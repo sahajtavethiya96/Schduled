@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { google } from 'googleapis'
 import { getCurrentSession } from '@/lib/authz'
 import { safeReturnTo } from '@/lib/api/helpers'
-import { env } from '@/lib/env'
+import { getAppUrl } from '@/lib/get-app-url'
+import { createGoogleOAuthClient, googleCalendarConfigured } from '@/lib/google/client'
 
 const SCOPES = [
   'https://www.googleapis.com/auth/calendar',
@@ -12,22 +12,18 @@ const SCOPES = [
 export async function GET(req: NextRequest) {
   const session = await getCurrentSession()
   if (!session) {
-    return NextResponse.redirect(new URL('/login', req.url))
+    return NextResponse.redirect(new URL('/login', getAppUrl()))
   }
 
   const returnTo = safeReturnTo(req.nextUrl.searchParams.get('returnTo'))
 
-  if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET) {
-    const fallback = new URL(returnTo, req.url)
+  if (!googleCalendarConfigured()) {
+    const fallback = new URL(returnTo, getAppUrl())
     fallback.searchParams.set('calendar_error', 'not_configured')
     return NextResponse.redirect(fallback)
   }
 
-  const oauth2Client = new google.auth.OAuth2(
-    env.GOOGLE_CLIENT_ID,
-    env.GOOGLE_CLIENT_SECRET,
-    `${env.NEXT_PUBLIC_APP_URL}/api/integrations/google/callback`,
-  )
+  const oauth2Client = createGoogleOAuthClient()
 
   const state = Buffer.from(
     JSON.stringify({ userId: session.user.id, returnTo }),

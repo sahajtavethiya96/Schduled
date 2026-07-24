@@ -21,7 +21,7 @@ import {
 import { user } from "@/db/schema";
 import { requireSession } from "@/lib/authz";
 import { db } from "@/lib/db";
-import { env } from "@/lib/env";
+import { getAppUrl } from "@/lib/get-app-url";
 
 export const metadata = { title: "Profile Settings" };
 
@@ -36,7 +36,7 @@ export default async function ProfilePage() {
   }
 
   const bookingUrl = freshUser.username
-    ? `${env.NEXT_PUBLIC_APP_URL}/${freshUser.username}`
+    ? `${getAppUrl()}/${freshUser.username}`
     : null;
 
   return (

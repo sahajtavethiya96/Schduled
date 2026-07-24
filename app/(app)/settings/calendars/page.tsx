@@ -8,6 +8,7 @@ import { connectedCalendar } from '@/db/schema'
 import { requireSession } from '@/lib/authz'
 import { db } from '@/lib/db'
 import { env } from '@/lib/env'
+import { getAppUrl } from '@/lib/get-app-url'
 import { CalendarActions } from './_components/calendar-actions'
 
 export const metadata = { title: 'Calendars' }
@@ -31,7 +32,7 @@ export default async function CalendarsPage() {
     .where(eq(connectedCalendar.userId, session.user.id))
     .orderBy(connectedCalendar.createdAt)
 
-  const connectUrl = `${env.NEXT_PUBLIC_APP_URL}/api/integrations/google?returnTo=/settings/calendars`
+  const connectUrl = `${getAppUrl()}/api/integrations/google?returnTo=/settings/calendars`
   const googleConfigured = !!(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET)
 
   return (

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { CheckCircle, Copy, ArrowRight } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { completeOnboarding } from '@/app/actions/onboarding'
+import { useAppOrigin } from '@/hooks/use-app-origin'
 
 interface StepShareLinkProps {
   username: string
@@ -11,8 +12,8 @@ interface StepShareLinkProps {
 }
 
 export function StepShareLink({ username, onBack }: StepShareLinkProps) {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? ''
-  const bookingUrl = `${appUrl}/${username}`
+  const appOrigin = useAppOrigin()
+  const bookingUrl = `${appOrigin}/${username}`
   const [copied, setCopied] = useState(false)
   const [finishing, setFinishing] = useState(false)
   const [error, setError] = useState('')

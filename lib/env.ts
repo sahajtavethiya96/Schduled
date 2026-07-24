@@ -8,7 +8,26 @@ const optionalString = z.preprocess(
 const envSchema = z.object({
   DATABASE_URL: z.string().min(1),
   APP_SECRET: z.string().min(1),
-  NEXT_PUBLIC_APP_URL: z.url(),
+
+  // The one source of truth for server-generated absolute URLs (OAuth
+  // redirect_uris, Better Auth baseURL, email/magic links, booking links).
+  // Deliberately NOT prefixed NEXT_PUBLIC_ — Next.js inlines NEXT_PUBLIC_*
+  // vars into the compiled bundle at `next build` time (client AND server
+  // chunks), so a value baked in at image-build time would stay frozen
+  // forever regardless of what the runtime `.env`/env_file sets. APP_URL is
+  // read live from process.env at request time instead. Required in
+  // production (see superRefine below); falls back to localhost in dev.
+  // Use lib/get-app-url.ts's getAppUrl() rather than reading this directly.
+  APP_URL: optionalString,
+
+  // Legacy/display-only. Client components must NOT read this directly for
+  // origin-dependent logic (use hooks/use-app-origin.ts's useAppOrigin()
+  // instead) — see APP_URL above for why. Kept optional for backward
+  // compatibility with existing .env files.
+  NEXT_PUBLIC_APP_URL: z.preprocess(
+    (value) => (value === "" ? undefined : value),
+    z.string().url().optional()
+  ),
   NODE_ENV: z
     .enum(["development", "test", "production"])
     .default("development"),
@@ -152,6 +171,18 @@ const envSchema = z.object({
       path: ["ENCRYPT_KEY"],
       message:
         "ENCRYPT_KEY is required when Google or Zoom OAuth is configured (it encrypts stored OAuth tokens).",
+    });
+  }
+
+  if (val.NODE_ENV === "production" && !val.APP_URL) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["APP_URL"],
+      message:
+        "APP_URL is required in production. It must be the real public https:// domain " +
+        "(e.g. https://schduled.2sc.dev) — unlike NEXT_PUBLIC_APP_URL, it is read live at " +
+        "runtime and is never frozen into the build, so OAuth redirects, magic links, and " +
+        "booking links resolve correctly behind a reverse proxy.",
     });
   }
 

@@ -1,5 +1,6 @@
 import { Section, Text } from "react-email";
 import { PRODUCT_NAME } from "@/config/platform";
+import { getAppUrl } from "@/lib/get-app-url";
 import { EmailLayout, emailStyles } from "@/lib/email/components/layout";
 
 export function DeleteConfirmationEmail({
@@ -11,8 +12,7 @@ export function DeleteConfirmationEmail({
   email: string;
   productName?: string;
 }) {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? '';
-  const logoUrl = appUrl ? `${appUrl}/email-logo.png` : undefined;
+  const logoUrl = `${getAppUrl()}/email-logo.png`;
 
   return (
     <EmailLayout

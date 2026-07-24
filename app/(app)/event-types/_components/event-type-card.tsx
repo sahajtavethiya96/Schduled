@@ -50,9 +50,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Switch } from '@/components/ui/switch'
+import { useAppOrigin } from '@/hooks/use-app-origin'
 import { cn } from '@/lib/utils'
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? ''
 
 interface Duration {
   duration: number
@@ -129,6 +128,7 @@ export function EventTypeCard({
   viewMode = 'list',
 }: EventTypeCardProps) {
   const router = useRouter()
+  const appOrigin = useAppOrigin()
   const [isPending, startTransition] = useTransition()
   const [copied, setCopied] = useState(false)
   const [lastBookedLabel, setLastBookedLabel] = useState<string | null>(null)
@@ -140,7 +140,7 @@ export function EventTypeCard({
     if (stats?.lastBooked) setLastBookedLabel(relativeDate(stats.lastBooked))
   }, [stats?.lastBooked])
 
-  const bookingUrl = username ? `${APP_URL}/${username}/${slug}` : null
+  const bookingUrl = username && appOrigin ? `${appOrigin}/${username}/${slug}` : null
   const cardColor = color || 'var(--primary)'
   const isActive_ = isSelected || isHovered
 

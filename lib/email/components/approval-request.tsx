@@ -1,4 +1,5 @@
 import { Button, Hr, Link, Section, Text } from "react-email";
+import { getAppUrl } from "@/lib/get-app-url";
 import { EmailLayout, emailStyles } from "./layout";
 
 interface ApprovalRequestEmailProps {
@@ -26,8 +27,7 @@ export function ApprovalRequestEmail({
 }: ApprovalRequestEmailProps) {
   const amber = "#D97706";
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? '';
-  const logoUrl = appUrl ? `${appUrl}/email-logo.png` : undefined;
+  const logoUrl = `${getAppUrl()}/email-logo.png`;
 
   return (
     <EmailLayout preview={`New booking request: ${eventName} with ${inviteeName}`} logoUrl={logoUrl}>

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { saveProfileStep } from '@/app/actions/onboarding'
+import { useAppOrigin } from '@/hooks/use-app-origin'
 
 // Avatar upload uses STORAGE_DRIVER from .env:
 //   local (default) → saved to public/uploads/avatars/{userId}.webp, served at /uploads/...
@@ -33,6 +34,7 @@ function nameToUsername(name: string): string {
 }
 
 export function StepProfile({ defaultName, defaultUsername, defaultImage, onNext }: StepProfileProps) {
+  const appOrigin = useAppOrigin()
   const [name, setName] = useState(defaultName)
   const [username, setUsername] = useState(defaultUsername)
   const [usernameState, setUsernameState] = useState<UsernameState>('idle')
@@ -198,7 +200,7 @@ export function StepProfile({ defaultName, defaultUsername, defaultImage, onNext
         <Label htmlFor="ob-username">Username</Label>
         <div className={`relative flex h-9 items-center border bg-background px-3 text-sm transition-colors focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/15 ${borderColor}`}>
           <span className="shrink-0 select-none whitespace-nowrap text-muted-foreground">
-            {(process.env.NEXT_PUBLIC_APP_URL ?? 'schduled.com').replace(/^https?:\/\//, '')}/
+            {appOrigin.replace(/^https?:\/\//, '')}/
           </span>
           <input
             id="ob-username"

@@ -22,7 +22,7 @@ Only three variables are strictly required to boot:
 ```env
 DATABASE_URL=postgresql://user:pass@host:5432/schduled
 APP_SECRET=<openssl rand -hex 32>
-NEXT_PUBLIC_APP_URL=https://your-domain.example
+APP_URL=https://your-domain.example
 ```
 
 **This is enough to start the app and log into it** — email + password login is
@@ -57,12 +57,21 @@ when you need the feature:
 - **Never committed:** `.env` is git-ignored; only `.env.example` (the
   template, no real values) is tracked.
 
-## `NEXT_PUBLIC_*` variables are public
+## `NEXT_PUBLIC_*` variables are public — and inlined at build time
 
 Anything prefixed `NEXT_PUBLIC_` is bundled into the browser JavaScript and
 is visible to anyone who opens dev tools — never put a secret in a
 `NEXT_PUBLIC_` variable. All the current `NEXT_PUBLIC_*` variables
-(`NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_PASSWORD_AUTH_ENABLED`,
-`NEXT_PUBLIC_LANDING_ENABLED`, `NEXT_PUBLIC_PRODUCT_NAME`,
-`NEXT_PUBLIC_SHOW_POWERED_BY`, `NEXT_PUBLIC_CONTACT_EMAIL`) are
-non-sensitive by design.
+(`NEXT_PUBLIC_PASSWORD_AUTH_ENABLED`, `NEXT_PUBLIC_LANDING_ENABLED`,
+`NEXT_PUBLIC_PRODUCT_NAME`, `NEXT_PUBLIC_SHOW_POWERED_BY`,
+`NEXT_PUBLIC_CONTACT_EMAIL`) are non-sensitive by design.
+
+There's a second, less obvious consequence: Next.js **inlines**
+`NEXT_PUBLIC_*` references into the compiled bundle (client *and* server
+chunks) at `next build` time — it does not read them live from the
+container's environment at runtime like ordinary vars. That's exactly why
+the app's own base URL is `APP_URL` (§ above), not `NEXT_PUBLIC_APP_URL`:
+a value baked into a Docker image at build time would stay frozen forever,
+so redeploying the same image with a different `APP_URL` in `env_file`
+wouldn't work if it were `NEXT_PUBLIC_`-prefixed. `APP_URL` is read fresh
+from `process.env` at request time instead.

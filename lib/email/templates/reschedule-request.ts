@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { formatInTimeZone } from "date-fns-tz";
 import { RescheduleRequestEmail } from "@/lib/email/components/reschedule-request";
 import { renderEmailTemplate } from "@/lib/email/renderer";
-import { env } from "@/lib/env";
+import { getAppUrl } from "@/lib/get-app-url";
 import { PRODUCT_NAME } from "@/config/platform";
 
 const DATE_FMT = "EEEE, MMMM d, yyyy 'at' h:mm a";
@@ -20,7 +20,7 @@ interface RescheduleRequestParams {
 }
 
 export async function rescheduleRequestTemplate(p: RescheduleRequestParams) {
-  const base = env.NEXT_PUBLIC_APP_URL;
+  const base = getAppUrl();
   const currentWhenHost = formatInTimeZone(p.currentStartUtc, p.hostTimezone, DATE_FMT);
   const requestedWhenHost = formatInTimeZone(p.requestedStartUtc, p.hostTimezone, DATE_FMT);
   const reviewUrl = `${base}/booking/review/${p.approvalToken}?type=reschedule`;

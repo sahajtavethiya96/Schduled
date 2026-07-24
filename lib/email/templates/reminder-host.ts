@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { formatInTimeZone } from "date-fns-tz";
 import { renderEmailTemplate } from "@/lib/email/renderer";
 import { ReminderHostEmail } from "@/lib/email/components/reminder-host";
-import { env } from "@/lib/env";
+import { getAppUrl } from "@/lib/get-app-url";
 
 interface ReminderHostParams {
   hostName: string;
@@ -22,7 +22,7 @@ interface ReminderHostParams {
 const DATE_FMT = "EEEE, MMMM d, yyyy 'at' h:mm a";
 
 export async function reminderHostTemplate(p: ReminderHostParams) {
-  const dashboardUrl = `${env.NEXT_PUBLIC_APP_URL}/dashboard`;
+  const dashboardUrl = `${getAppUrl()}/dashboard`;
 
   const startFormatted = formatInTimeZone(p.startUtc, p.hostTimezone, DATE_FMT);
   const inviteeTime = formatInTimeZone(

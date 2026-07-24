@@ -5,7 +5,7 @@ import { EmbedWidget } from './_components/embed-widget'
 import { eventType, user } from '@/db/schema'
 import { requireSession } from '@/lib/authz'
 import { db } from '@/lib/db'
-import { env } from '@/lib/env'
+import { getAppUrl } from '@/lib/get-app-url'
 
 export const metadata = { title: 'My Link' }
 
@@ -29,11 +29,11 @@ export default async function MyLinkPage() {
       />
       <MyLinkForm
         currentUsername={freshUser?.username ?? ''}
-        appUrl={env.NEXT_PUBLIC_APP_URL}
+        appUrl={getAppUrl()}
       />
       <EmbedWidget
         eventTypes={eventTypes}
-        appUrl={env.NEXT_PUBLIC_APP_URL}
+        appUrl={getAppUrl()}
         username={freshUser?.username ?? ''}
       />
     </div>

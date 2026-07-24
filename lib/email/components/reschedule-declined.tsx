@@ -1,4 +1,5 @@
 import { Hr, Link, Section, Text } from "react-email";
+import { getAppUrl } from "@/lib/get-app-url";
 import { canonicalizeTz } from "@/lib/utils";
 import { EmailLayout, emailStyles } from "./layout";
 
@@ -28,8 +29,7 @@ export function RescheduleDeclinedEmail({
   whenHost,
   whenInvitee,
 }: RescheduleDeclinedEmailProps) {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
-  const logoUrl = appUrl ? `${appUrl}/email-logo.png` : undefined;
+  const logoUrl = `${getAppUrl()}/email-logo.png`;
 
   return (
     <EmailLayout preview={`Reschedule declined — your ${eventName} is still confirmed`} logoUrl={logoUrl}>

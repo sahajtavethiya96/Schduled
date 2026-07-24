@@ -329,7 +329,7 @@ are real · P0/P1/P2 priority.
 | ✅ DONE | Security headers added via `headers()` in `next.config.mjs`: CSP (`default-src 'self'`, `frame-ancestors 'none'`, `object-src 'none'`, etc. — pragmatic, no nonce infra, so `script-src`/`style-src` allow `'unsafe-inline'` for Next.js's hydration bootstrap and Tailwind), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy` (blocks camera/mic/geolocation/payment), `Strict-Transport-Security` (deliberately no `preload` or `includeSubDomains` — see inline comments for why). Verified live: headers present on `/`, all pages still return 200. **Still true:** `frame-ancestors 'none'` will need a `frame-ancestors` carve-out for booking-page routes once the embed widget (§J) ships | `next.config.mjs` | P1 |
 | CHANGE | Audit rate-limit coverage across **all** public API routes (present on many) | `app/api/*` | P1 |
 | — | **Verified gap:** rate limiting (`lib/api/helpers.ts`) is an in-process `Map`, explicitly single-instance only (code comment confirms it). Running >1 web replica means each replica has its own independent counter — the real limit becomes N× the documented one, and counters reset on restart. This directly undercuts the horizontal-scaling story elsewhere in this doc. **Do not run >1 web replica without either accepting N× effective limits or replacing this with a DB/Redis-backed limiter** | `lib/api/helpers.ts` | P1 |
-| — | **Correction — this is NOT a bug, verified against Better Auth's source.** An earlier review pass flagged "reverse-proxy cookies may silently fail" as a P0 gap. Reading `node_modules/better-auth/dist/cookies/index.mjs` shows the secure-cookie flag is derived from `options.baseURL` (i.e. our static `NEXT_PUBLIC_APP_URL` string, checked via `.startsWith("https://")`) — **never** from the incoming request's protocol or `X-Forwarded-*` headers. Behind a TLS-terminating reverse proxy, Node sees plain `http://`, but that's irrelevant to Better Auth's decision here. **No code change needed.** The only real requirement (already documented in `ENVIRONMENT.md`): set `NEXT_PUBLIC_APP_URL` to the real public `https://` URL, not `http://localhost`, in production | `lib/auth.ts` (verified, not changed) | — ✅ |
+| — | **Correction, updated after the `APP_URL` fix below.** An earlier review pass flagged "reverse-proxy cookies may silently fail" as a P0 gap, then a later pass found it wasn't a `better-auth` bug — the secure-cookie flag is derived from `options.baseURL` (checked via `.startsWith("https://")`), never from request headers. But that `baseURL` was `NEXT_PUBLIC_APP_URL`, which Next.js inlines into the compiled bundle at `next build` time — a value baked in at image-build time stayed frozen regardless of the real runtime `.env`, which **did** make production deploys serve the wrong base URL (see `docs/bugs/2026-07-24-*-production-url-localhost-0000.md`). Fixed: `baseURL` now reads `getAppUrl()` (`lib/get-app-url.ts`), backed by a new server-only `APP_URL` var that is never inlined and is read live at runtime | `lib/auth.ts`, `lib/get-app-url.ts`, `lib/env.ts` | — ✅ |
 | ✅ DONE | Docs: run behind HTTPS reverse proxy (sample Caddy + nginx configs — `docs/self-hosting/installation.md`); rotate secrets (`ENVIRONMENT.md` Security notes); **back up `ENCRYPT_KEY`** (`docs/self-hosting/backup.md`) | docs | P0 |
 | ADD | Dependency scanning (Dependabot / `pnpm audit` in CI) | `.github/` | P1 |
 | — | Better Auth handles CSRF/session cookies — **keep** | `lib/auth.ts` | ✅ |
@@ -436,7 +436,7 @@ outbound webhooks · Outlook/Teams · public API · i18n.
 ```bash
 git clone <your-repo-url> schduled && cd schduled
 cp .env.example .env
-#   Set DATABASE_URL (host = "postgres" for compose), APP_SECRET, NEXT_PUBLIC_APP_URL
+#   Set DATABASE_URL (host = "postgres" for compose), APP_SECRET, APP_URL
 #   (generate secrets: openssl rand -hex 32). Also set POSTGRES_USER/PASSWORD/DB to
 #   match DATABASE_URL — docker compose reads these to create the Postgres container.
 #   Then set the self-host login essentials (recommended from day one):
@@ -448,7 +448,7 @@ docker compose up -d                 # postgres + migrate + web + worker; migrat
 docker compose logs -f migrate       # confirm migrations applied cleanly
 docker compose logs -f web worker    # wait for "ready"
 curl http://localhost:3000/api/health  # expect {"status":"ok"}
-# open NEXT_PUBLIC_APP_URL → sign up with INITIAL_ADMIN_EMAIL using a password
+# open APP_URL → sign up with INITIAL_ADMIN_EMAIL using a password
 ```
 
 Already have a Postgres database (managed service, or your own instance) and
@@ -463,7 +463,7 @@ git clone <your-repo-url> schduled && cd schduled
 corepack enable && pnpm install
 # create Postgres db+user, then:
 cp .env.example .env
-#   Set DATABASE_URL, APP_SECRET (openssl rand -hex 32), NEXT_PUBLIC_APP_URL,
+#   Set DATABASE_URL, APP_SECRET (openssl rand -hex 32), APP_URL,
 #   NEXT_PUBLIC_PASSWORD_AUTH_ENABLED=true, SIGNUP_ENABLED=false,
 #   INITIAL_ADMIN_EMAIL=you@example.com
 nano .env
@@ -472,13 +472,13 @@ pnpm build
 pnpm start        &                  # web on :3000
 pnpm worker:start &                  # background worker (emails, reminders, sync)
 curl http://localhost:3000/api/health  # expect {"status":"ok"}
-# open NEXT_PUBLIC_APP_URL → sign up with INITIAL_ADMIN_EMAIL using a password
+# open APP_URL → sign up with INITIAL_ADMIN_EMAIL using a password
 ```
 Run web + worker under **systemd/pm2** in production; put Nginx/Caddy/Traefik in
 front for TLS → `127.0.0.1:3000`. Example systemd units go in the Installation Guide.
 
 ### Post-install checklist
-- [ ] App loads at `NEXT_PUBLIC_APP_URL`
+- [ ] App loads at `APP_URL`
 - [ ] `curl <url>/api/health` returns `{"status":"ok"}`
 - [ ] You can log in — either `NEXT_PUBLIC_PASSWORD_AUTH_ENABLED=true` is set, or
       SMTP/Google is configured (otherwise the only sign-in path is a magic link
@@ -487,7 +487,7 @@ front for TLS → `127.0.0.1:3000`. Example systemd units go in the Installation
 - [ ] `SIGNUP_ENABLED=false` is set (recommended default — closes public signup;
       the `INITIAL_ADMIN_EMAIL` account is exempt and always gets through, so this
       is safe to set *before* your first deploy, not just after)
-- [ ] (If used) Google/Zoom redirect URIs match `NEXT_PUBLIC_APP_URL`; `ENCRYPT_KEY` set
+- [ ] (If used) Google/Zoom redirect URIs match `APP_URL`; `ENCRYPT_KEY` set
 - [ ] Worker running (a test booking sends confirmation/reminder)
 - [ ] Backups scheduled (DB + uploads + `ENCRYPT_KEY`)
 

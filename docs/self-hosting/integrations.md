@@ -48,7 +48,7 @@ Enables "Continue with Google" sign-in, two-way Google Calendar sync
    ```
    https://your-domain.example/api/integrations/google/callback
    ```
-   (replace with your real `NEXT_PUBLIC_APP_URL`, exactly — trailing
+   (replace with your real `APP_URL`, exactly — trailing
    slashes and protocol mismatches will cause the OAuth flow to fail).
 6. Set the resulting values:
    ```env
@@ -94,7 +94,7 @@ After setting either integration, go to **Settings → Integrations** in the
 app and connect the account. A successful connection creates a
 `connectedCalendar` (Google) or `videoConnection` (Zoom) record with an
 encrypted token. If the connect flow fails, double-check the redirect URI
-matches `NEXT_PUBLIC_APP_URL` exactly (protocol, host, no trailing slash
+matches `APP_URL` exactly (protocol, host, no trailing slash
 mismatch) and that `ENCRYPT_KEY` is set.
 
 ## Address autocomplete (bonus, not really an "integration")

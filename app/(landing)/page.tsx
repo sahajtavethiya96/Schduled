@@ -6,11 +6,12 @@ import { LandingHeader } from '@/components/landing/landing-header'
 import { LandingFooter } from '@/components/landing/landing-footer'
 import { Reveal } from '@/components/landing/reveal'
 import { env } from '@/lib/env'
+import { getAppUrl } from '@/lib/get-app-url'
 
 // Illustrative example domain shown in "how it works" copy — derives from
 // the real configured deployment so self-hosters see their own domain
 // instead of the hosted product's.
-const APP_HOST = env.NEXT_PUBLIC_APP_URL.replace(/^https?:\/\//, '')
+const APP_HOST = getAppUrl().replace(/^https?:\/\//, '')
 import {
   ArrowDown,
   ArrowRight,

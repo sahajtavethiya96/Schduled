@@ -6,7 +6,7 @@ import {
   type BookingEmailVariant,
 } from "@/lib/email/components/booking-email";
 import { renderEmailTemplate } from "@/lib/email/renderer";
-import { env } from "@/lib/env";
+import { getAppUrl } from "@/lib/get-app-url";
 
 const DATE_FMT = "EEEE, MMMM d, yyyy 'at' h:mm a";
 
@@ -37,7 +37,7 @@ const VERB: Record<BookingEmailVariant, string> = {
 };
 
 export async function bookingEmail(p: BookingEmailInput) {
-  const base = env.NEXT_PUBLIC_APP_URL;
+  const base = getAppUrl();
 
   const whenHost = formatInTimeZone(p.startUtc, p.hostTimezone, DATE_FMT);
   const whenInvitee = formatInTimeZone(p.startUtc, p.inviteeTimezone, DATE_FMT);

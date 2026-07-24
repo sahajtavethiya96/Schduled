@@ -7,7 +7,7 @@ import { getCurrentSession } from "@/lib/authz";
 import { safeReturnTo } from "@/lib/api/helpers";
 import { db } from "@/lib/db";
 import { encrypt } from "@/lib/encrypt";
-import { env } from "@/lib/env";
+import { getAppUrl } from "@/lib/get-app-url";
 import {
   exchangeZoomCode,
   getZoomUser,
@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
   // Build redirects from the configured app URL, not req.url — behind a tunnel
   // (ngrok/cloudflared) req.url resolves to the internal localhost host and the
   // protocol can flip to https, producing a broken redirect.
-  const base = env.NEXT_PUBLIC_APP_URL;
+  const base = getAppUrl();
   const failUrl = new URL("/settings/integrations?zoom_error=1", base);
 
   if (error || !code || !stateParam) {
