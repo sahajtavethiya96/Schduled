@@ -23,7 +23,7 @@ that's an administration view, not a shared workspace.
   version automatically), PostgreSQL 15 or 16.
 - **Both paths, for production:** a domain name and an HTTPS reverse proxy
   (Caddy, Traefik, or nginx) in front of the app — Google/Zoom OAuth
-  callbacks require a real `https://` URL, and `NEXT_PUBLIC_APP_URL` should
+  callbacks require a real `https://` URL, and `APP_URL` should
   reflect it (see [Configuration](./configuration.md)).
 
 ## Path A — Docker Compose (recommended)
@@ -50,7 +50,7 @@ Edit `.env`:
 # Required to boot
 DATABASE_URL=postgresql://schduled:strongpass@postgres:5432/schduled
 APP_SECRET=<openssl rand -hex 32>
-NEXT_PUBLIC_APP_URL=https://schedule.example.com
+APP_URL=https://schedule.example.com
 
 # Must match DATABASE_URL above — docker compose uses these to create the
 # Postgres container's initial user/db
@@ -90,7 +90,7 @@ configure the bundled Postgres container, which this path doesn't run):
 # Required to boot — your existing database, not a Compose-managed one
 DATABASE_URL=postgresql://myuser:mypass@my-db-host.example.com:5432/schduled
 APP_SECRET=<openssl rand -hex 32>
-NEXT_PUBLIC_APP_URL=https://schedule.example.com
+APP_URL=https://schedule.example.com
 
 # Recommended for self-hosting — see the "first login" note below
 NEXT_PUBLIC_PASSWORD_AUTH_ENABLED=true
@@ -117,7 +117,7 @@ Migrations run once via a dedicated `migrate` service (`pnpm db:migrate:docker`)
 that must complete successfully before `web`/`worker` start — no manual
 migration step, either way.
 
-Open `NEXT_PUBLIC_APP_URL` in a browser and sign up with the email you set
+Open `APP_URL` in a browser and sign up with the email you set
 as `INITIAL_ADMIN_EMAIL` — that account is automatically promoted to admin.
 
 ## Path B — Manual / Node
@@ -220,7 +220,7 @@ see the next section for real config to copy.
 ## Reverse proxy (both paths, production)
 
 Required for production either way: Google/Zoom OAuth callbacks need a real
-`https://` URL, and `NEXT_PUBLIC_APP_URL` should match it exactly. The app
+`https://` URL, and `APP_URL` should match it exactly. The app
 itself always listens on plain HTTP at `3000` (`127.0.0.1:3000` for the
 manual path, `localhost:3000` for Docker Compose) — your proxy handles TLS
 in front of it.
@@ -268,7 +268,7 @@ sudo certbot --nginx -d schedule.example.com
 sudo systemctl reload nginx
 ```
 
-Either way, once it's up: `NEXT_PUBLIC_APP_URL=https://schedule.example.com`
+Either way, once it's up: `APP_URL=https://schedule.example.com`
 in `.env`, and confirm `curl https://schedule.example.com/api/health` returns
 `{"status":"ok"}` through the proxy, not just on `localhost:3000` directly.
 
@@ -300,7 +300,7 @@ to admin. See `ENVIRONMENT.md` §3 for the full explanation.
 - [ ] The worker is running — a test booking sends a confirmation
       (or logs one to the console if SMTP isn't configured)
 - [ ] Backups are scheduled — see [Backup](./backup.md)
-- [ ] If using Google/Zoom, redirect URIs match `NEXT_PUBLIC_APP_URL` exactly
+- [ ] If using Google/Zoom, redirect URIs match `APP_URL` exactly
       — see [Integrations](./integrations.md)
 
 ## Next steps

@@ -3,6 +3,7 @@ import { videoConnection } from "@/db/schema";
 import { db } from "@/lib/db";
 import { decrypt, encrypt } from "@/lib/encrypt";
 import { env } from "@/lib/env";
+import { getAppUrl } from "@/lib/get-app-url";
 
 type VideoConnectionRow = typeof videoConnection.$inferSelect;
 
@@ -19,7 +20,7 @@ export function zoomConfigured(): boolean {
 }
 
 export function zoomRedirectUri(): string {
-  return `${env.NEXT_PUBLIC_APP_URL}/api/integrations/zoom/callback`;
+  return `${getAppUrl()}/api/integrations/zoom/callback`;
 }
 
 /** Build the Zoom authorization URL the host is redirected to. */

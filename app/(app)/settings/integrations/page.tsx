@@ -14,6 +14,7 @@ import { connectedCalendar, videoConnection } from "@/db/schema";
 import { requireSession } from "@/lib/authz";
 import { db } from "@/lib/db";
 import { env } from "@/lib/env";
+import { getAppUrl } from "@/lib/get-app-url";
 import { ZoomDisconnectButton } from "./_components/zoom-action";
 
 export const metadata = { title: "Integrations" };
@@ -64,7 +65,7 @@ export default async function IntegrationsPage() {
     .limit(1)
     .then((r) => r[0]);
 
-  const googleConnectUrl = `${env.NEXT_PUBLIC_APP_URL}/api/integrations/google?returnTo=/settings/integrations`;
+  const googleConnectUrl = `${getAppUrl()}/api/integrations/google?returnTo=/settings/integrations`;
   const googleConfigured = !!(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET);
 
   const zoomConn = await db
@@ -81,7 +82,7 @@ export default async function IntegrationsPage() {
     )
     .limit(1)
     .then((r) => r[0]);
-  const zoomConnectUrl = `${env.NEXT_PUBLIC_APP_URL}/api/integrations/zoom?returnTo=/settings/integrations`;
+  const zoomConnectUrl = `${getAppUrl()}/api/integrations/zoom?returnTo=/settings/integrations`;
   const zoomConfigured = !!(env.ZOOM_CLIENT_ID && env.ZOOM_CLIENT_SECRET);
 
   return (

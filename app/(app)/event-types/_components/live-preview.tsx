@@ -4,9 +4,8 @@ import { Clock, Globe, GoogleLogo, MapPin, Phone, Screencast, VideoCamera } from
 import type { UseFormReturn } from 'react-hook-form'
 import type { BuilderFormValues } from './builder'
 import { MEETING_TYPES } from './tab-general'
+import { useAppOrigin } from '@/hooks/use-app-origin'
 import { cn } from '@/lib/utils'
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'schduled.com'
 
 const LOCATION_LABELS: Record<string, { label: string; icon: React.ReactNode }> = {
   zoom:                { label: 'Zoom',             icon: <VideoCamera size={11} weight="fill" /> },
@@ -32,6 +31,7 @@ interface LivePreviewProps {
 }
 
 export function LivePreview({ form, username, meetingType }: LivePreviewProps) {
+  const appOrigin = useAppOrigin()
   const name = form.watch('name') || 'Meeting Name'
   const description = form.watch('description')
   const color = form.watch('color') || '#0d9488'
@@ -46,8 +46,8 @@ export function LivePreview({ form, username, meetingType }: LivePreviewProps) {
   const loc = LOCATION_LABELS[locationType] ?? LOCATION_LABELS.custom
   const meetingLabel = MEETING_TYPES.find((m) => m.id === meetingType)?.label ?? 'One-on-One'
 
-  const displayUrl = username
-    ? `${APP_URL.replace(/^https?:\/\//, '')}/${username}/${slug}`
+  const displayUrl = username && appOrigin
+    ? `${appOrigin.replace(/^https?:\/\//, '')}/${username}/${slug}`
     : null
 
   return (

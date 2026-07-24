@@ -97,7 +97,7 @@ Open `.env` and set:
 ```env
 DATABASE_URL=postgresql://schduled:strongpass@localhost:5432/schduled
 APP_SECRET=<output from step 5>
-NEXT_PUBLIC_APP_URL=http://localhost:3000        # or your real domain in production
+APP_URL=http://localhost:3000        # or your real https:// domain in production
 ```
 These three are the only variables the app **requires to boot** — see the
 next step for why you'll almost certainly want a couple more
@@ -170,7 +170,7 @@ pnpm worker:start &   # background worker
 
 ### 12. Create your admin account
 
-Open `NEXT_PUBLIC_APP_URL` in a browser and sign up using the email you set as
+Open `APP_URL` in a browser and sign up using the email you set as
 `INITIAL_ADMIN_EMAIL` in step 7 (via the password form, since that's enabled).
 That account is automatically promoted to admin — no CLI step needed.
 
@@ -182,7 +182,7 @@ pnpm make:admin you@example.com
 
 ### 13. Verify
 
-- [ ] App loads at `NEXT_PUBLIC_APP_URL`
+- [ ] App loads at `APP_URL`
 - [ ] You're signed in and, as the admin, can see the admin-only tabs under `/settings` (Users, Audit, Jobs, Platform)
 - [ ] The background worker is running (check its terminal/logs — a test
       booking should trigger a confirmation email, even if it's just logged to
@@ -199,7 +199,7 @@ Only **three** variables are strictly required for the app to start:
 |---|---|---|
 | `DATABASE_URL` | `postgresql://schduled:pass@localhost:5432/schduled` | PostgreSQL connection string |
 | `APP_SECRET` | *(32+ random chars)* | Better Auth session signing secret |
-| `NEXT_PUBLIC_APP_URL` | `https://schedule.example.com` | Public base URL, **no trailing slash** |
+| `APP_URL` | `https://schedule.example.com` | Public base URL, **no trailing slash** |
 
 Everything else is optional and unlocks specific features (email, Google, Zoom,
 richer geocoding, S3 storage).
@@ -220,7 +220,8 @@ Legend: **Req** = Required · **Opt** = Optional · **Cond** = Conditionally req
 |---|---|---|---|---|
 | `DATABASE_URL` | **Req** | — | Postgres connection for Drizzle ORM **and** pg-boss job queue | Your Postgres instance. Alternatives: managed (Supabase, Neon, RDS, DO), self-hosted Postgres 15/16, or bundled compose `postgres` service. `postgres://` is auto-normalized to `postgresql://`. |
 | `APP_SECRET` | **Req** | — | Signs Better Auth sessions (needs 32+ chars) | `openssl rand -hex 32`. Keep stable — rotating it logs everyone out. |
-| `NEXT_PUBLIC_APP_URL` | **Req** | — | Base URL for OAuth callbacks, email links, session baseURL. No trailing slash. Also determines the auth cookie's `secure` flag (checked via `.startsWith("https://")`) — **use the real public `https://` URL in production**, not `http://localhost`. | Your public URL. Must match OAuth redirect URIs exactly. |
+| `APP_URL` | **Req** | localhost:3000 in dev | Base URL for OAuth callbacks, email links, session baseURL. No trailing slash. Also determines the auth cookie's `secure` flag (checked via `.startsWith("https://")`) — **use the real public `https://` URL in production**, not `http://localhost`. Deliberately **not** prefixed `NEXT_PUBLIC_` — Next.js inlines `NEXT_PUBLIC_*` vars into the compiled bundle at build time, so a value baked in at image-build time would stay frozen forever; `APP_URL` is read live at runtime instead, so the same built image/deploy works across environments. | Your public URL. Must match OAuth redirect URIs exactly. |
+| `NEXT_PUBLIC_APP_URL` | Deprecated | — | No longer read anywhere in the app — superseded by `APP_URL` above. Safe to remove; kept in `.env.example` only so older `.env` files don't need to change immediately. | — |
 | `NODE_ENV` | Opt | `development` | `development` \| `test` \| `production`. Affects trusted origins & logging. | Set `production` when deployed. |
 | `DB_POOL_MAX` | Opt | `20` | Postgres connection pool size per web replica (`lib/db.ts`). | Raise for high traffic; do the math first — `replicas × DB_POOL_MAX` must stay under your database's `max_connections`. |
 | `NEXT_PUBLIC_LANDING_ENABLED` | Opt | `true` | **✅ Implemented — verified live.** `false` redirects `/` to `/login` (307, confirmed via `curl`) for internal/team deployments that don't want a public marketing page. Legal pages (`/privacy`, `/terms`, `/cookies`) and booking pages stay public either way (also confirmed live). | Set `false` for internal deployments; leave `true` (default) if you want the marketing landing shown, same as the hosted product. |
@@ -287,7 +288,7 @@ links. **Requires `ENCRYPT_KEY`** when set.
 3. Configure the OAuth consent screen (scopes: `calendar`, `calendar.events`).
 4. Create an **OAuth 2.0 Web** client.
 5. Add authorized redirect URI:
-   `${NEXT_PUBLIC_APP_URL}/api/integrations/google/callback`
+   `${APP_URL}/api/integrations/google/callback`
    (and the Better Auth sign-in callback if using Google login).
 6. Set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `ENCRYPT_KEY`.
 
@@ -306,7 +307,7 @@ Optional. Auto-creates Zoom meetings for bookings. **Requires `ENCRYPT_KEY`.**
 **Setup steps:**
 1. marketplace.zoom.us → **Develop → Build App → OAuth**.
 2. Scope: `meeting:write:meeting`.
-3. Redirect URL: `${NEXT_PUBLIC_APP_URL}/api/integrations/zoom/callback`.
+3. Redirect URL: `${APP_URL}/api/integrations/zoom/callback`.
 4. Set `ZOOM_CLIENT_ID`, `ZOOM_CLIENT_SECRET`, `ENCRYPT_KEY`.
 
 > Publishing a Zoom app publicly requires Zoom's review (can take weeks). For a
@@ -399,7 +400,7 @@ SELF-HOSTING.md.
 ```env
 DATABASE_URL=postgresql://schduled:pass@localhost:5432/schduled
 APP_SECRET=<openssl rand -hex 32>
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+APP_URL=http://localhost:3000
 ```
 
 Fine for local development — you have a terminal open, so a console-logged
@@ -420,7 +421,7 @@ POSTGRES_USER=schduled
 POSTGRES_PASSWORD=strongpass
 POSTGRES_DB=schduled
 APP_SECRET=<openssl rand -hex 32>
-NEXT_PUBLIC_APP_URL=https://schedule.example.com
+APP_URL=https://schedule.example.com
 
 # Guarantees the first login works even before SMTP/Google are configured
 NEXT_PUBLIC_PASSWORD_AUTH_ENABLED=true
@@ -452,7 +453,7 @@ POSTGRES_USER=schduled
 POSTGRES_PASSWORD=strongpass
 POSTGRES_DB=schduled
 APP_SECRET=<openssl rand -hex 32>
-NEXT_PUBLIC_APP_URL=https://schedule.example.com
+APP_URL=https://schedule.example.com
 
 # First-run admin + login safety net (see "Self-hosted first boot" above)
 INITIAL_ADMIN_EMAIL=you@example.com
@@ -529,9 +530,9 @@ All are tracked with fixes in `SELF-HOSTING.md` Part 4.
   (DB/Redis-backed) limiter.
 - ~~Auth cookies behind a reverse proxy aren't explicitly configured~~ —
   **investigated and this isn't actually an issue.** Better Auth derives the
-  cookie's `secure` flag from `NEXT_PUBLIC_APP_URL` itself (checked via
+  cookie's `secure` flag from `APP_URL` itself (checked via
   `.startsWith("https://")`), never from request headers — confirmed by
-  reading `better-auth`'s own source. Just make sure `NEXT_PUBLIC_APP_URL` is
+  reading `better-auth`'s own source. Just make sure `APP_URL` is
   the real public `https://` URL in production.
 - ~~DB connection pool is fixed at 20, not env-configurable, no connect-retry~~
   — **fixed.** `DB_POOL_MAX` env var (§1) controls pool size; a bounded

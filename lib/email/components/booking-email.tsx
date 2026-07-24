@@ -10,6 +10,7 @@ import {
   Section,
   Text,
 } from "react-email";
+import { getAppUrl } from "@/lib/get-app-url";
 import { canonicalizeTz } from "@/lib/utils";
 
 export type BookingEmailVariant =
@@ -138,14 +139,7 @@ export function BookingEmail(props: BookingEmailProps) {
           <Section
             style={{ backgroundColor: copy.headerColor, padding: "28px 32px" }}
           >
-            {(() => {
-              const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? '';
-              return appUrl ? (
-                <Img src={`${appUrl}/email-logo-white.png`} width="132" height="28" alt="Schduled" style={{ display: 'block', marginBottom: '8px' }} />
-              ) : (
-                <Text style={{ color: white, fontSize: "20px", fontWeight: 700, margin: "0 0 8px" }}>Schduled</Text>
-              );
-            })()}
+            <Img src={`${getAppUrl()}/email-logo-white.png`} width="132" height="28" alt="Schduled" style={{ display: 'block', marginBottom: '8px' }} />
             <Text
               style={{
                 color: "rgba(255,255,255,0.9)",

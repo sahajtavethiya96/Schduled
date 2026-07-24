@@ -3,17 +3,9 @@ import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { connectedCalendar } from '@/db/schema'
 import { decrypt, encrypt } from '@/lib/encrypt'
-import { env } from '@/lib/env'
+import { createGoogleOAuthClient } from '@/lib/google/client'
 
 type ConnectedCalendarRow = typeof connectedCalendar.$inferSelect
-
-function makeOAuth2Client() {
-  return new google.auth.OAuth2(
-    env.GOOGLE_CLIENT_ID,
-    env.GOOGLE_CLIENT_SECRET,
-    `${env.NEXT_PUBLIC_APP_URL}/api/integrations/google/callback`,
-  )
-}
 
 /**
  * Returns an authenticated Google Calendar API client for the given
@@ -30,7 +22,7 @@ export async function getGoogleCalendarClient(cal: ConnectedCalendarRow) {
     throw new Error(`Calendar ${cal.id} has no access token`)
   }
 
-  const oauth2 = makeOAuth2Client()
+  const oauth2 = createGoogleOAuthClient()
 
   const accessToken  = await decrypt(cal.accessToken)
   const refreshToken = cal.refreshToken ? await decrypt(cal.refreshToken) : null

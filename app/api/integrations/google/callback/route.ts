@@ -8,7 +8,8 @@ import { connectedCalendar, user } from '@/db/schema'
 import { encrypt } from '@/lib/encrypt'
 import { audit } from '@/lib/audit'
 import { safeReturnTo } from '@/lib/api/helpers'
-import { env } from '@/lib/env'
+import { getAppUrl } from '@/lib/get-app-url'
+import { createGoogleOAuthClient, googleCalendarConfigured } from '@/lib/google/client'
 
 export async function GET(req: NextRequest) {
   const url = req.nextUrl
@@ -16,7 +17,7 @@ export async function GET(req: NextRequest) {
   const stateParam = url.searchParams.get('state')
   const error = url.searchParams.get('error')
 
-  const failUrl = new URL('/dashboard?calendar_error=1', req.url)
+  const failUrl = new URL('/dashboard?calendar_error=1', getAppUrl())
 
   if (error || !code || !stateParam) {
     return NextResponse.redirect(failUrl)
@@ -32,18 +33,14 @@ export async function GET(req: NextRequest) {
   // Verify the current session matches the state userId
   const session = await getCurrentSession()
   if (!session || session.user.id !== state.userId) {
-    return NextResponse.redirect(new URL('/login', req.url))
+    return NextResponse.redirect(new URL('/login', getAppUrl()))
   }
 
-  if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET) {
+  if (!googleCalendarConfigured()) {
     return NextResponse.redirect(failUrl)
   }
 
-  const oauth2Client = new google.auth.OAuth2(
-    env.GOOGLE_CLIENT_ID,
-    env.GOOGLE_CLIENT_SECRET,
-    `${env.NEXT_PUBLIC_APP_URL}/api/integrations/google/callback`,
-  )
+  const oauth2Client = createGoogleOAuthClient()
 
   type OAuthTokens = {
     access_token?: string | null
@@ -144,7 +141,7 @@ export async function GET(req: NextRequest) {
     metadata: { provider: 'google', accountEmail },
   })
 
-  const returnUrl = new URL(safeReturnTo(state.returnTo), req.url)
+  const returnUrl = new URL(safeReturnTo(state.returnTo), getAppUrl())
   returnUrl.searchParams.set('calendar_connected', '1')
   return NextResponse.redirect(returnUrl)
 }

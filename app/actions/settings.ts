@@ -14,7 +14,7 @@ import {
 import { audit } from "@/lib/audit";
 import { requireSession } from "@/lib/authz";
 import { db } from "@/lib/db";
-import { env } from "@/lib/env";
+import { getAppUrl } from "@/lib/get-app-url";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 type ActionResult<T = {}> = { error: string } | ({ ok: true } & T);
@@ -286,7 +286,7 @@ export async function reconnectCalendar(): Promise<
 > {
   try {
     await requireSession();
-    const redirectUrl = `${env.NEXT_PUBLIC_APP_URL}/api/integrations/google?returnTo=/settings/calendars`;
+    const redirectUrl = `${getAppUrl()}/api/integrations/google?returnTo=/settings/calendars`;
     return { ok: true, redirectUrl };
   } catch {
     return { error: "Something went wrong. Please try again." };

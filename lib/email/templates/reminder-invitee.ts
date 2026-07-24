@@ -2,7 +2,7 @@ import { createElement } from 'react'
 import { formatInTimeZone } from 'date-fns-tz'
 import { renderEmailTemplate } from '@/lib/email/renderer'
 import { ReminderInviteeEmail } from '@/lib/email/components/reminder-invitee'
-import { env } from '@/lib/env'
+import { getAppUrl } from '@/lib/get-app-url'
 
 interface ReminderInviteeParams {
   inviteeName:     string
@@ -22,7 +22,7 @@ interface ReminderInviteeParams {
 const DATE_FMT = "EEEE, MMMM d, yyyy 'at' h:mm a"
 
 export async function reminderInviteeTemplate(p: ReminderInviteeParams) {
-  const base = env.NEXT_PUBLIC_APP_URL
+  const base = getAppUrl()
 
   const startFormatted = formatInTimeZone(p.startUtc, p.hostTimezone,    DATE_FMT)
   const inviteeTime    = formatInTimeZone(p.startUtc, p.inviteeTimezone, DATE_FMT)

@@ -16,6 +16,7 @@ import { PageHeader } from '@/components/scaffold/page-header'
 import { Card, CardContent } from '@/components/ui/card'
 import { requireAdmin } from '@/lib/authz'
 import { env } from '@/lib/env'
+import { getAppUrl } from '@/lib/get-app-url'
 import { cn } from '@/lib/utils'
 
 export const metadata = { title: 'System Status' }
@@ -32,7 +33,7 @@ export default async function SettingsPlatformPage() {
   const passwordAuthEnabled = env.NEXT_PUBLIC_PASSWORD_AUTH_ENABLED
   const signupEnabled       = env.SIGNUP_ENABLED
 
-  const appUrl  = env.NEXT_PUBLIC_APP_URL
+  const appUrl  = getAppUrl()
   const nodeEnv = env.NODE_ENV
 
   const healthItems = [

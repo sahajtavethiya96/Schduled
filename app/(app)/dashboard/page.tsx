@@ -23,7 +23,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { booking, eventType, user } from "@/db/schema";
 import { requireSession } from "@/lib/authz";
 import { db } from "@/lib/db";
-import { env } from "@/lib/env";
+import { getAppUrl } from "@/lib/get-app-url";
 
 export const metadata = { title: "Dashboard" };
 
@@ -182,7 +182,7 @@ export default async function DashboardPage() {
   };
 
   const username = freshUser?.username ?? null;
-  const bookingUrl = username ? `${env.NEXT_PUBLIC_APP_URL}/${username}` : null;
+  const bookingUrl = username ? `${getAppUrl()}/${username}` : null;
 
   // ── Lists ──────────────────────────────────────────────────────────
   const [upcomingMeetings, recentBookings] = await Promise.all([

@@ -12,6 +12,7 @@ import { enqueueEmail } from "@/lib/email";
 import { magicLinkTemplate } from "@/lib/email/templates/magic-link";
 import { resetPasswordTemplate } from "@/lib/email/templates/reset-password";
 import { env } from "@/lib/env";
+import { getAppUrl } from "@/lib/get-app-url";
 import { getEffectiveSignInMethods } from "@/lib/settings/sign-in-methods";
 import { passwordComplexityError } from "@/lib/password";
 
@@ -44,10 +45,10 @@ export const auth = betterAuth({
     },
   }),
   secret: env.APP_SECRET,
-  baseURL: env.NEXT_PUBLIC_APP_URL,
+  baseURL: getAppUrl(),
   trustedOrigins: [
     ...(env.NODE_ENV === "development" ? ["http://localhost:3000"] : []),
-    env.NEXT_PUBLIC_APP_URL,
+    getAppUrl(),
   ],
   // Throttle auth endpoints — without this, /sign-in/email is brute-forceable
   // and /request-password-reset + /sign-in/magic-link can be used to bomb any

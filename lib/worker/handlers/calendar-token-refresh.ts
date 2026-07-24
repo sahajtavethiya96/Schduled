@@ -1,10 +1,9 @@
 import { eq } from 'drizzle-orm'
 import type { Job } from 'pg-boss'
-import { google } from 'googleapis'
 import { db } from '@/lib/db'
 import { connectedCalendar } from '@/db/schema'
 import { decrypt, encrypt } from '@/lib/encrypt'
-import { env } from '@/lib/env'
+import { createGoogleOAuthClient } from '@/lib/google/client'
 import { enqueueJob } from '@/lib/worker/enqueue'
 import { type CalendarTokenRefreshPayload, JOB_NAMES } from '@/lib/worker/job-types'
 
@@ -30,11 +29,7 @@ async function processCalendarTokenRefresh(job: Job<CalendarTokenRefreshPayload>
     return
   }
 
-  const oauth2 = new google.auth.OAuth2(
-    env.GOOGLE_CLIENT_ID,
-    env.GOOGLE_CLIENT_SECRET,
-    `${env.NEXT_PUBLIC_APP_URL}/api/integrations/google/callback`,
-  )
+  const oauth2 = createGoogleOAuthClient()
 
   const refreshToken = await decrypt(cal.refreshToken)
 
