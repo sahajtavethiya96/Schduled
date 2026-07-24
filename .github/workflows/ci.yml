@@ -27,6 +27,11 @@ jobs:
     env:
       DATABASE_URL: postgresql://schduled:ci-test@localhost:5432/schduled
       APP_SECRET: ci-test-secret-not-for-production-use-32-chars-min
+      # `next build` (the Build step below) forces NODE_ENV=production
+      # internally regardless of what's set here, and lib/env.ts requires
+      # APP_URL whenever NODE_ENV is "production" — see Dockerfile for the
+      # same requirement in the Docker build stage.
+      APP_URL: http://localhost:3000
       NEXT_PUBLIC_APP_URL: http://localhost:3000
 
     steps:
