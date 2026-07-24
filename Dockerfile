@@ -21,21 +21,27 @@ ENV NODE_OPTIONS="--max-old-space-size=6144"
 # Placeholders so build-time env validation (lib/env.ts) passes. middleware.ts
 # imports `env` eagerly, and Next.js bundles middleware during `next build` —
 # without these, the build throws "Invalid environment variables" before it
-# ever produces an image. DATABASE_URL and APP_SECRET are NOT used at
-# runtime: env_file/.env supplies the real values when the container starts,
-# so one built image works for any domain/database (see docker-compose.yml).
+# ever produces an image. `next build` also forces NODE_ENV=production
+# internally (regardless of what's set here), which is why APP_URL needs a
+# placeholder too: lib/env.ts requires it whenever NODE_ENV is "production".
 #
-# NEXT_PUBLIC_APP_URL is different — Next.js inlines NEXT_PUBLIC_* vars into
-# the compiled bundle (client AND server chunks) at `next build` time, so
-# whatever is set here would stay frozen in the image forever, regardless of
-# what env_file/.env sets at runtime. It's set to this harmless placeholder
-# only to satisfy validation; nothing in the app actually reads it anymore.
-# The real, live-at-runtime app URL is APP_URL (server-only, deliberately NOT
-# NEXT_PUBLIC_-prefixed so it is never inlined) — see get-app-url.ts. It must
-# NOT be given a placeholder here; it's supplied by env_file/.env at
-# container start, same as DATABASE_URL/APP_SECRET.
+# DATABASE_URL, APP_SECRET, and APP_URL are all safe to placeholder here
+# because none of them are read at build time in any way that matters — they
+# are NOT NEXT_PUBLIC_-prefixed, so Next.js never inlines them into the
+# compiled bundle. They're read live from process.env at container runtime
+# instead, so env_file/.env supplies the real values when the container
+# starts and one built image works for any domain/database (see
+# docker-compose.yml). Do NOT put the real production domain here.
+#
+# NEXT_PUBLIC_APP_URL is different and must stay a harmless placeholder only
+# — Next.js inlines NEXT_PUBLIC_* vars into the compiled bundle (client AND
+# server chunks) at `next build` time, so whatever is set here would stay
+# frozen in the image forever. Nothing in the app actually reads it anymore;
+# it's kept only because lib/env.ts still accepts it for backward
+# compatibility with older .env files.
 ENV DATABASE_URL="postgresql://build:build@localhost:5432/build"
 ENV APP_SECRET="build-time-placeholder-value-000000000000"
+ENV APP_URL="http://localhost:3000"
 ENV NEXT_PUBLIC_APP_URL="http://localhost:3000"
 
 COPY --from=deps /app/node_modules ./node_modules
