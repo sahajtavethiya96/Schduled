@@ -101,13 +101,13 @@ APP_URL=http://localhost:3000        # or your real https:// domain in productio
 ```
 These three are the only variables the app **requires to boot** — see the
 next step for why you'll almost certainly want a couple more
-(`NEXT_PUBLIC_PASSWORD_AUTH_ENABLED`, `SIGNUP_ENABLED`) too.
+(`NEXT_PUBLIC_PASSWORD_AUTH_ENABLED`, `ALLOW_PUBLIC_SIGNUP`) too.
 
 ### 7. Set up your first login (self-hosting essential)
 
 ```env
 NEXT_PUBLIC_PASSWORD_AUTH_ENABLED=true
-SIGNUP_ENABLED=false
+ALLOW_PUBLIC_SIGNUP=false
 INITIAL_ADMIN_EMAIL=you@example.com
 ```
 Email + password is the **primary** login method and is **on by default**, so
@@ -116,7 +116,7 @@ only need to touch `NEXT_PUBLIC_PASSWORD_AUTH_ENABLED` if you want to *disable*
 password login (`=false`) for a magic-link/Google-only deployment. Magic link
 and Google are the optional secondary methods.
 
-`SIGNUP_ENABLED=false` closes public sign-up — recommended **from the start**,
+`ALLOW_PUBLIC_SIGNUP=false` closes public sign-up — recommended **from the start**,
 not "turn it on, then off later": `INITIAL_ADMIN_EMAIL` is exempt from the
 gate and can always sign up regardless, so there's no window where a stranger
 could register. This was verified directly: with this exact config, a sign-up
@@ -261,11 +261,11 @@ Set these for real delivery (booking confirmations, reminders, magic links).
 | `ENCRYPT_KEY` | **Cond** | — | AES-256-GCM key encrypting Google/Zoom OAuth tokens at rest. **Required when Google or Zoom OAuth is set.** 64 hex chars. | `openssl rand -hex 32`. **Back this up** — losing it makes stored tokens unrecoverable (users must reconnect). |
 | `INITIAL_ADMIN_EMAIL` | Opt | — | **✅ Implemented.** The moment a user with this email signs up (via password, magic link, or Google), they're auto-promoted to admin. Checked once, at account creation only — demoting them later via the admin panel is not overridden by a later sign-in. | Set it before the operator's first sign-up. Alternative: leave blank and run `pnpm make:admin you@example.com` manually after signup (works for any user, any time — e.g. to add a *second* admin). |
 | `NEXT_PUBLIC_PASSWORD_AUTH_ENABLED` | Opt | `true` | **✅ Implemented.** Email + password is the **primary** login method (min. 8-char password), shown first on both the user and admin login pages; magic link and Google are secondary. **On by default** — works on a fresh box with no SMTP or Google. Set `false` only for a magic-link/Google-only deployment. See `SELF-HOSTING.md` Part 4 §E. | Leave at the default (`true`) unless you specifically want to *disable* password login. |
-| `SIGNUP_ENABLED` | Opt | `true` | **✅ Implemented — verified live.** Gates *all* new-account creation (password sign-up, magic link first-use, Google first-login — they all funnel through the same `databaseHooks.user.create.before` hook). The `INITIAL_ADMIN_EMAIL` account is always exempt, so it's safe to close signup from the very start. Tested against a running instance: a random email was rejected (`HTTP 400 FAILED_TO_CREATE_USER`, no DB row written) while the admin email succeeded and was promoted. | **Recommended: set `false` together with `INITIAL_ADMIN_EMAIL`, from day one** — not "open then close." Only set `true` if you deliberately want open public registration. |
+| `ALLOW_PUBLIC_SIGNUP` | Opt | `true` | **✅ Implemented — verified live.** Gates *all* new-account creation (password sign-up, magic link first-use, Google first-login — they all funnel through the same `databaseHooks.user.create.before` hook). The `INITIAL_ADMIN_EMAIL` account is always exempt, so it's safe to close signup from the very start. Tested against a running instance: a random email was rejected (`HTTP 400 FAILED_TO_CREATE_USER`, no DB row written) while the admin email succeeded and was promoted. | **Recommended: set `false` together with `INITIAL_ADMIN_EMAIL`, from day one** — not "open then close." Only set `true` if you deliberately want open public registration. |
 
 > ✅ **Login works out of the box.** Email + password is on by default, so a
 > fresh deploy with only the 3 "minimum to boot" vars — no SMTP, no Google — can
-> still sign in. Pair `SIGNUP_ENABLED=false` with `INITIAL_ADMIN_EMAIL` so that
+> still sign in. Pair `ALLOW_PUBLIC_SIGNUP=false` with `INITIAL_ADMIN_EMAIL` so that
 > account can bootstrap while public registration stays closed.
 >
 > Note: password auth uses the `account.password` column added in migration
@@ -370,7 +370,7 @@ Backblaze B2, and any other S3-compatible endpoint (via `S3_ENDPOINT`).
 | `NEXT_PUBLIC_CONTACT_EMAIL` | Opt | `support@schduled.com` | **✅ Implemented — verified live.** Public "Contact us" address shown on the landing page FAQ and the `/contact` page's "General Enquiries" channel. | Set to your public-facing contact address. |
 | `PRIVACY_EMAIL` | Opt | `privacy@schduled.com` | **✅ Implemented — verified live.** Shown on `/contact`, `/privacy`, and `/cookies` for data requests. | Set to your privacy/legal contact address. |
 
-> `INITIAL_ADMIN_EMAIL`, `NEXT_PUBLIC_PASSWORD_AUTH_ENABLED`, `SIGNUP_ENABLED`,
+> `INITIAL_ADMIN_EMAIL`, `NEXT_PUBLIC_PASSWORD_AUTH_ENABLED`, `ALLOW_PUBLIC_SIGNUP`,
 > and `NEXT_PUBLIC_LANDING_ENABLED` (redirects `/` → `/login` when `false`,
 > verified live) are documented in §3 and §1 above.
 
@@ -428,7 +428,7 @@ NEXT_PUBLIC_PASSWORD_AUTH_ENABLED=true
 
 # Closes public sign-up from the start — INITIAL_ADMIN_EMAIL is exempt, so
 # there's no "open window" between deploy and closing it
-SIGNUP_ENABLED=false
+ALLOW_PUBLIC_SIGNUP=false
 
 # Auto-promotes this email to admin the moment it signs up
 INITIAL_ADMIN_EMAIL=you@example.com
@@ -438,10 +438,10 @@ Add SMTP/Google/Zoom/storage vars below once you're ready — none of them are
 required to get a working, logged-in instance running.
 
 > ✅ **The open-signup gap has been fixed and verified live.**
-> `SIGNUP_ENABLED=false` blocks new-account creation for anyone except the
+> `ALLOW_PUBLIC_SIGNUP=false` blocks new-account creation for anyone except the
 > `INITIAL_ADMIN_EMAIL` account (tested: a random email got `HTTP 400`, no
 > database row written; the admin email succeeded and was promoted). It's
-> safe to include `SIGNUP_ENABLED=false` from your very first deploy — no
+> safe to include `ALLOW_PUBLIC_SIGNUP=false` from your very first deploy — no
 > need to "open then close" it manually.
 
 ### Production (SMTP + Google + Zoom + local storage)
@@ -458,7 +458,7 @@ APP_URL=https://schedule.example.com
 # First-run admin + login safety net (see "Self-hosted first boot" above)
 INITIAL_ADMIN_EMAIL=you@example.com
 NEXT_PUBLIC_PASSWORD_AUTH_ENABLED=true
-SIGNUP_ENABLED=false
+ALLOW_PUBLIC_SIGNUP=false
 
 # Email
 SMTP_HOST=email-smtp.us-east-1.amazonaws.com
@@ -511,7 +511,7 @@ None of these block a self-hosted deployment, but each is a real gap a
 production operator should know about up front rather than discover later.
 All are tracked with fixes in `SELF-HOSTING.md` Part 4.
 
-- ~~Open signup while password auth is on~~ — **fixed.** `SIGNUP_ENABLED=false`
+- ~~Open signup while password auth is on~~ — **fixed.** `ALLOW_PUBLIC_SIGNUP=false`
   (recommended default for self-host) closes it; `INITIAL_ADMIN_EMAIL` is
   exempt. Verified live — see the "Self-hosted first boot" example above.
 - **CSP allows `'unsafe-inline'` for scripts and styles.** Security headers

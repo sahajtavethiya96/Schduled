@@ -16,9 +16,13 @@ complete. Until then, everything lives under **[Unreleased]**.
 - `docker-compose.external-db.yml` — an alternative to `docker-compose.yml`
   for self-hosters who already have a Postgres database (managed service or
   self-run) and don't want Compose to also run one.
-- `SIGNUP_ENABLED` — closes public account creation across all auth methods
-  (password, magic link, Google) while exempting `INITIAL_ADMIN_EMAIL`, so
-  self-hosted instances can be closed from the very first deploy.
+- `ALLOW_PUBLIC_SIGNUP` — closes public account creation across all auth
+  methods (password, magic link, Google) while exempting
+  `INITIAL_ADMIN_EMAIL`, so self-hosted instances can be closed from the
+  very first deploy.
+- Dedicated "you don't have permission" denial screen on `/login` for
+  Google sign-in attempts rejected because `ALLOW_PUBLIC_SIGNUP=false` and
+  the account doesn't already exist.
 - `NEXT_PUBLIC_PASSWORD_AUTH_ENABLED` and `INITIAL_ADMIN_EMAIL` — email +
   password login and first-run admin bootstrap for deployments without SMTP
   or Google configured yet.

@@ -5,7 +5,7 @@
 
 **Decisions locked in:**
 1. **Single-admin model.** No owner/admin/multi-tier hierarchy. Stays exactly as today: `role: "user" | "admin"` on the same `user` table, one admin, no promote/demote UI.
-2. **No invite system.** Dropped entirely from this plan. The deployment model is one admin = the only user — nothing to invite. Account creation keeps working exactly as it does today: the `/setup` wizard for the first-run admin, `INITIAL_ADMIN_EMAIL` auto-promotion, and ordinary signup (governed by the existing `SIGNUP_ENABLED` toggle, unchanged). Nothing new to build here.
+2. **No invite system.** Dropped entirely from this plan. The deployment model is one admin = the only user — nothing to invite. Account creation keeps working exactly as it does today: the `/setup` wizard for the first-run admin, `INITIAL_ADMIN_EMAIL` auto-promotion, and ordinary signup (governed by the existing `ALLOW_PUBLIC_SIGNUP` toggle, unchanged). Nothing new to build here.
 3. **Newsletter/Subscribers removed entirely** — not just the admin viewer. The public footer signup form, the API route, the DB table, and the admin list all get deleted. Not relocated anywhere.
 
 ---
@@ -90,6 +90,6 @@ Schduled currently ships with two separate experiences on one account: `/dashboa
 ## 5. Scope explicitly cut from earlier drafts
 
 - ~~Invite-only user creation~~ — not needed, dropped entirely
-- ~~`SIGNUP_ENABLED` default flip~~ — not needed, no change to signup behavior
+- ~~`ALLOW_PUBLIC_SIGNUP` default flip~~ — not needed, no change to signup behavior
 - ~~Owner/Admin multi-tier role model~~ — staying single-admin, no change to `config/platform.ts` roles
 - ~~Newsletter/Subscribers as a relocated admin tab~~ — removed entirely instead, not relocated

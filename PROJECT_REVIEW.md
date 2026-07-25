@@ -229,7 +229,7 @@ All access goes through Drizzle ORM's query builder or tagged-template `sql` fra
 All are optional and independently feature-flagged via environment variables: SMTP (email delivery — falls back to console logging), Google OAuth (login + Calendar sync), Zoom OAuth (video links), a geocoding provider chain (Photon/OSM keyless default, or Google/Mapbox), and S3/R2 (file storage, falls back to local disk).
 
 ### Authentication flow
-See §9 for full detail. Summary: Better Auth handles email+password, magic link, and Google OAuth uniformly through one `databaseHooks.user.create` gate that enforces `SIGNUP_ENABLED`/`INITIAL_ADMIN_EMAIL` bootstrap logic regardless of which method was used.
+See §9 for full detail. Summary: Better Auth handles email+password, magic link, and Google OAuth uniformly through one `databaseHooks.user.create` gate that enforces `ALLOW_PUBLIC_SIGNUP`/`INITIAL_ADMIN_EMAIL` bootstrap logic regardless of which method was used.
 
 ### Authorization flow
 Binary role model (`user`/`admin`, `config/platform.ts`). No granular permissions system. Admin routes are gated twice: coarsely by middleware (cookie presence), then authoritatively by `requireAdmin()` (DB-fresh role + ban check) inside the Orbit layout.
@@ -415,7 +415,7 @@ All routes live under `app/api/`. **Validation approach note:** despite `zod` be
 
 ## 9. Authentication & Authorization
 
-**Login flow:** Better Auth unifies email+password, magic link, and Google OAuth through one `databaseHooks.user.create` gate (`lib/auth.ts`). All three methods funnel through the same `before`/`after` hooks that enforce `SIGNUP_ENABLED` and `INITIAL_ADMIN_EMAIL` auto-promotion — so a self-hoster's bootstrap/lockdown policy applies uniformly regardless of how someone signs up.
+**Login flow:** Better Auth unifies email+password, magic link, and Google OAuth through one `databaseHooks.user.create` gate (`lib/auth.ts`). All three methods funnel through the same `before`/`after` hooks that enforce `ALLOW_PUBLIC_SIGNUP` and `INITIAL_ADMIN_EMAIL` auto-promotion — so a self-hoster's bootstrap/lockdown policy applies uniformly regardless of how someone signs up.
 
 **Session handling:** 30-day `expiresIn`, 1-day rolling `updateAge`, 60-second signed cookie cache, `freshAge: 0` (deliberately disables Better Auth's re-authentication-freshness gate, since magic-link auth has no re-auth flow). `requireSession()`/`requireAdmin()` re-verify `banned` status (and, for admin, `role`) against the database **on every call**, not just at session creation — closing a real gap in Better Auth's own ban enforcement.
 
@@ -458,7 +458,7 @@ All routes live under `app/api/`. **Validation approach note:** despite `zod` be
 | `EMAIL_WEBHOOK_SECRET` | Auth for inbound email-provider webhooks | No | Yes | — |
 | `INITIAL_ADMIN_EMAIL` | Auto-promote this email to admin on first signup | No | Config-sensitive | — |
 | `NEXT_PUBLIC_PASSWORD_AUTH_ENABLED` | Feature flag: password login | No | No | `true` |
-| `SIGNUP_ENABLED` | Gates all new-account creation | No | No | `true` |
+| `ALLOW_PUBLIC_SIGNUP` | Gates all new-account creation | No | No | `true` |
 | `NEXT_PUBLIC_LANDING_ENABLED` | Show/hide public marketing page | No | No | `true` |
 | `GOOGLE_CLIENT_ID`/`SECRET` | Google OAuth | No | Secret: yes | — |
 | `ENCRYPT_KEY` | Encrypts stored OAuth tokens (required if Google/Zoom set) | Conditional | Yes | — |
@@ -674,7 +674,7 @@ All routes live under `app/api/`. **Validation approach note:** despite `zod` be
 
 **Coverage:** 0%.
 
-**Missing tests, by priority for a booking app:** the advisory-lock/conflict-check transaction on booking create/approve/reschedule (this is exactly the kind of concurrency logic that's easy to silently regress); the `SIGNUP_ENABLED`/`INITIAL_ADMIN_EMAIL` bootstrap gate; the ban-re-check logic in `requireSession()`/`requireAdmin()`; the rate limiter's window/reset behavior; the email outbox's idempotency/retry logic.
+**Missing tests, by priority for a booking app:** the advisory-lock/conflict-check transaction on booking create/approve/reschedule (this is exactly the kind of concurrency logic that's easy to silently regress); the `ALLOW_PUBLIC_SIGNUP`/`INITIAL_ADMIN_EMAIL` bootstrap gate; the ban-re-check logic in `requireSession()`/`requireAdmin()`; the rate limiter's window/reset behavior; the email outbox's idempotency/retry logic.
 
 ---
 
@@ -769,7 +769,7 @@ All routes live under `app/api/`. **Validation approach note:** despite `zod` be
 | Monitoring | ❌ Not Implemented |
 | Analytics | ❌ Not Implemented |
 | Backup strategy | ⚠️ Documented (`docs/self-hosting/backup.md`) but not automated |
-| Feature flags | ⚠️ Partial — env-var-based toggles exist (`NEXT_PUBLIC_PASSWORD_AUTH_ENABLED`, `SIGNUP_ENABLED`, `NEXT_PUBLIC_LANDING_ENABLED`), no runtime/per-user flag system |
+| Feature flags | ⚠️ Partial — env-var-based toggles exist (`NEXT_PUBLIC_PASSWORD_AUTH_ENABLED`, `ALLOW_PUBLIC_SIGNUP`, `NEXT_PUBLIC_LANDING_ENABLED`), no runtime/per-user flag system |
 | Notifications | ✅ Implemented — both email and in-app |
 | Error tracking | ❌ Not Implemented (no Sentry or equivalent) |
 | Security headers | ✅ Implemented — comprehensive |

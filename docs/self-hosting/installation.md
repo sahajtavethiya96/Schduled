@@ -60,7 +60,7 @@ POSTGRES_DB=schduled
 
 # Recommended for self-hosting — see the "first login" note below
 NEXT_PUBLIC_PASSWORD_AUTH_ENABLED=true
-SIGNUP_ENABLED=false
+ALLOW_PUBLIC_SIGNUP=false
 INITIAL_ADMIN_EMAIL=you@example.com
 ```
 
@@ -94,7 +94,7 @@ APP_URL=https://schedule.example.com
 
 # Recommended for self-hosting — see the "first login" note below
 NEXT_PUBLIC_PASSWORD_AUTH_ENABLED=true
-SIGNUP_ENABLED=false
+ALLOW_PUBLIC_SIGNUP=false
 INITIAL_ADMIN_EMAIL=you@example.com
 ```
 
@@ -282,7 +282,7 @@ to actually deliver, otherwise the link only reaches the server console.)
 **Recommended:** set these two alongside the default password login, from the
 start:
 ```env
-SIGNUP_ENABLED=false
+ALLOW_PUBLIC_SIGNUP=false
 INITIAL_ADMIN_EMAIL=you@example.com
 # NEXT_PUBLIC_PASSWORD_AUTH_ENABLED defaults to true — only set it to false
 # if you want a magic-link/Google-only deployment.
@@ -296,7 +296,7 @@ to admin. See `ENVIRONMENT.md` §3 for the full explanation.
 - [ ] `curl <your-url>/api/health` returns `{"status":"ok"}`
 - [ ] You can sign in with the `INITIAL_ADMIN_EMAIL` account
 - [ ] Signed in as the admin, the admin-only tabs under `/settings` (Users, Audit, Jobs, Platform) are reachable
-- [ ] `SIGNUP_ENABLED=false` is set (or you've deliberately chosen open signup)
+- [ ] `ALLOW_PUBLIC_SIGNUP=false` is set (or you've deliberately chosen open signup)
 - [ ] The worker is running — a test booking sends a confirmation
       (or logs one to the console if SMTP isn't configured)
 - [ ] Backups are scheduled — see [Backup](./backup.md)

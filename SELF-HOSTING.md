@@ -35,7 +35,7 @@ and Phase 5 (teams/multi-tenant) remain explicitly out of scope for v1.
 | Encrypted OAuth tokens (`lib/encrypt.ts`) | ✅ Ready | — |
 | Background worker (pg-boss, no Redis) | ✅ Ready | K |
 | **Login works on a fresh install (no SMTP/Google)** | ✅ **Done** — email + password is the primary method, on by default | **E** |
-| **Signup is closed by default when self-hosted the recommended way** | ✅ **Done** (`SIGNUP_ENABLED`, verified live) | **E** |
+| **Signup is closed by default when self-hosted the recommended way** | ✅ **Done** (`ALLOW_PUBLIC_SIGNUP`, verified live) | **E** |
 | One-command deploy (Docker Compose + web image) | ✅ **Done** — `Dockerfile`, `docker-compose.yml`, dedicated `migrate` service | C |
 | DB migrations before app/worker start | ✅ Done (dedicated `migrate` service gates `web`/`worker` via `service_completed_successfully`) | C, D |
 | HTTP health endpoint | ✅ Done (`/api/health`, DB-backed) + worker heartbeat | C, L |
@@ -235,7 +235,7 @@ are real · P0/P1/P2 priority.
 | ✅ DONE | `account.password` column (Better Auth's credential-provider hash storage) — migration `0013_stale_flatman.sql` | `db/schema/auth.ts` | P0 |
 | ✅ DONE | `INITIAL_ADMIN_EMAIL` → auto-promote to admin at signup (checked once, at account creation) | `lib/auth.ts` (`databaseHooks.user.create.after`), `lib/env.ts` | P0 |
 | ✅ DONE | "Continue with Google" button now hides itself when Google isn't configured (was previously always rendered and would error on click) | `lib/auth.ts` (`googleAuthEnabled`), `auth-form.tsx` | P1 |
-| ✅ DONE | **Closed-signup control** via `SIGNUP_ENABLED` — a `databaseHooks.user.create.before` hook blocks new-account creation (password sign-up, magic link first-use, **and** Google first-login all funnel through the same hook) unless the email matches `INITIAL_ADMIN_EMAIL`. Default `true` (unchanged behavior); self-hosters set `false` **from day one** — the bootstrap admin always gets through regardless, so there's no "open then close" race window | `lib/auth.ts`, `lib/env.ts` | **P0** |
+| ✅ DONE | **Closed-signup control** via `ALLOW_PUBLIC_SIGNUP` — a `databaseHooks.user.create.before` hook blocks new-account creation (password sign-up, magic link first-use, **and** Google first-login all funnel through the same hook) unless the email matches `INITIAL_ADMIN_EMAIL`. Default `true` (unchanged behavior); self-hosters set `false` **from day one** — the bootstrap admin always gets through regardless, so there's no "open then close" race window | `lib/auth.ts`, `lib/env.ts` | **P0** |
 | — | Keep magic link (needs SMTP) + Google (optional) alongside password | — | ✅ |
 
 > **The lockout risk is eliminated by default.** Email + password is the primary
@@ -245,14 +245,14 @@ are real · P0/P1/P2 priority.
 > link/Google-only) reintroduces the console-magic-link dependency.
 >
 > ✅ **The open-signup risk flagged in the previous review is now fixed —
-> verified live, not just by reading the code.** `SIGNUP_ENABLED=false` +
+> verified live, not just by reading the code.** `ALLOW_PUBLIC_SIGNUP=false` +
 > `INITIAL_ADMIN_EMAIL=you@example.com` was tested against a running instance:
 > a sign-up attempt with a random email (`random-attacker@example.com`) was
 > rejected — `HTTP 400 {"code":"FAILED_TO_CREATE_USER"}`, **no row was written
 > to the `user` table** — while the `INITIAL_ADMIN_EMAIL` account signed up
 > successfully and was auto-promoted to `role: admin`, confirmed by querying
 > the database directly. The recommended self-host config in `ENVIRONMENT.md`
-> now sets `SIGNUP_ENABLED=false` from the start (not "open then close"),
+> now sets `ALLOW_PUBLIC_SIGNUP=false` from the start (not "open then close"),
 > since the bootstrap admin is exempt from the gate.
 
 ### F. Branding / white-label
@@ -374,7 +374,7 @@ a real first deploy):
 - ✅ Done: email+password auth (opt-in via `NEXT_PUBLIC_PASSWORD_AUTH_ENABLED`)
 - ✅ Done: `INITIAL_ADMIN_EMAIL` bootstrap
 - ✅ Done: Google button hides itself when unconfigured
-- ✅ Done: closed-signup control via `SIGNUP_ENABLED` (see §E — verified live)
+- ✅ Done: closed-signup control via `ALLOW_PUBLIC_SIGNUP` (see §E — verified live)
 - ✅ Done: reverse-proxy cookies — **turned out not to be a bug**, corrected in §M
 - ✅ Done: web `Dockerfile` + `docker-compose.yml` + dedicated `migrate` service
   (built and build-verified; **`docker build`/`docker compose up` itself not
@@ -441,7 +441,7 @@ cp .env.example .env
 #   match DATABASE_URL — docker compose reads these to create the Postgres container.
 #   Then set the self-host login essentials (recommended from day one):
 #     NEXT_PUBLIC_PASSWORD_AUTH_ENABLED=true
-#     SIGNUP_ENABLED=false                  (INITIAL_ADMIN_EMAIL is exempt — no open window)
+#     ALLOW_PUBLIC_SIGNUP=false                  (INITIAL_ADMIN_EMAIL is exempt — no open window)
 #     INITIAL_ADMIN_EMAIL=you@example.com   (this account auto-becomes admin on signup)
 nano .env
 docker compose up -d                 # postgres + migrate + web + worker; migrate runs first
@@ -464,7 +464,7 @@ corepack enable && pnpm install
 # create Postgres db+user, then:
 cp .env.example .env
 #   Set DATABASE_URL, APP_SECRET (openssl rand -hex 32), APP_URL,
-#   NEXT_PUBLIC_PASSWORD_AUTH_ENABLED=true, SIGNUP_ENABLED=false,
+#   NEXT_PUBLIC_PASSWORD_AUTH_ENABLED=true, ALLOW_PUBLIC_SIGNUP=false,
 #   INITIAL_ADMIN_EMAIL=you@example.com
 nano .env
 pnpm db:migrate                      # run migrations (incl. the account.password column)
@@ -484,7 +484,7 @@ front for TLS → `127.0.0.1:3000`. Example systemd units go in the Installation
       SMTP/Google is configured (otherwise the only sign-in path is a magic link
       logged to the server console — check `docker compose logs web` if so)
 - [ ] Admin created (via `INITIAL_ADMIN_EMAIL` signup or `pnpm make:admin`); admin-only tabs under `/settings` are reachable
-- [ ] `SIGNUP_ENABLED=false` is set (recommended default — closes public signup;
+- [ ] `ALLOW_PUBLIC_SIGNUP=false` is set (recommended default — closes public signup;
       the `INITIAL_ADMIN_EMAIL` account is exempt and always gets through, so this
       is safe to set *before* your first deploy, not just after)
 - [ ] (If used) Google/Zoom redirect URIs match `APP_URL`; `ENCRYPT_KEY` set
@@ -536,7 +536,7 @@ run — see the caveat in Part 7)
 - [x] Email+password auth, opt-in via `NEXT_PUBLIC_PASSWORD_AUTH_ENABLED` (default `false`) — done (`lib/auth.ts`, `lib/auth-client.ts`, `auth-form.tsx`, `lib/env.ts`, migration `0013_stale_flatman.sql`)
 - [x] `INITIAL_ADMIN_EMAIL` env-seeded first admin — done (`lib/auth.ts`, `lib/env.ts`, `.env.example`)
 - [x] Google login button hides itself when unconfigured — done (`lib/auth.ts` `googleAuthEnabled`, `auth-form.tsx`)
-- [x] **Closed-signup control via `SIGNUP_ENABLED`** — done, **verified live**: random email rejected (`HTTP 400`, no DB row); `INITIAL_ADMIN_EMAIL` succeeded and was promoted to admin (`lib/auth.ts`, `lib/env.ts`)
+- [x] **Closed-signup control via `ALLOW_PUBLIC_SIGNUP`** — done, **verified live**: random email rejected (`HTTP 400`, no DB row); `INITIAL_ADMIN_EMAIL` succeeded and was promoted to admin (`lib/auth.ts`, `lib/env.ts`)
 - [x] **Reverse-proxy cookies** — investigated, turned out to be a non-issue (Better Auth uses `baseURL`, not request headers); corrected in §M, no code change needed
 - [x] Web `Dockerfile` + `docker-compose.yml` + dedicated `migrate` service — done (`Dockerfile`, `docker-compose.yml`, `docker-compose.external-db.yml`); `migrate` reuses existing `Dockerfile.worker`, gates `web`/`worker` via `service_completed_successfully`
 - [x] `next.config.mjs` `output: 'standalone'` — done, build-verified (`.next/standalone/server.js` produced)

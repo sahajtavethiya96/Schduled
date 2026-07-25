@@ -31,7 +31,7 @@ export default async function SettingsPlatformPage() {
   const encryptionKeySet    = !!env.ENCRYPT_KEY
   const databaseUrlSet      = !!env.DATABASE_URL
   const passwordAuthEnabled = env.NEXT_PUBLIC_PASSWORD_AUTH_ENABLED
-  const signupEnabled       = env.SIGNUP_ENABLED
+  const allowPublicSignup   = env.ALLOW_PUBLIC_SIGNUP
 
   const appUrl  = getAppUrl()
   const nodeEnv = env.NODE_ENV
@@ -98,7 +98,7 @@ export default async function SettingsPlatformPage() {
             <ConfigRow label="App URL"       value={appUrl}                                      mono first />
             <ConfigRow label="Environment"   value={nodeEnv} />
             <ConfigRow label="Password Auth" value={passwordAuthEnabled ? 'Enabled' : 'Disabled'} ok={passwordAuthEnabled} manageHref="/settings/authentication" />
-            <ConfigRow label="User Signup"   value={signupEnabled ? 'Enabled' : 'Disabled'}       ok={signupEnabled} />
+            <ConfigRow label="Public Signup" value={allowPublicSignup ? 'Enabled' : 'Disabled'}   ok={allowPublicSignup} />
           </CardContent>
         </Card>
       </Section>

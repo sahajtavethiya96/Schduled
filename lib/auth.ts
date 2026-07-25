@@ -15,6 +15,7 @@ import { env } from "@/lib/env";
 import { getAppUrl } from "@/lib/get-app-url";
 import { getEffectiveSignInMethods } from "@/lib/settings/sign-in-methods";
 import { passwordComplexityError } from "@/lib/password";
+import { hasAnyUser } from "@/lib/setup";
 
 // Password sign-in / sign-up / reset all funnel through these paths.
 const PASSWORD_PATHS = new Set([
@@ -208,12 +209,12 @@ export const auth = betterAuth({
       create: {
         // Gates ALL new-account creation (password sign-up, magic link
         // first-use, Google first-login all funnel through this hook) —
-        // the bootstrap admin always gets through regardless of SIGNUP_ENABLED,
-        // so it's safe to close signup from day one rather than "open then
-        // close later". Returning false blocks creation (surfaces as a clean
-        // BAD_REQUEST to the client).
+        // the bootstrap admin always gets through regardless of
+        // ALLOW_PUBLIC_SIGNUP, so it's safe to close signup from day one
+        // rather than "open then close later". Returning false blocks
+        // creation (surfaces as a clean BAD_REQUEST to the client).
         before: async (user) => {
-          if (env.SIGNUP_ENABLED) {
+          if (env.ALLOW_PUBLIC_SIGNUP) {
             return;
           }
 
@@ -221,6 +222,19 @@ export const auth = betterAuth({
             env.INITIAL_ADMIN_EMAIL &&
             user.email.toLowerCase() === env.INITIAL_ADMIN_EMAIL.toLowerCase();
           if (isBootstrapAdmin) {
+            return;
+          }
+
+          // The /setup wizard (app/actions/setup.ts createFirstAdmin) is only
+          // reachable and only ever creates a user while the instance has
+          // zero users — every unauthenticated entry point redirects there
+          // via redirectToSetupIfNeeded() until an admin exists, and the
+          // action itself atomically re-checks and deletes the loser on a
+          // concurrent double-submit. So it's safe to let this one creation
+          // through regardless of ALLOW_PUBLIC_SIGNUP/INITIAL_ADMIN_EMAIL —
+          // without this, closing signup with no INITIAL_ADMIN_EMAIL set
+          // (a supported combination) would make first-run setup impossible.
+          if (!(await hasAnyUser())) {
             return;
           }
 

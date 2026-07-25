@@ -11,6 +11,7 @@ import {
   LockKey,
   LockSimple,
   PaperPlaneTilt,
+  Prohibit,
   ShieldCheck,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
@@ -27,7 +28,24 @@ import { MIN_PASSWORD_LENGTH } from "@/config/platform";
 import { authClient, signIn, signUp, useSession } from "@/lib/auth-client";
 import { passwordComplexityError } from "@/lib/password";
 
+// Better Auth's redirect-based flows (Google OAuth callback, magic-link
+// verify) surface a rejected databaseHooks.user.create.before hook as one of
+// these exact ?error= values — confirmed by reading the installed
+// better-auth source (oauth2/link-account.mjs's catch-all around
+// createOAuthUser turns a null/blocked user into "unable to create user",
+// spaces replaced with underscores in the redirect; the magic-link plugin's
+// verify handler does the equivalent "failed_to_create_user" directly). Both
+// strings can, in principle, also come from a genuine unrelated failure
+// during account creation — gated below on allowPublicSignup being false, so
+// an open instance never mislabels a real error as "access denied".
+const BLOCKED_SIGNUP_REDIRECT_ERRORS = new Set([
+  "unable_to_create_user",
+  "failed_to_create_user",
+]);
+const GENERIC_AUTH_ERROR = "Something went wrong signing in. Please try again.";
+
 interface AuthFormProps {
+  allowPublicSignup: boolean;
   googleEnabled: boolean;
   passwordEnabled: boolean;
   magicLinkEnabled: boolean;
@@ -43,7 +61,7 @@ export function AuthForm(props: AuthFormProps) {
 
 type Mode = "magic-link" | "password-signin" | "password-signup" | "forgot-password";
 
-function AuthFormInner({ googleEnabled, passwordEnabled, magicLinkEnabled }: AuthFormProps) {
+function AuthFormInner({ allowPublicSignup, googleEnabled, passwordEnabled, magicLinkEnabled }: AuthFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session, isPending } = useSession();
@@ -56,6 +74,7 @@ function AuthFormInner({ googleEnabled, passwordEnabled, magicLinkEnabled }: Aut
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [unauthorized, setUnauthorized] = useState(false);
   const [sent, setSent] = useState(false);
   const [resetSent, setResetSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -75,6 +94,20 @@ function AuthFormInner({ googleEnabled, passwordEnabled, magicLinkEnabled }: Aut
       router.replace("/post-auth");
     }
   }, [router, session]);
+
+  useEffect(() => {
+    const redirectError = searchParams.get("error");
+    if (!redirectError) return;
+
+    if (!allowPublicSignup && BLOCKED_SIGNUP_REDIRECT_ERRORS.has(redirectError)) {
+      setUnauthorized(true);
+    } else {
+      setError(GENERIC_AUTH_ERROR);
+    }
+    router.replace("/login", { scroll: false });
+    // Only re-run when the error param itself changes; router/allowPublicSignup are stable.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   if (isPending || session) {
     return (
@@ -117,7 +150,7 @@ function AuthFormInner({ googleEnabled, passwordEnabled, magicLinkEnabled }: Aut
     setError(null);
     setSubmitting(true);
 
-    const result = await signIn.magicLink({ callbackURL: safeNext, email });
+    const result = await signIn.magicLink({ callbackURL: safeNext, email, errorCallbackURL: "/login" });
 
     setSubmitting(false);
     if (result.error) {
@@ -130,7 +163,7 @@ function AuthFormInner({ googleEnabled, passwordEnabled, magicLinkEnabled }: Aut
   async function resend() {
     setResending(true);
     setError(null);
-    const result = await signIn.magicLink({ callbackURL: safeNext, email });
+    const result = await signIn.magicLink({ callbackURL: safeNext, email, errorCallbackURL: "/login" });
     setResending(false);
     if (result.error) {
       setError(result.error.message ?? "Failed to resend.");
@@ -161,7 +194,15 @@ function AuthFormInner({ googleEnabled, passwordEnabled, magicLinkEnabled }: Aut
 
     setSubmitting(false);
     if (result.error) {
-      setError(result.error.message ?? "Something went wrong. Please try again.");
+      // Better Auth returns this exact code only when databaseHooks.user.create.before
+      // rejected the account (see BLOCKED_SIGNUP_REDIRECT_ERRORS above for the
+      // equivalent OAuth/magic-link signal) — never for a genuine creation failure,
+      // which would surface as an uncaught error instead of this specific APIError.
+      if (result.error.code === "FAILED_TO_CREATE_USER") {
+        setUnauthorized(true);
+      } else {
+        setError(result.error.message ?? "Something went wrong. Please try again.");
+      }
     }
     // On success, useSession() updates reactively and the effect above redirects.
   }
@@ -180,28 +221,56 @@ function AuthFormInner({ googleEnabled, passwordEnabled, magicLinkEnabled }: Aut
         <Card className="animate-in fade-in slide-in-from-bottom-2 duration-500">
           <CardHeader>
             <CardTitle className="text-2xl">
-              {sent
-                ? "Check your email"
-                : mode === "password-signup"
-                  ? "Create your account"
-                  : mode === "forgot-password"
-                    ? "Reset your password"
-                    : "Sign in"}
+              {unauthorized
+                ? "Access denied"
+                : sent
+                  ? "Check your email"
+                  : mode === "password-signup"
+                    ? "Create your account"
+                    : mode === "forgot-password"
+                      ? "Reset your password"
+                      : "Sign in"}
             </CardTitle>
             <CardDescription>
-              {sent
-                ? "Your one-time sign-in link is on its way."
-                : mode === "magic-link"
-                  ? "Enter your email and we'll send you a secure magic link."
-                  : mode === "password-signup"
-                    ? "Set a password to create your account."
-                    : mode === "forgot-password"
-                      ? "Enter your email and we'll send you a reset link."
-                      : "Enter your email and password to sign in."}
+              {unauthorized
+                ? "This account can't sign in to this instance."
+                : sent
+                  ? "Your one-time sign-in link is on its way."
+                  : mode === "magic-link"
+                    ? "Enter your email and we'll send you a secure magic link."
+                    : mode === "password-signup"
+                      ? "Set a password to create your account."
+                      : mode === "forgot-password"
+                        ? "Enter your email and we'll send you a reset link."
+                        : "Enter your email and password to sign in."}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {sent ? (
+            {unauthorized ? (
+              <div className="space-y-5">
+                <div className="flex flex-col items-center gap-3 py-2 text-center">
+                  <span className="flex size-12 items-center justify-center bg-destructive/10 text-destructive">
+                    <Prohibit size={24} weight="fill" />
+                  </span>
+                  <p className="text-sm text-muted-foreground">
+                    Your account isn't authorized to access this Schduled instance.
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Only existing accounts can sign in.
+                    <br />
+                    Please contact the administrator if you believe this is an error.
+                  </p>
+                </div>
+                <Button
+                  className="w-full"
+                  onClick={() => setUnauthorized(false)}
+                  type="button"
+                  variant="outline"
+                >
+                  Back to sign in
+                </Button>
+              </div>
+            ) : sent ? (
               <div className="space-y-5">
                 <div className="flex flex-col items-center gap-3 py-2 text-center">
                   <span className="flex size-12 items-center justify-center bg-primary/10 text-primary">
@@ -298,7 +367,7 @@ function AuthFormInner({ googleEnabled, passwordEnabled, magicLinkEnabled }: Aut
                     {googleEnabled ? (
                       <Button
                         className="w-full"
-                        onClick={() => signIn.social({ provider: "google", callbackURL: safeNext })}
+                        onClick={() => signIn.social({ provider: "google", callbackURL: safeNext, errorCallbackURL: "/login" })}
                         type="button"
                         variant="outline"
                       >
@@ -466,7 +535,7 @@ function AuthFormInner({ googleEnabled, passwordEnabled, magicLinkEnabled }: Aut
                       {googleEnabled && (
                         <Button
                           className="w-full"
-                          onClick={() => signIn.social({ provider: "google", callbackURL: safeNext })}
+                          onClick={() => signIn.social({ provider: "google", callbackURL: safeNext, errorCallbackURL: "/login" })}
                           type="button"
                           variant="outline"
                         >
