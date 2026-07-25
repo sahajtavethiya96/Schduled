@@ -4,17 +4,23 @@ import { APIError, createAuthMiddleware } from "better-auth/api";
 import { admin } from "better-auth/plugins/admin";
 import { magicLink } from "better-auth/plugins/magic-link";
 import { eq } from "drizzle-orm";
-import { ADMIN_ROLE, MAX_PASSWORD_LENGTH, MIN_PASSWORD_LENGTH, PRODUCT_NAME } from "@/config/platform";
+import {
+  ADMIN_ROLE,
+  MAX_PASSWORD_LENGTH,
+  MIN_PASSWORD_LENGTH,
+  PRODUCT_NAME,
+} from "@/config/platform";
 import * as schema from "@/db/schema";
 import { audit } from "@/lib/audit";
 import { db } from "@/lib/db";
 import { enqueueEmail } from "@/lib/email";
+import { changeEmailVerificationTemplate } from "@/lib/email/templates/change-email-verification";
 import { magicLinkTemplate } from "@/lib/email/templates/magic-link";
 import { resetPasswordTemplate } from "@/lib/email/templates/reset-password";
 import { env } from "@/lib/env";
 import { getAppUrl } from "@/lib/get-app-url";
-import { getEffectiveSignInMethods } from "@/lib/settings/sign-in-methods";
 import { passwordComplexityError } from "@/lib/password";
+import { getEffectiveSignInMethods } from "@/lib/settings/sign-in-methods";
 import { hasAnyUser } from "@/lib/setup";
 
 // Password sign-in / sign-up / reset all funnel through these paths.
@@ -32,7 +38,9 @@ const NEW_PASSWORD_FIELDS: Record<string, "password" | "newPassword"> = {
   "/reset-password": "newPassword",
 };
 
-export const googleAuthEnabled = !!(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET);
+export const googleAuthEnabled = !!(
+  env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET
+);
 export const passwordAuthEnabled = env.NEXT_PUBLIC_PASSWORD_AUTH_ENABLED;
 
 export const auth = betterAuth({
@@ -114,6 +122,56 @@ export const auth = betterAuth({
       });
     },
   },
+  // Powers the "change email" flow's confirmation link (see user.changeEmail
+  // below) — Better Auth calls this with `user.email` already set to the
+  // NEW address, so it's the destination the link needs to reach.
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }) => {
+      const { html, text } = await changeEmailVerificationTemplate({
+        newEmail: user.email,
+        verificationUrl: url,
+      });
+
+      await enqueueEmail({
+        to: user.email,
+        subject: `Confirm your new ${PRODUCT_NAME} email`,
+        html,
+        text,
+      });
+
+      await audit({
+        action: "auth.change_email_verification_sent",
+        actorEmail: user.email,
+        description: `Change-email verification sent to ${user.email}`,
+        entityType: "user",
+        metadata: { newEmail: user.email },
+      });
+    },
+    // Fires once the link above is actually clicked and the email has been
+    // applied — this app never triggers plain signup-verification, so every
+    // call here is a completed change-email confirmation.
+    afterEmailVerification: async (user) => {
+      await audit({
+        action: "profile.email_updated",
+        actorEmail: user.email,
+        actorId: user.id,
+        description: `Email change confirmed: now ${user.email}`,
+        entityId: user.id,
+        entityType: "user",
+        metadata: { newEmail: user.email },
+      });
+    },
+  },
+  user: {
+    // Off by default in Better Auth — without this, /change-email 400s
+    // outright. Left at the default updateEmailWithoutVerification: false, so
+    // every change (regardless of the account's current emailVerified state)
+    // goes through the sendVerificationEmail confirmation link above rather
+    // than applying immediately.
+    changeEmail: {
+      enabled: true,
+    },
+  },
   // Server-side enforcement of the admin's "Sign-in Methods" toggles. The UI
   // hides disabled methods, but this is what actually blocks a direct API call
   // to a disabled method (defense in depth, not just cosmetic).
@@ -123,7 +181,9 @@ export const auth = betterAuth({
 
       const newPasswordField = NEW_PASSWORD_FIELDS[path];
       if (newPasswordField) {
-        const candidate = (ctx.body as Record<string, unknown> | undefined)?.[newPasswordField];
+        const candidate = (ctx.body as Record<string, unknown> | undefined)?.[
+          newPasswordField
+        ];
         if (typeof candidate === "string") {
           const complexityError = passwordComplexityError(candidate);
           if (complexityError) {
@@ -137,7 +197,9 @@ export const auth = betterAuth({
       const isGoogleSocial =
         path === "/sign-in/social" &&
         (ctx.body as { provider?: string } | undefined)?.provider === "google";
-      if (!needsPassword && !needsMagicLink && !isGoogleSocial) return;
+      if (!needsPassword && !needsMagicLink && !isGoogleSocial) {
+        return;
+      }
 
       // Fail open: a transient error reading the toggles must not turn into a
       // login outage. This is defense-in-depth over the UI, not the only gate.

@@ -1,10 +1,17 @@
 "use server";
 
+import { createId } from "@paralleldrive/cuid2";
 import { and, eq, gt, inArray, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createId } from "@paralleldrive/cuid2";
-import { account, booking, session as sessionTable, user, userProfile, verification } from "@/db/schema";
+import {
+  account,
+  booking,
+  session as sessionTable,
+  user,
+  userProfile,
+  verification,
+} from "@/db/schema";
 import { audit } from "@/lib/audit";
 import { requireSession } from "@/lib/authz";
 import { emailInviteesOfHostRemoval } from "@/lib/booking/host-booking-cleanup";
@@ -42,11 +49,16 @@ export async function updateNameAction(
     .select({ id: userProfile.id })
     .from(userProfile)
     .where(eq(userProfile.userId, session.user.id))
-    .limit(1)
+    .limit(1);
   if (existing) {
-    await db.update(userProfile).set({ displayName: name, updatedAt: new Date() }).where(eq(userProfile.userId, session.user.id))
+    await db
+      .update(userProfile)
+      .set({ displayName: name, updatedAt: new Date() })
+      .where(eq(userProfile.userId, session.user.id));
   } else {
-    await db.insert(userProfile).values({ id: createId(), userId: session.user.id, displayName: name })
+    await db
+      .insert(userProfile)
+      .values({ id: createId(), userId: session.user.id, displayName: name });
   }
 
   await audit({
@@ -68,61 +80,16 @@ export async function updateNameAction(
 export async function removeAvatarAction(): Promise<ActionState> {
   try {
     const session = await requireSession();
-    await db.update(user).set({ image: null, updatedAt: new Date() }).where(eq(user.id, session.user.id));
+    await db
+      .update(user)
+      .set({ image: null, updatedAt: new Date() })
+      .where(eq(user.id, session.user.id));
     revalidatePath("/profile/profile");
     revalidatePath("/", "layout");
     return { success: "Photo removed." };
   } catch {
     return { error: "Failed to remove photo. Please try again." };
   }
-}
-
-export async function changeEmailAction(
-  _state: ActionState,
-  formData: FormData
-): Promise<ActionState> {
-  const current = await requireSession();
-  const newEmail = String(formData.get("email") ?? "")
-    .trim()
-    .toLowerCase();
-
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
-    return { error: "Enter a valid email address." };
-  }
-
-  const [existing] = await db
-    .select({ id: user.id })
-    .from(user)
-    .where(eq(user.email, newEmail))
-    .limit(1);
-
-  if (existing && existing.id !== current.user.id) {
-    return { error: "That email is already in use." };
-  }
-
-  await db
-    .update(user)
-    .set({
-      email: newEmail,
-      emailVerified: false,
-      updatedAt: new Date(),
-    })
-    .where(eq(user.id, current.user.id));
-
-  await audit({
-    action: "profile.email_updated",
-    actorEmail: current.user.email,
-    actorId: current.user.id,
-    description: "Updated account email",
-    entityId: current.user.id,
-    entityType: "user",
-    metadata: { newEmail, oldEmail: current.user.email },
-  });
-
-  revalidatePath("/dashboard");
-  revalidatePath("/profile/profile");
-  revalidatePath("/", "layout");
-  return { success: "Email updated. Use the new email for future sign-ins." };
 }
 
 export async function revokeSessionAction(formData: FormData): Promise<void> {
@@ -201,10 +168,12 @@ export async function sendDeleteCodeAction(): Promise<ActionState> {
       .where(eq(user.id, current.user.id))
       .limit(1);
 
-    if (!freshUser) return { error: "Account not found." };
+    if (!freshUser) {
+      return { error: "Account not found." };
+    }
 
     // Generate a 6-digit numeric OTP
-    const code = String(Math.floor(100000 + Math.random() * 900000));
+    const code = String(Math.floor(100_000 + Math.random() * 900_000));
     const identifier = `delete-account:${freshUser.id}`;
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
@@ -260,8 +229,12 @@ export async function deleteAccountAction(
   const code = String(formData.get("code") ?? "").trim();
   const reason = String(formData.get("reason") ?? "").trim();
 
-  if (!reason) return { error: "Please select a reason for leaving." };
-  if (!code || code.length !== 6) return { error: "Enter the 6-digit code from your email." };
+  if (!reason) {
+    return { error: "Please select a reason for leaving." };
+  }
+  if (!code || code.length !== 6) {
+    return { error: "Enter the 6-digit code from your email." };
+  }
 
   const [freshUser] = await db
     .select({ email: user.email, id: user.id })
@@ -269,7 +242,9 @@ export async function deleteAccountAction(
     .where(eq(user.id, current.user.id))
     .limit(1);
 
-  if (!freshUser) return { error: "Account not found." };
+  if (!freshUser) {
+    return { error: "Account not found." };
+  }
 
   // Verify the OTP code
   const identifier = `delete-account:${freshUser.id}`;
@@ -281,7 +256,7 @@ export async function deleteAccountAction(
     .where(
       and(
         eq(verification.identifier, identifier),
-        gt(verification.expiresAt, now),
+        gt(verification.expiresAt, now)
       )
     )
     .limit(1);

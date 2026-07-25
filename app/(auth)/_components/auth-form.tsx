@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/logo";
+import { canSignInByEmail } from "@/app/actions/auth";
 import { MIN_PASSWORD_LENGTH } from "@/config/platform";
 import { authClient, signIn, signUp, useSession } from "@/lib/auth-client";
 import { passwordComplexityError } from "@/lib/password";
@@ -150,6 +151,12 @@ function AuthFormInner({ allowPublicSignup, googleEnabled, passwordEnabled, magi
     setError(null);
     setSubmitting(true);
 
+    if (!allowPublicSignup && !(await canSignInByEmail(email))) {
+      setSubmitting(false);
+      setUnauthorized(true);
+      return;
+    }
+
     const result = await signIn.magicLink({ callbackURL: safeNext, email, errorCallbackURL: "/login" });
 
     setSubmitting(false);
@@ -163,6 +170,14 @@ function AuthFormInner({ allowPublicSignup, googleEnabled, passwordEnabled, magi
   async function resend() {
     setResending(true);
     setError(null);
+
+    if (!allowPublicSignup && !(await canSignInByEmail(email))) {
+      setResending(false);
+      setSent(false);
+      setUnauthorized(true);
+      return;
+    }
+
     const result = await signIn.magicLink({ callbackURL: safeNext, email, errorCallbackURL: "/login" });
     setResending(false);
     if (result.error) {
@@ -448,7 +463,7 @@ function AuthFormInner({ allowPublicSignup, googleEnabled, passwordEnabled, magi
                     {error && (
                       <div className="rounded-none bg-destructive/10 p-3 text-sm">
                         <p className="text-destructive">{error}</p>
-                        {mode === "password-signin" && (
+                        {mode === "password-signin" && allowPublicSignup && (
                           <button
                             type="button"
                             onClick={() => switchMode("password-signup")}
@@ -465,15 +480,17 @@ function AuthFormInner({ allowPublicSignup, googleEnabled, passwordEnabled, magi
                         : mode === "password-signup" ? "Create account" : "Sign in"}
                     </Button>
                     <div className="flex flex-col items-center gap-1.5 text-center text-xs">
-                      <button
-                        className="font-medium text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
-                        onClick={() => switchMode(mode === "password-signup" ? "password-signin" : "password-signup")}
-                        type="button"
-                      >
-                        {mode === "password-signup"
-                          ? "Already have an account? Sign in"
-                          : "New here? Create an account"}
-                      </button>
+                      {(allowPublicSignup || mode === "password-signup") && (
+                        <button
+                          className="font-medium text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                          onClick={() => switchMode(mode === "password-signup" ? "password-signin" : "password-signup")}
+                          type="button"
+                        >
+                          {mode === "password-signup"
+                            ? "Already have an account? Sign in"
+                            : "New here? Create an account"}
+                        </button>
+                      )}
                       {mode === "password-signin" && (
                         <button
                           className="font-medium text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"

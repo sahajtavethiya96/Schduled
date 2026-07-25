@@ -5,7 +5,7 @@ import { toast } from 'sonner'
 import {
   ArrowLeft, ArrowRight, ArrowsClockwise, ArrowSquareOut,
   CalendarBlank, CalendarCheck, CaretDown, CheckCircle,
-  Clock, Copy, Globe, List, PencilSimple, Plus, Star, Trash, X,
+  Clock, Copy, Globe, List, MagnifyingGlass, PencilSimple, Plus, Star, Trash, X,
 } from '@phosphor-icons/react'
 import {
   updateAvailabilitySchedule,
@@ -1186,7 +1186,7 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
                       className="w-16 h-9 border border-input bg-background px-2 text-sm text-center outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
                     />
                     <span className="text-sm text-muted-foreground">meetings per</span>
-                    <span className="text-sm font-medium">{lim.period}</span>
+                    <span className="text-sm font-medium capitalize">{lim.period}</span>
                     <button
                       type="button"
                       disabled={limitPending}
@@ -1223,7 +1223,7 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
                   value={limitPeriod}
                   onValueChange={(v) => setLimitPeriod(v as MeetingLimitPeriod)}
                 >
-                  <SelectTrigger className="w-28 h-9 text-sm">
+                  <SelectTrigger className="w-28 h-9 text-sm capitalize">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -1545,7 +1545,10 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
           <DialogTitle>Change timezone</DialogTitle>
           <DialogDescription className="sr-only">Select your timezone</DialogDescription>
           <div className="space-y-3">
-            <Input placeholder="Search timezones…" value={tzSearch} onChange={(e) => setTzSearch(e.target.value)} autoFocus className="h-9" />
+            <div className="relative">
+              <MagnifyingGlass size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Input placeholder="Search timezones…" value={tzSearch} onChange={(e) => setTzSearch(e.target.value)} autoFocus className="h-9 pl-9" />
+            </div>
             <div className="max-h-64 overflow-y-auto border border-border">
               {filteredTz.map((tz) => (
                 <button key={tz} type="button" onClick={() => handleTzChange(tz)} disabled={isPending}

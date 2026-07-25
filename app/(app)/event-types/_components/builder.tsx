@@ -180,6 +180,17 @@ const TABS = [
   { id: "cancellation", label: "Cancellation" },
 ];
 
+// Scoped to sessionStorage (this browser tab only, cleared when it closes)
+// rather than localStorage — this is a scratch draft for an interrupted
+// editing session (e.g. clicking "Edit Schedule" and coming back via the
+// browser Back button), not something that should resurrect across
+// unrelated future visits.
+function draftKeyFor(mode: "create" | "edit", eventTypeId?: string) {
+  return mode === "create"
+    ? "schduled:event-type-draft:new"
+    : `schduled:event-type-draft:edit:${eventTypeId}`;
+}
+
 // Maps each tab to the form fields it owns — used to jump to the tab with errors
 const TAB_FIELDS: Record<string, (keyof BuilderFormValues)[]> = {
   general: ["name", "slug", "description", "color", "meetingType", "isActive", "isHidden", "requiresApproval"],
@@ -242,6 +253,69 @@ export function EventTypeBuilder({
   // in edit mode, not the values the page was originally rendered with.
   const savedValuesRef = useRef(defaultValues);
 
+  const draftKey = draftKeyFor(mode, eventTypeId);
+  // Gates the persist-effect below until the restore-effect has had its
+  // chance to run first. Both effects fire in the same commit on mount;
+  // without this gate, the persist-effect's first run would capture
+  // `watchedValues` from BEFORE the restore's form.reset() takes effect and
+  // overwrite the just-read draft with the pre-restore (blank) values.
+  const [hydrated, setHydrated] = useState(false);
+
+  function clearDraft() {
+    try {
+      sessionStorage.removeItem(draftKey);
+    } catch {
+      // Private-browsing/storage-disabled edge cases — nothing to clean up.
+    }
+  }
+
+  // Restore an interrupted draft on mount — e.g. the user clicked "Edit
+  // Schedule" (which navigates away to /availability) and came back via the
+  // browser Back button. keepDefaultValues so formState.isDirty still
+  // compares against the ORIGINAL server values, not the restored draft —
+  // otherwise the Save/Discard buttons in edit mode wouldn't realize there's
+  // anything to save.
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(draftKey);
+      const parsed = raw ? JSON.parse(raw) : null;
+      // Deliberately NOT validated against the full schema here — a draft is
+      // often mid-edit and legitimately incomplete (e.g. required-field or
+      // cross-field rules not satisfied yet). form.reset() doesn't require
+      // validity; the existing per-tab/submit validation UX handles
+      // incompleteness normally once the user acts on it.
+      if (parsed?.values && typeof parsed.values === "object" && !Array.isArray(parsed.values)) {
+        form.reset(parsed.values, { keepDefaultValues: true });
+        if (typeof parsed.activeTab === "string") setActiveTab(parsed.activeTab);
+        if (Array.isArray(parsed.pendingQuestions)) setPendingQuestions(parsed.pendingQuestions);
+      }
+    } catch {
+      // Corrupted/incompatible draft — ignore it and start fresh.
+    } finally {
+      setHydrated(true);
+    }
+    // Intentionally mount-only: restoring is a one-time action, not something
+    // that should re-run as the form/draftKey identity happens to change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const watchedValues = form.watch();
+
+  // Persist the in-progress draft on every change so it survives the
+  // navigate-away-and-come-back flow above. Gated on `hydrated` — see above.
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      sessionStorage.setItem(
+        draftKey,
+        JSON.stringify({ values: watchedValues, activeTab, pendingQuestions })
+      );
+    } catch {
+      // Same as above — losing the draft-persistence nicety isn't worth
+      // crashing the form over.
+    }
+  }, [hydrated, watchedValues, activeTab, pendingQuestions, draftKey]);
+
   const isDirty = form.formState.isDirty;
   const tabIndex = TABS.findIndex((t) => t.id === activeTab);
 
@@ -293,6 +367,7 @@ export function EventTypeBuilder({
           toast.error(res.error);
           return;
         }
+        clearDraft();
         setSuccessInfo({
           id: res.id,
           slug: res.slug,
@@ -310,6 +385,7 @@ export function EventTypeBuilder({
         const savedValues = { ...values, slug: res.slug };
         form.reset(savedValues);
         savedValuesRef.current = savedValues;
+        clearDraft();
         setSuccessInfo({
           id: eventTypeId!,
           slug: res.slug,
@@ -377,7 +453,7 @@ export function EventTypeBuilder({
                   <Button
                     className="gap-1.5 text-muted-foreground"
                     disabled={!isDirty || isPending}
-                    onClick={() => form.reset(savedValuesRef.current)}
+                    onClick={() => { form.reset(savedValuesRef.current); clearDraft(); }}
                     size="sm"
                     type="button"
                     variant="ghost"
@@ -507,7 +583,7 @@ export function EventTypeBuilder({
           </div>
 
           {/* Right: live preview — always visible on large screens */}
-          <div className="w-80 shrink-0 hidden lg:block">
+          <div className="w-80 shrink-0 hidden lg:block lg:sticky lg:top-44">
             <LivePreview form={form} meetingType={form.watch('meetingType')} username={username} />
           </div>
         </div>

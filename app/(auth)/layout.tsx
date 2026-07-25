@@ -29,7 +29,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
       </div>
 
       {/* ── One unified card holding both halves ── */}
-      <div className="relative z-10 grid w-full max-w-7xl overflow-hidden border border-border bg-background ring-1 ring-foreground/10 lg:min-h-[720px] lg:grid-cols-2">
+      <div className="relative z-10 grid w-full max-w-7xl overflow-hidden border border-border bg-background ring-1 ring-foreground/10 lg:grid-cols-2">
         {/* ── Brand hero (desktop only) ── */}
         <div
           className="relative hidden flex-col justify-between gap-8 overflow-hidden p-8 text-white lg:flex xl:p-10"
