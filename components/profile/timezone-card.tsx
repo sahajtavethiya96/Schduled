@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle, Globe } from "@phosphor-icons/react";
+import { CheckCircle, Globe, MagnifyingGlass } from "@phosphor-icons/react";
 import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { updateUserTimezone } from "@/app/actions/availability";
@@ -149,13 +149,16 @@ export function TimezoneCard({ timezone }: { timezone: string }) {
             Select your timezone
           </DialogDescription>
           <div className="space-y-3">
-            <Input
-              autoFocus
-              className="h-9"
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search timezones…"
-              value={search}
-            />
+            <div className="relative">
+              <MagnifyingGlass size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                autoFocus
+                className="h-9 pl-9"
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search timezones…"
+                value={search}
+              />
+            </div>
             <div className="max-h-64 overflow-y-auto border border-border">
               {filteredTz.map((tz) => (
                 <button

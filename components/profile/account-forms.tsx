@@ -1,16 +1,14 @@
 "use client";
 
-import Image from "next/image";
-import { useRef, useState } from "react";
-import { useActionState } from "react";
 import { UserCircle } from "@phosphor-icons/react";
-import { useAvatar } from "@/components/avatar-context";
+import Image from "next/image";
+import { useActionState, useRef, useState } from "react";
 import {
   type ActionState,
-  changeEmailAction,
   removeAvatarAction,
   updateNameAction,
 } from "@/app/actions/profile";
+import { useAvatar } from "@/components/avatar-context";
 import { DeleteAccountModal } from "@/components/profile/delete-account-modal";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +19,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { authClient } from "@/lib/auth-client";
+import { authErrorMessage } from "@/lib/auth-errors";
 
 const initialState: ActionState = {};
 
@@ -41,7 +41,9 @@ export function AvatarUploadCard({
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     setError("");
     setSuccess(false);
@@ -70,21 +72,23 @@ export function AvatarUploadCard({
         body: form,
       });
       const data: { url?: string; error?: string } = await res.json();
-      if (!res.ok) {
-        setError(data.error ?? "Upload failed. Please try again.");
-        setPreview(currentImageUrl ?? null);
-      } else {
+      if (res.ok) {
         const busted = `${data.url}?t=${new Date().getTime()}`;
         setPreview(busted);
         setUrl(busted);
         setSuccess(true);
+      } else {
+        setError(data.error ?? "Upload failed. Please try again.");
+        setPreview(currentImageUrl ?? null);
       }
     } catch {
       setError("Upload failed. Please try again.");
       setPreview(currentImageUrl ?? null);
     } finally {
       setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   }
 
@@ -99,16 +103,23 @@ export function AvatarUploadCard({
       <CardContent>
         <div className="flex items-center gap-6">
           <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
-            className="group relative size-20 shrink-0 overflow-hidden border-2 border-dashed border-border bg-muted transition hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
             aria-label="Upload profile image"
+            className="group relative size-20 shrink-0 overflow-hidden border-2 border-dashed border-border bg-muted transition hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
+            disabled={uploading}
+            onClick={() => fileInputRef.current?.click()}
+            type="button"
           >
             {preview ? (
-              <Image fill unoptimized src={preview} alt="Profile image" className="object-cover" sizes="80px" />
+              <Image
+                alt="Profile image"
+                className="object-cover"
+                fill
+                sizes="80px"
+                src={preview}
+                unoptimized
+              />
             ) : (
-              <UserCircle size={40} className="m-auto text-muted-foreground" />
+              <UserCircle className="m-auto text-muted-foreground" size={40} />
             )}
 
             {uploading ? (
@@ -123,45 +134,45 @@ export function AvatarUploadCard({
           </button>
 
           <input
-            ref={fileInputRef}
-            type="file"
             accept="image/jpeg,image/png,image/webp"
             className="hidden"
             onChange={handleFileChange}
+            ref={fileInputRef}
+            type="file"
           />
 
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Button
-                type="button"
-                variant="outline"
-                size="sm"
                 disabled={uploading || removing}
                 onClick={() => fileInputRef.current?.click()}
+                size="sm"
+                type="button"
+                variant="outline"
               >
                 {uploading ? "Uploading…" : "Change image"}
               </Button>
               {preview && (
                 <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  disabled={uploading || removing}
                   className="text-destructive hover:bg-destructive/5 hover:text-destructive"
+                  disabled={uploading || removing}
                   onClick={async () => {
-                    setRemoving(true)
-                    setError("")
-                    setSuccess(false)
-                    const res = await removeAvatarAction()
-                    setRemoving(false)
+                    setRemoving(true);
+                    setError("");
+                    setSuccess(false);
+                    const res = await removeAvatarAction();
+                    setRemoving(false);
                     if (res.error) {
-                      setError(res.error)
+                      setError(res.error);
                     } else {
-                      setPreview(null)
-                      setUrl(null)
-                      setSuccess(true)
+                      setPreview(null);
+                      setUrl(null);
+                      setSuccess(true);
                     }
                   }}
+                  size="sm"
+                  type="button"
+                  variant="ghost"
                 >
                   {removing ? "Removing…" : "Remove"}
                 </Button>
@@ -212,10 +223,41 @@ export function AccountIdentityForms({
     updateNameAction,
     initialState
   );
-  const [emailState, emailAction, emailPending] = useActionState(
-    changeEmailAction,
-    initialState
-  );
+
+  const [emailValue, setEmailValue] = useState(email);
+  const [emailState, setEmailState] = useState<ActionState>(initialState);
+  const [emailPending, setEmailPending] = useState(false);
+
+  async function onEmailSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const newEmail = emailValue.trim().toLowerCase();
+    if (newEmail === email.toLowerCase()) {
+      setEmailState({ error: "Enter a different email address." });
+      return;
+    }
+
+    setEmailPending(true);
+    setEmailState({});
+    const { error: err } = await authClient.changeEmail({
+      newEmail,
+      callbackURL: "/profile/profile",
+    });
+    setEmailPending(false);
+
+    if (err) {
+      setEmailState({
+        error: authErrorMessage(
+          err.code,
+          err.message ?? "Could not update your email."
+        ),
+      });
+      return;
+    }
+    setEmailState({
+      success:
+        "Check your new email address for a confirmation link — your sign-in email won't change until you click it.",
+    });
+  }
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
@@ -263,23 +305,27 @@ export function AccountIdentityForms({
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-1 flex-col">
-          <form action={emailAction} className="flex flex-1 flex-col space-y-4">
+          <form
+            className="flex flex-1 flex-col space-y-4"
+            onSubmit={onEmailSubmit}
+          >
             <label className="block" htmlFor="email">
               <span className="mb-2 block font-semibold text-foreground text-sm">
                 Email
               </span>
               <Input
-                defaultValue={email}
                 id="email"
                 name="email"
+                onChange={(e) => setEmailValue(e.target.value)}
                 required
                 type="email"
+                value={emailValue}
               />
             </label>
             <ActionMessage state={emailState} />
             <div className="mt-auto flex justify-end">
               <Button disabled={emailPending} type="submit">
-                {emailPending ? "Saving..." : "Update email"}
+                {emailPending ? "Sending..." : "Update email"}
               </Button>
             </div>
           </form>
@@ -295,8 +341,9 @@ export function DeleteAccountForm({ email }: { email: string }) {
       <CardHeader>
         <CardTitle className="text-destructive">Delete Account</CardTitle>
         <CardDescription>
-          Permanently delete your account, sessions, meeting types, and all connected
-          data. Audit records remain for operator history. This cannot be undone.
+          Permanently delete your account, sessions, meeting types, and all
+          connected data. Audit records remain for operator history. This cannot
+          be undone.
         </CardDescription>
       </CardHeader>
       <CardContent>

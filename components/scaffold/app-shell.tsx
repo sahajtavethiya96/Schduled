@@ -68,7 +68,7 @@ export function AppShell({
         <main data-app-main className="flex-1 overflow-y-auto overflow-x-clip bg-page pb-16 md:pb-0 [scrollbar-gutter:stable]">
           <ScrollReset />
           <AutofillScrollFix />
-          <div className="mx-auto max-w-7xl px-4 md:px-6 py-6 md:py-8">
+          <div className="mx-auto max-w-7xl px-4 md:px-6 pt-4 pb-6 md:pt-5 md:pb-8">
             {children}
           </div>
         </main>
