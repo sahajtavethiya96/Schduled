@@ -28,7 +28,7 @@ APP_URL=https://your-domain.example
 **This is enough to start the app and log into it** — email + password login is
 on by default, so no SMTP or Google is needed for the first sign-in. See
 [Installation → "First login"](./installation.md#first-login--read-this-before-you-deploy)
-for the recommended setup (add `SIGNUP_ENABLED=false` + `INITIAL_ADMIN_EMAIL`).
+for the recommended setup (add `ALLOW_PUBLIC_SIGNUP=false` + `INITIAL_ADMIN_EMAIL`).
 
 ## Full config — by feature
 
@@ -41,7 +41,7 @@ when you need the feature:
 | Google Calendar + Meet | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `ENCRYPT_KEY` | [Integrations](./integrations.md) |
 | Zoom | `ZOOM_CLIENT_ID`, `ZOOM_CLIENT_SECRET`, `ENCRYPT_KEY` | [Integrations](./integrations.md) |
 | Password login | `NEXT_PUBLIC_PASSWORD_AUTH_ENABLED` | `ENVIRONMENT.md` §3 |
-| Closed signup | `SIGNUP_ENABLED`, `INITIAL_ADMIN_EMAIL` | `ENVIRONMENT.md` §3 |
+| Closed signup | `ALLOW_PUBLIC_SIGNUP`, `INITIAL_ADMIN_EMAIL` | `ENVIRONMENT.md` §3 |
 | S3/R2 storage | `STORAGE_DRIVER=s3` + `S3_*`, or `STORAGE_DRIVER=r2` + `R2_*` | `ENVIRONMENT.md` §7 |
 | Address autocomplete | `GEOCODER_PROVIDER`, `GOOGLE_MAPS_API_KEY`, `MAPBOX_TOKEN` | `ENVIRONMENT.md` §6 |
 | Branding | `NEXT_PUBLIC_PRODUCT_NAME`, `NEXT_PUBLIC_SHOW_POWERED_BY`, `CONTACT_EMAIL`, `NEXT_PUBLIC_CONTACT_EMAIL`, `PRIVACY_EMAIL` | `ENVIRONMENT.md` §8 |

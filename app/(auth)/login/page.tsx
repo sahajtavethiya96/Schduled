@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { AuthForm } from "@/app/(auth)/_components/auth-form";
+import { env } from "@/lib/env";
 import { getEffectiveSignInMethods } from "@/lib/settings/sign-in-methods";
 import { redirectToSetupIfNeeded } from "@/lib/setup";
 
@@ -19,6 +20,7 @@ export default async function LoginPage() {
   return (
     <Suspense>
       <AuthForm
+        allowPublicSignup={env.ALLOW_PUBLIC_SIGNUP}
         googleEnabled={methods.google}
         magicLinkEnabled={methods.magicLink}
         passwordEnabled={methods.password}

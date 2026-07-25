@@ -30,7 +30,7 @@ In scope:
 - The application code in this repository (`app/`, `lib/`, `components/`,
   `db/`, worker handlers, Docker packaging).
 - Authentication, session handling, and the self-hosting signup gate
-  (`SIGNUP_ENABLED`, `INITIAL_ADMIN_EMAIL`).
+  (`ALLOW_PUBLIC_SIGNUP`, `INITIAL_ADMIN_EMAIL`).
 - Data exposure across users (one user seeing another's bookings/data).
 
 Out of scope (report upstream instead):

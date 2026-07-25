@@ -66,7 +66,7 @@ const envSchema = z.object({
   // self-hoster opts in. Set to 'false' to close public sign-up; the
   // INITIAL_ADMIN_EMAIL account can always sign up regardless, so it's safe
   // to set both from day one instead of "open then close later".
-  SIGNUP_ENABLED: z.preprocess(
+  ALLOW_PUBLIC_SIGNUP: z.preprocess(
     (v) => (v === undefined ? true : v === "true" || v === "1"),
     z.boolean()
   ),
