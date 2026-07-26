@@ -127,6 +127,13 @@
       "when": 1784287288426,
       "tag": "0017_productive_red_ghost",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1785040556509,
+      "tag": "0018_oval_black_panther",
+      "breakpoints": true
     }
   ]
 }
