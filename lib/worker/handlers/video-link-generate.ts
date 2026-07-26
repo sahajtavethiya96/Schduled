@@ -1,9 +1,19 @@
 import { and, eq } from "drizzle-orm";
 import type { Job } from "pg-boss";
 import { booking, connectedCalendar, eventType, videoConnection } from "@/db/schema";
+import { audit } from "@/lib/audit";
 import { db } from "@/lib/db";
-import type { VideoLinkGeneratePayload } from "@/lib/worker/job-types";
+import { QUEUE_OPTIONS } from "@/lib/worker/ensure-queues";
+import { JOB_NAMES, type VideoLinkGeneratePayload } from "@/lib/worker/job-types";
 import { createZoomMeeting, getValidZoomAccessToken } from "@/lib/zoom/client";
+
+function jobAttempt(job: Job<unknown>): number {
+  return Number(
+    (job as { retryCount?: number; retrycount?: number }).retryCount ??
+      (job as { retrycount?: number }).retrycount ??
+      0
+  );
+}
 
 export async function handleVideoLinkGenerate(
   jobs: Job<VideoLinkGeneratePayload>[]
@@ -80,12 +90,8 @@ async function processVideoLinkGenerate(job: Job<VideoLinkGeneratePayload>) {
       return;
     }
 
-    const attempt = Number(
-      (job as { retryCount?: number; retrycount?: number }).retryCount ??
-        (job as { retrycount?: number }).retrycount ??
-        0
-    );
-    if (attempt < 2) {
+    const retryLimit = QUEUE_OPTIONS[JOB_NAMES.VIDEO_LINK_GENERATE].retryLimit ?? 0;
+    if (jobAttempt(job) < retryLimit) {
       throw new Error(
         `Meet link for booking ${bookingId} not written yet by calendar-write — retrying`
       );
@@ -97,7 +103,7 @@ async function processVideoLinkGenerate(job: Job<VideoLinkGeneratePayload>) {
   }
 
   if (b.locationType === "zoom") {
-    await generateZoomLink(b);
+    await generateZoomLink(b, jobAttempt(job));
     return;
   }
 
@@ -107,16 +113,42 @@ async function processVideoLinkGenerate(job: Job<VideoLinkGeneratePayload>) {
   );
 }
 
-async function generateZoomLink(b: {
-  id: string;
-  hostUserId: string;
-  inviteeName: string;
-  inviteeTimezone: string;
-  startTime: Date;
-  duration: number;
-  videoLinkInvitee: string | null;
-  etName: string;
-}) {
+/**
+ * Records why a Zoom link will never be generated for this booking so the UI
+ * can tell the host instead of silently showing no Join button forever (see
+ * booking.videoLinkError). Previously these were `console.warn`/`return` —
+ * the booking row was never updated, so `locationValue` stayed null with no
+ * trace of why.
+ */
+async function giveUpOnZoomLink(bookingId: string, hostUserId: string, code: string, detail: unknown) {
+  console.warn(`[video-link-generate] booking ${bookingId}: giving up on Zoom link (${code})`, detail ?? "");
+  await db
+    .update(booking)
+    .set({ videoLinkError: code, updatedAt: new Date() })
+    .where(eq(booking.id, bookingId));
+  await audit({
+    action: "video.link_generation_failed",
+    actorId: hostUserId,
+    entityType: "video_connection",
+    entityId: bookingId,
+    description: `Zoom meeting link could not be generated for booking ${bookingId}: ${code}`,
+    metadata: { provider: "zoom", code },
+  });
+}
+
+async function generateZoomLink(
+  b: {
+    id: string;
+    hostUserId: string;
+    inviteeName: string;
+    inviteeTimezone: string;
+    startTime: Date;
+    duration: number;
+    videoLinkInvitee: string | null;
+    etName: string;
+  },
+  attempt: number
+) {
   // Already generated (idempotent re-run)
   if (b.videoLinkInvitee) {
     console.log(
@@ -124,6 +156,9 @@ async function generateZoomLink(b: {
     );
     return;
   }
+
+  const retryLimit = QUEUE_OPTIONS[JOB_NAMES.VIDEO_LINK_GENERATE].retryLimit ?? 0;
+  const isLastAttempt = attempt >= retryLimit;
 
   // Find the host's connected Zoom account
   const [conn] = await db
@@ -138,9 +173,9 @@ async function generateZoomLink(b: {
     .limit(1);
 
   if (!conn) {
-    console.log(
-      `[video-link-generate] booking ${b.id}: host ${b.hostUserId} has no Zoom connection — skipping`
-    );
+    // Deterministic — retrying won't make a connection appear — so give up
+    // immediately instead of burning the retry budget.
+    await giveUpOnZoomLink(b.id, b.hostUserId, "zoom_not_connected", null);
     return;
   }
 
@@ -148,11 +183,15 @@ async function generateZoomLink(b: {
   try {
     accessToken = await getValidZoomAccessToken(conn);
   } catch (err) {
+    if (isLastAttempt) {
+      await giveUpOnZoomLink(b.id, b.hostUserId, "zoom_token_refresh_failed", err);
+      return;
+    }
     console.error(
       `[video-link-generate] booking ${b.id}: failed to get Zoom access token:`,
       err
     );
-    throw err; // transient (network/refresh) — let pg-boss retry
+    throw err; // may be transient (network) — let pg-boss retry
   }
 
   let meeting;
@@ -165,6 +204,10 @@ async function generateZoomLink(b: {
       agenda: `Scheduled via Schduled with ${b.inviteeName}`,
     });
   } catch (err) {
+    if (isLastAttempt) {
+      await giveUpOnZoomLink(b.id, b.hostUserId, "zoom_meeting_create_failed", err);
+      return;
+    }
     // The meeting was not created — safe for pg-boss to retry.
     console.error(
       `[video-link-generate] booking ${b.id}: Zoom meeting create failed:`,
@@ -178,7 +221,7 @@ async function generateZoomLink(b: {
   // SECOND Zoom meeting would be created. Retrying just the write keeps a
   // transient DB blip from duplicating the meeting.
   let persisted = false;
-  for (let attempt = 0; attempt < 3 && !persisted; attempt++) {
+  for (let dbAttempt = 0; dbAttempt < 3 && !persisted; dbAttempt++) {
     try {
       await db
         .update(booking)
@@ -186,14 +229,15 @@ async function generateZoomLink(b: {
           videoLinkHost: meeting.startUrl, // host start link
           videoLinkInvitee: meeting.joinUrl, // invitee join link
           locationValue: meeting.joinUrl,
+          videoLinkError: null,
           updatedAt: new Date(),
         })
         .where(eq(booking.id, b.id));
       persisted = true;
     } catch (dbErr) {
-      if (attempt === 2) throw dbErr;
+      if (dbAttempt === 2) throw dbErr;
       console.warn(
-        `[video-link-generate] booking ${b.id}: persist attempt ${attempt + 1} failed, retrying:`,
+        `[video-link-generate] booking ${b.id}: persist attempt ${dbAttempt + 1} failed, retrying:`,
         dbErr
       );
     }

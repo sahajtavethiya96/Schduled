@@ -21,6 +21,7 @@ import {
   Phone,
   UsersThree,
   VideoCamera,
+  Warning,
   X,
 } from '@phosphor-icons/react/dist/ssr'
 import { Button } from '@/components/ui/button'
@@ -67,6 +68,7 @@ export default async function BookingDetailPage({
       duration: booking.duration,
       status: booking.status,
       locationValue: booking.locationValue,
+      videoLinkError: booking.videoLinkError,
       cancelToken: booking.cancelToken,
       rescheduleToken: booking.rescheduleToken,
       approvalToken: booking.approvalToken,
@@ -113,6 +115,11 @@ export default async function BookingDetailPage({
       ? b.locationValue
       : null
   const isLocationLink = b.locationType === 'in_person' && !!joinUrl
+  const videoLinkFailedMessage = !joinUrl && b.videoLinkError
+    ? b.videoLinkError === 'zoom_not_connected'
+      ? 'Zoom isn’t connected — reconnect it in Settings to generate this link.'
+      : 'The meeting link couldn’t be created. Reconnect Zoom in Settings, or contact the invitee directly.'
+    : null
   const isPastConfirmed = b.status === 'confirmed' && b.startTime <= now
   const hasActions = isUpcoming || (isPending && b.approvalToken) || (isRescheduleReq && b.approvalToken) || isPastConfirmed
 
@@ -219,6 +226,12 @@ export default async function BookingDetailPage({
             <a href={joinUrl} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-primary hover:underline">
               {isLocationLink ? 'View location →' : 'Join meeting →'}
             </a>
+          )}
+          {videoLinkFailedMessage && (
+            <p className="flex items-start gap-1.5 text-sm text-destructive">
+              <Warning size={15} weight="fill" className="mt-0.5 shrink-0" />
+              {videoLinkFailedMessage}
+            </p>
           )}
         </InfoCard>
       </div>
