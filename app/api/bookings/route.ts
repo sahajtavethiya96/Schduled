@@ -1,5 +1,5 @@
 import { createId } from "@paralleldrive/cuid2";
-import { addMinutes, addHours, subHours } from "date-fns";
+import { addMinutes, addHours } from "date-fns";
 import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
 import { and, eq, gt, gte, lte, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
@@ -22,6 +22,7 @@ import { isValidTimezone, sanitizeText, validateEmail } from "@/lib/validators";
 import { canonicalizeTz } from "@/lib/utils";
 import { enqueueJob } from "@/lib/worker/enqueue";
 import { JOB_NAMES } from "@/lib/worker/job-types";
+import { computeReminderSchedule } from "@/lib/worker/reminder-schedule";
 
 interface BookingBody {
   answers?: {
@@ -492,26 +493,15 @@ async function enqueueBookingJobs(opts: {
     jobs.push(enqueueJob(JOB_NAMES.VIDEO_LINK_GENERATE, { bookingId }));
   }
 
-  // 24 h reminder
-  const remind24h = subHours(startTime, 24);
-  if (remind24h.getTime() > now) {
+  // Reminder(s) — 24h + 1h with plenty of lead time; a single last-mile
+  // 10m/5m fallback when the booking is made too close to the meeting for
+  // those windows to ever fire. See lib/worker/reminder-schedule.ts.
+  for (const reminder of computeReminderSchedule(startTime, new Date(now))) {
     jobs.push(
       enqueueJob(
-        JOB_NAMES.BOOKING_REMINDER_24H,
+        reminder.jobName,
         { bookingId, bookingStartUtc: startUtcIso },
-        { singletonKey: `reminder-24h-${bookingId}`, startAfter: remind24h }
-      )
-    );
-  }
-
-  // 1 h reminder
-  const remind1h = subHours(startTime, 1);
-  if (remind1h.getTime() > now) {
-    jobs.push(
-      enqueueJob(
-        JOB_NAMES.BOOKING_REMINDER_1H,
-        { bookingId, bookingStartUtc: startUtcIso },
-        { singletonKey: `reminder-1h-${bookingId}`, startAfter: remind1h }
+        { singletonKey: `reminder-${reminder.singletonTag}-${bookingId}`, startAfter: reminder.startAfter }
       )
     );
   }

@@ -1,9 +1,9 @@
-import { subHours } from "date-fns";
 import type { Job } from "pg-boss";
 import { createNotification } from "@/lib/notifications/create";
 import { enqueueJob } from "@/lib/worker/enqueue";
 import { JOB_NAMES } from "@/lib/worker/job-types";
 import type { BookingApprovedPayload } from "@/lib/worker/job-types";
+import { computeReminderSchedule } from "@/lib/worker/reminder-schedule";
 import { loadBookingForLifecycle } from "./booking-lifecycle-data";
 
 export async function handleBookingApproved(jobs: Job<BookingApprovedPayload>[]) {
@@ -36,29 +36,16 @@ async function processOne(bookingId: string) {
     bookingId: b.id,
   });
 
-  // Schedule reminder jobs
-  const now = Date.now();
+  // Schedule reminder job(s) — see lib/worker/reminder-schedule.ts.
   const startUtcIso = startUtc.toISOString();
   const reminders: Promise<unknown>[] = [];
 
-  const remind24h = subHours(startUtc, 24);
-  if (remind24h.getTime() > now) {
+  for (const reminder of computeReminderSchedule(startUtc, new Date())) {
     reminders.push(
       enqueueJob(
-        JOB_NAMES.BOOKING_REMINDER_24H,
+        reminder.jobName,
         { bookingId: b.id, bookingStartUtc: startUtcIso },
-        { singletonKey: `reminder-24h-${b.id}`, startAfter: remind24h }
-      )
-    );
-  }
-
-  const remind1h = subHours(startUtc, 1);
-  if (remind1h.getTime() > now) {
-    reminders.push(
-      enqueueJob(
-        JOB_NAMES.BOOKING_REMINDER_1H,
-        { bookingId: b.id, bookingStartUtc: startUtcIso },
-        { singletonKey: `reminder-1h-${b.id}`, startAfter: remind1h }
+        { singletonKey: `reminder-${reminder.singletonTag}-${b.id}`, startAfter: reminder.startAfter }
       )
     );
   }

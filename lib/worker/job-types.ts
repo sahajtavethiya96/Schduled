@@ -10,6 +10,10 @@ export const JOB_NAMES = {
   BOOKING_CONFIRMATION: "booking.confirmation",
   BOOKING_REMINDER_24H: "booking.reminder-24h",
   BOOKING_REMINDER_1H: "booking.reminder-1h",
+  // Last-mile fallback reminders for bookings made too close to the meeting
+  // for the 24h/1h windows to ever fire — see lib/worker/reminder-schedule.ts.
+  BOOKING_REMINDER_10M: "booking.reminder-10m",
+  BOOKING_REMINDER_5M: "booking.reminder-5m",
   BOOKING_CANCEL_REMINDERS: "booking.cancel-reminders",
   BOOKING_CANCELLATION: "booking.cancellation",
   CALENDAR_CANCEL: "booking.calendar-cancel",
@@ -147,6 +151,8 @@ export type JobPayloads = {
   [JOB_NAMES.BOOKING_CONFIRMATION]: BookingConfirmationPayload;
   [JOB_NAMES.BOOKING_REMINDER_24H]: BookingReminderPayload;
   [JOB_NAMES.BOOKING_REMINDER_1H]: BookingReminderPayload;
+  [JOB_NAMES.BOOKING_REMINDER_10M]: BookingReminderPayload;
+  [JOB_NAMES.BOOKING_REMINDER_5M]: BookingReminderPayload;
   [JOB_NAMES.BOOKING_CANCEL_REMINDERS]: BookingCancelRemindersPayload;
   [JOB_NAMES.BOOKING_CANCELLATION]: BookingCancellationPayload;
   [JOB_NAMES.CALENDAR_CANCEL]: CalendarCancelPayload;
