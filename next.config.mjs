@@ -9,6 +9,15 @@ const nextConfig = {
   // minimal server) — dramatically smaller Docker images than a full
   // `next start` deploy.
   output: "standalone",
+  // sharp (native image resize, used by the avatar upload route) needs to be
+  // resolved with a plain runtime require(), not bundled/traced by
+  // Turbopack's server-component bundler — its "external module" loader
+  // wraps native addons differently than Node's own require() and fails to
+  // dlopen sharp's libvips .so even when the file is genuinely present and
+  // working (confirmed: `node -e "require('sharp')"` succeeds in the same
+  // container where the app itself throws ERR_DLOPEN_FAILED). This opts
+  // sharp out of that bundling path entirely.
+  serverExternalPackages: ["sharp"],
   async redirects() {
     return [
       { source: '/settings', destination: '/settings/my-link', permanent: true },
