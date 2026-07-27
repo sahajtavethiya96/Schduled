@@ -284,7 +284,7 @@ export const auth = betterAuth({
             env.INITIAL_ADMIN_EMAIL &&
             user.email.toLowerCase() === env.INITIAL_ADMIN_EMAIL.toLowerCase();
           if (isBootstrapAdmin) {
-            return;
+            return { data: { emailVerified: true } };
           }
 
           // The /setup wizard (app/actions/setup.ts createFirstAdmin) is only
@@ -296,8 +296,20 @@ export const auth = betterAuth({
           // through regardless of ALLOW_PUBLIC_SIGNUP/INITIAL_ADMIN_EMAIL —
           // without this, closing signup with no INITIAL_ADMIN_EMAIL set
           // (a supported combination) would make first-run setup impossible.
+          //
+          // Both branches above mark emailVerified true at creation: with
+          // signup closed, this hook itself is the only door in, so — unlike
+          // the open ALLOW_PUBLIC_SIGNUP path above, where anyone can type in
+          // an email they don't own — every account reaching here is already
+          // vetted. Without this, a password sign-up (the only method with no
+          // built-in ownership proof; magic link and Google both verify the
+          // email out of band) leaves emailVerified permanently false — this
+          // app has no signup-verification email to ever flip it — which
+          // then permanently blocks that same person from later linking
+          // Google to the same address (Better Auth's account-linking
+          // requires the existing user's email to already be verified).
           if (!(await hasAnyUser())) {
-            return;
+            return { data: { emailVerified: true } };
           }
 
           return false;

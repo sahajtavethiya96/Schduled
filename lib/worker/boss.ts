@@ -69,7 +69,12 @@ export async function startWorker() {
 
   // ── Booking lifecycle handlers ─────────────────────────────────────────────
   const { handleBookingConfirmation } = await import("@/lib/worker/handlers/booking-confirmation");
-  const { handleBookingReminder24h, handleBookingReminder1h } = await import("@/lib/worker/handlers/booking-reminder");
+  const {
+    handleBookingReminder24h,
+    handleBookingReminder1h,
+    handleBookingReminder10m,
+    handleBookingReminder5m,
+  } = await import("@/lib/worker/handlers/booking-reminder");
   const { handleBookingCancelReminders } = await import("@/lib/worker/handlers/booking-cancel-reminders");
   const { handleBookingCancellation } = await import("@/lib/worker/handlers/booking-cancellation");
   const { handleBookingRescheduleReminders } = await import("@/lib/worker/handlers/booking-reschedule-reminders");
@@ -110,6 +115,8 @@ export async function startWorker() {
     work(JOB_NAMES.BOOKING_CONFIRMATION,        handleBookingConfirmation),
     work(JOB_NAMES.BOOKING_REMINDER_24H,        handleBookingReminder24h),
     work(JOB_NAMES.BOOKING_REMINDER_1H,         handleBookingReminder1h),
+    work(JOB_NAMES.BOOKING_REMINDER_10M,        handleBookingReminder10m),
+    work(JOB_NAMES.BOOKING_REMINDER_5M,         handleBookingReminder5m),
     work(JOB_NAMES.BOOKING_CANCEL_REMINDERS,    handleBookingCancelReminders),
     work(JOB_NAMES.BOOKING_CANCELLATION,        handleBookingCancellation),
     work(JOB_NAMES.BOOKING_RESCHEDULE_REMINDERS, handleBookingRescheduleReminders),

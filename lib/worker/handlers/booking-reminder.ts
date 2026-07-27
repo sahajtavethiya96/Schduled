@@ -28,9 +28,36 @@ export async function handleBookingReminder1h(
   }
 }
 
+// Last-mile fallback reminders — see lib/worker/reminder-schedule.ts for when
+// these are scheduled instead of the 24h/1h pair above.
+export async function handleBookingReminder10m(
+  jobs: Job<BookingReminderPayload>[]
+) {
+  for (const job of jobs) {
+    await processReminder(job, "10 minutes");
+  }
+}
+
+export async function handleBookingReminder5m(
+  jobs: Job<BookingReminderPayload>[]
+) {
+  for (const job of jobs) {
+    await processReminder(job, "5 minutes");
+  }
+}
+
+type ReminderWindow = "24 hours" | "1 hour" | "10 minutes" | "5 minutes";
+
+const REMINDER_TAG: Record<ReminderWindow, string> = {
+  "24 hours": "24h",
+  "1 hour": "1h",
+  "10 minutes": "10m",
+  "5 minutes": "5m",
+};
+
 async function processReminder(
   job: Job<BookingReminderPayload>,
-  timeUntil: "24 hours" | "1 hour"
+  timeUntil: ReminderWindow
 ) {
   const { bookingId, bookingStartUtc } = job.data;
 
@@ -90,10 +117,12 @@ async function processReminder(
   const locationLabelInvitee = resolveLocationLabel(b.etLocationType, b.etLocationValue, b.inviteePhone);
   const locationLabelHost = resolveLocationLabelHost(b.etLocationType, b.etLocationValue, b.inviteePhone);
   const { invitee: inviteeLabel, host: hostLabel } = resolveMeetLabels(b.etLocationType);
-  const tag = timeUntil === "24 hours" ? "24h" : "1h";
+  const tag = REMINDER_TAG[timeUntil];
 
   // "reminderEmail24h/1h" pref controls INVITEE reminders ("Send invitees a reminder").
   // The host always receives their own reminder regardless of this setting.
+  // The 10m/5m last-mile fallbacks stand in for a missed 1h reminder, so they
+  // honor that same toggle rather than introducing a new preference.
   const inviteeReminderEnabled = timeUntil === "24 hours"
     ? prefs?.reminderEmail24h !== false
     : prefs?.reminderEmail1h !== false;

@@ -17,7 +17,7 @@ interface ReminderHostParams {
   /** "Start Google Meet" | "Start Zoom Meeting" */
   meetLabel: string;
   meetPassword?: string | null;
-  timeUntil: "24 hours" | "1 hour";
+  timeUntil: "24 hours" | "1 hour" | "10 minutes" | "5 minutes";
 }
 
 const DATE_FMT = "EEEE, MMMM d, yyyy 'at' h:mm a";
