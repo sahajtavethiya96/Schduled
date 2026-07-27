@@ -21,6 +21,7 @@ export const booking = pgTable('booking', {
   locationValue:    text('location_value'),
   videoLinkHost:    text('video_link_host'),
   videoLinkInvitee: text('video_link_invitee'),
+  videoLinkPassword: text('video_link_password'),
   // Set once video-link-generate gives up for good (no provider connection,
   // or the provider API call kept failing through every retry) so the UI can
   // tell "still generating" apart from "never going to happen" instead of

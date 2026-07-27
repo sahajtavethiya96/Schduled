@@ -1,0 +1,1 @@
+ALTER TABLE "booking" ADD COLUMN "video_link_password" text;

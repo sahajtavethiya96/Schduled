@@ -134,6 +134,13 @@
       "when": 1785040556509,
       "tag": "0018_oval_black_panther",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1785143738050,
+      "tag": "0019_vengeful_marrow",
+      "breakpoints": true
     }
   ]
 }

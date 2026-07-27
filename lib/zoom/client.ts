@@ -165,6 +165,7 @@ export interface CreateZoomMeetingInput {
 export interface ZoomMeetingResult {
   joinUrl: string; // for the invitee
   meetingId: string;
+  password: string | null;
   startUrl: string; // for the host
 }
 
@@ -202,6 +203,7 @@ export async function createZoomMeeting(
   const data = (await res.json()) as {
     id: number;
     join_url: string;
+    password?: string;
     start_url: string;
   };
 
@@ -209,5 +211,6 @@ export async function createZoomMeeting(
     joinUrl: data.join_url,
     startUrl: data.start_url,
     meetingId: String(data.id),
+    password: data.password || null,
   };
 }

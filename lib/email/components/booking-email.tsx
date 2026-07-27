@@ -31,6 +31,7 @@ export interface BookingEmailProps {
   locationType: string; // e.g. "google_meet" | "zoom" | "phone_host_calls" | …
   meetLabel: string; // button text, e.g. "Join Google Meet" / "Join Zoom Meeting"
   meetLink: string | null;
+  meetPassword?: string | null;
   otherPartyName: string; // invitee email → host name; host email → invitee name
   previousWhen: string | null; // reschedule only — old time (invitee tz)
   reason: string | null; // cancellation only
@@ -235,6 +236,25 @@ export function BookingEmail(props: BookingEmailProps) {
                 >
                   {props.meetLabel}
                 </a>
+              </Section>
+            )}
+
+            {showMeet && props.meetPassword && (
+              <Section style={{ textAlign: "center", marginBottom: "24px" }}>
+                <Text
+                  style={{
+                    color: "#6B7280",
+                    fontSize: "12px",
+                    margin: "0 0 2px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  Meeting Password
+                </Text>
+                <Text style={{ color: text1, fontSize: "16px", fontWeight: 700, margin: 0 }}>
+                  {props.meetPassword}
+                </Text>
               </Section>
             )}
 

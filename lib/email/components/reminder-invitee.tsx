@@ -24,6 +24,7 @@ interface Props {
   locationLabel:  string
   meetLink:       string | null
   meetLabel:      string
+  meetPassword?:  string | null
   cancelUrl:      string
   rescheduleUrl:  string
   timeUntil:      string   // e.g. "24 hours" or "1 hour"
@@ -47,6 +48,7 @@ export function ReminderInviteeEmail({
   locationLabel,
   meetLink,
   meetLabel,
+  meetPassword,
   cancelUrl,
   rescheduleUrl,
   timeUntil,
@@ -104,6 +106,17 @@ export function ReminderInviteeEmail({
                 >
                   {meetLabel}
                 </a>
+              </Section>
+            )}
+
+            {meetLink && meetPassword && (
+              <Section style={{ textAlign: 'center', marginBottom: '24px' }}>
+                <Text style={{ color: '#6B7280', fontSize: '12px', margin: '0 0 2px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  Meeting Password
+                </Text>
+                <Text style={{ color: text1, fontSize: '16px', fontWeight: 700, margin: 0 }}>
+                  {meetPassword}
+                </Text>
               </Section>
             )}
 

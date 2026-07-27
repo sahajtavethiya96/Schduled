@@ -44,6 +44,7 @@ async function processReminder(
       startTime: booking.startTime,
       videoLinkInvitee: booking.videoLinkInvitee,
       videoLinkHost: booking.videoLinkHost,
+      videoLinkPassword: booking.videoLinkPassword,
       cancelToken: booking.cancelToken,
       rescheduleToken: booking.rescheduleToken,
       status: booking.status,
@@ -109,6 +110,7 @@ async function processReminder(
       locationLabel: locationLabelInvitee,
       meetLink: b.videoLinkInvitee,
       meetLabel: inviteeLabel,
+      meetPassword: b.videoLinkPassword,
       cancelToken: b.cancelToken,
       rescheduleToken: b.rescheduleToken,
       timeUntil,
@@ -137,6 +139,7 @@ async function processReminder(
       locationLabel: locationLabelHost,
       startMeetLink,
       meetLabel: hostLabel,
+      meetPassword: b.videoLinkPassword,
       timeUntil,
     });
 

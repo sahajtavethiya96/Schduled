@@ -228,6 +228,7 @@ async function generateZoomLink(
         .set({
           videoLinkHost: meeting.startUrl, // host start link
           videoLinkInvitee: meeting.joinUrl, // invitee join link
+          videoLinkPassword: meeting.password,
           locationValue: meeting.joinUrl,
           videoLinkError: null,
           updatedAt: new Date(),

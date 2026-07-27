@@ -64,6 +64,7 @@ async function processOne(bookingId: string, previousStartUtc: string) {
       otherPartyName: b.hostName ?? "your host",
       meetLink: b.videoLinkInvitee,
       meetLabel,
+      meetPassword: b.videoLinkPassword,
     });
     const icsAttachment = generateBookingICS({
       uid: b.id,
@@ -105,6 +106,7 @@ async function processOne(bookingId: string, previousStartUtc: string) {
       otherPartyName: b.inviteeName,
       meetLink: b.videoLinkHost,
       meetLabel,
+      meetPassword: b.videoLinkPassword,
     });
     await enqueueEmail(
       {
