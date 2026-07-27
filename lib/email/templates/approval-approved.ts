@@ -18,6 +18,7 @@ interface ApprovalApprovedParams {
   locationType: string;
   meetLabel: string;
   meetLink: string | null;
+  meetPassword?: string | null;
   rescheduleToken: string;
   startUtc: Date;
 }
@@ -43,6 +44,7 @@ export async function approvalApprovedTemplate(p: ApprovalApprovedParams) {
       locationType: p.locationType,
       meetLabel: p.meetLabel,
       meetLink: p.meetLink,
+      meetPassword: p.meetPassword,
       rescheduleUrl,
       whenHost,
       whenInvitee,
@@ -56,7 +58,7 @@ Your booking request for ${p.eventName} with ${p.hostName} has been approved!
 Date & Time (${p.hostTimezone}): ${whenHost}
 ${p.inviteeTimezone !== p.hostTimezone ? `Date & Time (${p.inviteeTimezone}): ${whenInvitee}\n` : ""}Location: ${p.locationLabel}
 ${p.meetLink ? `\nJoin: ${p.meetLink}` : ""}
-
+${p.meetLink && p.meetPassword ? `Meeting Password: ${p.meetPassword}\n` : ""}
 Reschedule: ${rescheduleUrl}
 Cancel: ${cancelUrl}
 

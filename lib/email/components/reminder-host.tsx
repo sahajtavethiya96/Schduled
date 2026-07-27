@@ -24,6 +24,7 @@ interface Props {
   locationLabel: string;
   startMeetLink: string | null; // Zoom start URL or Google Meet link
   meetLabel: string; // "Start Google Meet" | "Start Zoom Meeting"
+  meetPassword?: string | null;
   timeUntil: string; // "24 hours" | "1 hour"
   dashboardUrl: string;
 }
@@ -49,6 +50,7 @@ export function ReminderHostEmail({
   locationLabel,
   startMeetLink,
   meetLabel,
+  meetPassword,
   timeUntil,
   dashboardUrl,
 }: Props) {
@@ -172,6 +174,25 @@ export function ReminderHostEmail({
                 >
                   {meetLabel}
                 </a>
+              </Section>
+            )}
+
+            {startMeetLink && meetPassword && (
+              <Section style={{ textAlign: "center", marginBottom: "24px" }}>
+                <Text
+                  style={{
+                    color: "#6B7280",
+                    fontSize: "12px",
+                    margin: "0 0 2px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  Meeting Password
+                </Text>
+                <Text style={{ color: text1, fontSize: "16px", fontWeight: 700, margin: 0 }}>
+                  {meetPassword}
+                </Text>
               </Section>
             )}
 

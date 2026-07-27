@@ -101,6 +101,7 @@ async function processOne(job: Job<BookingConfirmationPayload>) {
       otherPartyName: b.hostName ?? "your host",
       meetLink: b.videoLinkInvitee,
       meetLabel,
+      meetPassword: b.videoLinkPassword,
     });
 
     const icsAttachment = generateBookingICS({
@@ -151,6 +152,7 @@ async function processOne(job: Job<BookingConfirmationPayload>) {
       otherPartyName: b.inviteeName,
       meetLink: b.videoLinkHost,
       meetLabel,
+      meetPassword: b.videoLinkPassword,
     });
     await enqueueEmail(
       {

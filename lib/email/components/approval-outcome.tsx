@@ -14,6 +14,7 @@ interface ApprovalOutcomeEmailProps {
   locationType?: string;
   meetLabel?: string;
   meetLink?: string | null;
+  meetPassword?: string | null;
   rejectionReason?: string | null;
   rescheduleUrl?: string | null;
   whenHost: string;
@@ -36,6 +37,7 @@ export function ApprovalOutcomeEmail({
   locationType,
   meetLabel,
   meetLink,
+  meetPassword,
   rejectionReason,
   rescheduleUrl,
   whenHost,
@@ -175,6 +177,14 @@ export function ApprovalOutcomeEmail({
               </Button>
             )}
           </Section>
+          {meetLink && meetPassword && (
+            <Section style={{ textAlign: "center" as const, marginBottom: "12px" }}>
+              <Text style={{ ...emailStyles.muted, margin: "0 0 2px" }}>Meeting Password</Text>
+              <Text style={{ ...emailStyles.paragraph, fontWeight: 700, margin: 0 }}>
+                {meetPassword}
+              </Text>
+            </Section>
+          )}
           {(cancelUrl || rescheduleUrl) && (
             <Text
               style={{

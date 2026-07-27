@@ -28,6 +28,7 @@ export interface BookingLifecycleRow {
   status: string;
   videoLinkHost: string | null;
   videoLinkInvitee: string | null;
+  videoLinkPassword: string | null;
 }
 
 export async function loadBookingForLifecycle(
@@ -44,6 +45,7 @@ export async function loadBookingForLifecycle(
       endTime: booking.endTime,
       videoLinkInvitee: booking.videoLinkInvitee,
       videoLinkHost: booking.videoLinkHost,
+      videoLinkPassword: booking.videoLinkPassword,
       cancelToken: booking.cancelToken,
       rescheduleToken: booking.rescheduleToken,
       rescheduleRequestedStart: booking.rescheduleRequestedStart,

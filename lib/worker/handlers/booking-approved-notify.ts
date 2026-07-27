@@ -51,6 +51,7 @@ async function processOne(bookingId: string) {
     locationType: b.etLocationType,
     meetLabel,
     meetLink: b.videoLinkInvitee,
+    meetPassword: b.videoLinkPassword,
     rescheduleToken: b.rescheduleToken,
     startUtc,
   });
@@ -97,6 +98,7 @@ async function processOne(bookingId: string) {
       locationType: b.etLocationType,
       meetLabel,
       meetLink: b.videoLinkHost,
+      meetPassword: b.videoLinkPassword,
       recipientName: b.hostName ?? "there",
       otherPartyName: b.inviteeName,
       cancelToken: b.cancelToken,

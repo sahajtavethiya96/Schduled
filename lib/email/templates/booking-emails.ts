@@ -21,6 +21,7 @@ export interface BookingEmailInput {
   locationType: string;
   meetLabel?: string;
   meetLink: string | null;
+  meetPassword?: string | null;
   otherPartyName: string;
   previousStartUtc: Date | null;
   reason: string | null;
@@ -67,6 +68,7 @@ export async function bookingEmail(p: BookingEmailInput) {
       locationType: p.locationType,
       meetLink: p.variant === "cancellation" ? null : p.meetLink,
       meetLabel: p.meetLabel ?? "Join Meeting",
+      meetPassword: p.variant === "cancellation" ? null : p.meetPassword,
       rescheduleUrl: p.variant === "cancellation" ? null : rescheduleUrl,
       cancelUrl: p.variant === "cancellation" ? null : cancelUrl,
       previousWhen: p.variant === "reschedule" ? previousWhen : null,
@@ -88,6 +90,9 @@ export async function bookingEmail(p: BookingEmailInput) {
     `Location: ${p.locationLabel}`,
     p.variant === "cancellation" && p.reason ? `Reason: ${p.reason}` : "",
     p.variant !== "cancellation" && p.meetLink ? `\nJoin: ${p.meetLink}` : "",
+    p.variant !== "cancellation" && p.meetLink && p.meetPassword
+      ? `Meeting Password: ${p.meetPassword}`
+      : "",
     isInvitee && p.variant !== "cancellation"
       ? `\nReschedule: ${rescheduleUrl}\nCancel: ${cancelUrl}`
       : "",

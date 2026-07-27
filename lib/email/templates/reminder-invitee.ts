@@ -14,6 +14,7 @@ interface ReminderInviteeParams {
   locationLabel:   string
   meetLink:        string | null
   meetLabel:       string
+  meetPassword?:   string | null
   cancelToken:     string
   rescheduleToken: string
   timeUntil:       '24 hours' | '1 hour'
@@ -42,6 +43,7 @@ export async function reminderInviteeTemplate(p: ReminderInviteeParams) {
       locationLabel:   p.locationLabel,
       meetLink:        p.meetLink,
       meetLabel:       p.meetLabel,
+      meetPassword:    p.meetPassword,
       cancelUrl,
       rescheduleUrl,
       timeUntil:       p.timeUntil,
@@ -56,7 +58,7 @@ Time (${p.hostTimezone}): ${startFormatted}
 Time (${p.inviteeTimezone}): ${inviteeTime}
 Location: ${p.locationLabel}
 ${p.meetLink ? `\nJoin: ${p.meetLink}` : ''}
-
+${p.meetLink && p.meetPassword ? `Meeting Password: ${p.meetPassword}\n` : ''}
 Reschedule: ${rescheduleUrl}
 Cancel: ${cancelUrl}
 

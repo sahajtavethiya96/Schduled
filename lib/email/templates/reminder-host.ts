@@ -16,6 +16,7 @@ interface ReminderHostParams {
   startMeetLink: string | null;
   /** "Start Google Meet" | "Start Zoom Meeting" */
   meetLabel: string;
+  meetPassword?: string | null;
   timeUntil: "24 hours" | "1 hour";
 }
 
@@ -43,6 +44,7 @@ export async function reminderHostTemplate(p: ReminderHostParams) {
       locationLabel: p.locationLabel,
       startMeetLink: p.startMeetLink,
       meetLabel: p.meetLabel,
+      meetPassword: p.meetPassword,
       timeUntil: p.timeUntil,
       dashboardUrl,
     })
@@ -56,7 +58,7 @@ Time (${p.hostTimezone}): ${startFormatted}
 Time (${p.inviteeTimezone}): ${inviteeTime}
 Location: ${p.locationLabel}
 ${p.startMeetLink ? `\n${p.meetLabel}: ${p.startMeetLink}` : ""}
-
+${p.startMeetLink && p.meetPassword ? `Meeting Password: ${p.meetPassword}\n` : ""}
 Manage your bookings: ${dashboardUrl}
 
 — Schduled`;
