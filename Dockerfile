@@ -11,6 +11,22 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 # tailwind, biome types, etc.)
 RUN pnpm install --frozen-lockfile
 
+# Next's standalone output-file-tracing only reliably captures files reached
+# via a static require()/import — sharp's native binding dlopen's its
+# libvips .so at runtime instead, which the tracer can't see, so it's
+# silently missing from `.next/standalone`'s pruned node_modules (observed in
+# production: "ERR_DLOPEN_FAILED: libvips-cpp.so... cannot open shared
+# object file"). This stage dereferences sharp's real files out of pnpm's
+# symlinked virtual store (`node_modules/sharp` -> `.pnpm/sharp@x.y.z/...`)
+# so they can be copied into the runner as plain files below.
+FROM node:22-bookworm-slim AS sharp-deps
+
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+RUN real_dir="$(dirname "$(readlink -f node_modules/sharp)")" \
+  && mkdir -p /sharp-runtime \
+  && cp -rL "$real_dir/." /sharp-runtime/
+
 FROM node:22-bookworm-slim AS builder
 
 WORKDIR /app
@@ -77,6 +93,11 @@ RUN groupadd --system --gid 1001 app \
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
+
+# Overwrite whatever (incomplete) sharp the standalone trace captured with
+# the fully-dereferenced real files from the sharp-deps stage above — see
+# the comment there for why the trace alone isn't reliable for sharp.
+COPY --from=sharp-deps /sharp-runtime/. ./node_modules/
 
 # Pre-create the uploads mount point (STORAGE_DRIVER=local, see
 # docker-compose.yml's `uploads` volume) owned by `app` before it exists.
