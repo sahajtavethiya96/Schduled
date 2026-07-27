@@ -94,9 +94,13 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
-# Overwrite whatever (incomplete) sharp the standalone trace captured with
-# the fully-dereferenced real files from the sharp-deps stage above — see
-# the comment there for why the trace alone isn't reliable for sharp.
+# The standalone trace leaves node_modules/sharp (and its native deps) as
+# symlinks into a pruned .pnpm store missing sharp's libvips .so — COPY can't
+# merge a real directory tree onto an existing symlink/file at the same
+# path ("cannot copy to non-directory"), so clear those exact entries first,
+# then overlay the fully-dereferenced real files from the sharp-deps stage
+# above (see the comment there for why the trace alone isn't reliable here).
+RUN rm -rf node_modules/sharp node_modules/@img node_modules/detect-libc node_modules/semver
 COPY --from=sharp-deps /sharp-runtime/. ./node_modules/
 
 # Pre-create the uploads mount point (STORAGE_DRIVER=local, see
