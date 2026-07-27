@@ -78,7 +78,13 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
-RUN chown -R app:app /app
+# Pre-create the uploads mount point (STORAGE_DRIVER=local, see
+# docker-compose.yml's `uploads` volume) owned by `app` before it exists.
+# Without this, /app/uploads doesn't exist in the image, so on first mount
+# Docker creates it as root:root — the non-root `app` user below then gets
+# EACCES on every upload, since chown -R below only ever touches what's
+# already in this layer, not a volume created fresh at container start.
+RUN mkdir -p uploads && chown -R app:app /app
 
 USER app
 
