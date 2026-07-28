@@ -3,7 +3,7 @@ import { formatInTimeZone } from "date-fns-tz";
 import { RescheduleRequestEmail } from "@/lib/email/components/reschedule-request";
 import { renderEmailTemplate } from "@/lib/email/renderer";
 import { getAppUrl } from "@/lib/get-app-url";
-import { PRODUCT_NAME } from "@/config/platform";
+import { getEmailBranding } from "@/lib/email/branding";
 
 const DATE_FMT = "EEEE, MMMM d, yyyy 'at' h:mm a";
 
@@ -20,6 +20,7 @@ interface RescheduleRequestParams {
 }
 
 export async function rescheduleRequestTemplate(p: RescheduleRequestParams) {
+  const branding = await getEmailBranding();
   const base = getAppUrl();
   const currentWhenHost = formatInTimeZone(p.currentStartUtc, p.hostTimezone, DATE_FMT);
   const requestedWhenHost = formatInTimeZone(p.requestedStartUtc, p.hostTimezone, DATE_FMT);
@@ -29,6 +30,7 @@ export async function rescheduleRequestTemplate(p: RescheduleRequestParams) {
   const html = await renderEmailTemplate(
     createElement(RescheduleRequestEmail, {
       approveUrl,
+      branding,
       currentWhenHost,
       eventName: p.eventName,
       hostName: p.hostName,
@@ -56,7 +58,7 @@ Review & Decline: ${reviewUrl}
 
 Rejecting keeps the current meeting exactly as it is.
 
-— ${PRODUCT_NAME}`;
+— ${branding.appName}`;
 
   return {
     html,

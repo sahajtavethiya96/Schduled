@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { formatInTimeZone } from "date-fns-tz";
 import { RescheduleDeclinedEmail } from "@/lib/email/components/reschedule-declined";
 import { renderEmailTemplate } from "@/lib/email/renderer";
-import { PRODUCT_NAME } from "@/config/platform";
+import { getEmailBranding } from "@/lib/email/branding";
 
 const DATE_FMT = "EEEE, MMMM d, yyyy 'at' h:mm a";
 
@@ -18,11 +18,13 @@ interface RescheduleDeclinedParams {
 }
 
 export async function rescheduleDeclinedTemplate(p: RescheduleDeclinedParams) {
+  const branding = await getEmailBranding();
   const whenHost = formatInTimeZone(p.originalStartUtc, p.hostTimezone, DATE_FMT);
   const whenInvitee = formatInTimeZone(p.originalStartUtc, p.inviteeTimezone, DATE_FMT);
 
   const html = await renderEmailTemplate(
     createElement(RescheduleDeclinedEmail, {
+      branding,
       eventName: p.eventName,
       hostName: p.hostName,
       hostTimezone: p.hostTimezone,
@@ -43,7 +45,7 @@ Your original meeting remains confirmed:
 Date & Time: ${whenInvitee} (${p.inviteeTimezone})
 Location: ${p.locationLabel}${p.reason ? `\n\nReason provided: ${p.reason}` : ""}
 
-— ${PRODUCT_NAME}`;
+— ${branding.appName}`;
 
   return {
     html,

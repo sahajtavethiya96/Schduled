@@ -1,6 +1,7 @@
 import { createElement } from "react";
 import { formatInTimeZone } from "date-fns-tz";
 import { ApprovalRequestEmail } from "@/lib/email/components/approval-request";
+import { getEmailBranding } from "@/lib/email/branding";
 import { renderEmailTemplate } from "@/lib/email/renderer";
 import { getAppUrl } from "@/lib/get-app-url";
 
@@ -18,6 +19,7 @@ interface ApprovalRequestParams {
 }
 
 export async function approvalRequestTemplate(p: ApprovalRequestParams) {
+  const branding = await getEmailBranding();
   const base = getAppUrl();
   const whenHost = formatInTimeZone(p.startUtc, p.hostTimezone, DATE_FMT);
   const reviewUrl = `${base}/booking/review/${p.approvalToken}`;
@@ -26,6 +28,7 @@ export async function approvalRequestTemplate(p: ApprovalRequestParams) {
   const html = await renderEmailTemplate(
     createElement(ApprovalRequestEmail, {
       approveUrl,
+      branding,
       eventName: p.eventName,
       hostName: p.hostName,
       hostTimezone: p.hostTimezone,
@@ -48,7 +51,7 @@ Location: ${p.locationLabel}
 Approve: ${approveUrl}
 Review & Decline: ${reviewUrl}
 
-— Schduled`;
+— ${branding.appName}`;
 
   return {
     html,

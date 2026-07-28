@@ -1,5 +1,5 @@
 import { createElement } from "react";
-import { PRODUCT_NAME } from "@/config/platform";
+import { getEmailBranding } from "@/lib/email/branding";
 import { ChangeEmailVerificationEmail } from "@/lib/email/components/change-email-verification";
 import { renderEmailTemplate } from "@/lib/email/renderer";
 
@@ -10,15 +10,17 @@ export async function changeEmailVerificationTemplate({
   newEmail: string;
   verificationUrl: string;
 }) {
+  const branding = await getEmailBranding();
+
   const html = await renderEmailTemplate(
     createElement(ChangeEmailVerificationEmail, {
       newEmail,
       verificationUrl,
-      productName: PRODUCT_NAME,
+      branding,
     })
   );
 
-  const text = `Confirm your new ${PRODUCT_NAME} email address
+  const text = `Confirm your new ${branding.appName} email address
 
 We received a request to change your account email to ${newEmail}.
 Use this link to confirm — your sign-in email won't change until you do:

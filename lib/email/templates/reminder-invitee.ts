@@ -2,6 +2,7 @@ import { createElement } from 'react'
 import { formatInTimeZone } from 'date-fns-tz'
 import { renderEmailTemplate } from '@/lib/email/renderer'
 import { ReminderInviteeEmail } from '@/lib/email/components/reminder-invitee'
+import { getEmailBranding } from '@/lib/email/branding'
 import { getAppUrl } from '@/lib/get-app-url'
 
 interface ReminderInviteeParams {
@@ -23,6 +24,7 @@ interface ReminderInviteeParams {
 const DATE_FMT = "EEEE, MMMM d, yyyy 'at' h:mm a"
 
 export async function reminderInviteeTemplate(p: ReminderInviteeParams) {
+  const branding = await getEmailBranding()
   const base = getAppUrl()
 
   const startFormatted = formatInTimeZone(p.startUtc, p.hostTimezone,    DATE_FMT)
@@ -33,6 +35,7 @@ export async function reminderInviteeTemplate(p: ReminderInviteeParams) {
 
   const html = await renderEmailTemplate(
     createElement(ReminderInviteeEmail, {
+      branding,
       inviteeName:     p.inviteeName,
       hostName:        p.hostName,
       eventName:       p.eventName,
@@ -62,7 +65,7 @@ ${p.meetLink && p.meetPassword ? `Meeting Password: ${p.meetPassword}\n` : ''}
 Reschedule: ${rescheduleUrl}
 Cancel: ${cancelUrl}
 
-— Schduled`
+— ${branding.appName}`
 
   return { html, text }
 }

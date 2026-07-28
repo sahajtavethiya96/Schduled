@@ -1,9 +1,10 @@
 import { Button, Hr, Link, Section, Text } from "react-email";
-import { getAppUrl } from "@/lib/get-app-url";
-import { EmailLayout, emailStyles } from "./layout";
+import { emailBranding, type EmailBranding } from "@/lib/email/branding";
+import { buildEmailStyles, EmailLayout } from "./layout";
 
 interface ApprovalRequestEmailProps {
   approveUrl: string;
+  branding?: EmailBranding;
   eventName: string;
   hostName: string;
   inviteeEmail: string;
@@ -16,6 +17,7 @@ interface ApprovalRequestEmailProps {
 
 export function ApprovalRequestEmail({
   approveUrl,
+  branding = emailBranding,
   eventName,
   hostName,
   inviteeEmail,
@@ -26,11 +28,10 @@ export function ApprovalRequestEmail({
   hostTimezone,
 }: ApprovalRequestEmailProps) {
   const amber = "#D97706";
-
-  const logoUrl = `${getAppUrl()}/email-logo.png`;
+  const emailStyles = buildEmailStyles(branding.brandColor);
 
   return (
-    <EmailLayout preview={`New booking request: ${eventName} with ${inviteeName}`} logoUrl={logoUrl}>
+    <EmailLayout preview={`New booking request: ${eventName} with ${inviteeName}`} productName={branding.appName} logoUrl={branding.logoUrl}>
       {/* Badge */}
       <Section style={{ marginBottom: "8px" }}>
         <Text
@@ -65,7 +66,7 @@ export function ApprovalRequestEmail({
         <DetailRow label="Event" value={eventName} />
         <DetailRow label="Requested by" value={`${inviteeName} (${inviteeEmail})`} />
         <DetailRow label="Date & Time" value={`${whenHost} (${hostTimezone})`} />
-        <DetailRow label="Location" value={locationLabel} href={locationLabel.startsWith('http') ? locationLabel : undefined} />
+        <DetailRow label="Location" value={locationLabel} href={locationLabel.startsWith('http') ? locationLabel : undefined} linkColor={branding.brandColor} />
       </Section>
 
       <Hr style={{ borderColor: "#E5E7EB", margin: "20px 0" }} />
@@ -76,7 +77,6 @@ export function ApprovalRequestEmail({
           href={approveUrl}
           style={{
             ...emailStyles.button,
-            backgroundColor: "#0D9488",
             marginBottom: "12px",
             marginRight: "12px",
           }}
@@ -105,12 +105,13 @@ export function ApprovalRequestEmail({
   );
 }
 
-function DetailRow({ label, value, href }: { label: string; value: string; href?: string }) {
+function DetailRow({ label, value, href, linkColor = emailBranding.brandColor }: { label: string; value: string; href?: string; linkColor?: string }) {
+  const emailStyles = buildEmailStyles(linkColor);
   return (
     <Section style={{ marginBottom: "8px" }}>
       <Text style={{ ...emailStyles.muted, margin: "0" }}>{label}</Text>
       {href ? (
-        <Link href={href} style={{ color: "#0D9488", fontSize: "14px", fontWeight: 600, display: "block", textDecoration: "underline" }}>
+        <Link href={href} style={{ color: linkColor, fontSize: "14px", fontWeight: 600, display: "block", textDecoration: "underline" }}>
           View Location
         </Link>
       ) : (

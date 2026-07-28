@@ -6,6 +6,7 @@ import {
   GoogleLogo,
   Key,
   LockKey,
+  Palette,
   ShieldCheck,
   Stack,
   VideoCamera,
@@ -15,14 +16,19 @@ import Link from 'next/link'
 import { PageHeader } from '@/components/scaffold/page-header'
 import { Card, CardContent } from '@/components/ui/card'
 import { requireAdmin } from '@/lib/authz'
+import { emailBranding } from '@/lib/email/branding'
 import { env } from '@/lib/env'
 import { getAppUrl } from '@/lib/get-app-url'
+import { getStoredBranding } from '@/lib/settings/branding'
 import { cn } from '@/lib/utils'
+import { BrandingEditor } from './_components/branding-editor'
 
 export const metadata = { title: 'System Status' }
 
 export default async function SettingsPlatformPage() {
   await requireAdmin()
+
+  const storedBranding = await getStoredBranding()
 
   const smtpConfigured      = !!(env.SMTP_HOST && env.SMTP_PORT && env.SMTP_USER)
   const googleConfigured    = !!(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET)
@@ -65,7 +71,8 @@ export default async function SettingsPlatformPage() {
           {warningCount > 0 && <StatChip label="Warnings" value={String(warningCount)} tone="warning" />}
         </div>
         <p className="text-sm text-muted-foreground">
-          This page is read-only. Configuration is managed through environment variables and integration settings.
+          Health, integrations, and security below are read-only — managed through environment
+          variables. Branding is editable here directly.
         </p>
       </div>
 
@@ -101,6 +108,21 @@ export default async function SettingsPlatformPage() {
             <ConfigRow label="Public Signup" value={allowPublicSignup ? 'Enabled' : 'Disabled'}   ok={allowPublicSignup} />
           </CardContent>
         </Card>
+      </Section>
+
+      <SectionDivider />
+
+      {/* ── Branding ── */}
+      <Section
+        icon={<Palette size={15} weight="bold" />}
+        title="Branding"
+        description="Customize the name, logo, and accent color shown in every email. Falls back to Schduled's defaults when unset."
+      >
+        <BrandingEditor
+          initial={storedBranding}
+          defaultAppName={emailBranding.appName}
+          defaultBrandColor={emailBranding.brandColor}
+        />
       </Section>
 
       <SectionDivider />

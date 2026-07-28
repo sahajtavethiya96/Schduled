@@ -10,7 +10,7 @@ import {
   Section,
   Text,
 } from "react-email";
-import { getAppUrl } from "@/lib/get-app-url";
+import { type EmailBranding, emailBranding } from "@/lib/email/branding";
 import { canonicalizeTz } from "@/lib/utils";
 
 export type BookingEmailVariant =
@@ -21,14 +21,15 @@ export type BookingEmailAudience = "invitee" | "host";
 
 export interface BookingEmailProps {
   audience: BookingEmailAudience;
+  branding?: EmailBranding;
   cancelUrl: string | null; // invitee only
   confirmationNote: string | null; // confirmation invitee only
   eventName: string;
   hostTimezone: string;
   inviteeTimezone: string;
   locationLabel: string;
-  locationUrl?: string | null;
   locationType: string; // e.g. "google_meet" | "zoom" | "phone_host_calls" | …
+  locationUrl?: string | null;
   meetLabel: string; // button text, e.g. "Join Google Meet" / "Join Zoom Meeting"
   meetLink: string | null;
   meetPassword?: string | null;
@@ -42,7 +43,6 @@ export interface BookingEmailProps {
   whenInvitee: string; // formatted in invitee tz
 }
 
-const teal = "#0D9488";
 const red = "#EF4444";
 const bg = "#F3F7F6";
 const white = "#ffffff";
@@ -50,11 +50,14 @@ const text1 = "#171717";
 const text2 = "#4B5563";
 const border = "#D1FAE5";
 
+// headerColor is "brand" for confirmation/reschedule (resolved against the
+// live branding at render time) or a fixed literal (cancellation stays red
+// regardless of brand color — it's a semantic/destructive state, not brand).
 const COPY: Record<
   BookingEmailVariant,
   {
     badge: string;
-    headerColor: string;
+    headerColor: "brand" | string;
     preview: (p: BookingEmailProps) => string;
     heading: (p: BookingEmailProps) => string;
     intro: (p: BookingEmailProps) => string;
@@ -62,7 +65,7 @@ const COPY: Record<
 > = {
   confirmation: {
     badge: "Booking confirmed",
-    headerColor: teal,
+    headerColor: "brand",
     preview: (p) => `Confirmed: ${p.eventName} with ${p.otherPartyName}`,
     heading: (p) => `Hi ${p.recipientName},`,
     intro: (p) =>
@@ -82,7 +85,7 @@ const COPY: Record<
   },
   reschedule: {
     badge: "Booking rescheduled",
-    headerColor: teal,
+    headerColor: "brand",
     preview: (p) => `Rescheduled: ${p.eventName} with ${p.otherPartyName}`,
     heading: (p) => `Hi ${p.recipientName},`,
     intro: (p) =>
@@ -93,7 +96,10 @@ const COPY: Record<
 };
 
 export function BookingEmail(props: BookingEmailProps) {
+  const branding = props.branding ?? emailBranding;
   const copy = COPY[props.variant];
+  const headerColor =
+    copy.headerColor === "brand" ? branding.brandColor : copy.headerColor;
   const showManage =
     props.variant !== "cancellation" &&
     props.audience === "invitee" &&
@@ -138,9 +144,33 @@ export function BookingEmail(props: BookingEmailProps) {
         >
           {/* Header */}
           <Section
-            style={{ backgroundColor: copy.headerColor, padding: "28px 32px" }}
+            style={{ backgroundColor: headerColor, padding: "28px 32px" }}
           >
-            <Img src={`${getAppUrl()}/email-logo-white.png`} width="132" height="28" alt="Schduled" style={{ display: 'block', marginBottom: '8px' }} />
+            {branding.logoUrlWhite ? (
+              <Img
+                alt={branding.appName}
+                height="36"
+                src={branding.logoUrlWhite}
+                style={{
+                  display: "block",
+                  marginBottom: "8px",
+                  height: "36px",
+                  maxWidth: "220px",
+                  width: "auto",
+                }}
+              />
+            ) : (
+              <Text
+                style={{
+                  color: white,
+                  fontSize: "18px",
+                  fontWeight: 800,
+                  margin: "0 0 8px",
+                }}
+              >
+                {branding.appName}
+              </Text>
+            )}
             <Text
               style={{
                 color: "rgba(255,255,255,0.9)",
@@ -191,13 +221,23 @@ export function BookingEmail(props: BookingEmailProps) {
                 label={`${props.variant === "reschedule" ? "New time" : "Time"} (${canonicalizeTz(props.hostTimezone)})`}
                 value={props.whenHost}
               />
-              {canonicalizeTz(props.inviteeTimezone) !== canonicalizeTz(props.hostTimezone) && (
+              {canonicalizeTz(props.inviteeTimezone) !==
+                canonicalizeTz(props.hostTimezone) && (
                 <Row
                   label={`Time (${canonicalizeTz(props.inviteeTimezone)})`}
                   value={props.whenInvitee}
                 />
               )}
-              <Row label="Location" value={props.locationLabel} href={props.locationLabel.startsWith('http') ? props.locationLabel : undefined} />
+              <Row
+                href={
+                  props.locationLabel.startsWith("http")
+                    ? props.locationLabel
+                    : undefined
+                }
+                label="Location"
+                linkColor={branding.brandColor}
+                value={props.locationLabel}
+              />
               {props.variant === "cancellation" && props.reason && (
                 <Row label="Reason" value={props.reason} />
               )}
@@ -213,7 +253,14 @@ export function BookingEmail(props: BookingEmailProps) {
                   marginBottom: "24px",
                 }}
               >
-                <Text style={{ color: "#166534", fontSize: "13px", margin: 0, lineHeight: "1.6" }}>
+                <Text
+                  style={{
+                    color: "#166534",
+                    fontSize: "13px",
+                    margin: 0,
+                    lineHeight: "1.6",
+                  }}
+                >
                   {props.confirmationNote}
                 </Text>
               </Section>
@@ -225,7 +272,7 @@ export function BookingEmail(props: BookingEmailProps) {
                 <a
                   href={props.meetLink!}
                   style={{
-                    backgroundColor: teal,
+                    backgroundColor: branding.brandColor,
                     color: white,
                     display: "inline-block",
                     fontSize: "15px",
@@ -252,7 +299,14 @@ export function BookingEmail(props: BookingEmailProps) {
                 >
                   Meeting Password
                 </Text>
-                <Text style={{ color: text1, fontSize: "16px", fontWeight: 700, margin: 0 }}>
+                <Text
+                  style={{
+                    color: text1,
+                    fontSize: "16px",
+                    fontWeight: 700,
+                    margin: 0,
+                  }}
+                >
                   {props.meetPassword}
                 </Text>
               </Section>
@@ -270,7 +324,14 @@ export function BookingEmail(props: BookingEmailProps) {
                   marginBottom: "24px",
                 }}
               >
-                <Text style={{ color: "#92400E", fontSize: "13px", margin: 0, lineHeight: "1.6" }}>
+                <Text
+                  style={{
+                    color: "#92400E",
+                    fontSize: "13px",
+                    margin: 0,
+                    lineHeight: "1.6",
+                  }}
+                >
                   {props.audience === "host"
                     ? `⚠ No ${providerName} link was generated for this meeting. Connect ${providerName} in Settings → Integrations so links are created automatically, then share the link with your invitee.`
                     : `The ${providerName} link isn't ready yet — ${props.otherPartyName} will share it with you before the meeting.`}
@@ -291,7 +352,10 @@ export function BookingEmail(props: BookingEmailProps) {
                   {props.rescheduleUrl && (
                     <a
                       href={props.rescheduleUrl}
-                      style={{ color: teal, marginRight: "16px" }}
+                      style={{
+                        color: branding.brandColor,
+                        marginRight: "16px",
+                      }}
                     >
                       Reschedule
                     </a>
@@ -322,7 +386,7 @@ export function BookingEmail(props: BookingEmailProps) {
                 textAlign: "center",
               }}
             >
-              © Schduled
+              © {branding.appName}
             </Text>
           </Section>
         </Container>
@@ -336,11 +400,13 @@ function Row({
   value,
   strike,
   href,
+  linkColor = emailBranding.brandColor,
 }: {
   label: string;
   value: string;
   strike?: boolean;
   href?: string;
+  linkColor?: string;
 }) {
   return (
     <Section style={{ marginBottom: "8px" }}>
@@ -359,7 +425,7 @@ function Row({
         <Link
           href={href}
           style={{
-            color: teal,
+            color: linkColor,
             fontSize: "14px",
             fontWeight: 600,
             display: "block",

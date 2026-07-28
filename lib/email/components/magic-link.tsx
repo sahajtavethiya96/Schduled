@@ -1,25 +1,20 @@
 import { Button, Link, Section, Text } from "react-email";
-import { PRODUCT_NAME } from "@/config/platform";
-import { getAppUrl } from "@/lib/get-app-url";
-import { EmailLayout, emailStyles } from "@/lib/email/components/layout";
+import { emailBranding, type EmailBranding } from "@/lib/email/branding";
+import { buildEmailStyles, EmailLayout } from "@/lib/email/components/layout";
 
 export function MagicLinkEmail({
   email,
   magicLinkUrl,
-  productName = PRODUCT_NAME,
+  branding = emailBranding,
 }: {
   email: string;
   magicLinkUrl: string;
-  productName?: string;
+  branding?: EmailBranding;
 }) {
-  const logoUrl = `${getAppUrl()}/email-logo.png`;
-
+  const productName = branding.appName;
+  const emailStyles = buildEmailStyles(branding.brandColor);
   return (
-    <EmailLayout
-      preview={`Sign in to ${productName}`}
-      productName={productName}
-      logoUrl={logoUrl}
-    >
+    <EmailLayout preview={`Sign in to ${productName}`} productName={productName} logoUrl={branding.logoUrl}>
       <Text style={emailStyles.heading}>Sign in to {productName}</Text>
       <Text style={emailStyles.paragraph}>
         Use the button below to sign in as{" "}

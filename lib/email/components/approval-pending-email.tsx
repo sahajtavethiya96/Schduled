@@ -1,9 +1,10 @@
 import { Hr, Link, Section, Text } from "react-email";
-import { getAppUrl } from "@/lib/get-app-url";
+import { emailBranding, type EmailBranding } from "@/lib/email/branding";
 import { canonicalizeTz } from "@/lib/utils";
-import { EmailLayout, emailStyles } from "./layout";
+import { buildEmailStyles, EmailLayout } from "./layout";
 
 interface ApprovalPendingEmailProps {
+  branding?: EmailBranding;
   cancelUrl: string;
   eventName: string;
   hostName: string;
@@ -19,6 +20,7 @@ const amber = "#D97706";
 const amberBg = "#FEF3C7";
 
 export function ApprovalPendingEmail({
+  branding = emailBranding,
   cancelUrl,
   eventName,
   hostName,
@@ -29,10 +31,9 @@ export function ApprovalPendingEmail({
   whenHost,
   whenInvitee,
 }: ApprovalPendingEmailProps) {
-  const logoUrl = `${getAppUrl()}/email-logo.png`;
-
+  const emailStyles = buildEmailStyles(branding.brandColor);
   return (
-    <EmailLayout logoUrl={logoUrl} preview={`Request received: ${eventName} with ${hostName}`}>
+    <EmailLayout preview={`Request received: ${eventName} with ${hostName}`} productName={branding.appName} logoUrl={branding.logoUrl}>
       <Section style={{ marginBottom: "8px" }}>
         <Text
           style={{
@@ -69,7 +70,7 @@ export function ApprovalPendingEmail({
         {canonicalizeTz(inviteeTimezone) !== canonicalizeTz(hostTimezone) && (
           <DetailRow label={`Date & Time (${canonicalizeTz(inviteeTimezone)})`} value={whenInvitee} />
         )}
-        <DetailRow label="Location" value={locationLabel} href={locationLabel.startsWith('http') ? locationLabel : undefined} />
+        <DetailRow label="Location" value={locationLabel} href={locationLabel.startsWith('http') ? locationLabel : undefined} linkColor={branding.brandColor} />
         <DetailRow label="Status" value="Awaiting host approval" />
       </Section>
 
@@ -85,12 +86,13 @@ export function ApprovalPendingEmail({
   );
 }
 
-function DetailRow({ label, value, href }: { label: string; value: string; href?: string }) {
+function DetailRow({ label, value, href, linkColor = emailBranding.brandColor }: { label: string; value: string; href?: string; linkColor?: string }) {
+  const emailStyles = buildEmailStyles(linkColor);
   return (
     <Section style={{ marginBottom: "8px" }}>
       <Text style={{ ...emailStyles.muted, margin: "0" }}>{label}</Text>
       {href ? (
-        <Link href={href} style={{ color: "#0D9488", fontSize: "14px", fontWeight: 600, display: "block", textDecoration: "underline" }}>
+        <Link href={href} style={{ color: linkColor, fontSize: "14px", fontWeight: 600, display: "block", textDecoration: "underline" }}>
           View Location
         </Link>
       ) : (

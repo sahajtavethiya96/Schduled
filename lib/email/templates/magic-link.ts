@@ -1,5 +1,5 @@
 import { createElement } from "react";
-import { PRODUCT_NAME } from "@/config/platform";
+import { getEmailBranding } from "@/lib/email/branding";
 import { MagicLinkEmail } from "@/lib/email/components/magic-link";
 import { renderEmailTemplate } from "@/lib/email/renderer";
 
@@ -10,15 +10,17 @@ export async function magicLinkTemplate({
   email: string;
   magicLinkUrl: string;
 }) {
+  const branding = await getEmailBranding();
+
   const html = await renderEmailTemplate(
     createElement(MagicLinkEmail, {
       email,
       magicLinkUrl,
-      productName: PRODUCT_NAME,
+      branding,
     })
   );
 
-  const text = `Sign in to ${PRODUCT_NAME}
+  const text = `Sign in to ${branding.appName}
 
 Use this link to sign in as ${email}:
 ${magicLinkUrl}

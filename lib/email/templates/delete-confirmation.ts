@@ -1,5 +1,5 @@
 import { createElement } from "react";
-import { PRODUCT_NAME } from "@/config/platform";
+import { getEmailBranding } from "@/lib/email/branding";
 import { DeleteConfirmationEmail } from "@/lib/email/components/delete-confirmation";
 import { renderEmailTemplate } from "@/lib/email/renderer";
 
@@ -10,15 +10,17 @@ export async function deleteConfirmationTemplate({
   code: string;
   email: string;
 }) {
+  const branding = await getEmailBranding();
+
   const html = await renderEmailTemplate(
     createElement(DeleteConfirmationEmail, {
       code,
       email,
-      productName: PRODUCT_NAME,
+      branding,
     })
   );
 
-  const text = `Confirm account deletion — ${PRODUCT_NAME}
+  const text = `Confirm account deletion — ${branding.appName}
 
 Your confirmation code is: ${code}
 

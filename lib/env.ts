@@ -109,6 +109,14 @@ const envSchema = z.object({
   NEXT_PUBLIC_CONTACT_EMAIL: z.string().min(1).default("support@schduled.com"),
   PRIVACY_EMAIL: z.string().min(1).default("privacy@schduled.com"),
 
+  // Email-specific branding overrides (see lib/email/branding.ts) — all
+  // optional. Unset means "use the built-in Schduled default" for the logo
+  // and color; the support address has no default at all (omitted from
+  // footers entirely unless set).
+  NEXT_PUBLIC_LOGO_URL: optionalString,
+  NEXT_PUBLIC_EMAIL_BRAND_COLOR: optionalString,
+  NEXT_PUBLIC_EMAIL_SUPPORT_ADDRESS: optionalString,
+
   // Google OAuth + Calendar API
   GOOGLE_CLIENT_ID: optionalString,
   GOOGLE_CLIENT_SECRET: optionalString,
