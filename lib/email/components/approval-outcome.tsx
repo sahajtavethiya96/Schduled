@@ -1,10 +1,11 @@
 import { Button, Hr, Link, Section, Text } from "react-email";
-import { getAppUrl } from "@/lib/get-app-url";
+import { emailBranding, type EmailBranding } from "@/lib/email/branding";
 import { canonicalizeTz } from "@/lib/utils";
-import { EmailLayout, emailStyles } from "./layout";
+import { buildEmailStyles, EmailLayout } from "./layout";
 
 interface ApprovalOutcomeEmailProps {
   approved: boolean;
+  branding?: EmailBranding;
   cancelUrl?: string | null;
   confirmationNote?: string | null;
   eventName: string;
@@ -23,11 +24,11 @@ interface ApprovalOutcomeEmailProps {
   inviteeTimezone: string;
 }
 
-const teal = "#0D9488";
 const red = "#EF4444";
 
 export function ApprovalOutcomeEmail({
   approved,
+  branding = emailBranding,
   cancelUrl,
   confirmationNote,
   eventName,
@@ -45,6 +46,8 @@ export function ApprovalOutcomeEmail({
   hostTimezone,
   inviteeTimezone,
 }: ApprovalOutcomeEmailProps) {
+  const teal = branding.brandColor;
+  const emailStyles = buildEmailStyles(teal);
   const badgeColor = approved ? teal : red;
   const badgeBg = approved ? "#CCFBF1" : "#FEE2E2";
   const badgeText = approved ? "Booking Confirmed" : "Booking Declined";
@@ -58,15 +61,15 @@ export function ApprovalOutcomeEmail({
         : locationType === "teams"
           ? "Microsoft Teams"
           : "video";
-  const logoUrl = `${getAppUrl()}/email-logo.png`;
-
   return (
-    <EmailLayout logoUrl={logoUrl}
+    <EmailLayout
       preview={
         approved
           ? `Confirmed: ${eventName} with ${hostName}`
           : `Declined: ${eventName} with ${hostName}`
       }
+      productName={branding.appName}
+      logoUrl={branding.logoUrl}
     >
       {/* Badge */}
       <Section style={{ marginBottom: "8px" }}>
@@ -126,7 +129,7 @@ export function ApprovalOutcomeEmail({
         {canonicalizeTz(inviteeTimezone) !== canonicalizeTz(hostTimezone) && (
           <DetailRow label={`Date & Time (${canonicalizeTz(inviteeTimezone)})`} value={whenInvitee} />
         )}
-        <DetailRow label="Location" value={locationLabel} href={locationLabel.startsWith('http') ? locationLabel : undefined} />
+        <DetailRow label="Location" value={locationLabel} href={locationLabel.startsWith('http') ? locationLabel : undefined} linkColor={teal} />
       </Section>
 
       {approved && confirmationNote && (
@@ -218,12 +221,13 @@ export function ApprovalOutcomeEmail({
   );
 }
 
-function DetailRow({ label, value, href }: { label: string; value: string; href?: string }) {
+function DetailRow({ label, value, href, linkColor = emailBranding.brandColor }: { label: string; value: string; href?: string; linkColor?: string }) {
+  const emailStyles = buildEmailStyles(linkColor);
   return (
     <Section style={{ marginBottom: "8px" }}>
       <Text style={{ ...emailStyles.muted, margin: "0" }}>{label}</Text>
       {href ? (
-        <Link href={href} style={{ color: "#0D9488", fontSize: "14px", fontWeight: 600, display: "block", textDecoration: "underline" }}>
+        <Link href={href} style={{ color: linkColor, fontSize: "14px", fontWeight: 600, display: "block", textDecoration: "underline" }}>
           View Location
         </Link>
       ) : (

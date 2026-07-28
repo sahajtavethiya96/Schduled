@@ -2,6 +2,7 @@ import { createElement } from "react";
 import { formatInTimeZone } from "date-fns-tz";
 import { renderEmailTemplate } from "@/lib/email/renderer";
 import { ReminderHostEmail } from "@/lib/email/components/reminder-host";
+import { getEmailBranding } from "@/lib/email/branding";
 import { getAppUrl } from "@/lib/get-app-url";
 
 interface ReminderHostParams {
@@ -23,6 +24,7 @@ interface ReminderHostParams {
 const DATE_FMT = "EEEE, MMMM d, yyyy 'at' h:mm a";
 
 export async function reminderHostTemplate(p: ReminderHostParams) {
+  const branding = await getEmailBranding();
   const dashboardUrl = `${getAppUrl()}/dashboard`;
 
   const startFormatted = formatInTimeZone(p.startUtc, p.hostTimezone, DATE_FMT);
@@ -34,6 +36,7 @@ export async function reminderHostTemplate(p: ReminderHostParams) {
 
   const html = await renderEmailTemplate(
     createElement(ReminderHostEmail, {
+      branding,
       hostName: p.hostName,
       inviteeName: p.inviteeName,
       eventName: p.eventName,
@@ -61,7 +64,7 @@ ${p.startMeetLink ? `\n${p.meetLabel}: ${p.startMeetLink}` : ""}
 ${p.startMeetLink && p.meetPassword ? `Meeting Password: ${p.meetPassword}\n` : ""}
 Manage your bookings: ${dashboardUrl}
 
-— Schduled`;
+— ${branding.appName}`;
 
   return { html, text };
 }

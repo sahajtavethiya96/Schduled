@@ -9,6 +9,11 @@ import {
   setSignInMethods,
   signInMethodAvailability,
 } from "@/lib/settings/sign-in-methods";
+import {
+  type StoredBranding,
+  getStoredBranding,
+  setStoredBranding,
+} from "@/lib/settings/branding";
 
 type ActionResult = { error: string } | { ok: true };
 
@@ -48,6 +53,36 @@ export async function updateSignInMethodsAction(
     description: `Sign-in methods updated — password: ${nextStored.password}, magic link: ${nextStored.magicLink}, Google: ${nextStored.google}`,
     entityType: "setting",
     metadata: { previous, next: nextStored },
+  });
+
+  revalidatePath("/settings/platform");
+  return { ok: true };
+}
+
+const HEX_COLOR = /^#[0-9a-fA-F]{6}$/;
+
+export async function updateBrandingAction(
+  next: StoredBranding
+): Promise<ActionResult> {
+  const admin = await requireAdmin();
+
+  if (next.brandColor && !HEX_COLOR.test(next.brandColor)) {
+    return { error: "Brand color must be a hex value like #0D9488." };
+  }
+  if (next.supportEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(next.supportEmail)) {
+    return { error: "Support email address doesn't look valid." };
+  }
+
+  const previous = await getStoredBranding();
+  await setStoredBranding(next);
+
+  await audit({
+    action: "settings.branding_updated",
+    actorEmail: admin.user.email,
+    actorId: admin.user.id,
+    description: `Email branding updated — app name: ${next.appName || "(default)"}`,
+    entityType: "setting",
+    metadata: { previous, next },
   });
 
   revalidatePath("/settings/platform");

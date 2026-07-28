@@ -1,24 +1,23 @@
 import { Button, Link, Section, Text } from "react-email";
-import { PRODUCT_NAME } from "@/config/platform";
-import { getAppUrl } from "@/lib/get-app-url";
-import { EmailLayout, emailStyles } from "@/lib/email/components/layout";
+import { emailBranding, type EmailBranding } from "@/lib/email/branding";
+import { buildEmailStyles, EmailLayout } from "@/lib/email/components/layout";
 
 export function ResetPasswordEmail({
   email,
   resetUrl,
-  productName = PRODUCT_NAME,
+  branding = emailBranding,
 }: {
   email: string;
   resetUrl: string;
-  productName?: string;
+  branding?: EmailBranding;
 }) {
-  const logoUrl = `${getAppUrl()}/email-logo.png`;
-
+  const productName = branding.appName;
+  const emailStyles = buildEmailStyles(branding.brandColor);
   return (
     <EmailLayout
       preview={`Reset your ${productName} password`}
       productName={productName}
-      logoUrl={logoUrl}
+      logoUrl={branding.logoUrl}
     >
       <Text style={emailStyles.heading}>Reset your password</Text>
       <Text style={emailStyles.paragraph}>

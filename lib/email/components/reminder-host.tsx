@@ -10,26 +10,26 @@ import {
   Section,
   Text,
 } from "react-email";
-import { getAppUrl } from "@/lib/get-app-url";
+import { type EmailBranding, emailBranding } from "@/lib/email/branding";
 import { canonicalizeTz } from "@/lib/utils";
 
 interface Props {
-  hostName: string;
-  inviteeName: string;
+  branding?: EmailBranding;
+  dashboardUrl: string;
   eventName: string;
-  startFormatted: string; // e.g. "Monday, June 17, 2026 at 3:00 PM"
+  hostName: string;
   hostTimezone: string;
+  inviteeName: string;
   inviteeTime: string; // same meeting time in invitee tz
   inviteeTimezone: string;
   locationLabel: string;
-  startMeetLink: string | null; // Zoom start URL or Google Meet link
   meetLabel: string; // "Start Google Meet" | "Start Zoom Meeting"
   meetPassword?: string | null;
+  startFormatted: string; // e.g. "Monday, June 17, 2026 at 3:00 PM"
+  startMeetLink: string | null; // Zoom start URL or Google Meet link
   timeUntil: string; // "24 hours" | "1 hour"
-  dashboardUrl: string;
 }
 
-const teal = "#0D9488";
 const bg = "#F3F7F6";
 const white = "#ffffff";
 const text1 = "#171717";
@@ -40,6 +40,7 @@ const amberBorder = "#FDE68A";
 const amberText = "#92400E";
 
 export function ReminderHostEmail({
+  branding = emailBranding,
   hostName,
   inviteeName,
   eventName,
@@ -54,6 +55,7 @@ export function ReminderHostEmail({
   timeUntil,
   dashboardUrl,
 }: Props) {
+  const teal = branding.brandColor;
   return (
     <Html>
       <Head />
@@ -77,7 +79,31 @@ export function ReminderHostEmail({
         >
           {/* Teal header */}
           <Section style={{ backgroundColor: teal, padding: "28px 32px" }}>
-            <Img src={`${getAppUrl()}/email-logo-white.png`} width="132" height="28" alt="Schduled" style={{ display: 'block', marginBottom: '8px' }} />
+            {branding.logoUrlWhite ? (
+              <Img
+                alt={branding.appName}
+                height="36"
+                src={branding.logoUrlWhite}
+                style={{
+                  display: "block",
+                  marginBottom: "8px",
+                  height: "36px",
+                  maxWidth: "220px",
+                  width: "auto",
+                }}
+              />
+            ) : (
+              <Text
+                style={{
+                  color: white,
+                  fontSize: "18px",
+                  fontWeight: 800,
+                  margin: "0 0 8px",
+                }}
+              >
+                {branding.appName}
+              </Text>
+            )}
             <Text
               style={{
                 color: "rgba(255,255,255,0.85)",
@@ -104,10 +130,8 @@ export function ReminderHostEmail({
             <Text
               style={{ color: text2, fontSize: "15px", margin: "0 0 24px" }}
             >
-              You have an upcoming{" "}
-              <strong>{eventName}</strong> with{" "}
-              <strong>{inviteeName}</strong> in{" "}
-              <strong>{timeUntil}</strong>.
+              You have an upcoming <strong>{eventName}</strong> with{" "}
+              <strong>{inviteeName}</strong> in <strong>{timeUntil}</strong>.
             </Text>
 
             {/* Amber heads-up banner */}
@@ -146,20 +170,26 @@ export function ReminderHostEmail({
                 label={`Time (${canonicalizeTz(hostTimezone)})`}
                 value={startFormatted}
               />
-              {canonicalizeTz(inviteeTimezone) !== canonicalizeTz(hostTimezone) && (
+              {canonicalizeTz(inviteeTimezone) !==
+                canonicalizeTz(hostTimezone) && (
                 <Row
                   label={`Time (${canonicalizeTz(inviteeTimezone)})`}
                   value={inviteeTime}
                 />
               )}
-              <Row label="Location" value={locationLabel} href={locationLabel.startsWith('http') ? locationLabel : undefined} />
+              <Row
+                href={
+                  locationLabel.startsWith("http") ? locationLabel : undefined
+                }
+                label="Location"
+                linkColor={teal}
+                value={locationLabel}
+              />
             </Section>
 
             {/* Start meeting button */}
             {startMeetLink && (
-              <Section
-                style={{ textAlign: "center", marginBottom: "24px" }}
-              >
+              <Section style={{ textAlign: "center", marginBottom: "24px" }}>
                 <a
                   href={startMeetLink}
                   style={{
@@ -190,7 +220,14 @@ export function ReminderHostEmail({
                 >
                   Meeting Password
                 </Text>
-                <Text style={{ color: text1, fontSize: "16px", fontWeight: 700, margin: 0 }}>
+                <Text
+                  style={{
+                    color: text1,
+                    fontSize: "16px",
+                    fontWeight: 700,
+                    margin: 0,
+                  }}
+                >
                   {meetPassword}
                 </Text>
               </Section>
@@ -198,15 +235,10 @@ export function ReminderHostEmail({
 
             <Hr style={{ borderColor: border, margin: "24px 0" }} />
 
-            <Text
-              style={{ color: text2, fontSize: "13px", margin: 0 }}
-            >
+            <Text style={{ color: text2, fontSize: "13px", margin: 0 }}>
               This reminder was sent because you have an event scheduled on{" "}
-              <strong>Schduled</strong>. Manage your events at{" "}
-              <a
-                href={dashboardUrl}
-                style={{ color: teal }}
-              >
+              <strong>{branding.appName}</strong>. Manage your events at{" "}
+              <a href={dashboardUrl} style={{ color: teal }}>
                 your dashboard
               </a>
               .
@@ -229,7 +261,7 @@ export function ReminderHostEmail({
                 textAlign: "center",
               }}
             >
-              © Schduled
+              © {branding.appName}
             </Text>
           </Section>
         </Container>
@@ -238,7 +270,17 @@ export function ReminderHostEmail({
   );
 }
 
-function Row({ label, value, href }: { label: string; value: string; href?: string }) {
+function Row({
+  label,
+  value,
+  href,
+  linkColor = emailBranding.brandColor,
+}: {
+  label: string;
+  value: string;
+  href?: string;
+  linkColor?: string;
+}) {
   return (
     <Section style={{ marginBottom: "8px" }}>
       <Text
@@ -253,11 +295,27 @@ function Row({ label, value, href }: { label: string; value: string; href?: stri
         {label}
       </Text>
       {href ? (
-        <Link href={href} style={{ color: "#0D9488", fontSize: "14px", fontWeight: 600, display: "block", textDecoration: "underline" }}>
+        <Link
+          href={href}
+          style={{
+            color: linkColor,
+            fontSize: "14px",
+            fontWeight: 600,
+            display: "block",
+            textDecoration: "underline",
+          }}
+        >
           View Location
         </Link>
       ) : (
-        <Text style={{ color: "#111827", fontSize: "14px", fontWeight: 600, margin: 0 }}>
+        <Text
+          style={{
+            color: "#111827",
+            fontSize: "14px",
+            fontWeight: 600,
+            margin: 0,
+          }}
+        >
           {value}
         </Text>
       )}

@@ -1,9 +1,10 @@
 import { Hr, Link, Section, Text } from "react-email";
-import { getAppUrl } from "@/lib/get-app-url";
+import { emailBranding, type EmailBranding } from "@/lib/email/branding";
 import { canonicalizeTz } from "@/lib/utils";
-import { EmailLayout, emailStyles } from "./layout";
+import { buildEmailStyles, EmailLayout } from "./layout";
 
 interface RescheduleDeclinedEmailProps {
+  branding?: EmailBranding;
   eventName: string;
   hostName: string;
   hostTimezone: string;
@@ -16,9 +17,9 @@ interface RescheduleDeclinedEmailProps {
 }
 
 const red = "#EF4444";
-const teal = "#0D9488";
 
 export function RescheduleDeclinedEmail({
+  branding = emailBranding,
   eventName,
   hostName,
   hostTimezone,
@@ -29,10 +30,10 @@ export function RescheduleDeclinedEmail({
   whenHost,
   whenInvitee,
 }: RescheduleDeclinedEmailProps) {
-  const logoUrl = `${getAppUrl()}/email-logo.png`;
-
+  const teal = branding.brandColor;
+  const emailStyles = buildEmailStyles(teal);
   return (
-    <EmailLayout preview={`Reschedule declined — your ${eventName} is still confirmed`} logoUrl={logoUrl}>
+    <EmailLayout preview={`Reschedule declined — your ${eventName} is still confirmed`} productName={branding.appName} logoUrl={branding.logoUrl}>
       {/* Badge */}
       <Section style={{ marginBottom: "8px" }}>
         <Text
@@ -101,7 +102,7 @@ export function RescheduleDeclinedEmail({
         {canonicalizeTz(inviteeTimezone) !== canonicalizeTz(hostTimezone) && (
           <DetailRow label={`Date & Time (${canonicalizeTz(inviteeTimezone)})`} value={whenInvitee} />
         )}
-        <DetailRow label="Location" value={locationLabel} href={locationLabel.startsWith("http") ? locationLabel : undefined} />
+        <DetailRow label="Location" value={locationLabel} href={locationLabel.startsWith("http") ? locationLabel : undefined} linkColor={teal} />
       </Section>
 
       <Text style={{ ...emailStyles.muted, textAlign: "center" as const, marginTop: "16px" }}>
@@ -111,12 +112,13 @@ export function RescheduleDeclinedEmail({
   );
 }
 
-function DetailRow({ label, value, href }: { label: string; value: string; href?: string }) {
+function DetailRow({ label, value, href, linkColor = emailBranding.brandColor }: { label: string; value: string; href?: string; linkColor?: string }) {
+  const emailStyles = buildEmailStyles(linkColor);
   return (
     <Section style={{ marginBottom: "8px" }}>
       <Text style={{ ...emailStyles.muted, margin: "0" }}>{label}</Text>
       {href ? (
-        <Link href={href} style={{ color: teal, fontSize: "14px", fontWeight: 600, display: "block", textDecoration: "underline" }}>
+        <Link href={href} style={{ color: linkColor, fontSize: "14px", fontWeight: 600, display: "block", textDecoration: "underline" }}>
           View Location
         </Link>
       ) : (

@@ -1,6 +1,7 @@
 import { createElement } from "react";
 import { formatInTimeZone } from "date-fns-tz";
 import { ApprovalOutcomeEmail } from "@/lib/email/components/approval-outcome";
+import { getEmailBranding } from "@/lib/email/branding";
 import { renderEmailTemplate } from "@/lib/email/renderer";
 import { env } from "@/lib/env";
 
@@ -18,12 +19,14 @@ interface ApprovalRejectedParams {
 }
 
 export async function approvalRejectedTemplate(p: ApprovalRejectedParams) {
+  const branding = await getEmailBranding();
   const whenHost = formatInTimeZone(p.startUtc, p.hostTimezone, DATE_FMT);
   const whenInvitee = formatInTimeZone(p.startUtc, p.inviteeTimezone, DATE_FMT);
 
   const html = await renderEmailTemplate(
     createElement(ApprovalOutcomeEmail, {
       approved: false,
+      branding,
       eventName: p.eventName,
       hostName: p.hostName,
       hostTimezone: p.hostTimezone,
@@ -44,7 +47,7 @@ Date & Time (${p.hostTimezone}): ${whenHost}
 
 Please reach out to ${p.hostName} directly if you have any questions.
 
-— Schduled`;
+— ${branding.appName}`;
 
   return {
     html,

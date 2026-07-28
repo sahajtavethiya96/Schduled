@@ -1,6 +1,7 @@
 import { createElement } from "react";
 import { formatInTimeZone } from "date-fns-tz";
 import { ApprovalOutcomeEmail } from "@/lib/email/components/approval-outcome";
+import { getEmailBranding } from "@/lib/email/branding";
 import { renderEmailTemplate } from "@/lib/email/renderer";
 import { getAppUrl } from "@/lib/get-app-url";
 
@@ -24,6 +25,7 @@ interface ApprovalApprovedParams {
 }
 
 export async function approvalApprovedTemplate(p: ApprovalApprovedParams) {
+  const branding = await getEmailBranding();
   const base = getAppUrl();
   const whenHost = formatInTimeZone(p.startUtc, p.hostTimezone, DATE_FMT);
   const whenInvitee = formatInTimeZone(p.startUtc, p.inviteeTimezone, DATE_FMT);
@@ -33,6 +35,7 @@ export async function approvalApprovedTemplate(p: ApprovalApprovedParams) {
   const html = await renderEmailTemplate(
     createElement(ApprovalOutcomeEmail, {
       approved: true,
+      branding,
       cancelUrl,
       confirmationNote: p.confirmationNote ?? null,
       eventName: p.eventName,
@@ -62,7 +65,7 @@ ${p.meetLink && p.meetPassword ? `Meeting Password: ${p.meetPassword}\n` : ""}
 Reschedule: ${rescheduleUrl}
 Cancel: ${cancelUrl}
 
-— Schduled`;
+— ${branding.appName}`;
 
   return {
     html,

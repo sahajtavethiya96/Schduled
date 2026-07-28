@@ -5,6 +5,7 @@ import {
   type BookingEmailAudience,
   type BookingEmailVariant,
 } from "@/lib/email/components/booking-email";
+import { getEmailBranding } from "@/lib/email/branding";
 import { renderEmailTemplate } from "@/lib/email/renderer";
 import { getAppUrl } from "@/lib/get-app-url";
 
@@ -38,6 +39,7 @@ const VERB: Record<BookingEmailVariant, string> = {
 };
 
 export async function bookingEmail(p: BookingEmailInput) {
+  const branding = await getEmailBranding();
   const base = getAppUrl();
 
   const whenHost = formatInTimeZone(p.startUtc, p.hostTimezone, DATE_FMT);
@@ -57,6 +59,7 @@ export async function bookingEmail(p: BookingEmailInput) {
     createElement(BookingEmail, {
       variant: p.variant,
       audience: p.audience,
+      branding,
       recipientName: p.recipientName,
       otherPartyName: p.otherPartyName,
       eventName: p.eventName,
@@ -97,7 +100,7 @@ export async function bookingEmail(p: BookingEmailInput) {
       ? `\nReschedule: ${rescheduleUrl}\nCancel: ${cancelUrl}`
       : "",
     "",
-    "— Schduled",
+    `— ${branding.appName}`,
   ].filter((l) => l !== "");
 
   const subjectMap: Record<BookingEmailVariant, string> = {
