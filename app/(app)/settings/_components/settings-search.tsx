@@ -22,6 +22,7 @@ const WORKSPACE_ENTRIES: SearchEntry[] = [
 // note in settings-nav.tsx. Re-add once teams/invites ship.
 const ADMIN_ENTRIES: SearchEntry[] = [
   { href: "/settings/authentication", label: "Authentication", group: "Platform", keywords: "sign in login password magic link google oauth auth" },
+  { href: "/settings/branding",       label: "Branding", group: "Platform", keywords: "branding logo name color email white label white-label" },
   { href: "/settings/platform",       label: "System Status", group: "Platform", keywords: "smtp email health integrations security general environment app secret encryption zoom database" },
   { href: "/settings/audit",          label: "Audit Logs",      group: "Administration", keywords: "audit logs history activity timeline" },
   { href: "/settings/jobs",           label: "Background Jobs", group: "Administration", keywords: "jobs queue email outbox background pg-boss" },

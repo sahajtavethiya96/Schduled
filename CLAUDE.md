@@ -103,13 +103,13 @@ Examples:
 - Admin email: `dhruti.hirapara@snapdevio.com`
 - Users log in via magic link only (no Google OAuth for admin)
 - There is no separate admin panel or admin login — admins use the same `/login` and the same dashboard as everyone else
-- Use `requireAdmin()` for admin-only routes under `/settings` (users, audit, jobs, platform)
+- Use `requireAdmin()` for admin-only routes under `/settings` (users, audit, jobs, platform, branding)
 - Use `requireSession()` for app routes
 
 ---
 
 ## Project Structure
-- `app/(app)/` — authenticated user app (includes admin-only screens under `app/(app)/settings/{users,audit,jobs,platform}`, gated by `requireAdmin()`)
+- `app/(app)/` — authenticated user app (includes admin-only screens under `app/(app)/settings/{users,audit,jobs,platform,branding}`, gated by `requireAdmin()`)
 - `app/(booking)/` — public booking flow
 - `app/(landing)/` — public marketing pages
 - `components/ui/` — shadcn/ui primitives (customized, no radius, no shadow)
