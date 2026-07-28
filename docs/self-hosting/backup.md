@@ -38,7 +38,7 @@ access to your database.
 ## 2. Uploaded files
 
 Only relevant if `STORAGE_DRIVER=local` (the default) — files live in
-`public/uploads/` (or the `uploads` Docker volume). If `STORAGE_DRIVER=s3`,
+`./uploads` (or the `uploads` Docker volume). If `STORAGE_DRIVER=s3`,
 your files live in your S3/R2 bucket, which has its own durability (still
 worth checking your provider's backup/versioning story, but that's outside
 Schduled's scope).

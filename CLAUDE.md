@@ -4,7 +4,7 @@ Read this file before making any code changes. These rules override all defaults
 Design decisions are documented in [design.md](./design.md) — follow it strictly.
 
 ## Tech Stack
-- Next.js 15 App Router + Turbopack
+- Next.js 16 App Router + Turbopack
 - Better Auth v1.6.18 (magic link, admin plugin)
 - Drizzle ORM + PostgreSQL
 - Tailwind CSS v4
@@ -89,8 +89,8 @@ Examples:
 
 ## Code Rules
 - `tsc --noEmit` must pass clean after every change
-- No S3 uploads (feature skipped)
-- Only one admin in the system — no "Make Admin / Remove Admin" UI
+- File storage: local disk by default (`./uploads`); S3/R2-compatible storage available via `STORAGE_DRIVER=s3` (see `ENVIRONMENT.md`)
+- Admins are managed via `/settings/users` (promote/suspend) — no separate "Make Admin" button elsewhere in the app
 - Booking emails: teal-only color scheme
 - No `max-w-4xl` wrappers in admin (`/settings/users`, `/settings/audit`, `/settings/jobs`, `/settings/platform`) pages — full width layouts
 - Use `cn()` from `lib/utils` for conditional class merging
@@ -100,8 +100,8 @@ Examples:
 ---
 
 ## Auth
-- Admin email: `dhruti.hirapara@snapdevio.com`
-- Users log in via magic link only (no Google OAuth for admin)
+- Admin bootstrap: the account matching `INITIAL_ADMIN_EMAIL` (env var) is auto-promoted to admin on signup
+- Users can sign in via magic link, email + password, or Google OAuth (each toggleable via env flags — see `ENVIRONMENT.md`)
 - There is no separate admin panel or admin login — admins use the same `/login` and the same dashboard as everyone else
 - Use `requireAdmin()` for admin-only routes under `/settings` (users, audit, jobs, platform, branding)
 - Use `requireSession()` for app routes

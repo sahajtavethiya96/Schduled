@@ -21,9 +21,9 @@ Schduled is **~97% ready** — Phases 1, 2, and 3 are now implemented and
 verified. The stack is open-source and 12-factor-style, with a one-command
 Docker deploy, a working health check, closed-signup protection, durable
 S3-compatible storage, env-driven branding, security headers, versioning,
-CI, and a full self-hosting docs set. The **only thing deliberately not
-done** is the LICENSE decision (Part 5) — everything else that was blocked
-on it (dropping `"private": true`, publishing) waits on that one call.
+CI, and a full self-hosting docs set. LICENSE is decided and implemented
+(MIT — Part 5); `package.json` still keeps `"private": true`, a separate
+publish-readiness signal not tied to the license question anymore.
 Optional Phase 4 (Calendly parity — embed widget, webhooks, Outlook/Teams)
 and Phase 5 (teams/multi-tenant) remain explicitly out of scope for v1.
 
@@ -47,7 +47,7 @@ and Phase 5 (teams/multi-tenant) remain explicitly out of scope for v1.
 | Security headers (CSP/HSTS/X-Frame-Options) | ✅ **Done** — verified live | M |
 | Internal-only leftovers (`krova`, ngrok origin, `scaffold-*`) | ✅ **Done** — renamed/removed | F |
 | OSS hygiene files (CONTRIBUTING/SECURITY/COC/CHANGELOG) | ✅ **Done** | A |
-| LICENSE | ❌ **Deliberately deferred** — no license chosen yet | A |
+| LICENSE | ✅ **Done** — MIT (`LICENSE`, `package.json`) | A |
 | CI + versioning (`/api/version`) | ✅ **Done** — verified live; no semver tags cut yet | A |
 | Deployment / backup / upgrade docs | ✅ **Done** — all 7 guides written | Part 8 |
 | Multi-tenant / teams | ❌ Single-user | Part 3 (out of scope v1) |
@@ -148,10 +148,10 @@ are real · P0/P1/P2 priority.
 ### A. Repository, licensing & OSS hygiene
 | Type | Change | Where | P |
 |---|---|---|---|
-| — | `LICENSE` — **deliberately deferred**, not this pass. Package.json keeps `"private": true` until the license question is resolved | root | P1 (deferred) |
-| ✅ DONE | `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1), `CHANGELOG.md` (Keep a Changelog format, seeded with an honest `[Unreleased]` section — no fabricated history). `CONTRIBUTING.md` notes the license is still pending rather than asserting one | root | P1 |
+| ✅ DONE | `LICENSE` — MIT chosen and added; `package.json`'s `license` field set to `"MIT"` | root | P1 |
+| ✅ DONE | `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1), `CHANGELOG.md` (Keep a Changelog format, seeded with an honest `[Unreleased]` section — no fabricated history). `CONTRIBUTING.md` states the MIT license and links `LICENSE` | root | P1 |
 | ✅ DONE | GitHub issue templates (bug report, feature request), PR template, `.github/workflows/ci.yml` (typecheck + build as hard gates; lint + `pnpm audit` as informational — see note below) | `.github/` | P1 |
-| — | `package.json`: `"private": true` intentionally **kept** — dropping it, adding `license`/`repository` is a publishing signal tied to the deferred license decision | `package.json` | P1 (deferred) |
+| — | `package.json`: `"private": true` intentionally **kept** for now — dropping it is a separate publishing-readiness signal, independent of the (now-resolved) license choice | `package.json` | P1 |
 | ✅ DONE | README rewritten: split "Self-hosting" vs "Local development", links `SELF-HOSTING.md` + `ENVIRONMENT.md` + the new `docs/self-hosting/*` guides. Also fixed a pre-existing broken link (README pointed at a nonexistent `docs/commands.md`) | `README.md` | P1 |
 | — | Rotate/clear real secrets in local `.env` before repo goes public — **still the operator's action to take**, not something that can be automated | `.env` (local) | P0 |
 | ✅ DONE | Versioning: `/api/version` reports `package.json` name/version + `GIT_SHA` (passed as a Docker `--build-arg` at build time, since `.git` is excluded from the build context; falls back to `"unknown"`). Verified live. Semver git tags **not yet started** — no releases have been cut | `app/api/version/route.ts`, `Dockerfile` (`ARG GIT_SHA`) | P1 |
@@ -280,7 +280,7 @@ are real · P0/P1/P2 priority.
 | Type | Change | Where | P |
 |---|---|---|---|
 | ✅ DONE | **Auto-load S3 driver** from `STORAGE_DRIVER` — real implementation uncommented, placeholder throw-stubs removed, build-verified (`tsc` + `pnpm build` clean) | `lib/storage/index.ts`, `lib/storage/s3.ts` | P1 |
-| ✅ DONE | Docker volume for `public/uploads/` (single-node, `STORAGE_DRIVER=local`) | `docker-compose.yml` | P1 |
+| ✅ DONE | Docker volume for `./uploads` (single-node, `STORAGE_DRIVER=local`) | `docker-compose.yml` | P1 |
 | — | Document: multi-instance ⇒ use S3/R2/MinIO (local disk won't share) | docs | note |
 | — | **Not yet verified against a real S3/R2 bucket** — build-verified only (no live bucket in this environment). Test an actual upload/delete cycle before relying on it in production | — | note |
 
@@ -409,8 +409,9 @@ releases cut yet) ·
 ~~the full docs set~~ ✅ done, all 7 guides (Part 8) ·
 ~~down-migration/rollback runbook~~ ✅ done (folded into the Upgrade guide) ·
 ~~`ENCRYPT_KEY` rotation story~~ ✅ done (documented as manual/unsupported,
-folded into the Backup guide). **LICENSE deliberately deferred** — not part
-of this pass; `package.json` keeps `"private": true` until that's decided.
+folded into the Backup guide). **LICENSE decided and implemented (MIT)** —
+see Part 5; `package.json` keeps `"private": true` pending a separate
+publish-readiness decision.
 
 **Phase 4 — Calendly parity** (P2, optional): embed widget (with CORS scoping) ·
 outbound webhooks · Outlook/Teams · public API · i18n.
@@ -557,8 +558,7 @@ run — see the caveat in Part 7)
 - [x] Grep for leftover internal branding — done: `krova`→`app` (both Dockerfiles), ngrok origin→`DEV_TUNNEL_ORIGIN` env var, `scaffold.healthcheck`→`platform.healthcheck` (job name, handler file, all references)
 
 **Phase 3 — ship as OSS (P1)** — ✅ implemented and verified this pass
-(LICENSE deliberately excluded — see below)
-- [ ] LICENSE — **deferred**, not done this pass (`package.json` keeps `"private": true`)
+- [x] LICENSE — done: MIT chosen, `LICENSE` file added, `package.json`'s `license` field set to `"MIT"` (`"private": true` kept, pending a separate publish-readiness decision)
 - [x] CONTRIBUTING.md, SECURITY.md, CODE_OF_CONDUCT.md, CHANGELOG.md — done
 - [x] CI (typecheck + build hard gates; lint + `pnpm audit` informational — 260 pre-existing formatting deviations and 5 known transitive-dep advisories predate this pass) + Dependabot config + issue/PR templates — done
 - [x] Versioning: `/api/version` (name + version + `GIT_SHA` build-arg) — done, verified live. Semver git tags **not started** — no releases cut yet

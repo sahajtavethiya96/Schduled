@@ -59,7 +59,7 @@ Plus, not route groups:
 | `auth.ts`, `auth-client.ts`, `authz.ts` | Better Auth config, client hooks, `requireSession()`/`requireAdmin()` |
 | `db.ts`, `pg-connection.ts` | Drizzle client + pool |
 | `encrypt.ts` | AES-256-GCM for OAuth tokens at rest |
-| `storage/` | Upload abstraction — `local.ts` (disk) / `s3.ts` (S3/R2), selected via `STORAGE_DRIVER` |
+| `storage.ts` | Upload abstraction — local disk, S3, or R2 driver, selected via `STORAGE_DRIVER`; served through `app/api/files/[...key]` |
 | `email/` | React Email templates + `renderer.ts` |
 | `smtp/` | SMTP client |
 | `calendar/` | Slot generation (`slots.ts`), `.ics` generation |
@@ -69,7 +69,7 @@ Plus, not route groups:
 | `notifications/` | In-app/email notification creation |
 | `audit.ts` | Admin audit-log writer |
 | `api/helpers.ts` | Shared API route helpers |
-| `validators.ts`, `utils.ts`, `event-colors.ts`, `booking-status.ts`, `s3.ts` | Misc shared helpers |
+| `validators.ts`, `utils.ts`, `event-colors.ts`, `booking-status.ts` | Misc shared helpers |
 
 ## `db/`
 

@@ -2,6 +2,14 @@
 
 This is the single reference document for the full project order. Read this first, then use the linked files for detail on each item.
 
+> **Pre-development planning document.** This describes the original build
+> order and plan before the MVP existed — it does not reflect the current,
+> shipped implementation (e.g. actual env vars are `APP_SECRET`/`APP_URL`, not
+> `BETTER_AUTH_SECRET`/`BETTER_AUTH_URL`; there is no `src/` directory). For
+> accurate, current documentation, see the root
+> [README.md](../README.md), [SETUP.md](../SETUP.md),
+> [ENVIRONMENT.md](../ENVIRONMENT.md), and [SELF-HOSTING.md](../SELF-HOSTING.md).
+
 ---
 
 ## Part 1 — Planning Docs (All Complete ✅)

@@ -168,7 +168,7 @@ Set `ZOOM_CLIENT_ID` and `ZOOM_CLIENT_SECRET` to let hosts create Zoom links aut
 Works out of the box with the free, keyless Photon (OpenStreetMap) provider. Set `GOOGLE_MAPS_API_KEY` or `MAPBOX_TOKEN` for richer coverage.
 
 ### Cloud file storage (S3 / Cloudflare R2)
-By default, uploads are stored in the local `public/uploads/` folder. For production, set `STORAGE_DRIVER=s3` and the `S3_*` credentials in `.env`.
+By default, uploads are stored in the local `./uploads` folder (served through an API route, not `/public`). For production, set `STORAGE_DRIVER=s3` and the `S3_*` credentials in `.env`.
 
 ---
 
@@ -200,7 +200,7 @@ By default, uploads are stored in the local `public/uploads/` folder. For produc
 
 **`pnpm db:migrate` errors with a connection refused** — The database isn't running. Make sure `pnpm db:local` is running in another terminal and shows "Postgres running…" before you migrate.
 
-**Port 3000 already in use** — Another app is using it. Stop that app, or run `next dev -p 3001` and update `NEXT_PUBLIC_APP_URL` in `.env` to match.
+**Port 3000 already in use** — Another app is using it. Stop that app, or run `next dev -p 3001` and update `APP_URL` in `.env` to match.
 
 **Port 5432 already in use** — A previous database is still running (or a system Postgres is already on that port). Find and stop it, change the port in `DATABASE_URL`, or delete the `.schduled-postgres/` folder to start fresh (this erases local data).
 

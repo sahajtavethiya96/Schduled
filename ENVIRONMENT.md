@@ -218,15 +218,17 @@ Legend: **Req** = Required · **Opt** = Optional · **Cond** = Conditionally req
 
 | Variable | Req? | Default | Purpose | How to get / alternatives |
 |---|---|---|---|---|
-| `DATABASE_URL` | **Req** | — | Postgres connection for Drizzle ORM **and** pg-boss job queue | Your Postgres instance. Alternatives: managed (Supabase, Neon, RDS, DO), self-hosted Postgres 15/16, or bundled compose `postgres` service. `postgres://` is auto-normalized to `postgresql://`. |
+| `DATABASE_URL` | **Req** | — | Postgres connection for Drizzle ORM **and** pg-boss job queue | Your Postgres instance. Alternatives: managed (Supabase, Neon, RDS, DO), self-hosted Postgres 15/16, or bundled compose `postgres` service. `postgres://` is auto-normalized to `postgresql://`. Docs: [PostgreSQL connection strings](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING). |
 | `APP_SECRET` | **Req** | — | Signs Better Auth sessions (needs 32+ chars) | `openssl rand -hex 32`. Keep stable — rotating it logs everyone out. |
 | `APP_URL` | **Req** | localhost:3000 in dev | Base URL for OAuth callbacks, email links, session baseURL. No trailing slash. Also determines the auth cookie's `secure` flag (checked via `.startsWith("https://")`) — **use the real public `https://` URL in production**, not `http://localhost`. Deliberately **not** prefixed `NEXT_PUBLIC_` — Next.js inlines `NEXT_PUBLIC_*` vars into the compiled bundle at build time, so a value baked in at image-build time would stay frozen forever; `APP_URL` is read live at runtime instead, so the same built image/deploy works across environments. | Your public URL. Must match OAuth redirect URIs exactly. |
-| `NEXT_PUBLIC_APP_URL` | Deprecated | — | No longer read anywhere in the app — superseded by `APP_URL` above. Safe to remove; kept in `.env.example` only so older `.env` files don't need to change immediately. | — |
+| `NEXT_PUBLIC_APP_URL` | Deprecated | — | `APP_URL` above takes priority everywhere. This one is only read as a last-resort fallback (`lib/get-app-url.ts`) if `APP_URL` is unset — don't rely on it. Already removed from `.env.example`. | — |
 | `NODE_ENV` | Opt | `development` | `development` \| `test` \| `production`. Affects trusted origins & logging. | Set `production` when deployed. |
 | `DB_POOL_MAX` | Opt | `20` | Postgres connection pool size per web replica (`lib/db.ts`). | Raise for high traffic; do the math first — `replicas × DB_POOL_MAX` must stay under your database's `max_connections`. |
 | `NEXT_PUBLIC_LANDING_ENABLED` | Opt | `true` | **✅ Implemented — verified live.** `false` redirects `/` to `/login` (307, confirmed via `curl`) for internal/team deployments that don't want a public marketing page. Legal pages (`/privacy`, `/terms`, `/cookies`) and booking pages stay public either way (also confirmed live). | Set `false` for internal deployments; leave `true` (default) if you want the marketing landing shown, same as the hosted product. |
 | `DEV_TUNNEL_ORIGIN` | Opt | — | **Development only** — allows a tunneling origin (e.g. an ngrok subdomain) to reach `next dev`, for testing OAuth callbacks that need a public URL. Has no effect in production. Not part of `.env.example` on purpose — it's personal to whoever's tunnel it is, not something a template should hardcode. | Set to your own tunnel's hostname if you use one; otherwise leave unset. |
 | `GIT_SHA` | Opt | `unknown` | **✅ Implemented — verified live.** Surfaced at `/api/version` alongside the `package.json` name/version. Not a normal `.env` variable — it's a **Docker build-arg** (`.git` is excluded from the build context), so it's set at image-build time, not runtime. See `docs/self-hosting/docker.md`. | `docker build --build-arg GIT_SHA=$(git rev-parse --short HEAD) ...` |
+| `LOG_LEVEL` | Opt | `info` | Log verbosity for the `pino` logger (`lib/logger.ts`). Valid values: `fatal`, `error`, `warn`, `info`, `debug`, `trace`, `silent`. | Set directly — no external service. Lower it (e.g. `debug`) for local troubleshooting, raise it (`warn`) to cut noise in production. |
+| `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB` | Opt | `schduled` / `change-me` / `schduled` | Only read by `docker-compose.yml` (the bundled-Postgres file) to create that container's initial user/db — **not read by the app itself**. Ignored by the manual/Node path and by `docker-compose.external-db.yml`. | Set your own values; keep them in sync with `DATABASE_URL` above. |
 
 ### 2. Email / SMTP
 
@@ -245,14 +247,23 @@ Set these for real delivery (booking confirmations, reminders, magic links).
 
 **Email provider options (all SMTP-compatible):**
 
-| Provider | Type | Notes |
-|---|---|---|
-| **Self-hosted Postfix / Maddy / Mailcow** | Self-hosted | Fully in your control; you manage deliverability (SPF/DKIM/DMARC, IP reputation). |
-| **Amazon SES** | Cloud, cheap | Great price at scale; SMTP creds from SES console. |
-| **Resend** | Cloud, dev-friendly | SMTP + API; simple domain setup. |
-| **Postmark** | Cloud | Excellent transactional deliverability. |
-| **Mailgun / SendGrid / Brevo** | Cloud | Widely used SMTP. |
-| **Mailtrap** | Testing only | Sandbox that captures mail — do **not** use in production. |
+| Provider | Type | Notes | Docs |
+|---|---|---|---|
+| **Self-hosted Postfix / Maddy / Mailcow** | Self-hosted | Fully in your control; you manage deliverability (SPF/DKIM/DMARC, IP reputation). | [Postfix](https://www.postfix.org/documentation.html) |
+| **Amazon SES** | Cloud, cheap | Great price at scale; SMTP creds from SES console. | [SES SMTP docs](https://docs.aws.amazon.com/ses/latest/dg/send-email-smtp.html) |
+| **Resend** | Cloud, dev-friendly | SMTP + API; simple domain setup. | [Resend SMTP docs](https://resend.com/docs/send-with-smtp) |
+| **Postmark** | Cloud | Excellent transactional deliverability. | [Postmark SMTP docs](https://postmarkapp.com/support/article/1002-what-are-the-postmark-smtp-and-api-details) |
+| **Mailgun** | Cloud | Widely used SMTP. | [Mailgun SMTP docs](https://documentation.mailgun.com/docs/mailgun/user-manual/sending-messages/#sending-via-smtp) |
+| **SendGrid** | Cloud | Widely used SMTP. | [SendGrid SMTP docs](https://docs.sendgrid.com/for-developers/sending-email/getting-started-smtp) |
+| **Brevo** | Cloud | Widely used SMTP. | [Brevo SMTP docs](https://developers.brevo.com/docs/send-a-transactional-email#smtp) |
+| **Mailtrap** | Testing only | Sandbox that captures mail — do **not** use in production. | [Mailtrap docs](https://mailtrap.io/docs/) |
+
+**Troubleshooting:** wrong `SMTP_SECURE`/port pairing is the most common
+connection failure (`465` needs `SMTP_SECURE=true`, `587` needs `false`).
+Mail delivered but landing in spam, or rejected outright, almost always
+means the sending domain isn't verified with SPF/DKIM records at the
+provider — see the provider's docs above for their exact domain-verification
+steps.
 
 ### 3. Encryption, admin bootstrap & password login
 
@@ -295,6 +306,15 @@ links. **Requires `ENCRYPT_KEY`** when set.
 > **Google Meet** links are created through the Google Calendar API — no separate
 > credential; connecting Google Calendar enables Meet.
 
+**Official docs:** [Google Calendar API overview](https://developers.google.com/calendar/api/guides/overview) ·
+[OAuth 2.0 for Web Server Apps](https://developers.google.com/identity/protocols/oauth2/web-server)
+
+**Troubleshooting:** the #1 cause of a failed connection is a redirect URI
+that doesn't match exactly (protocol, host, and trailing slash all count).
+If only the developer's own Google account can connect while others get
+blocked, the OAuth consent screen is still in "Testing" mode — publish it
+(or add testers) in the Cloud Console.
+
 ### 5. Zoom OAuth (video links)
 
 Optional. Auto-creates Zoom meetings for bookings. **Requires `ENCRYPT_KEY`.**
@@ -313,6 +333,14 @@ Optional. Auto-creates Zoom meetings for bookings. **Requires `ENCRYPT_KEY`.**
 > Publishing a Zoom app publicly requires Zoom's review (can take weeks). For a
 > single self-hosted instance, an unpublished/internal app works for your own account.
 
+**Official docs:** [Zoom OAuth apps](https://developers.zoom.us/docs/integrations/oauth/)
+
+**Troubleshooting:** same redirect-URI-mismatch failure mode as Google. An
+"invalid scope" error means `meeting:write:meeting` wasn't added (or wasn't
+saved) on the app's Scopes tab. A token that stops working after ~15 minutes
+just needs Schduled to refresh it automatically — if it doesn't, reconnect
+the integration from Settings → Integrations.
+
 ### 6. Geocoder (in-person address autocomplete)
 
 Optional. Powers the address field on in-person event types. **Defaults to free,
@@ -321,11 +349,12 @@ keyless Photon (OpenStreetMap)** — you don't need to set anything.
 | Variable | Req? | Default | Purpose | Alternatives |
 |---|---|---|---|---|
 | `GEOCODER_PROVIDER` | Opt | auto | Pin provider: `photon` \| `google` \| `mapbox` | Auto-detect order: Mapbox → Google → Photon. |
-| `GOOGLE_MAPS_API_KEY` | Opt | — | Google Places key (richer results) | Google Cloud Console → Places API. Paid. |
-| `MAPBOX_TOKEN` | Opt | — | Mapbox geocoding token | mapbox.com account. Paid tier above free quota. |
+| `GOOGLE_MAPS_API_KEY` | Opt | — | Google Places key (richer results) | Google Cloud Console → Places API. Paid. Docs: [Places API](https://developers.google.com/maps/documentation/places/web-service/overview). |
+| `MAPBOX_TOKEN` | Opt | — | Mapbox geocoding token | mapbox.com account. Paid tier above free quota. Docs: [Mapbox Geocoding API](https://docs.mapbox.com/api/search/geocoding/). |
 
 > Self-hosted alternative: run your own **Photon**/**Nominatim** instance for
-> full control (no external calls). Default Photon is fine for most.
+> full control (no external calls). Default Photon is fine for most. Docs:
+> [Photon](https://github.com/komoot/photon), [Nominatim](https://nominatim.org/release-docs/latest/).
 
 ### 7. File storage
 
@@ -352,6 +381,24 @@ bucket public-access setup is required for any driver.
 Backblaze B2, and any other S3-compatible endpoint (via `S3_ENDPOINT`).
 **r2 driver** is a dedicated Cloudflare R2 integration.
 
+**Official docs:** [AWS S3](https://docs.aws.amazon.com/s3/) ·
+[Cloudflare R2](https://developers.cloudflare.com/r2/) ·
+[MinIO](https://min.io/docs/minio/linux/index.html)
+
+**Troubleshooting:** a wrong `S3_REGION` or a bucket name that doesn't exist
+yet won't fail at boot (only `S3_BUCKET`/`R2_BUCKET`+`R2_ACCOUNT_ID` are
+boot-validated — see the note below) — you'll see it as an upload failing at
+request time instead. Create the bucket in the provider's console first, and
+double-check the access key has read/write/delete permission on it.
+
+> **What's actually boot-validated:** `lib/env.ts`'s Zod schema only cross-checks
+> `S3_BUCKET` (when `STORAGE_DRIVER=s3`) and `R2_BUCKET`+`R2_ACCOUNT_ID` (when
+> `STORAGE_DRIVER=r2`) — the app refuses to start if those are missing. The
+> other "Cond" fields above (`S3_REGION`, `S3_ACCESS_KEY_ID`/`SECRET_ACCESS_KEY`,
+> `R2_ACCESS_KEY_ID`/`SECRET_ACCESS_KEY`) aren't cross-validated at boot; get
+> them wrong and you'll see the failure at upload time instead. The same is
+> true of the SMTP variables in §2 — none of them are boot-validated together.
+
 > ✅ **Implemented**, via [files-sdk](https://files-sdk.dev), in
 > [`lib/storage.ts`](./lib/storage.ts) — set `STORAGE_DRIVER=s3` or `r2` and
 > the matching vars above, no code edits needed. Every driver is served
@@ -369,6 +416,9 @@ Backblaze B2, and any other S3-compatible endpoint (via `S3_ENDPOINT`).
 | `CONTACT_EMAIL` | Opt | — | **✅ Implemented.** Server-only — where the `/contact` page's form submissions are routed. Falls back to `SMTP_USER`, then `hello@schduled.com`, if unset (unchanged fallback chain, just now read via the validated `env` object instead of raw `process.env`). | Set to your support inbox. |
 | `NEXT_PUBLIC_CONTACT_EMAIL` | Opt | `support@schduled.com` | **✅ Implemented — verified live.** Public "Contact us" address shown on the landing page FAQ and the `/contact` page's "General Enquiries" channel. | Set to your public-facing contact address. |
 | `PRIVACY_EMAIL` | Opt | `privacy@schduled.com` | **✅ Implemented — verified live.** Shown on `/contact`, `/privacy`, and `/cookies` for data requests. | Set to your privacy/legal contact address. |
+| `NEXT_PUBLIC_LOGO_URL` | Opt | — | Absolute URL to a logo image shown at the top of every email, next to `NEXT_PUBLIC_PRODUCT_NAME`. Unset keeps the built-in Schduled logo (a self-hoster with a custom product name but no logo gets a text-only header instead). | Set to your own hosted logo image. |
+| `NEXT_PUBLIC_EMAIL_BRAND_COLOR` | Opt | Schduled teal | Accent color (hex) used for buttons/links in emails. | Set to your own brand color, e.g. `#0D9488`. |
+| `NEXT_PUBLIC_EMAIL_SUPPORT_ADDRESS` | Opt | — | Support address shown in email footers ("Questions? Contact us at ..."). Omitted from footers entirely unless set. | Set to your support inbox. |
 
 > `INITIAL_ADMIN_EMAIL`, `NEXT_PUBLIC_PASSWORD_AUTH_ENABLED`, `ALLOW_PUBLIC_SIGNUP`,
 > and `NEXT_PUBLIC_LANDING_ENABLED` (redirects `/` → `/login` when `false`,
@@ -548,9 +598,10 @@ All are tracked with fixes in `SELF-HOSTING.md` Part 4.
   `docker compose up` has not been run, since Docker wasn't available in the
   environment this was built in. Run it once yourself before trusting it in
   production.
-- **Logs are unstructured.** Plain `console.log`/`console.error` to stdout, no
-  `LOG_LEVEL`, no JSON output. Fine for `docker compose logs`; more work if
-  you're piping to Loki/CloudWatch/Datadog.
+- ~~Logs are unstructured~~ — **fixed.** `lib/logger.ts` uses `pino`, emitting
+  structured JSON in production (pretty-printed only in an interactive dev
+  terminal); level is configurable via the optional `LOG_LEVEL` env var
+  (default `info`).
 - **No down-migrations.** Drizzle migrations are forward-only. If an upgrade's
   migration causes problems, the recovery path is **restore your pre-upgrade
   database backup and redeploy the previous image/commit** — not an automated
