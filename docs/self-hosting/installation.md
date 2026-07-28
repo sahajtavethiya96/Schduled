@@ -18,9 +18,10 @@ that's an administration view, not a shared workspace.
 
 ### Prerequisites
 
-- **Docker path:** Docker 24+ and Docker Compose v2.
+- **Docker path:** [Docker](https://docs.docker.com/engine/install/) 24+ and
+  [Docker Compose](https://docs.docker.com/compose/) v2.
 - **Manual path:** Node.js 22+, pnpm (`corepack enable` installs the pinned
-  version automatically), PostgreSQL 15 or 16.
+  version automatically), [PostgreSQL](https://www.postgresql.org/docs/) 15 or 16.
 - **Both paths, for production:** a domain name and an HTTPS reverse proxy
   (Caddy, Traefik, or nginx) in front of the app — Google/Zoom OAuth
   callbacks require a real `https://` URL, and `APP_URL` should

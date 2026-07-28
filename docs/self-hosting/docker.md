@@ -1,12 +1,14 @@
 # Docker Guide
 
+Official docs: [Docker](https://docs.docker.com/) · [Docker Compose](https://docs.docker.com/compose/)
+
 ## Images
 
 Two images are built from this repo:
 
 | Image | Dockerfile | Purpose |
 |---|---|---|
-| `web` | `Dockerfile` | The Next.js server (`output: 'standalone'`), migrates the database on boot, then serves traffic |
+| `web` | `Dockerfile` | The Next.js server (`output: 'standalone'`) — serves traffic once the database is migrated |
 | `worker` | `Dockerfile.worker` | The background job processor (pg-boss) — emails, reminders, calendar sync |
 
 Both run as a non-root `app` user, share the same `.env`, and connect to the
@@ -31,11 +33,17 @@ proxy (Caddy/Traefik/nginx) and choose their own storage backend (local
 volume, or an S3-compatible bucket via `STORAGE_DRIVER=s3`).
 
 ```bash
-docker compose up -d              # build + start everything
+docker compose up -d              # build + start everything; migrate runs first
+docker compose logs -f migrate    # confirm migrations applied cleanly
 docker compose logs -f web worker # tail logs
 docker compose ps                 # check health status
 docker compose down                # stop (keeps volumes)
 ```
+
+Migrations are not run by the `web` or `worker` images themselves — a
+dedicated `migrate` service (built from `Dockerfile.worker`) runs the
+migrator once and must exit successfully before `web`/`worker` start
+(`depends_on: migrate: condition: service_completed_successfully`).
 
 ### `docker-compose.external-db.yml` — bring your own Postgres
 
@@ -62,17 +70,14 @@ don't exist in this file.
 | `postgres-data` | `postgres` | Database files — this is your actual data. Back it up. **Bundled compose file only** — doesn't exist in `docker-compose.external-db.yml`, since your database lives outside Compose entirely. |
 | `uploads` | `web` | Avatar/logo uploads, **only when `STORAGE_DRIVER=local`** (the default). Not used at all if `STORAGE_DRIVER=s3`. |
 
-Docker Compose prefixes volume names with the **project name**, which
-defaults to your clone directory's name (lowercased). If you cloned into a
-directory called `schduled`, the actual volume is `schduled_uploads`; if
-you cloned into something else, it'll be `<that-name>_uploads`. Find the
-exact name with:
+The volume name is pinned in `docker-compose.yml` (`name: schduled_uploads`),
+so it's always `schduled_uploads` regardless of your clone directory name.
+Confirm with:
 ```bash
 docker volume ls | grep uploads
 ```
 The [Backup](./backup.md) and [Restore](./restore.md) guides' example
-commands assume `schduled_uploads` — substitute your actual volume name if
-it differs.
+commands use this exact name.
 
 ### Healthchecks
 
@@ -140,4 +145,5 @@ git pull
 docker compose build
 docker compose up -d
 ```
-Migrations run automatically via the `web` container's entrypoint.
+Migrations run automatically via the dedicated `migrate` service, which
+`web`/`worker` wait on before starting.

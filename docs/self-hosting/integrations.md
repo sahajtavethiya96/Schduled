@@ -11,8 +11,12 @@ nothing.
 
 ## Email (SMTP)
 
-Any SMTP-compatible provider works — self-hosted (Postfix, Maddy, Mailcow)
-or cloud (Amazon SES, Resend, Postmark, Mailgun, SendGrid, Brevo). Avoid
+Any SMTP-compatible provider works — self-hosted ([Postfix](https://www.postfix.org/documentation.html))
+or cloud ([Amazon SES](https://docs.aws.amazon.com/ses/latest/dg/send-email-smtp.html),
+[Resend](https://resend.com/docs/send-with-smtp), [Postmark](https://postmarkapp.com/support/article/1002-what-are-the-postmark-smtp-and-api-details),
+[Mailgun](https://documentation.mailgun.com/docs/mailgun/user-manual/sending-messages/#sending-via-smtp),
+[SendGrid](https://docs.sendgrid.com/for-developers/sending-email/getting-started-smtp),
+[Brevo](https://developers.brevo.com/docs/send-a-transactional-email#smtp)). Avoid
 Mailtrap in production — it's a testing sandbox that never actually
 delivers mail.
 
@@ -30,6 +34,12 @@ confirmations, reminders, magic links) is the single most common
 self-hosting complaint for products like this. If `SMTP_HOST` is unset,
 Schduled logs the email content to the console instead of sending it — fine
 for testing, not for production.
+
+**Troubleshooting:** wrong `SMTP_SECURE`/port pairing is the most common
+connection failure (`465` needs `SMTP_SECURE=true`, `587` needs `false`).
+Mail landing in spam or rejected outright almost always means SPF/DKIM
+aren't set up for the sending domain — see your provider's docs (linked
+above) for their exact domain-verification steps.
 
 ## Google Calendar + Google Meet
 
@@ -63,6 +73,14 @@ Enables "Continue with Google" sign-in, two-way Google Calendar sync
 Google Meet links require no separate credential — connecting Google
 Calendar is sufficient; Meet links are created through the Calendar API.
 
+**Official docs:** [Google Calendar API overview](https://developers.google.com/calendar/api/guides/overview) ·
+[OAuth 2.0 for Web Server Apps](https://developers.google.com/identity/protocols/oauth2/web-server)
+
+**Common errors:** a redirect URI that doesn't match exactly (protocol,
+host, trailing slash) is the #1 cause of a failed connection. If only your
+own Google account can connect while others can't, the OAuth consent screen
+is still in "Testing" mode — publish it (or add testers) in the Cloud Console.
+
 ## Zoom
 
 Auto-generates a Zoom meeting link for bookings that use the Zoom location
@@ -88,6 +106,12 @@ process, which can take weeks. For a single self-hosted instance connecting
 your own Zoom account, an **unpublished/internal** app works fine and
 requires no review.
 
+**Official docs:** [Zoom OAuth apps](https://developers.zoom.us/docs/integrations/oauth/)
+
+**Common errors:** same redirect-URI-mismatch failure mode as Google. An
+"invalid scope" error means `meeting:write:meeting` wasn't added (or wasn't
+saved) on the app's Scopes tab.
+
 ## Verifying it worked
 
 After setting either integration, go to **Settings → Integrations** in the
@@ -100,7 +124,9 @@ mismatch) and that `ENCRYPT_KEY` is set.
 ## Address autocomplete (bonus, not really an "integration")
 
 The in-person location field's autocomplete defaults to free, keyless
-**Photon** (OpenStreetMap-based) — no setup required. For richer
-address/building-level coverage, set a Google Places or Mapbox key — see
+**[Photon](https://github.com/komoot/photon)** (OpenStreetMap-based) — no
+setup required. For richer address/building-level coverage, set a
+[Google Places](https://developers.google.com/maps/documentation/places/web-service/overview)
+or [Mapbox](https://docs.mapbox.com/api/search/geocoding/) key — see
 `ENVIRONMENT.md` §6. This is entirely optional; Photon is fine for most
 deployments.

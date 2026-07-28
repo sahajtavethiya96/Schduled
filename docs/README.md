@@ -2,6 +2,14 @@
 
 > A modern, intelligent scheduling platform — built for teams, freelancers, and revenue teams who need more than a simple booking link.
 
+> **This is a pre-development planning document,** written before the MVP was
+> built, and describes the original plan (including a `src/` layout,
+> `BETTER_AUTH_*` env vars, and Microsoft/Outlook integrations that were never
+> built). It does not reflect the current, shipped implementation. For
+> accurate, current documentation, see the root
+> [README.md](../README.md), [SETUP.md](../SETUP.md),
+> [ENVIRONMENT.md](../ENVIRONMENT.md), and [SELF-HOSTING.md](../SELF-HOSTING.md).
+
 ---
 
 ## Project Overview
@@ -291,7 +299,7 @@ Contributions are welcome. Open an issue to report bugs or propose features, or 
 
 ## License
 
-MIT — see [LICENSE](./LICENSE) for details.
+MIT — see [LICENSE](../LICENSE) for details.
 
 ---
 

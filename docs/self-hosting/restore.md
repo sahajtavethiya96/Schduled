@@ -97,6 +97,7 @@ Verification checklist:
 ## Restoring onto a newer app version
 
 If you're restoring a backup taken from an older version onto a newer
-codebase, run `pnpm db:migrate` (or let the Docker entrypoint do it) after
-restoring the dump — this applies any migrations that postdate your
-backup. See [Upgrade](./upgrade.md) for the general upgrade procedure.
+codebase, run `pnpm db:migrate` (or simply `docker compose up -d` — the
+dedicated `migrate` service re-runs automatically and applies anything
+pending) after restoring the dump. See [Upgrade](./upgrade.md) for the
+general upgrade procedure.

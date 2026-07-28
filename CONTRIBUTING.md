@@ -5,12 +5,9 @@ expect some rough edges in the process itself, not just the code.
 
 ## License status
 
-Schduled does not have a published open-source license yet — that decision
-is still pending (see `SELF-HOSTING.md` Part 5). Until a `LICENSE` file is
-added, treat the repository as "all rights reserved" for anything beyond
-personal evaluation. This will be resolved before any public release; if
-you're contributing before then, understand that the license question is
-still open.
+Schduled is licensed under the MIT License — see [`LICENSE`](./LICENSE) for
+the full text. By contributing, you agree your contributions are licensed
+under the same terms.
 
 ## Development setup
 
@@ -22,7 +19,7 @@ where to get it.
 corepack enable
 pnpm install
 cp .env.example .env
-# fill in DATABASE_URL, APP_SECRET, NEXT_PUBLIC_APP_URL at minimum
+# fill in DATABASE_URL, APP_SECRET, APP_URL at minimum
 pnpm db:local      # or point DATABASE_URL at your own Postgres
 pnpm db:migrate
 pnpm dev            # runs the web app + background worker together

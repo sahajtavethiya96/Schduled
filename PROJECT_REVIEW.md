@@ -3,6 +3,14 @@
 **Reviewed:** `main` branch, commit `e579a93` (merge of PR #53, "setup-wizard-and-account-settings")
 **Method:** Static analysis of the current codebase only. No code was modified to produce this document. Where something could not be confirmed in the code, it is explicitly marked **Not Implemented** or **Not observed** rather than assumed.
 
+> **Point-in-time snapshot — since superseded in two places.** The codebase has
+> moved on since the commit above: the "Orbit" admin panel described below was
+> folded into `/settings` (see
+> `docs/bugs/2026-07-16-solution-orbit-admin-panel-removal.md`), and an
+> automated test suite now exists and runs in CI (`.github/workflows/ci.yml`),
+> contradicting the "zero automated tests" claim in §1 and §16. Treat the rest
+> of this document as historical context, not current state.
+
 ---
 
 ## 1. Executive Summary

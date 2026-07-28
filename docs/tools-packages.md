@@ -67,7 +67,7 @@ Complete documentation of every package, library, service, and tool used in Schd
 | | |
 |---|---|
 | **Purpose** | CLI for generating and running database migrations |
-| **Commands** | `pnpm db:generate` — generate migration from schema diff; `pnpm db:migrate` — apply pending migrations; `pnpm db:studio` — browser-based table viewer |
+| **Commands** | `pnpm db:generate` — generate migration from schema diff; `pnpm db:migrate` — apply pending migrations |
 | **Never** | Write migrations by hand — always change `schema.ts` and run `db:generate` |
 
 ### postgres
@@ -537,7 +537,6 @@ Key compiler settings in `tsconfig.json`:
     "worker": "tsx src/lib/worker/index.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio",
     "db:push": "drizzle-kit push",
     "lint": "biome check .",
     "format": "biome format --write .",

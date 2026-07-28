@@ -22,7 +22,7 @@ See **[SELF-HOSTING.md](./SELF-HOSTING.md)** for the full guide, and
 ```bash
 git clone <this-repo-url> schduled && cd schduled
 cp .env.example .env
-# set DATABASE_URL, APP_SECRET, NEXT_PUBLIC_APP_URL, and (recommended)
+# set DATABASE_URL, APP_SECRET, APP_URL, and (recommended)
 # NEXT_PUBLIC_PASSWORD_AUTH_ENABLED=true + ALLOW_PUBLIC_SIGNUP=false + INITIAL_ADMIN_EMAIL
 docker compose up -d
 ```
@@ -80,7 +80,6 @@ vulnerability.
 - `lib/email/` — persists outbound email before enqueueing work
 - `lib/worker/` — pg-boss queues and job handlers
 - `components/` — shared UI kit and scaffold shell
-- `docker/` — Docker Compose entrypoint script
 - `docs/self-hosting/` — the self-hosting guide set
 - [SETUP.md](./SETUP.md) — local development, start to finish
 
@@ -91,3 +90,7 @@ project layout.
 
 Version and current git commit are exposed at `/api/version` on a running
 instance. See [CHANGELOG.md](./CHANGELOG.md) for what's changed.
+
+## License
+
+MIT — see [LICENSE](./LICENSE) for details.

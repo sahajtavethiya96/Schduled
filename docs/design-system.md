@@ -338,7 +338,7 @@ export function Logo({
       {variant !== 'wordmark' && <LogoMark px={icon} />}
       {variant !== 'icon' && (
         <span className={cn(text, 'font-semibold tracking-tight text-foreground')}>
-          <span className="text-primary">S</span>chedica
+          <span className="text-primary">S</span>chduled
         </span>
       )}
     </span>

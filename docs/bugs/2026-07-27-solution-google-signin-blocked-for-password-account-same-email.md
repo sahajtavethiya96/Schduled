@@ -20,9 +20,9 @@ if (!(await hasAnyUser())) {
 
 The `ALLOW_PUBLIC_SIGNUP === true` branch above these (open self-signup) is **untouched** — it still returns a bare pass-through, so password sign-ups created under open registration keep the default `emailVerified: false` and Better Auth's protection stays in place there.
 
-Then, as a one-time data fix (not a schema migration — a single existing row): updated the one already-affected user (`smitsatasiya7@gmail.com`, created via the `/setup` wizard before this fix existed) directly:
+Then, as a one-time data fix (not a schema migration — a single existing row): updated the one already-affected user (`user@example.com`, created via the `/setup` wizard before this fix existed) directly:
 ```sql
-UPDATE "user" SET email_verified = true, updated_at = now() WHERE email = 'smitsatasiya7@gmail.com';
+UPDATE "user" SET email_verified = true, updated_at = now() WHERE email = 'user@example.com';
 ```
 The code fix only governs *future* user creation — it can't retroactively fix a row that already exists with `emailVerified = false`, so without this the same account would have stayed stuck even after deploying the code change.
 
