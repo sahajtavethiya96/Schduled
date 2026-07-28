@@ -21,6 +21,7 @@ const WORKSPACE_LINKS = [
 
 const PLATFORM_LINKS = [
   { href: "/settings/authentication", label: "Authentication" },
+  { href: "/settings/branding",       label: "Branding" },
   { href: "/settings/platform",       label: "System Status" },
 ];
 
