@@ -1,4 +1,4 @@
-FROM node:22-bookworm-slim AS deps
+FROM node:25-bookworm-slim AS deps
 
 WORKDIR /app
 
@@ -19,7 +19,7 @@ RUN pnpm install --frozen-lockfile
 # object file"). This stage dereferences sharp's real files out of pnpm's
 # symlinked virtual store (`node_modules/sharp` -> `.pnpm/sharp@x.y.z/...`)
 # so they can be copied into the runner as plain files below.
-FROM node:22-bookworm-slim AS sharp-deps
+FROM node:25-bookworm-slim AS sharp-deps
 
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
@@ -27,7 +27,7 @@ RUN real_dir="$(dirname "$(readlink -f node_modules/sharp)")" \
   && mkdir -p /sharp-runtime \
   && cp -rL "$real_dir/." /sharp-runtime/
 
-FROM node:22-bookworm-slim AS builder
+FROM node:25-bookworm-slim AS builder
 
 WORKDIR /app
 
@@ -65,7 +65,7 @@ COPY . .
 
 RUN corepack enable && pnpm build
 
-FROM node:22-bookworm-slim AS runner
+FROM node:25-bookworm-slim AS runner
 
 WORKDIR /app
 
