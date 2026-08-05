@@ -13,7 +13,7 @@ Complete documentation of every package, library, service, and tool used in Schd
 | **Why pnpm** | Faster installs than npm, disk-efficient (hard-links shared packages), strict dependency resolution prevents phantom dependencies |
 | **Version** | pnpm@9+ |
 | **Usage** | `pnpm install`, `pnpm dev`, `pnpm worker`, `pnpm build` |
-| **Key commands** | `pnpm dlx shadcn@latest add <component>` — add Shadcn/UI component |
+| **Key commands** | `pnpm install`, `pnpm build`, `pnpm typecheck` |
 
 ---
 
@@ -302,14 +302,14 @@ Complete documentation of every package, library, service, and tool used in Schd
 | **Features** | All UI |
 | **Configuration** | `tailwind.config.ts` — extend with custom colors, fonts, design tokens |
 
-### @shadcn/ui (via radix-ui)
+### UI Kit (via Headless UI / @floating-ui/react)
 
 | | |
 |---|---|
-| **Purpose** | Copy-paste UI component library built on Radix UI primitives — fully accessible, fully customizable |
+| **Purpose** | Hand-authored UI component kit built on Headless UI and @floating-ui/react primitives — fully accessible, fully customizable |
 | **Features** | All UI screens |
 | **Key components** | Button, Card, Table, Dialog, Sheet, Badge, Input, Select, Textarea, Switch, Tabs, Popover, Calendar, Command, DropdownMenu, Form, Toast |
-| **Install** | `pnpm dlx shadcn@latest add button card table ...` — copies component files into `src/components/ui/` |
+| **Adding new components** | Hand-authored directly in `src/components/ui/`, following the existing files' conventions — no CLI/generator |
 | **Why** | No black-box component library dependency; components are owned code; works perfectly with Tailwind |
 
 ### class-variance-authority (cva)
@@ -317,7 +317,7 @@ Complete documentation of every package, library, service, and tool used in Schd
 | | |
 |---|---|
 | **Purpose** | Type-safe variant API for component styling — defines size/variant/color combos |
-| **Used in** | All Shadcn/UI components |
+| **Used in** | All UI Kit components |
 
 ### clsx + tailwind-merge
 
@@ -595,7 +595,8 @@ Key compiler settings in `tsconfig.json`:
     "@phosphor-icons/react": "^2.1.10",
 
     "@paralleldrive/cuid2": "^2.2.2",
-    "radix-ui": "^1.4.0",
+    "@headlessui/react": "^2.2.10",
+    "@floating-ui/react": "0.26.28",
     "tsx": "^4.19.0"
   }
 }

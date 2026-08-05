@@ -288,6 +288,6 @@ The admin panel does not enqueue jobs except for one: the "Send password reset" 
 - **Next.js App Router (Server Components)** — all admin pages are Server Components; data fetched via Drizzle ORM and Better Auth Admin Plugin on the server; no client-side data fetching for lists.
 - **Better Auth Admin Plugin** — provides `listUsers`, `banUser`, `unbanUser`, `listUserSessions`, `revokeUserSessions`, `impersonateUser`; all admin user actions use this API.
 - **Drizzle ORM** — queries `audit_logs`, `email_outbox`, `platform_settings`, and booking counts; `pgboss.job` queried via raw SQL since it lives in the `pgboss` schema; `platform_settings` always accessed via `DbSettings.get()` for the 60-second cache.
-- **Shadcn/UI** — data tables, cards, badges, dialogs, and sidebar navigation.
+- **UI Kit** (`components/ui/`) — data tables, cards, badges, dialogs, and sidebar navigation.
 - **PostgreSQL (pg-boss schema)** — `pgboss.job` table queried read-only for the job queue monitor.
 - **`src/middleware.ts`** — admin route protection; redirects non-admins before any admin page renders.

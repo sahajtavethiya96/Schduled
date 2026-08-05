@@ -1,43 +1,118 @@
 "use client"
 
 import * as React from "react"
-import { Dialog as SheetPrimitive } from "radix-ui"
+import {
+  Dialog as HeadlessDialog,
+  DialogBackdrop,
+  DialogPanel,
+  DialogTitle as HeadlessDialogTitle,
+  Description,
+} from "@headlessui/react"
+import { Slot } from "@/components/ui/slot"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { XIcon } from "@phosphor-icons/react"
 
-function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
-  return <SheetPrimitive.Root data-slot="sheet" {...props} />
+type SheetContextValue = {
+  open: boolean
+  setOpen: (open: boolean) => void
+}
+
+const SheetContext = React.createContext<SheetContextValue | null>(null)
+
+function useSheetContext(component: string) {
+  const ctx = React.useContext(SheetContext)
+  if (!ctx) {
+    throw new Error(`<${component}> must be used within <Sheet>`)
+  }
+  return ctx
+}
+
+function Sheet({
+  open: openProp,
+  defaultOpen = false,
+  onOpenChange,
+  children,
+}: {
+  open?: boolean
+  defaultOpen?: boolean
+  onOpenChange?: (open: boolean) => void
+  children?: React.ReactNode
+}) {
+  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen)
+  const isControlled = openProp !== undefined
+  const open = isControlled ? openProp : uncontrolledOpen
+
+  const setOpen = React.useCallback(
+    (next: boolean) => {
+      if (!isControlled) setUncontrolledOpen(next)
+      onOpenChange?.(next)
+    },
+    [isControlled, onOpenChange]
+  )
+
+  return (
+    <SheetContext.Provider value={{ open, setOpen }}>
+      {children}
+    </SheetContext.Provider>
+  )
 }
 
 function SheetTrigger({
+  asChild = false,
+  onClick,
   ...props
-}: React.ComponentProps<typeof SheetPrimitive.Trigger>) {
-  return <SheetPrimitive.Trigger data-slot="sheet-trigger" {...props} />
+}: React.ComponentProps<"button"> & { asChild?: boolean }) {
+  const { setOpen } = useSheetContext("SheetTrigger")
+  const Comp = asChild ? Slot : "button"
+
+  return (
+    <Comp
+      data-slot="sheet-trigger"
+      onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+        onClick?.(event)
+        if (!event.defaultPrevented) setOpen(true)
+      }}
+      {...props}
+    />
+  )
+}
+
+function SheetPortal({ children }: { children?: React.ReactNode }) {
+  return <>{children}</>
 }
 
 function SheetClose({
+  asChild = false,
+  onClick,
   ...props
-}: React.ComponentProps<typeof SheetPrimitive.Close>) {
-  return <SheetPrimitive.Close data-slot="sheet-close" {...props} />
-}
+}: React.ComponentProps<"button"> & { asChild?: boolean }) {
+  const { setOpen } = useSheetContext("SheetClose")
+  const Comp = asChild ? Slot : "button"
 
-function SheetPortal({
-  ...props
-}: React.ComponentProps<typeof SheetPrimitive.Portal>) {
-  return <SheetPrimitive.Portal data-slot="sheet-portal" {...props} />
+  return (
+    <Comp
+      data-slot="sheet-close"
+      onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+        onClick?.(event)
+        if (!event.defaultPrevented) setOpen(false)
+      }}
+      {...props}
+    />
+  )
 }
 
 function SheetOverlay({
   className,
   ...props
-}: React.ComponentProps<typeof SheetPrimitive.Overlay>) {
+}: React.ComponentProps<typeof DialogBackdrop>) {
   return (
-    <SheetPrimitive.Overlay
+    <DialogBackdrop
       data-slot="sheet-overlay"
+      transition
       className={cn(
-        "fixed inset-0 z-50 bg-black/50 duration-100 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
+        "fixed inset-0 z-50 bg-black/50 duration-100 data-open:animate-in data-open:fade-in-0 data-leave:animate-out data-leave:fade-out-0",
         className
       )}
       {...props}
@@ -51,25 +126,28 @@ function SheetContent({
   side = "right",
   showCloseButton = true,
   ...props
-}: React.ComponentProps<typeof SheetPrimitive.Content> & {
+}: React.ComponentProps<"div"> & {
   side?: "top" | "right" | "bottom" | "left"
   showCloseButton?: boolean
 }) {
+  const { open, setOpen } = useSheetContext("SheetContent")
+
   return (
-    <SheetPortal>
+    <HeadlessDialog data-slot="sheet-portal" open={open} onClose={setOpen} transition>
       <SheetOverlay />
-      <SheetPrimitive.Content
+      <DialogPanel
         data-slot="sheet-content"
         data-side={side}
+        transition
         className={cn(
-          "fixed z-50 flex flex-col bg-popover bg-clip-padding text-sm text-popover-foreground transition duration-200 ease-in-out data-[side=bottom]:inset-x-0 data-[side=bottom]:bottom-0 data-[side=bottom]:h-auto data-[side=bottom]:border-t data-[side=left]:inset-y-0 data-[side=left]:left-0 data-[side=left]:h-full data-[side=left]:w-3/4 data-[side=left]:border-r data-[side=right]:inset-y-0 data-[side=right]:right-0 data-[side=right]:h-full data-[side=right]:w-3/4 data-[side=right]:border-l data-[side=top]:inset-x-0 data-[side=top]:top-0 data-[side=top]:h-auto data-[side=top]:border-b data-[side=left]:sm:max-w-sm data-[side=right]:sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-[side=bottom]:data-open:slide-in-from-bottom-10 data-[side=left]:data-open:slide-in-from-left-10 data-[side=right]:data-open:slide-in-from-right-10 data-[side=top]:data-open:slide-in-from-top-10 data-closed:animate-out data-closed:fade-out-0 data-[side=bottom]:data-closed:slide-out-to-bottom-10 data-[side=left]:data-closed:slide-out-to-left-10 data-[side=right]:data-closed:slide-out-to-right-10 data-[side=top]:data-closed:slide-out-to-top-10",
+          "fixed z-50 flex flex-col bg-popover bg-clip-padding text-sm text-popover-foreground transition duration-200 ease-in-out data-[side=bottom]:inset-x-0 data-[side=bottom]:bottom-0 data-[side=bottom]:h-auto data-[side=bottom]:border-t data-[side=left]:inset-y-0 data-[side=left]:left-0 data-[side=left]:h-full data-[side=left]:w-3/4 data-[side=left]:border-r data-[side=right]:inset-y-0 data-[side=right]:right-0 data-[side=right]:h-full data-[side=right]:w-3/4 data-[side=right]:border-l data-[side=top]:inset-x-0 data-[side=top]:top-0 data-[side=top]:h-auto data-[side=top]:border-b data-[side=left]:sm:max-w-sm data-[side=right]:sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-[side=bottom]:data-open:slide-in-from-bottom-10 data-[side=left]:data-open:slide-in-from-left-10 data-[side=right]:data-open:slide-in-from-right-10 data-[side=top]:data-open:slide-in-from-top-10 data-leave:animate-out data-leave:fade-out-0 data-[side=bottom]:data-leave:slide-out-to-bottom-10 data-[side=left]:data-leave:slide-out-to-left-10 data-[side=right]:data-leave:slide-out-to-right-10 data-[side=top]:data-leave:slide-out-to-top-10",
           className
         )}
         {...props}
       >
         {children}
         {showCloseButton && (
-          <SheetPrimitive.Close data-slot="sheet-close" asChild>
+          <SheetClose asChild>
             <Button
               variant="ghost"
               size="icon-sm"
@@ -78,10 +156,10 @@ function SheetContent({
               <XIcon size={15} />
               <span className="sr-only">Close</span>
             </Button>
-          </SheetPrimitive.Close>
+          </SheetClose>
         )}
-      </SheetPrimitive.Content>
-    </SheetPortal>
+      </DialogPanel>
+    </HeadlessDialog>
   )
 }
 
@@ -108,9 +186,9 @@ function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
 function SheetTitle({
   className,
   ...props
-}: React.ComponentProps<typeof SheetPrimitive.Title>) {
+}: React.ComponentProps<typeof HeadlessDialogTitle>) {
   return (
-    <SheetPrimitive.Title
+    <HeadlessDialogTitle
       data-slot="sheet-title"
       className={cn(
         "font-heading text-lg font-semibold tracking-wider text-foreground uppercase",
@@ -124,9 +202,9 @@ function SheetTitle({
 function SheetDescription({
   className,
   ...props
-}: React.ComponentProps<typeof SheetPrimitive.Description>) {
+}: React.ComponentProps<typeof Description>) {
   return (
-    <SheetPrimitive.Description
+    <Description
       data-slot="sheet-description"
       className={cn(
         "mt-0.5 text-sm leading-relaxed text-muted-foreground",

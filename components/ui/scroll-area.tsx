@@ -1,55 +1,51 @@
 "use client"
 
 import * as React from "react"
-import { ScrollArea as ScrollAreaPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
+
+// The standard CSS `scrollbar-width`/`scrollbar-color` properties (widely
+// supported since ~2023) plus a `::-webkit-scrollbar` fallback for older
+// Chromium/Safari give a "thin, tinted, consistent" scrollbar look with
+// zero JS — real native scrolling (momentum, keyboard, touch, a11y) with
+// custom paint, instead of faked scrolling. `ScrollBar` is kept as a no-op
+// passthrough purely for API-surface parity (same precedent as
+// SelectScrollUpButton/SelectScrollDownButton in select.tsx) — the
+// viewport now styles its own scrollbar directly, so there's no separate
+// scrollbar element to compose.
+const scrollbarClassName = cn(
+  "[scrollbar-width:thin] [scrollbar-color:var(--color-border)_transparent]",
+  "[&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar]:h-2.5",
+  "[&::-webkit-scrollbar-track]:bg-transparent",
+  "[&::-webkit-scrollbar-thumb]:rounded-none [&::-webkit-scrollbar-thumb]:border-2 [&::-webkit-scrollbar-thumb]:border-solid [&::-webkit-scrollbar-thumb]:border-transparent [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-thumb]:bg-clip-padding"
+)
 
 function ScrollArea({
   className,
   children,
   ...props
-}: React.ComponentProps<typeof ScrollAreaPrimitive.Root>) {
+}: React.ComponentProps<"div">) {
   return (
-    <ScrollAreaPrimitive.Root
-      data-slot="scroll-area"
-      className={cn("relative", className)}
-      {...props}
-    >
-      <ScrollAreaPrimitive.Viewport
+    <div data-slot="scroll-area" className={cn("relative", className)} {...props}>
+      <div
         data-slot="scroll-area-viewport"
-        className="size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1"
+        className={cn(
+          "size-full overflow-auto rounded-[inherit] outline-none transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1",
+          scrollbarClassName
+        )}
       >
         {children}
-      </ScrollAreaPrimitive.Viewport>
-      <ScrollBar />
-      <ScrollAreaPrimitive.Corner />
-    </ScrollAreaPrimitive.Root>
+      </div>
+    </div>
   )
 }
 
-function ScrollBar({
-  className,
-  orientation = "vertical",
-  ...props
-}: React.ComponentProps<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>) {
-  return (
-    <ScrollAreaPrimitive.ScrollAreaScrollbar
-      data-slot="scroll-area-scrollbar"
-      data-orientation={orientation}
-      orientation={orientation}
-      className={cn(
-        "flex touch-none p-px transition-colors select-none data-horizontal:h-2.5 data-horizontal:flex-col data-horizontal:border-t data-horizontal:border-t-transparent data-vertical:h-full data-vertical:w-2.5 data-vertical:border-l data-vertical:border-l-transparent",
-        className
-      )}
-      {...props}
-    >
-      <ScrollAreaPrimitive.ScrollAreaThumb
-        data-slot="scroll-area-thumb"
-        className="relative flex-1 rounded-none bg-border"
-      />
-    </ScrollAreaPrimitive.ScrollAreaScrollbar>
-  )
+function ScrollBar(
+  _props: React.ComponentProps<"div"> & {
+    orientation?: "vertical" | "horizontal"
+  }
+) {
+  return null
 }
 
 export { ScrollArea, ScrollBar }

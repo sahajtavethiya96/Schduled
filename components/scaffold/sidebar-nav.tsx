@@ -138,7 +138,7 @@ export function SidebarNav({
           title={email}
         >
           {/* key remounts on URL change so the placeholder shows after the
-              photo is removed (Radix keeps a stale "loaded" status). */}
+              photo is removed (avoids a stale "loaded" status carrying over). */}
           <Avatar key={avatarUrl ?? "placeholder"}>
             {avatarUrl ? <AvatarImage src={avatarUrl} alt="Profile" /> : null}
             <AvatarFallback className="bg-primary/10 text-primary">

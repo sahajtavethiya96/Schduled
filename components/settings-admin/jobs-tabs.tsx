@@ -22,8 +22,8 @@ export function JobsTabs({
   return (
     // `key` forces a remount whenever the URL-derived tab changes for a
     // reason other than clicking a trigger (e.g. browser Back/Forward) —
-    // Radix Tabs is uncontrolled after mount, so `defaultValue` alone
-    // wouldn't resync the visible tab to the address bar.
+    // Tabs is uncontrolled after mount, so `defaultValue` alone wouldn't
+    // resync the visible tab to the address bar.
     <Tabs key={defaultTab} defaultValue={defaultTab} onValueChange={handleChange}>
       <TabsList variant="line">
         <TabsTrigger value="queues">Queues</TabsTrigger>

@@ -78,14 +78,14 @@ For production, run the Next.js server and `pnpm worker` as separate pm2/systemd
 
 | Technology | Purpose |
 |-----------|---------|
-| **Custom Next.js Admin** | Hand-built admin pages at `/admin` using Next.js App Router + Shadcn/UI — user management, booking oversight, job queue monitor, platform settings. Protected by Better Auth admin role check. No third-party admin dependency. |
+| **Custom Next.js Admin** | Hand-built admin pages at `/admin` using Next.js App Router + the project's own UI Kit — user management, booking oversight, job queue monitor, platform settings. Protected by Better Auth admin role check. No third-party admin dependency. |
 
 ### UI & Styling
 
 | Technology | Purpose |
 |-----------|---------|
 | **Tailwind CSS** | Utility-first CSS — all booking page, dashboard, and admin UI styles |
-| **Shadcn/UI** | Pre-built accessible component library (buttons, modals, calendars, dropdowns) built on Radix UI primitives — used across dashboard and booking pages |
+| **UI Kit** (`components/ui/`) | Hand-rolled accessible component kit (buttons, modals, calendars, dropdowns) built on Headless UI / @floating-ui/react primitives — used across dashboard and booking pages |
 
 ### External APIs & Calendar Integrations
 
@@ -131,24 +131,24 @@ Which library or service each feature depends on. Use this as a quick lookup dur
 
 | # | Feature | Tools / Libraries Needed |
 |---|---------|--------------------------|
-| 1 | **Landing Page** | Next.js 15 (Server Components), Tailwind CSS, Shadcn/UI, Next.js Metadata API, `next/image`, `next/font` |
+| 1 | **Landing Page** | Next.js 15 (Server Components), Tailwind CSS, UI Kit, Next.js Metadata API, `next/image`, `next/font` |
 | 2 | **User Onboarding & Auth** | Better Auth (email/password, Google OAuth, magic link), Nodemailer (SMTP), React Email, Next.js App Router |
-| 3 | **User Profile & Settings** | Better Auth, S3-compatible storage + `@aws-sdk/client-s3` + `s3-request-presigner` (photo upload), pg-boss (GDPR export), Nodemailer, Drizzle ORM, Shadcn/UI |
-| 4 | **Event Type Builder** | Drizzle ORM, Next.js Server Actions, Next.js ISR (`revalidatePath`), Shadcn/UI |
-| 5 | **Availability Management** | Drizzle ORM, `date-fns-tz`, Next.js Server Actions, Shadcn/UI |
+| 3 | **User Profile & Settings** | Better Auth, S3-compatible storage + `@aws-sdk/client-s3` + `s3-request-presigner` (photo upload), pg-boss (GDPR export), Nodemailer, Drizzle ORM, UI Kit |
+| 4 | **Event Type Builder** | Drizzle ORM, Next.js Server Actions, Next.js ISR (`revalidatePath`), UI Kit |
+| 5 | **Availability Management** | Drizzle ORM, `date-fns-tz`, Next.js Server Actions, UI Kit |
 | 6 | **Timezone Management** | `date-fns-tz`, Drizzle ORM, `ical-generator`, Browser `Intl.DateTimeFormat` API |
 | 7 | **Calendar Integrations** | `googleapis` (Google Calendar API), `@microsoft/microsoft-graph-client` (Outlook + Teams), `tsdav` *(Phase 2 — Apple CalDAV)*, Drizzle ORM, pg-boss (sync job) |
-| 8 | **Public Booking Page** | Next.js App Router (dynamic routes), Next.js ISR, Next.js Metadata API, Tailwind CSS, Shadcn/UI, Drizzle ORM, `date-fns-tz` |
+| 8 | **Public Booking Page** | Next.js App Router (dynamic routes), Next.js ISR, Next.js Metadata API, Tailwind CSS, UI Kit, Drizzle ORM, `date-fns-tz` |
 | 9 | **Booking Engine** | PostgreSQL advisory locks (`pg_advisory_xact_lock`), Drizzle ORM, Zod, pg-boss (post-booking jobs), Next.js API Route |
-| 10 | **Custom Questions** | Drizzle ORM, Zod (answer validation + HTML strip), Shadcn/UI, Next.js App Router |
+| 10 | **Custom Questions** | Drizzle ORM, Zod (answer validation + HTML strip), UI Kit, Next.js App Router |
 | 11 | **Video Conferencing** | Zoom API (OAuth 2.0), `googleapis` (Google Meet via Calendar API), `@microsoft/microsoft-graph-client` (Teams), Drizzle ORM, pg-boss |
 | 12 | **Booking Confirmation** | pg-boss (async after DB commit), Nodemailer (SMTP), React Email, `ical-generator` (ICS), `googleapis` (host calendar event), `@microsoft/microsoft-graph-client` (Outlook event) |
 | 13 | **Notifications & Reminders** | pg-boss (schedule 24h + 1h jobs), Nodemailer (SMTP), React Email (reminder templates), Drizzle ORM |
-| 14 | **Meetings Dashboard** | Drizzle ORM (bookings + joins), Better Auth (session check), pg-boss (cancel reminders on host cancel), Shadcn/UI, Next.js Server Components |
+| 14 | **Meetings Dashboard** | Drizzle ORM (bookings + joins), Better Auth (session check), pg-boss (cancel reminders on host cancel), UI Kit, Next.js Server Components |
 | 15 | **Cancellation & Reschedule** | Drizzle ORM (token lookup + atomic status update), pg-boss (cancel/reschedule reminder jobs), Nodemailer + React Email (notification emails), Next.js App Router |
-| 16 | **Admin Panel** | Better Auth Admin Plugin (`listUsers`, `banUser`, `impersonateUser`, `revokeUserSessions`), Drizzle ORM (bookings + pgboss.job queries), Shadcn/UI, Nodemailer, pg-boss Node.js API (retry/cancel jobs) |
+| 16 | **Admin Panel** | Better Auth Admin Plugin (`listUsers`, `banUser`, `impersonateUser`, `revokeUserSessions`), Drizzle ORM (bookings + pgboss.job queries), UI Kit, Nodemailer, pg-boss Node.js API (retry/cancel jobs) |
 
-> **Cross-feature tools used everywhere:** PostgreSQL 16+ (primary DB) · Drizzle ORM (all DB access) · Next.js 15 App Router (all pages/routes) · TypeScript (whole stack) · Tailwind CSS + Shadcn/UI (all UI) · Zod (all API validation) · Better Auth (all protected routes) · pg-boss (all async jobs)
+> **Cross-feature tools used everywhere:** PostgreSQL 16+ (primary DB) · Drizzle ORM (all DB access) · Next.js 15 App Router (all pages/routes) · TypeScript (whole stack) · Tailwind CSS + the project's UI Kit (all UI) · Zod (all API validation) · Better Auth (all protected routes) · pg-boss (all async jobs)
 
 ---
 

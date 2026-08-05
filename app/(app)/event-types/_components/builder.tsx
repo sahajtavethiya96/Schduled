@@ -477,7 +477,7 @@ export function EventTypeBuilder({
             </div>
           </div>
   
-          {/* Tab bar — custom, no Radix Tabs to avoid scroll arrows. Aligns to the
+          {/* Tab bar — custom, avoids scroll arrows. Aligns to the
               header card above (no edge-to-edge bleed) so the borders line up. */}
           <div className="border-b border-border bg-page">
             <div className="flex overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

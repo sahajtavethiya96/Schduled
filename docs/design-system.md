@@ -20,8 +20,8 @@ Schduled's visual design follows four principles:
 | Tool | Version | Purpose |
 |------|---------|---------|
 | **Tailwind CSS** | 4.x | Utility-first styling — all layouts, spacing, colors via class names |
-| **Shadcn/UI** | Latest (radix-lyra style) | Pre-built accessible component library on top of Radix UI primitives |
-| **Radix UI** | 1.4.x | Headless accessible primitives (popover, dialog, dropdown, tabs, etc.) |
+| **UI Kit** (`components/ui/`) | — | Hand-authored accessible component kit, built on Headless UI / @floating-ui/react primitives |
+| **Headless UI / @floating-ui/react** | `^2.2.10` / `0.26.28` | Headless accessible primitives (popover, dialog, dropdown, tabs, etc.) |
 | **next-themes** | 0.4.x | Dark/light mode toggle — class-based, persisted to localStorage |
 | **Phosphor Icons** | 2.1.x | Icon library — used for all navigation icons, action buttons, status indicators |
 | **Geist Sans** | Variable | Primary UI font — all headings, labels, body text |
@@ -34,18 +34,7 @@ Schduled's visual design follows four principles:
 
 **PostCSS config (no tailwind.config.ts):** Tailwind v4 uses PostCSS-only. All theme customization lives in `app/globals.css` via CSS custom properties — no separate config file needed.
 
-**Shadcn setup (`components.json`):**
-
-| Setting | Value |
-|---------|-------|
-| Style | `radix-lyra` |
-| Base color | `neutral` |
-| CSS variables | `true` |
-| RSC | `true` |
-| TSX | `true` |
-| Icon library | `phosphor` |
-| Utils alias | `@/lib/utils` |
-| UI alias | `@/components/ui` |
+**UI primitives:** `components/ui/` is hand-authored — there is no CLI or `components.json` generator. New primitives are written directly against Headless UI / @floating-ui/react, following the existing files' conventions (zero radius, no shadow, `data-*` state variants defined in `app/globals.css`).
 
 ---
 
@@ -568,7 +557,7 @@ All type uses Tailwind's default scale. Stick to these sizes for consistency:
 
 **Global border radius: `0`** — all components have sharp, square corners.
 
-`--radius: 0` in CSS. All Shadcn radius variants resolve to zero:
+`--radius: 0` in CSS. All radius theme variants (`app/globals.css`) resolve to zero:
 - `--radius-sm`, `--radius-md`, `--radius-lg`, `--radius-xl` — all `0`
 
 **Rule:** Never add `rounded-*` classes to any component. The only exception is avatar images which may use `rounded-full` for circular profile photos.
@@ -867,8 +856,8 @@ Short, snappy transitions keep the app feeling responsive. These apply only to i
 | Input focus ring | `transition-shadow duration-150` |
 | Card hover border | `transition-colors duration-150` |
 | Sidebar collapse expand | `transition-width duration-200 ease-in-out` |
-| Sheet / drawer open | Radix default — slide-in 200ms ease |
-| Dialog open | Radix default — fade + scale 150ms |
+| Sheet / drawer open | default — slide-in 200ms ease |
+| Dialog open | default — fade + scale 150ms |
 | Nav link active underline | `transition-colors duration-100` |
 | Cookie banner enter | `transition-transform duration-400 ease-out` slide up from bottom |
 | Toast enter/exit | Sonner built-in — slide + fade |
@@ -982,14 +971,14 @@ Each segment: `h-1 flex-1 rounded-none`. Filled segments colored, empty segments
 | Rule | Implementation |
 |------|---------------|
 | Focus rings | `outline-ring/50` on all interactive elements via base layer |
-| Keyboard nav | All Radix UI primitives support full keyboard navigation |
+| Keyboard nav | All shared UI primitives support full keyboard navigation |
 | Screen readers | `aria-label`, `aria-describedby`, `sr-only` on all icon-only buttons |
 | Color contrast | OKLCH tokens chosen for WCAG AA contrast in both light and dark |
 | Reduced motion | All animations disabled via media query |
 | Touch targets | Minimum 44×44px on mobile for all interactive elements |
 | Error messages | Form errors associated to inputs via `aria-describedby` |
 | Semantic HTML | `<header>`, `<main>`, `<nav>`, `<footer>`, `<section>` used correctly |
-| Dialogs | Radix `Dialog` and `AlertDialog` — focus trap, `Escape` to close, scroll lock |
+| Dialogs | `Dialog` and `AlertDialog` — focus trap, `Escape` to close, scroll lock |
 
 ---
 
@@ -1317,7 +1306,7 @@ The booking page is invitee-facing and intentionally minimal — no Schduled nav
 
 ## UI Components Reference
 
-All components live in `src/components/ui/`. Use Shadcn CLI to add new components. Never edit primitive files unless customizing the design token behavior.
+All components live in `src/components/ui/` and are hand-authored (no CLI generator). Never edit primitive files unless customizing the design token behavior.
 
 ### Core Component List
 
@@ -1328,7 +1317,7 @@ All components live in `src/components/ui/`. Use Shadcn CLI to add new component
 | `Textarea` | `textarea.tsx` | Multi-line inputs |
 | `Label` | `label.tsx` | All form labels |
 | `Form` | `form.tsx` | React Hook Form integration with validation messages |
-| `Select` | `select.tsx` | Dropdown select (Radix) |
+| `Select` | `select.tsx` | Dropdown select |
 | `Combobox` | `combobox.tsx` | Searchable dropdown |
 | `Checkbox` | `checkbox.tsx` | Boolean toggles in forms |
 | `Switch` | `switch.tsx` | On/off toggles (event type active, availability override) |
@@ -1527,7 +1516,7 @@ Profile  Calendar Timezone  Event   Share
 
 ### Event Type Builder — `/dashboard/event-types/new` and `/dashboard/event-types/[id]/edit`
 
-**Tabbed layout** — Shadcn `<Tabs>` with these tabs:
+**Tabbed layout** — `<Tabs>` with these tabs:
 1. **General** — Name, Description, Duration (select or custom), URL slug, Color picker, Status toggle
 2. **Availability** — Availability schedule assignment, booking window, min notice, buffer before/after, daily limit, start time increment
 3. **Location** — Location type selector (Zoom, Google Meet, Phone, In-person, Custom). Provider-specific sub-fields shown based on selection.
@@ -1967,7 +1956,7 @@ React Email components live in `src/lib/email/`. These are rendered server-side 
 |------|------|
 | Global CSS + tokens | `app/globals.css` |
 | Theme provider | `src/components/theme-provider.tsx` |
-| Shadcn UI components | `src/components/ui/` |
+| UI Kit components | `src/components/ui/` |
 | App-level components | `src/components/` |
 | Email templates | `src/lib/email/` |
 | Utility (cn helper) | `src/lib/utils.ts` |

@@ -169,7 +169,7 @@ export function StepTimezone({ onNext, onBack }: StepTimezoneProps) {
       <div className="space-y-1.5">
         <Label>Timezone</Label>
 
-        {/* Inline dropdown — no portal/absolute so Radix FocusScope never blocks it */}
+        {/* Inline dropdown — no portal/absolute so a focus trap never blocks it */}
         <div ref={containerRef}>
           {/* Trigger */}
           <button

@@ -42,7 +42,7 @@ Never use Lucide, Heroicons, or any other icon library.
 
 ## Component Library
 
-**Always use shadcn/ui components** from `components/ui/`. Never use raw HTML elements where a shadcn component exists.
+**Always use the UI Kit components** from `components/ui/`. Never use raw HTML elements where a UI Kit component exists.
 
 Available components:
 

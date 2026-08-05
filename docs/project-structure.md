@@ -88,7 +88,7 @@ Plus, not route groups:
 
 | Path | Purpose |
 |---|---|
-| `ui/` | shadcn/ui primitives, customized to this project's design system (zero radius, no shadow) — see `CLAUDE.md` |
+| `ui/` | Hand-authored UI Kit primitives, built on Headless UI/@floating-ui/react, customized to this project's design system (zero radius, no shadow) — see `CLAUDE.md` |
 | `scaffold/` | App shell: `app-shell.tsx`, sidebar, header, mobile nav, search, notification bell |
 | `settings-admin/` | Admin-only settings components (users, audit, jobs) |
 | `landing/` | Marketing page sections, header, footer |
