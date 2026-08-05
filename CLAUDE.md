@@ -50,7 +50,7 @@ import { IconName } from "@phosphor-icons/react/dist/ssr"
 
 ## Component Usage (STRICT)
 
-**Always use shadcn/ui components from `components/ui/`.** Never use raw HTML elements where a shadcn component exists.
+**Always use the UI Kit components from `components/ui/`.** Never use raw HTML elements where a UI Kit component exists.
 
 | Instead of | Use |
 |---|---|
@@ -62,7 +62,7 @@ import { IconName } from "@phosphor-icons/react/dist/ssr"
 | `<table>` | `<Table>` from `components/ui/table` |
 | `<dialog>` / modal | `<Dialog>` or `<AlertDialog>` from `components/ui/` |
 
-Only create a new component when no existing shadcn component in `components/ui/` fits the need. See [design.md](./design.md) for the full list of available components.
+Only create a new component when no existing component in `components/ui/` fits the need. See [design.md](./design.md) for the full list of available components.
 
 ---
 
@@ -112,7 +112,7 @@ Examples:
 - `app/(app)/` — authenticated user app (includes admin-only screens under `app/(app)/settings/{users,audit,jobs,platform,branding}`, gated by `requireAdmin()`)
 - `app/(booking)/` — public booking flow
 - `app/(landing)/` — public marketing pages
-- `components/ui/` — shadcn/ui primitives (customized, no radius, no shadow)
+- `components/ui/` — hand-authored UI Kit primitives (customized, no radius, no shadow)
 - `components/settings-admin/` — admin-only settings components (users, audit, jobs)
 - `components/scaffold/` — app shell (sidebar, header)
 

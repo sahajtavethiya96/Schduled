@@ -28,8 +28,8 @@ function defaultFormat(t: string): string {
 const normalizeTime = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '')
 
 /**
- * A compact, type-to-filter time picker. Replaces a Radix Select to avoid the
- * fast auto-scroll arrows and to let users type a time (e.g. "230pm").
+ * A compact, type-to-filter time picker that avoids fast auto-scroll
+ * arrows and lets users type a time (e.g. "230pm").
  */
 export function TimeCombobox({
   value,
@@ -52,7 +52,11 @@ export function TimeCombobox({
   // When this combobox lives inside a modal Dialog, the dialog's scroll-lock
   // blocks wheel scrolling on a body-portaled popover. Portaling the dropdown
   // INTO the dialog keeps it within the allowed scroll region so it scrolls.
-  const [container, setContainer] = useState<Element | null>(null)
+  // Must default/fall back to `undefined`, not `null` — FloatingPortal's
+  // `root` prop treats a literal `null` as "wait for it to resolve" and
+  // never creates the portal node, which permanently stalls the popover for
+  // every trigger outside a Dialog (i.e. almost everywhere this is used).
+  const [container, setContainer] = useState<Element | undefined>(undefined)
 
   const filtered = useMemo(() => {
     const q = normalizeTime(query)
@@ -63,7 +67,7 @@ export function TimeCombobox({
   // On open: target the nearest dialog, clear query, focus input, scroll to value
   useEffect(() => {
     if (!open) return
-    setContainer(triggerRef.current?.closest('[role="dialog"]') ?? null)
+    setContainer(triggerRef.current?.closest('[role="dialog"]') ?? undefined)
     setQuery('')
     const id = setTimeout(() => {
       inputRef.current?.focus()

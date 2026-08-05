@@ -170,7 +170,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 next, react, react-dom, better-auth, drizzle-orm, postgres, pg-boss,
 nodemailer, @phosphor-icons/react, @paralleldrive/cuid2, @react-email/render,
-react-email, radix-ui, shadcn, class-variance-authority, clsx, tailwind-merge,
+react-email, @headlessui/react, @floating-ui/react, shadcn, class-variance-authority, clsx, tailwind-merge,
 zod, tsx, tw-animate-css, tailwindcss, @tailwindcss/postcss
 ```
 

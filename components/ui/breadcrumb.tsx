@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Slot } from "radix-ui"
+import { Slot } from "@/components/ui/slot"
 
 import { cn } from "@/lib/utils"
 import { CaretRightIcon, DotsThreeIcon } from "@phosphor-icons/react"
@@ -45,7 +45,7 @@ function BreadcrumbLink({
 }: React.ComponentProps<"a"> & {
   asChild?: boolean
 }) {
-  const Comp = asChild ? Slot.Root : "a"
+  const Comp = asChild ? Slot : "a"
 
   return (
     <Comp

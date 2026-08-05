@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 /**
- * Password field with a show/hide toggle. Composes the shadcn `Input` — shadcn
- * has no password primitive, and this is app-specific composite UI.
+ * Password field with a show/hide toggle. Composes the project's `Input`
+ * primitive — there's no built-in password variant, and this is
+ * app-specific composite UI.
  */
 export function PasswordInput({
   className,

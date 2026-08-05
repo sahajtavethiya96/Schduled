@@ -270,7 +270,8 @@ pnpm add \
   next-themes \
   clsx tailwind-merge \
   class-variance-authority \
-  radix-ui \
+  @headlessui/react \
+  @floating-ui/react \
   @phosphor-icons/react \
   geist \
   tsx
@@ -435,7 +436,7 @@ npx shadcn@latest add \
 | `class-variance-authority` | latest | Type-safe component variants (used by Shadcn/UI) |
 | `@phosphor-icons/react` | ^2.1.10 | Icon library — all Phosphor icons; use `/dist/ssr` import in Server Components |
 | `geist` | latest | Vercel's Geist font (sans + mono) |
-| `radix-ui` | latest | Radix UI primitives — consumed by Shadcn/UI components |
+| `@headlessui/react` / `@floating-ui/react` | latest | Headless UI primitives — consumed by Shadcn/UI components |
 | `tsx` | latest | Run TypeScript files directly — used by the worker process in production |
 | **Dev only** | | |
 | `@biomejs/biome` | latest | Linter + formatter — replaces ESLint + Prettier; 10-50× faster |

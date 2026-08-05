@@ -1,6 +1,155 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
+
+/*
+ * These 7 custom variants were previously supplied by `@import
+ * "shadcn/tailwind.css"` (the `shadcn` npm package). Copied verbatim
+ * (same selectors, same `:where()` wrapping) so removing the shadcn
+ * package changes nothing about the compiled CSS for the 11 components
+ * that consume them (dialog, alert-dialog, sheet, popover, dropdown-menu,
+ * select, tooltip, switch, checkbox, tabs, separator). `data-selected`
+ * and `data-active` were also defined upstream but have zero consumers
+ * in this repo, so they were dropped rather than copied.
+ */
+@custom-variant data-open {
+  &:where([data-state="open"]),
+  &:where([data-open]:not([data-open="false"])) {
+    @slot;
+  }
+}
+
+@custom-variant data-closed {
+  &:where([data-state="closed"]),
+  &:where([data-closed]:not([data-closed="false"])) {
+    @slot;
+  }
+}
+
+@custom-variant data-checked {
+  &:where([data-state="checked"]),
+  &:where([data-checked]:not([data-checked="false"])) {
+    @slot;
+  }
+}
+
+@custom-variant data-unchecked {
+  &:where([data-state="unchecked"]),
+  &:where([data-unchecked]:not([data-unchecked="false"])) {
+    @slot;
+  }
+}
+
+@custom-variant data-disabled {
+  &:where([data-disabled="true"]),
+  &:where([data-disabled]:not([data-disabled="false"])) {
+    @slot;
+  }
+}
+
+@custom-variant data-horizontal {
+  &:where([data-orientation="horizontal"]) {
+    @slot;
+  }
+}
+
+@custom-variant data-vertical {
+  &:where([data-orientation="vertical"]) {
+    @slot;
+  }
+}
+
+@plugin "daisyui" {
+  themes: light --default, dark;
+}
+
+/*
+ * DaisyUI theme tokens are proxied straight to the existing shadcn/Schduled
+ * CSS variables (:root / .dark below) instead of hardcoded values, so the
+ * two systems share one source of truth during the shadcn -> DaisyUI
+ * migration. Light/dark switching is driven by next-themes toggling both
+ * .dark (for shadcn's `dark:` variant) and [data-theme] (for DaisyUI) on
+ * <html> at the same time — see components/theme-provider.tsx usage in
+ * app/layout.tsx.
+ */
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  color-scheme: light;
+
+  --color-base-100: var(--background);
+  --color-base-200: var(--muted);
+  --color-base-300: var(--border);
+  --color-base-content: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-content: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-content: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-content: var(--accent-foreground);
+  --color-neutral: var(--secondary);
+  --color-neutral-content: var(--secondary-foreground);
+
+  --color-info: var(--primary);
+  --color-info-content: var(--primary-foreground);
+  --color-success: var(--success);
+  --color-success-content: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-content: var(--foreground);
+  --color-error: var(--destructive);
+  --color-error-content: oklch(0.985 0 0);
+
+  /* Sharp corners are the brand — see --radius in :root below. */
+  --radius-selector: 0rem;
+  --radius-field: 0rem;
+  --radius-box: 0rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+
+  /* No shadows anywhere — see CLAUDE.md design rules. */
+  --depth: 0;
+  --noise: 0;
+}
+
+@plugin "daisyui/theme" {
+  name: "dark";
+  default: false;
+  color-scheme: dark;
+
+  --color-base-100: var(--background);
+  --color-base-200: var(--muted);
+  --color-base-300: var(--border);
+  --color-base-content: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-content: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-content: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-content: var(--accent-foreground);
+  --color-neutral: var(--secondary);
+  --color-neutral-content: var(--secondary-foreground);
+
+  --color-info: var(--primary);
+  --color-info-content: var(--primary-foreground);
+  --color-success: var(--success);
+  --color-success-content: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-content: var(--foreground);
+  --color-error: var(--destructive);
+  --color-error-content: oklch(0.985 0 0);
+
+  --radius-selector: 0rem;
+  --radius-field: 0rem;
+  --radius-box: 0rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+
+  --depth: 0;
+  --noise: 0;
+}
 
 @custom-variant dark (&:is(.dark *));
 
@@ -12,8 +161,8 @@ html {
   background: var(--background);
   /* Reserves the scrollbar's width permanently so opening a modal/dropdown
      (which hides the scrollbar via a body scroll-lock) never shifts layout
-     width — without this, every Radix dropdown/dialog open causes a
-     horizontal jerk on any page that scrolls on <body>. */
+     width — without this, every dropdown/dialog open causes a horizontal
+     jerk on any page that scrolls on <body>. */
   scrollbar-gutter: stable;
 }
 

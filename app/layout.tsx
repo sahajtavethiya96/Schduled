@@ -34,7 +34,11 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body suppressHydrationWarning>
-        <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
+        <ThemeProvider
+          attribute={["class", "data-theme"]}
+          defaultTheme="light"
+          disableTransitionOnChange
+        >
           <GlobalRouteLoader />
           {children}
           <Toaster />

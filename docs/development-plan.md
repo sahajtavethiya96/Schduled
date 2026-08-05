@@ -21,7 +21,7 @@ At the start of each phase, reference the relevant feature doc from the `feature
 | Auth | Better Auth (with Admin Plugin) |
 | Job Queue | pg-boss (PostgreSQL-backed — no Redis) |
 | Styling | Tailwind CSS |
-| UI Components | Shadcn/UI (Radix UI primitives) |
+| UI Components | Shadcn/UI (Headless UI / @floating-ui/react primitives) |
 | Forms | react-hook-form + Zod (@hookform/resolvers) |
 | Email Delivery | Nodemailer (SMTP) |
 | Email Templates | React Email (@react-email/components) |

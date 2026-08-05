@@ -338,6 +338,6 @@ All page metadata managed via Next.js `generateMetadata()` API.
 - **Next.js 15 App Router (Server Components)** — landing page is fully server-rendered; no client-side JS on first load; fast initial paint and full SEO crawlability.
 - **Next.js Metadata API** — `generateMetadata()` on every public page for type-safe `<title>`, `<meta>`, and Open Graph tags.
 - **Tailwind CSS** — all landing page styles; responsive utility classes for mobile/tablet/desktop breakpoints.
-- **Shadcn/UI** — accordion component for FAQ, button components for CTAs.
+- **UI Kit** (`components/ui/`) — button components for CTAs. The FAQ uses its own hand-rolled `components/landing/faq-accordion.tsx`, not the shared UI Kit.
 - **Next.js `<Image>`** — hero screenshot and section images automatically converted to WebP, sized for viewport, lazy-loaded below the fold.
 - **`next/font`** — self-hosted fonts (Geist Sans Variable + JetBrains Mono Variable) loaded without external request; eliminates font-related layout shift. See [design-system.md](../design-system.md) — Typography for full font spec.

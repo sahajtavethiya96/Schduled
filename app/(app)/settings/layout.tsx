@@ -29,7 +29,6 @@ export default async function SettingsLayout({
 
       <div className="flex items-start gap-8">
         <aside className="hidden w-52 shrink-0 space-y-4 md:block md:sticky md:top-6 md:self-start">
-          <SettingsSearch isAdmin={isAdmin} />
           <SettingsNav isAdmin={isAdmin} />
         </aside>
         <div className="min-w-0 flex-1">{children}</div>

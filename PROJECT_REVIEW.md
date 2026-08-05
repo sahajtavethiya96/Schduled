@@ -21,7 +21,7 @@
 
 **Current development status:** Actively developed, pre-1.0, no tagged releases yet (`CHANGELOG.md` keeps everything under `[Unreleased]`, explicitly stating semantic versioning starts once the "OSS release process" in `SELF-HOSTING.md` Phase 3 completes). The schema has 15 migrations, all small and additive — a healthy, low-risk incremental evolution pattern with no destructive changes observed. The most recently merged feature (this review's own trigger) added a self-hosting-oriented first-run setup wizard, password management, and an MIT `LICENSE`.
 
-**Technology stack:** Next.js 16 (App Router, Turbopack), TypeScript 6 (strict), PostgreSQL + Drizzle ORM, Better Auth 1.6.18, Tailwind v4 + shadcn/Radix (Phosphor icons), pg-boss (Postgres-native job queue), nodemailer + react-email, optional S3/R2 file storage, Docker Compose deployment. Full detail in §3.
+**Technology stack:** Next.js 16 (App Router, Turbopack), TypeScript 6 (strict), PostgreSQL + Drizzle ORM, Better Auth 1.6.18, Tailwind v4 + shadcn-style components on Headless UI/@floating-ui/react (Phosphor icons), pg-boss (Postgres-native job queue), nodemailer + react-email, optional S3/R2 file storage, Docker Compose deployment. Full detail in §3.
 
 **Overall architecture:** Three independently deployable processes sharing one Postgres database: a Next.js web server (UI + API routes + Server Actions), a separate pg-boss worker process (email delivery, reminders, calendar sync), and Postgres itself. No Redis, no message broker, no external cache — Postgres is the single source of truth and the job queue backend, which keeps the operational surface area small for a self-hosted product.
 
@@ -60,7 +60,7 @@ app/
 └── post-auth/                 # Role-agnostic post-login redirect target
 
 components/
-├── ui/                      # 39 shadcn-style primitives (Radix-based, no radius/shadow per design.md)
+├── ui/                      # 39 shadcn-style primitives (Headless UI/@floating-ui/react-based, no radius/shadow per design.md)
 ├── admin/, orbit/            # Admin-panel-specific components
 ├── profile/                  # Shared profile components (incl. password-card.tsx, sessions-card.tsx)
 ├── scaffold/                 # App shell: sidebar, header, page-header, impersonation banner
@@ -105,7 +105,7 @@ hooks/           — one custom hook (use-username-check.ts)
 | Database | PostgreSQL | `16` (Docker image) |
 | ORM | Drizzle ORM + drizzle-kit | `^0.45.2` / `^0.31.10` |
 | Auth | Better Auth (email+password, magic link, Google OAuth, admin/impersonation plugin) | `^1.6.18` |
-| UI library | shadcn-style components over `radix-ui` | `radix-ui ^1.5.0`, `shadcn` CLI `^4.11.0` |
+| UI library | shadcn-style components over `@headlessui/react` + `@floating-ui/react` (hand-authored, no CLI/generator) | `@headlessui/react ^2.2.10`, `@floating-ui/react 0.26.28` |
 | State management | None (plain React state + 2 Contexts; no Redux/Zustand/Jotai) | — |
 | Styling | Tailwind CSS | `^4.3.1` |
 | Package manager | pnpm (single workspace) | `pnpm@11.6.0` |
@@ -654,7 +654,7 @@ All routes live under `app/api/`. **Validation approach note:** despite `zod` be
 | `postgres` `^3.4.9` | Postgres driver | Actively maintained, lightweight | `pg` |
 | `pg-boss` `^12.19.1` | Background job queue | Actively maintained, Postgres-native | BullMQ + Redis |
 | `tailwindcss` `^4.3.1` | Styling | Actively maintained | — |
-| `radix-ui` `^1.5.0` | Accessible UI primitives | Actively maintained | Headless UI |
+| `@headlessui/react` `^2.2.10` + `@floating-ui/react` `0.26.28` | Accessible UI primitives | Actively maintained | Radix UI |
 | `@phosphor-icons/react` | Icon set | Actively maintained | Lucide |
 | `nodemailer` `^8.0.11` | SMTP transport | Mature, actively maintained | Resend, Postmark SDK |
 | `react-email` / `@react-email/render` | Email templates | Actively maintained | MJML |
@@ -688,9 +688,9 @@ All routes live under `app/api/`. **Validation approach note:** despite `zod` be
 
 ## 21. Accessibility
 
-**Keyboard navigation:** Mostly solid via Radix primitives (21 of 39 `components/ui/` files use `radix-ui`, covering all interactive components — dialogs, dropdowns, selects, tabs, accordions, tooltips, popovers). **One confirmed gap:** `components/landing/faq-accordion.tsx` renders its entire clickable FAQ row as a bare `<div onClick={...}>` with no `role="button"`, `tabIndex`, or keyboard handler — not reachable via Tab, not activatable via Enter/Space. This is public-facing (landing page), not gated behind auth, and should be fixed.
+**Keyboard navigation:** Mostly solid via the Headless UI/@floating-ui/react-based primitives, covering all interactive components — dialogs, dropdowns, selects, tabs, accordions, tooltips, popovers. **One confirmed gap:** `components/landing/faq-accordion.tsx` renders its entire clickable FAQ row as a bare `<div onClick={...}>` with no `role="button"`, `tabIndex`, or keyboard handler — not reachable via Tab, not activatable via Enter/Space. This is public-facing (landing page), not gated behind auth, and should be fixed.
 
-**Screen reader support:** 75 `aria-*` attribute occurrences and 15 `role=` occurrences in `components/`, concentrated in the Radix-based primitives — reasonable baseline coverage, not exhaustively audited component-by-component beyond the spot checks performed.
+**Screen reader support:** 75 `aria-*` attribute occurrences and 15 `role=` occurrences in `components/`, concentrated in the shared UI primitives — reasonable baseline coverage, not exhaustively audited component-by-component beyond the spot checks performed.
 
 **Color contrast:** Not independently measured in this review (would require a rendered-page contrast audit tool, out of scope for static analysis).
 

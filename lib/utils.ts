@@ -9,6 +9,26 @@ export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+// Ref callback for Headless UI's floating panels (ListboxOptions/MenuItems,
+// used by components/ui/select.tsx and components/ui/dropdown-menu.tsx).
+// Their internal floating-ui positioning (@headlessui/react's
+// internal/floating.js) renders the panel fully opaque at (0, 0) for the
+// first couple of frames after mount, before its computed top/left take
+// visual effect — a brief but fully-visible flash to the wrong corner. Since
+// that panel unmounts/remounts on every open (Headless UI's default
+// `unmount` behavior), this ref callback fires fresh each time and hides the
+// node for two animation frames before revealing it already in place.
+export function hideUntilPositioned(node: HTMLElement | null) {
+  if (!node) return
+  node.style.visibility = "hidden"
+  const raf = requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      node.style.visibility = ""
+    })
+  })
+  return () => cancelAnimationFrame(raf)
+}
+
 export function formatDateTime(value: Date | string | null | undefined) {
   if (!value) {
     return "Never"

@@ -38,7 +38,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -133,6 +132,7 @@ export function EventTypeCard({
   const [copied, setCopied] = useState(false)
   const [lastBookedLabel, setLastBookedLabel] = useState<string | null>(null)
   const [isHovered, setIsHovered] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
 
   const loc = LOCATION_META[locationType] ?? LOCATION_META.custom
 
@@ -192,50 +192,63 @@ export function EventTypeCard({
 
   // ── Shared dropdown items ──────────────────────────────────────────────────
 
+  // Rendered as a sibling of DropdownMenu (not nested inside it) and opened
+  // via local state set from the Delete DropdownMenuItem's onClick. This
+  // follows the Headless UI maintainer's documented recommendation for a
+  // Dialog triggered from a Menu item: move the Dialog outside the
+  // Menu/MenuItem tree and drive its open state from there, rather than
+  // nesting it inside the menu (github.com/tailwindlabs/headlessui,
+  // discussion #1449) — nesting it would tie the dialog's mounted state to
+  // the menu's own open/closed state, which Headless UI's MenuItem doesn't
+  // support keeping independent of a menu-item click.
+  const deleteConfirmDialog = (
+    <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete &ldquo;{name}&rdquo;?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This will permanently delete this meeting type and all associated questions. Existing bookings will not be affected.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={handleDelete}>
+            Delete
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+
   const moreMenu = (align: 'start' | 'end' = 'end') => (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button type="button" title="More" aria-label="More" disabled={isPending}
-          className="flex h-8 w-8 items-center justify-center text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary disabled:opacity-50">
-          <DotsThreeVertical size={16} />
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align={align} className="w-44">
-        <DropdownMenuItem asChild>
-          <Link href={`/event-types/${id}`} className="flex items-center gap-2">
-            <PencilSimple size={14} /> Edit
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem className="flex items-center gap-2" onClick={copyLink} disabled={!bookingUrl || !isActive}>
-          <LinkIcon size={14} /> Copy link
-        </DropdownMenuItem>
-        <DropdownMenuItem className="flex items-center gap-2" onClick={handleDuplicate}>
-          <Copy size={14} /> Duplicate
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <DropdownMenuItem className="flex items-center gap-2 text-destructive focus:text-destructive" onSelect={(e) => e.preventDefault()}>
-              <Trash size={14} /> Delete
-            </DropdownMenuItem>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete &ldquo;{name}&rdquo;?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This will permanently delete this meeting type and all associated questions. Existing bookings will not be affected.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={handleDelete}>
-                Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button type="button" title="More" aria-label="More" disabled={isPending}
+            className="flex h-8 w-8 items-center justify-center text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary disabled:opacity-50">
+            <DotsThreeVertical size={16} />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align={align} className="w-44">
+          <DropdownMenuItem asChild>
+            <Link href={`/event-types/${id}`} className="flex items-center gap-2">
+              <PencilSimple size={14} /> Edit
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem className="flex items-center gap-2" onClick={copyLink} disabled={!bookingUrl || !isActive}>
+            <LinkIcon size={14} /> Copy link
+          </DropdownMenuItem>
+          <DropdownMenuItem className="flex items-center gap-2" onClick={handleDuplicate}>
+            <Copy size={14} /> Duplicate
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem className="flex items-center gap-2 text-destructive data-focus:text-destructive" onClick={() => setDeleteOpen(true)}>
+            <Trash size={14} /> Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      {deleteConfirmDialog}
+    </>
   )
 
   // ── Shared badges ─────────────────────────────────────────────────────────
@@ -363,27 +376,12 @@ export function EventTypeCard({
                   <Copy size={14} /> Duplicate
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <DropdownMenuItem className="flex items-center gap-2 text-destructive focus:text-destructive" onSelect={(e) => e.preventDefault()}>
-                      <Trash size={14} /> Delete
-                    </DropdownMenuItem>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Delete &ldquo;{name}&rdquo;?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This will permanently delete this meeting type and all associated questions. Existing bookings will not be affected.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={handleDelete}>Delete</AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                <DropdownMenuItem className="flex items-center gap-2 text-destructive data-focus:text-destructive" onClick={() => setDeleteOpen(true)}>
+                  <Trash size={14} /> Delete
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            {deleteConfirmDialog}
           </div>
           {toggleControl}
         </div>
