@@ -22,7 +22,7 @@ export async function getGoogleCalendarClient(cal: ConnectedCalendarRow) {
     throw new Error(`Calendar ${cal.id} has no access token`)
   }
 
-  const oauth2 = createGoogleOAuthClient()
+  const oauth2 = await createGoogleOAuthClient()
 
   const accessToken  = await decrypt(cal.accessToken)
   const refreshToken = cal.refreshToken ? await decrypt(cal.refreshToken) : null

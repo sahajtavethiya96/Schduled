@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     "/settings/integrations"
   );
 
-  if (!zoomConfigured()) {
+  if (!(await zoomConfigured())) {
     const fallback = new URL(returnTo, getAppUrl());
     fallback.searchParams.set("zoom_error", "not_configured");
     return NextResponse.redirect(fallback);
@@ -25,5 +25,5 @@ export async function GET(req: NextRequest) {
     JSON.stringify({ userId: session.user.id, returnTo })
   ).toString("base64");
 
-  return NextResponse.redirect(getZoomAuthUrl(state));
+  return NextResponse.redirect(await getZoomAuthUrl(state));
 }

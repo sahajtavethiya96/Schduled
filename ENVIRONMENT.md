@@ -363,6 +363,10 @@ or `r2` for durable / multi-instance storage. Uploads are always served
 through `/api/files/[...key]`, never a direct/public cloud URL — so no
 bucket public-access setup is required for any driver.
 
+All of this can also be configured from Settings → Services instead of (or
+on top of) the vars below — a value saved there wins and applies live with
+no restart. See [`docs/self-hosting/integrations.md`](./docs/self-hosting/integrations.md#integration-settings-db-configuration).
+
 | Variable | Req? | Default | Purpose | Alternatives |
 |---|---|---|---|---|
 | `STORAGE_DRIVER` | Opt | `local` | `local`, `s3`, or `r2` | `local` for single node; `s3`/`r2` for durability/scale. |

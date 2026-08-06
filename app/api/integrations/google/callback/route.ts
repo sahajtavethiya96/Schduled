@@ -36,11 +36,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(new URL('/login', getAppUrl()))
   }
 
-  if (!googleCalendarConfigured()) {
+  if (!(await googleCalendarConfigured())) {
     return NextResponse.redirect(failUrl)
   }
 
-  const oauth2Client = createGoogleOAuthClient()
+  const oauth2Client = await createGoogleOAuthClient()
 
   type OAuthTokens = {
     access_token?: string | null

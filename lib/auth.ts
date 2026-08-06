@@ -19,6 +19,7 @@ import { magicLinkTemplate } from "@/lib/email/templates/magic-link";
 import { resetPasswordTemplate } from "@/lib/email/templates/reset-password";
 import { env } from "@/lib/env";
 import { getAppUrl } from "@/lib/get-app-url";
+import { getGoogleOAuthSettings } from "@/lib/integration-settings";
 import { passwordComplexityError } from "@/lib/password";
 import { getEffectiveSignInMethods } from "@/lib/settings/sign-in-methods";
 import { hasAnyUser } from "@/lib/setup";
@@ -38,9 +39,29 @@ const NEW_PASSWORD_FIELDS: Record<string, "password" | "newPassword"> = {
   "/reset-password": "newPassword",
 };
 
-export const googleAuthEnabled = !!(
-  env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET
-);
+// Better Auth builds `socialProviders` once, synchronously, at module
+// evaluation — it isn't a per-request config, so it can't consult the DB
+// live like the rest of this app's integration settings do. This top-level
+// await resolves the DB-or-env Google credentials once, at process boot: a
+// DB-only config (no env vars at all) works after a restart, and any later
+// change made via Settings → Services needs a restart to take effect for
+// Google *sign-in* specifically (Google *Calendar*, in lib/google/client.ts,
+// reads fresh per call and needs no restart). Wrapped in try/catch because
+// `next build`'s page-data-collection phase imports this module against a
+// placeholder DATABASE_URL with no real Postgres reachable — a DB failure
+// here must degrade to "Google sign-in not configured", not crash the build.
+let googleOAuthAtBoot: Awaited<ReturnType<typeof getGoogleOAuthSettings>> =
+  null;
+try {
+  googleOAuthAtBoot = await getGoogleOAuthSettings();
+} catch (error) {
+  console.error(
+    "[auth] failed to resolve Google OAuth settings at boot",
+    error
+  );
+}
+
+export const googleAuthEnabled = !!googleOAuthAtBoot;
 export const passwordAuthEnabled = env.NEXT_PUBLIC_PASSWORD_AUTH_ENABLED;
 
 export const auth = betterAuth({
@@ -82,12 +103,12 @@ export const auth = betterAuth({
       allowUnlinkingAll: true,
     },
   },
-  ...(googleAuthEnabled
+  ...(googleOAuthAtBoot
     ? {
         socialProviders: {
           google: {
-            clientId: env.GOOGLE_CLIENT_ID as string,
-            clientSecret: env.GOOGLE_CLIENT_SECRET as string,
+            clientId: googleOAuthAtBoot.clientId,
+            clientSecret: googleOAuthAtBoot.clientSecret,
           },
         },
       }

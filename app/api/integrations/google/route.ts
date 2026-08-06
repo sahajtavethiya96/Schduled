@@ -17,13 +17,13 @@ export async function GET(req: NextRequest) {
 
   const returnTo = safeReturnTo(req.nextUrl.searchParams.get('returnTo'))
 
-  if (!googleCalendarConfigured()) {
+  if (!(await googleCalendarConfigured())) {
     const fallback = new URL(returnTo, getAppUrl())
     fallback.searchParams.set('calendar_error', 'not_configured')
     return NextResponse.redirect(fallback)
   }
 
-  const oauth2Client = createGoogleOAuthClient()
+  const oauth2Client = await createGoogleOAuthClient()
 
   const state = Buffer.from(
     JSON.stringify({ userId: session.user.id, returnTo }),

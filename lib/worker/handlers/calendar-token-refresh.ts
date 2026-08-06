@@ -29,7 +29,7 @@ async function processCalendarTokenRefresh(job: Job<CalendarTokenRefreshPayload>
     return
   }
 
-  const oauth2 = createGoogleOAuthClient()
+  const oauth2 = await createGoogleOAuthClient()
 
   const refreshToken = await decrypt(cal.refreshToken)
 

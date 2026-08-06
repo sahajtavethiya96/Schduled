@@ -1,4 +1,8 @@
-import { GoogleLogo, MicrosoftOutlookLogo, VideoCamera } from "@phosphor-icons/react/dist/ssr";
+import {
+  GoogleLogo,
+  MicrosoftOutlookLogo,
+  VideoCamera,
+} from "@phosphor-icons/react/dist/ssr";
 import { and, eq } from "drizzle-orm";
 import { PageHeader } from "@/components/scaffold/page-header";
 import { Badge } from "@/components/ui/badge";
@@ -13,8 +17,11 @@ import {
 import { connectedCalendar, videoConnection } from "@/db/schema";
 import { requireSession } from "@/lib/authz";
 import { db } from "@/lib/db";
-import { env } from "@/lib/env";
 import { getAppUrl } from "@/lib/get-app-url";
+import {
+  isGoogleOAuthConfigured,
+  isZoomOAuthConfigured,
+} from "@/lib/integration-settings";
 import { ZoomDisconnectButton } from "./_components/zoom-action";
 
 export const metadata = { title: "Integrations" };
@@ -66,7 +73,7 @@ export default async function IntegrationsPage() {
     .then((r) => r[0]);
 
   const googleConnectUrl = `${getAppUrl()}/api/integrations/google?returnTo=/settings/integrations`;
-  const googleConfigured = !!(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET);
+  const googleConfigured = await isGoogleOAuthConfigured();
 
   const zoomConn = await db
     .select({
@@ -83,7 +90,7 @@ export default async function IntegrationsPage() {
     .limit(1)
     .then((r) => r[0]);
   const zoomConnectUrl = `${getAppUrl()}/api/integrations/zoom?returnTo=/settings/integrations`;
-  const zoomConfigured = !!(env.ZOOM_CLIENT_ID && env.ZOOM_CLIENT_SECRET);
+  const zoomConfigured = await isZoomOAuthConfigured();
 
   return (
     <div className="space-y-6">
@@ -120,10 +127,7 @@ export default async function IntegrationsPage() {
             }
             badge={
               googleCal?.status === "connected" ? (
-                <Badge
-                  className="text-primary"
-                  variant="secondary"
-                >
+                <Badge className="text-primary" variant="secondary">
                   Active
                 </Badge>
               ) : (
@@ -152,10 +156,7 @@ export default async function IntegrationsPage() {
             }
             badge={
               zoomConn ? (
-                <Badge
-                  className="text-primary"
-                  variant="secondary"
-                >
+                <Badge className="text-primary" variant="secondary">
                   Active
                 </Badge>
               ) : (
@@ -191,10 +192,7 @@ export default async function IntegrationsPage() {
             }
             badge={
               googleCal?.status === "connected" ? (
-                <Badge
-                  className="text-primary"
-                  variant="secondary"
-                >
+                <Badge className="text-primary" variant="secondary">
                   Connected
                 </Badge>
               ) : undefined

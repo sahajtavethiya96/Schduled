@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { env } from "@/lib/env";
+import { getSmtpSettings, isSmtpConfigured } from "@/lib/integration-settings";
 
 export interface SmtpAttachment {
   content: string;
@@ -22,24 +22,13 @@ export interface SmtpSendResult {
   status: string;
 }
 
-function isPlaceholderHost(host: string) {
-  return /(^|\.)example\.(com|org|net)$/i.test(host.trim());
-}
-
-export function isSmtpConfigured() {
-  return !!(
-    env.SMTP_HOST &&
-    !isPlaceholderHost(env.SMTP_HOST) &&
-    env.SMTP_USER &&
-    env.SMTP_PASS &&
-    env.EMAIL_FROM
-  );
-}
+export { isSmtpConfigured };
 
 export async function sendEmailViaSmtp(
   input: SmtpSendInput
 ): Promise<SmtpSendResult> {
-  if (!isSmtpConfigured()) {
+  const settings = await getSmtpSettings();
+  if (!settings) {
     console.log("[email:dev]", {
       subject: input.subject,
       text: input.text,
@@ -51,19 +40,18 @@ export async function sendEmailViaSmtp(
     };
   }
 
-  const port = env.SMTP_PORT ?? 587;
   const transporter = nodemailer.createTransport({
-    host: env.SMTP_HOST,
-    port,
-    secure: env.SMTP_SECURE ?? port === 465,
+    host: settings.host,
+    port: settings.port,
+    secure: settings.secure,
     auth: {
-      user: env.SMTP_USER,
-      pass: env.SMTP_PASS,
+      user: settings.user,
+      pass: settings.pass,
     },
   });
 
   const info = await transporter.sendMail({
-    from: env.EMAIL_FROM,
+    from: settings.from,
     to: Array.isArray(input.to) ? input.to.join(", ") : input.to,
     subject: input.subject,
     html: input.html,
