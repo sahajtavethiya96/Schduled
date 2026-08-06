@@ -2,11 +2,15 @@ import { inArray } from "drizzle-orm";
 import { appSetting } from "@/db/schema";
 import { db } from "@/lib/db";
 import { env } from "@/lib/env";
+import {
+  isGoogleOAuthConfigured,
+  isSmtpConfigured,
+} from "@/lib/integration-settings";
 
 export interface SignInMethods {
-  password: boolean;
-  magicLink: boolean;
   google: boolean;
+  magicLink: boolean;
+  password: boolean;
 }
 
 const KEYS = {
@@ -17,23 +21,30 @@ const KEYS = {
 
 const ALL_KEYS = [KEYS.password, KEYS.magicLink, KEYS.google];
 
-// Env-level availability ("ceiling"): a method the deployment can't physically
-// offer can never be turned on, regardless of the admin's stored preference.
+// Availability ("ceiling"): a method the deployment can't physically offer
+// can never be turned on, regardless of the admin's stored preference.
 //  - password: hard-disabled only if the operator sets the env flag off
-//  - google: needs OAuth credentials in the environment
+//  - google: needs OAuth credentials (DB-configured or env, see
+//    lib/integration-settings.ts)
 //  - magic link: needs SMTP to actually deliver, so it's only offered in
 //    production when SMTP is configured. In development the console fallback
 //    makes it usable, so it stays available for local testing.
-export const smtpConfigured = !!(env.SMTP_HOST && env.SMTP_PORT && env.SMTP_USER);
+// Functions, not module-scope consts: SMTP/Google can now be configured via
+// the DB (Settings → Services), which a frozen-at-import const would never
+// see without a restart.
 export const passwordAvailable = env.NEXT_PUBLIC_PASSWORD_AUTH_ENABLED;
-export const googleAvailable = !!(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET);
-export const magicLinkAvailable = smtpConfigured || env.NODE_ENV !== "production";
 
-export const signInMethodAvailability: SignInMethods = {
-  password: passwordAvailable,
-  magicLink: magicLinkAvailable,
-  google: googleAvailable,
-};
+export async function getSignInMethodAvailability(): Promise<SignInMethods> {
+  const [smtp, google] = await Promise.all([
+    isSmtpConfigured(),
+    isGoogleOAuthConfigured(),
+  ]);
+  return {
+    password: passwordAvailable,
+    magicLink: smtp || env.NODE_ENV !== "production",
+    google,
+  };
+}
 
 // Short-lived process cache so the Better Auth `before` hook (which runs on
 // every auth request) doesn't hit the DB each time. Writes invalidate it, and
@@ -48,7 +59,9 @@ export function invalidateSignInMethodsCache() {
 /** Raw admin-stored intent — defaults every method to true when unset. */
 export async function getStoredSignInMethods(): Promise<SignInMethods> {
   const current = Date.now();
-  if (cache && current - cache.at < TTL_MS) return cache.value;
+  if (cache && current - cache.at < TTL_MS) {
+    return cache.value;
+  }
 
   const rows = await db
     .select({ key: appSetting.key, value: appSetting.value })
@@ -68,31 +81,25 @@ export async function getStoredSignInMethods(): Promise<SignInMethods> {
   return value;
 }
 
-/** Every method the deployment can physically offer, ignoring admin intent. */
-export function availableSignInMethods(): SignInMethods {
-  return {
-    password: passwordAvailable,
-    magicLink: magicLinkAvailable,
-    google: googleAvailable,
-  };
-}
-
 /**
- * What's actually offered = admin intent ∧ env availability, with a hard floor:
+ * What's actually offered = admin intent ∧ availability, with a hard floor:
  * if a stored preference leaves no *available* method on (e.g. the admin chose
  * Google-only and the operator later removed the OAuth creds), fall back to
  * every available method so a login page can never end up with zero options.
- * `magicLinkAvailable` is true in dev, so the floor always yields ≥ 1.
+ * Availability's `magicLink` is true in dev, so the floor always yields ≥ 1.
  */
 export async function getEffectiveSignInMethods(): Promise<SignInMethods> {
-  const stored = await getStoredSignInMethods();
+  const [stored, availability] = await Promise.all([
+    getStoredSignInMethods(),
+    getSignInMethodAvailability(),
+  ]);
   const effective: SignInMethods = {
-    password: stored.password && passwordAvailable,
-    magicLink: stored.magicLink && magicLinkAvailable,
-    google: stored.google && googleAvailable,
+    password: stored.password && availability.password,
+    magicLink: stored.magicLink && availability.magicLink,
+    google: stored.google && availability.google,
   };
   if (!effective.password && !effective.magicLink && !effective.google) {
-    return availableSignInMethods();
+    return availability;
   }
   return effective;
 }

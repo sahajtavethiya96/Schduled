@@ -2,8 +2,11 @@ import { eq } from "drizzle-orm";
 import { videoConnection } from "@/db/schema";
 import { db } from "@/lib/db";
 import { decrypt, encrypt } from "@/lib/encrypt";
-import { env } from "@/lib/env";
 import { getAppUrl } from "@/lib/get-app-url";
+import {
+  getZoomOAuthSettings,
+  isZoomOAuthConfigured,
+} from "@/lib/integration-settings";
 
 type VideoConnectionRow = typeof videoConnection.$inferSelect;
 
@@ -15,19 +18,23 @@ const ZOOM_API_BASE = "https://api.zoom.us/v2";
 // is the granular replacement for the classic `meeting:write`.
 const ZOOM_SCOPES = ["meeting:write:meeting"];
 
-export function zoomConfigured(): boolean {
-  return !!(env.ZOOM_CLIENT_ID && env.ZOOM_CLIENT_SECRET);
-}
+export { isZoomOAuthConfigured as zoomConfigured };
 
 export function zoomRedirectUri(): string {
   return `${getAppUrl()}/api/integrations/zoom/callback`;
 }
 
-/** Build the Zoom authorization URL the host is redirected to. */
-export function getZoomAuthUrl(state: string): string {
+/** Build the Zoom authorization URL the host is redirected to. Every call
+ * site already guards with `zoomConfigured()` first, so this throws rather
+ * than building a URL with an undefined client_id. */
+export async function getZoomAuthUrl(state: string): Promise<string> {
+  const settings = await getZoomOAuthSettings();
+  if (!settings) {
+    throw new Error("Zoom OAuth is not configured");
+  }
   const params = new URLSearchParams({
     response_type: "code",
-    client_id: env.ZOOM_CLIENT_ID!,
+    client_id: settings.clientId,
     redirect_uri: zoomRedirectUri(),
     state,
     scope: ZOOM_SCOPES.join(" "),
@@ -35,8 +42,12 @@ export function getZoomAuthUrl(state: string): string {
   return `${ZOOM_OAUTH_BASE}/authorize?${params.toString()}`;
 }
 
-function basicAuthHeader(): string {
-  const raw = `${env.ZOOM_CLIENT_ID}:${env.ZOOM_CLIENT_SECRET}`;
+async function basicAuthHeader(): Promise<string> {
+  const settings = await getZoomOAuthSettings();
+  if (!settings) {
+    throw new Error("Zoom OAuth is not configured");
+  }
+  const raw = `${settings.clientId}:${settings.clientSecret}`;
   return `Basic ${Buffer.from(raw).toString("base64")}`;
 }
 
@@ -59,7 +70,7 @@ export async function exchangeZoomCode(
   const res = await fetch(`${ZOOM_OAUTH_BASE}/token`, {
     method: "POST",
     headers: {
-      Authorization: basicAuthHeader(),
+      Authorization: await basicAuthHeader(),
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body,
@@ -84,7 +95,7 @@ async function refreshZoomToken(
   const res = await fetch(`${ZOOM_OAUTH_BASE}/token`, {
     method: "POST",
     headers: {
-      Authorization: basicAuthHeader(),
+      Authorization: await basicAuthHeader(),
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body,

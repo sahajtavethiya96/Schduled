@@ -19,6 +19,7 @@ export * from "@/db/schema/bookings";
 export * from "@/db/schema/notifications";
 export * from "@/db/schema/security";
 export * from "@/db/schema/platform";
+export * from "@/db/schema/integration-settings";
 
 // Relations (after all tables to avoid circular imports)
 export * from "@/db/schema/relations";

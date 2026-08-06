@@ -89,7 +89,7 @@ Examples:
 
 ## Code Rules
 - `tsc --noEmit` must pass clean after every change
-- File storage: local disk by default (`./uploads`); S3/R2-compatible storage available via `STORAGE_DRIVER=s3` (see `ENVIRONMENT.md`)
+- File storage: local disk by default (`./uploads`); S3/R2-compatible storage available via `STORAGE_DRIVER=s3` (see `ENVIRONMENT.md`) — or configure any of this from Settings → Services instead, see Integration Settings below
 - Admins are managed via `/settings/users` (promote/suspend) — no separate "Make Admin" button elsewhere in the app
 - Booking emails: teal-only color scheme
 - No `max-w-4xl` wrappers in admin (`/settings/users`, `/settings/audit`, `/settings/jobs`, `/settings/platform`) pages — full width layouts
@@ -109,12 +109,32 @@ Examples:
 ---
 
 ## Project Structure
-- `app/(app)/` — authenticated user app (includes admin-only screens under `app/(app)/settings/{users,audit,jobs,platform,branding}`, gated by `requireAdmin()`)
+- `app/(app)/` — authenticated user app (includes admin-only screens under `app/(app)/settings/{users,audit,jobs,platform,branding,services}`, gated by `requireAdmin()`)
 - `app/(booking)/` — public booking flow
 - `app/(landing)/` — public marketing pages
 - `components/ui/` — hand-authored UI Kit primitives (customized, no radius, no shadow)
 - `components/settings-admin/` — admin-only settings components (users, audit, jobs)
+- `components/settings-services/` — SMTP/Google/Zoom/storage settings forms, shared by `/settings/services` and the setup wizard's "Configure services" step
 - `components/scaffold/` — app shell (sidebar, header)
+
+---
+
+## Integration Settings (SMTP, Google OAuth, Zoom, Storage)
+
+SMTP, Google OAuth, Zoom OAuth, and file storage are each configurable two
+ways — `.env` vars (see `ENVIRONMENT.md`), or from inside the app via the
+setup wizard or **Settings → Services** (`app/(app)/settings/services/`,
+admin-only). A DB-saved value always wins over the matching `.env` var,
+per field, and applies live with no restart — **except** Google *Sign-In*
+(the Better Auth social-login button), which is resolved once at process
+boot and needs a restart to pick up a DB-only config; Google *Calendar*,
+Zoom, SMTP, and storage all resolve fresh on every use.
+
+- Resolution + encryption: `lib/integration-settings.ts` (AES-GCM via the
+  existing `lib/encrypt.ts`, keyed by `ENCRYPT_KEY` — no new key to manage)
+- Save actions: `app/actions/platform-settings.ts` (`update*SettingsAction`,
+  `test*ConnectionAction`)
+- Full write-up: [`docs/self-hosting/integrations.md`](./docs/self-hosting/integrations.md#integration-settings-db-configuration)
 
 ---
 

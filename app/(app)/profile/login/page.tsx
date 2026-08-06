@@ -10,9 +10,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { account } from "@/db/schema";
+import { googleAuthEnabled } from "@/lib/auth";
 import { requireSession } from "@/lib/authz";
 import { db } from "@/lib/db";
-import { env } from "@/lib/env";
 import { GoogleActions } from "./_components/google-actions";
 
 export const metadata = { title: "Login" };
@@ -53,14 +53,18 @@ export default async function LoginPage() {
 
   const hasGoogle = accounts.some((a) => a.providerId === "google");
   const canDisconnectGoogle = hasGoogle;
-  const isGoogleEnabled = !!(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET);
+  // Reflects Better Auth's own boot-time-resolved config (lib/auth.ts), not
+  // a fresh DB read — the sign-in button is only real if the running Better
+  // Auth instance actually has the Google provider registered, and that's
+  // frozen at process start (see lib/auth.ts for why).
+  const isGoogleEnabled = googleAuthEnabled;
 
   return (
     <div className="space-y-6">
       <PageHeader
+        description="Manage how you sign in to your account."
         eyebrow="Profile"
         title="Connected Accounts"
-        description="Manage how you sign in to your account."
       />
 
       <Card>
@@ -73,45 +77,23 @@ export default async function LoginPage() {
         <CardContent className="divide-y divide-border p-0 px-6">
           {/* Magic Link — always active */}
           <LoginRow
-            icon={<EnvelopeSimple size={20} />}
-            name="Magic Link"
-            description={`A sign-in link is sent to ${session.user.email} — no password required.`}
             badge={
-              <Badge
-                className="text-emerald-600"
-                variant="secondary"
-              >
+              <Badge className="text-emerald-600" variant="secondary">
                 Active
               </Badge>
             }
+            description={`A sign-in link is sent to ${session.user.email} — no password required.`}
+            icon={<EnvelopeSimple size={20} />}
+            name="Magic Link"
           />
 
           {/* Google OAuth */}
           <LoginRow
-            icon={<GoogleLogo size={20} weight="bold" />}
-            name="Google"
-            description={
-              hasGoogle
-                ? "Your Google account is connected. You can sign in with Google."
-                : "Connect your Google account to sign in with Google."
-            }
-            badge={
-              hasGoogle ? (
-                <Badge
-                  className="text-emerald-600"
-                  variant="secondary"
-                >
-                  Connected
-                </Badge>
-              ) : (
-                <Badge variant="secondary">Not connected</Badge>
-              )
-            }
             action={
               isGoogleEnabled ? (
                 <GoogleActions
-                  hasGoogle={hasGoogle}
                   canDisconnect={canDisconnectGoogle}
+                  hasGoogle={hasGoogle}
                 />
               ) : (
                 <span className="text-sm text-muted-foreground">
@@ -119,6 +101,22 @@ export default async function LoginPage() {
                 </span>
               )
             }
+            badge={
+              hasGoogle ? (
+                <Badge className="text-emerald-600" variant="secondary">
+                  Connected
+                </Badge>
+              ) : (
+                <Badge variant="secondary">Not connected</Badge>
+              )
+            }
+            description={
+              hasGoogle
+                ? "Your Google account is connected. You can sign in with Google."
+                : "Connect your Google account to sign in with Google."
+            }
+            icon={<GoogleLogo size={20} weight="bold" />}
+            name="Google"
           />
         </CardContent>
       </Card>

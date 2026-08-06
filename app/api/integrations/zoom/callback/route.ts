@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(new URL("/login", base));
   }
 
-  if (!zoomConfigured()) {
+  if (!(await zoomConfigured())) {
     return NextResponse.redirect(failUrl);
   }
 

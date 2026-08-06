@@ -9,6 +9,42 @@ Outlook/Office 365 and Microsoft Teams are not implemented yet (tracked as
 Phase 4 / P2 in `SELF-HOSTING.md`) — don't set variables for them, they do
 nothing.
 
+## Integration settings (DB configuration)
+
+SMTP, Google OAuth, Zoom OAuth, and file storage can each be configured
+either way — through the `.env` vars documented in the sections below, **or**
+from inside the app instead, without touching `.env` at all: the first-run
+setup wizard's "Configure services" step, or **Settings → Services** any time
+after. Both paths write to the same place and can be mixed freely.
+
+**Resolution order, per field:** a value saved in Settings → Services always
+wins over the matching `.env` var; an unset field falls back to `.env`; if
+neither is set, that integration is treated as unconfigured. This is
+per-field, not per-integration — e.g. SMTP host/port can come from `.env`
+while the password is only set in Settings → Services, and the merged result
+is used together.
+
+**Encryption:** secrets (SMTP password, OAuth client secrets, S3/R2 access
+keys) are encrypted at rest with AES-GCM, keyed off `ENCRYPT_KEY` — the same
+key this app already uses to encrypt stored OAuth tokens, not a separate key
+to manage. `ENCRYPT_KEY` itself must stay in `.env` (it's what unlocks
+everything else) — set it before saving any secret through Settings →
+Services, or the save fails with a clear error instead of silently storing
+plaintext.
+
+**Restart requirement — Google Sign-In only:** the "Continue with Google"
+button (via Better Auth) is wired up once when the server process starts, so
+a Google config that exists only in the database (no `.env` vars at all)
+takes effect for Sign-In after the next restart, and any later change to it
+needs another restart. Every other resolved value — Google **Calendar**
+connections, Zoom, SMTP, and file storage — is re-read fresh on every use and
+applies immediately, no restart, ever.
+
+**Clearing a saved value:** use the "clear" (eraser) button next to a secret
+field in Settings → Services to remove it from the database and fall back to
+`.env` again; leaving a secret field blank on save just means "don't touch
+what's already saved there."
+
 ## Email (SMTP)
 
 Any SMTP-compatible provider works — self-hosted ([Postfix](https://www.postfix.org/documentation.html))
@@ -68,7 +104,11 @@ Enables "Continue with Google" sign-in, two-way Google Calendar sync
    ```
    `ENCRYPT_KEY` is **required** the moment Google is configured — it
    encrypts stored OAuth tokens at rest. The app will refuse to boot
-   without it if Google credentials are set (`lib/env.ts` validates this).
+   without it if Google credentials are set via `.env` (`lib/env.ts`
+   validates this). Configuring Google entirely through Settings → Services
+   instead skips this boot-time check — but `ENCRYPT_KEY` is still required
+   to actually save the client secret there (see
+   [Integration settings (DB configuration)](#integration-settings-db-configuration) above).
 
 Google Meet links require no separate credential — connecting Google
 Calendar is sufficient; Meet links are created through the Calendar API.
@@ -100,6 +140,8 @@ type.
    ZOOM_CLIENT_SECRET=xxxxxxxx
    ENCRYPT_KEY=<openssl rand -hex 32>   # same key as Google, if both are used
    ```
+   Or set the client ID/secret from Settings → Services instead — see
+   [Integration settings (DB configuration)](#integration-settings-db-configuration) above.
 
 **Publishing note:** a publicly-listed Zoom app requires Zoom's review
 process, which can take weeks. For a single self-hosted instance connecting
