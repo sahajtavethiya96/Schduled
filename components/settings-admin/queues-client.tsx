@@ -61,7 +61,7 @@ function RetryButton({ queueName }: { queueName: string }) {
 
   return (
     <Button
-      className="h-7 gap-1.5 border-destructive/30 text-xs text-destructive hover:bg-destructive/10"
+      className="h-7 gap-1.5 border-error/30 text-xs text-error hover:bg-error/10"
       disabled={isPending}
       onClick={handleRetry}
       size="sm"
@@ -94,7 +94,7 @@ function StatCard({
         accent
           ? "border-primary/40 bg-primary/[0.04]"
           : danger
-            ? "border-destructive/30 bg-destructive/[0.03]"
+            ? "border-error/30 bg-error/[0.03]"
             : ""
       }
     >
@@ -104,7 +104,7 @@ function StatCard({
             <p className="text-xs font-semibold uppercase tracking-ui text-muted-foreground">
               {label}
             </p>
-            <p className="mt-1.5 font-heading text-3xl font-bold text-foreground">
+            <p className="mt-1.5 font-heading text-3xl font-bold text-base-content">
               {value}
             </p>
           </div>
@@ -113,7 +113,7 @@ function StatCard({
               accent
                 ? "text-primary"
                 : danger
-                  ? "text-destructive"
+                  ? "text-error"
                   : "text-muted-foreground/60"
             }
           >
@@ -143,9 +143,9 @@ function WorkerStatusCard({ status }: { status: WorkerStatus }) {
     },
     stopped: {
       label: "Stopped",
-      textCls: "text-destructive",
-      dotCls: "bg-destructive",
-      cardCls: "border-destructive/30 bg-destructive/[0.03]",
+      textCls: "text-error",
+      dotCls: "bg-error",
+      cardCls: "border-error/30 bg-error/[0.03]",
     },
   }[status];
 
@@ -186,7 +186,7 @@ function QueueOverviewCard({
 }) {
   const status =
     failed > 0
-      ? { label: `${failed} Failed`, cls: "text-destructive", dot: "bg-destructive", border: "border-destructive/25" }
+      ? { label: `${failed} Failed`, cls: "text-error", dot: "bg-error", border: "border-error/25" }
       : active > 0
         ? { label: `${active} Running`, cls: "text-primary", dot: "bg-primary", border: "border-primary/25" }
         : pending > 0
@@ -195,7 +195,7 @@ function QueueOverviewCard({
 
   return (
     <div className={`flex flex-col gap-2 border p-3.5 ${status.border}`}>
-      <p className="truncate text-sm font-medium text-foreground">{name}</p>
+      <p className="truncate text-sm font-medium text-base-content">{name}</p>
       <span className={`flex items-center gap-1.5 text-xs font-semibold ${status.cls}`}>
         <span className={`size-1.5 rounded-full ${status.dot}`} />
         {status.label}
@@ -359,7 +359,7 @@ export function QueuesClient({
       {/* ── Header ──────────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="text-lg font-bold text-foreground">Job Queues</h2>
+          <h2 className="text-lg font-bold text-base-content">Job Queues</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             pg-boss queue state grouped by queue name and job state.
           </p>
@@ -409,7 +409,7 @@ export function QueuesClient({
       {/* ── Per-queue overview ──────────────────────────────────────────── */}
       {queueOverview.length > 0 && (
         <div>
-          <h3 className="mb-3 text-sm font-semibold text-foreground">Queue Overview</h3>
+          <h3 className="mb-3 text-sm font-semibold text-base-content">Queue Overview</h3>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {queueOverview.map((q) => (
               <QueueOverviewCard key={q.name} {...q} name={getFriendlyName(q.name)} />
@@ -420,7 +420,7 @@ export function QueuesClient({
 
       {/* ── Queue details table ──────────────────────────────────────────── */}
       <Card>
-        <CardHeader className="flex flex-col gap-3 border-b border-border py-4 sm:flex-row sm:items-center sm:justify-between">
+        <CardHeader className="flex flex-col gap-3 border-b border-base-300 py-4 sm:flex-row sm:items-center sm:justify-between">
           <CardTitle className="text-base font-semibold">
             Queue Details
           </CardTitle>
@@ -461,12 +461,12 @@ export function QueuesClient({
                 <Stack size={40} weight="duotone" />
               </span>
               <div>
-                <p className="text-sm font-medium text-foreground">
+                <p className="text-sm font-medium text-base-content">
                   No queue data yet
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   Run{" "}
-                  <code className="font-mono text-foreground">pnpm worker</code>{" "}
+                  <code className="font-mono text-base-content">pnpm worker</code>{" "}
                   or enqueue an email to populate the pg-boss schema.
                 </p>
               </div>
@@ -478,7 +478,7 @@ export function QueuesClient({
                   <span className="text-muted-foreground/25">
                     <MagnifyingGlass size={36} />
                   </span>
-                  <p className="text-sm font-medium text-foreground">
+                  <p className="text-sm font-medium text-base-content">
                     No queues match
                   </p>
                   <p className="text-xs text-muted-foreground">
@@ -489,7 +489,7 @@ export function QueuesClient({
                 <div className="overflow-x-auto">
                   <Table className="w-full text-sm">
                     <TableHeader>
-                      <TableRow className="border-b border-border bg-muted/40">
+                      <TableRow className="border-b border-base-300 bg-base-200/40">
                         <TableHead className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-ui text-muted-foreground">
                           Queue
                         </TableHead>
@@ -507,7 +507,7 @@ export function QueuesClient({
                     <TableBody>
                       {pageRows.map((row) => (
                         <TableRow
-                          className="cursor-pointer border-b border-border transition-colors hover:bg-muted/20 last:border-0"
+                          className="cursor-pointer border-b border-base-300 transition-colors hover:bg-base-200/20 last:border-0"
                           key={`${row.name}:${row.state}`}
                           onClick={() =>
                             setSelected({ name: row.name, state: row.state })
@@ -559,7 +559,7 @@ export function QueuesClient({
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between gap-3 border-t border-border px-5 py-3">
+            <div className="flex items-center justify-between gap-3 border-t border-base-300 px-5 py-3">
               <p className="text-xs text-muted-foreground">
                 {filtered.length} rows
               </p>

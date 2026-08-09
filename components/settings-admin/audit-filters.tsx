@@ -118,12 +118,12 @@ export function AuditFilters({
       </div>
 
       {dateRange === "custom" && (
-        <div className="flex items-center gap-3 border-t border-border bg-muted/30 px-1 py-3">
+        <div className="flex items-center gap-3 border-t border-base-300 bg-base-200/30 px-1 py-3">
           <FunnelSimple className="text-muted-foreground" size={14} />
           <label className="flex items-center gap-2 text-sm">
             <span className="text-muted-foreground">From</span>
             <input
-              className="h-8 border border-border bg-background px-2 text-sm focus:border-primary focus:outline-none"
+              className="h-8 border border-base-300 bg-base-100 px-2 text-sm focus:border-primary focus:outline-none"
               onChange={(e) => push({ from: e.target.value || undefined })}
               type="date"
               defaultValue={customFrom}
@@ -132,7 +132,7 @@ export function AuditFilters({
           <label className="flex items-center gap-2 text-sm">
             <span className="text-muted-foreground">To</span>
             <input
-              className="h-8 border border-border bg-background px-2 text-sm focus:border-primary focus:outline-none"
+              className="h-8 border border-base-300 bg-base-100 px-2 text-sm focus:border-primary focus:outline-none"
               onChange={(e) => push({ to: e.target.value || undefined })}
               type="date"
               defaultValue={customTo}

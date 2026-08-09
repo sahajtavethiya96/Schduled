@@ -110,7 +110,7 @@ export function GlobalSearch() {
             onChange={(e) => { setQuery(e.target.value); setOpen(true) }}
             onFocus={() => setOpen(true)}
             onKeyDown={onKeyDown}
-            className="h-9 w-48 md:w-72 lg:w-[340px] rounded-none border border-border bg-page pl-8 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+            className="h-9 w-48 md:w-72 lg:w-[340px] rounded-none border border-base-300 bg-page pl-8 pr-3 text-sm text-base-content placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all"
             placeholder="Search bookings, contacts, meeting types…"
             type="search"
           />
@@ -209,11 +209,11 @@ function ResultRow({
       onClick={onClick}
       className={cn(
         'flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm transition-colors',
-        'hover:bg-muted',
+        'hover:bg-base-200',
       )}
     >
       <span className="shrink-0 text-muted-foreground">{icon}</span>
-      <span className="min-w-0 flex-1 truncate font-medium text-foreground">{label}</span>
+      <span className="min-w-0 flex-1 truncate font-medium text-base-content">{label}</span>
       {sub && <span className="shrink-0 text-xs text-muted-foreground">{sub}</span>}
     </button>
   )

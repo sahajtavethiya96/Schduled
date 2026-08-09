@@ -142,7 +142,7 @@ export function ConfirmationClient({
   })()
 
   return (
-    <div className="relative min-h-screen bg-muted/30 p-4 md:flex md:items-center md:justify-center md:p-8">
+    <div className="relative min-h-screen bg-base-200/30 p-4 md:flex md:items-center md:justify-center md:p-8">
 
       {/* Blur decorations */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
@@ -151,7 +151,7 @@ export function ConfirmationClient({
       </div>
 
       {/* Toolbar */}
-      <div className="fixed top-0 left-0 right-0 z-50 h-[56px] border-b border-border bg-background/96 backdrop-blur-md">
+      <div className="fixed top-0 left-0 right-0 z-50 h-[56px] border-b border-base-300 bg-base-100/96 backdrop-blur-md">
         <div className="mx-auto flex h-full w-full max-w-[580px] items-center justify-between px-0">
         <Logo size="md" href="/" />
         <div className="flex items-center gap-2">
@@ -159,7 +159,7 @@ export function ConfirmationClient({
           <button
             type="button"
             onClick={copyPageLink}
-            className="inline-flex h-8 items-center gap-1.5 bg-primary px-3.5 text-xs font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+            className="inline-flex h-8 items-center gap-1.5 bg-primary px-3.5 text-xs font-semibold text-primary-content transition-opacity hover:opacity-90"
           >
             {copyLinkDone
               ? <Check size={13} weight="bold" />
@@ -173,7 +173,7 @@ export function ConfirmationClient({
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
-                className="inline-flex h-8 items-center gap-1.5 border border-border px-3.5 text-xs font-semibold text-foreground/70 transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
+                className="inline-flex h-8 items-center gap-1.5 border border-base-300 px-3.5 text-xs font-semibold text-base-content/70 transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
               >
                 Menu
                 <CaretDown size={11} weight="bold" />
@@ -204,13 +204,13 @@ export function ConfirmationClient({
       </div>
 
       <div className="relative z-10 mx-auto w-full max-w-[580px]" style={{ paddingTop: '3.5rem' }}>
-        <div className="flex flex-col items-center gap-5 bg-card px-5 py-8 sm:px-8 border-[3px] border-primary">
+        <div className="flex flex-col items-center gap-5 bg-base-100 px-5 py-8 sm:px-8 border-[3px] border-primary">
 
           {/* Back button */}
           <div className="w-full">
             <Link
               href={hostUsername ? `/${hostUsername}` : '/'}
-              className="inline-flex items-center gap-2 border border-border px-3.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
+              className="inline-flex items-center gap-2 border border-base-300 px-3.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
             >
               <ArrowLeft size={14} />
               Back
@@ -249,11 +249,11 @@ export function ConfirmationClient({
           <div className="text-center">
             {isPending ? (
               <>
-                <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                <h1 className="text-2xl font-bold tracking-tight text-base-content">
                   Request Submitted!
                 </h1>
                 {hostName && (
-                  <p className="mt-1 text-sm font-medium text-foreground">
+                  <p className="mt-1 text-sm font-medium text-base-content">
                     Your request for{' '}
                     <span className="text-amber-600">{eventName}</span> with{' '}
                     <span className="text-primary">{hostName}</span> is awaiting approval.
@@ -265,11 +265,11 @@ export function ConfirmationClient({
               </>
             ) : (
               <>
-                <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                <h1 className="text-2xl font-bold tracking-tight text-base-content">
                   You&apos;re Scheduled!
                 </h1>
                 {hostName && (
-                  <p className="mt-1 text-sm font-medium text-foreground">
+                  <p className="mt-1 text-sm font-medium text-base-content">
                     Your meeting with <span className="text-primary">{hostName}</span> is confirmed.
                   </p>
                 )}
@@ -281,24 +281,24 @@ export function ConfirmationClient({
           </div>
 
           {/* ── Meeting details card ── */}
-          <div className="w-full border border-border bg-muted/30">
-            <div className="border-b border-border px-5 py-2.5">
-              <p className="text-sm font-bold text-foreground">{eventName}</p>
+          <div className="w-full border border-base-300 bg-base-200/30">
+            <div className="border-b border-base-300 px-5 py-2.5">
+              <p className="text-sm font-bold text-base-content">{eventName}</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5 px-5 py-3.5">
               {hostName && (
                 <div className="flex items-center gap-2">
                   <UserCircle size={14} className="shrink-0 text-muted-foreground" />
-                  <span className="truncate text-xs text-foreground">{hostName}</span>
+                  <span className="truncate text-xs text-base-content">{hostName}</span>
                 </div>
               )}
               <div className="flex items-center gap-2">
                 <CalendarBlank size={14} className="shrink-0 text-muted-foreground" />
-                <span className="truncate text-xs text-foreground">{dateLine}</span>
+                <span className="truncate text-xs text-base-content">{dateLine}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock size={14} className="shrink-0 text-muted-foreground" />
-                <span className="text-xs text-foreground">
+                <span className="text-xs text-base-content">
                   {startTime}{endTime ? ` – ${endTime}` : ''}
                 </span>
               </div>
@@ -325,7 +325,7 @@ export function ConfirmationClient({
                       View Location
                     </a>
                   ) : (
-                    <span className="break-all text-xs text-foreground">{locationValue}</span>
+                    <span className="break-all text-xs text-base-content">{locationValue}</span>
                   )}
                 </div>
               )}
@@ -357,7 +357,7 @@ export function ConfirmationClient({
               {rescheduleToken && (
                 <Link
                   href={`/reschedule/${rescheduleToken}`}
-                  className="flex flex-1 h-10 items-center justify-center gap-1.5 border border-primary text-sm font-semibold text-primary transition-all hover:bg-primary hover:text-primary-foreground"
+                  className="flex flex-1 h-10 items-center justify-center gap-1.5 border border-primary text-sm font-semibold text-primary transition-all hover:bg-primary hover:text-primary-content"
                 >
                   <ArrowsClockwise size={13} />
                   Reschedule
@@ -366,7 +366,7 @@ export function ConfirmationClient({
               {cancelToken && (
                 <Link
                   href={`/cancel/${cancelToken}`}
-                  className="flex flex-1 h-10 items-center justify-center gap-1.5 border border-destructive/30 text-sm font-semibold text-destructive/60 transition-all hover:bg-destructive/5 hover:border-destructive hover:text-destructive"
+                  className="flex flex-1 h-10 items-center justify-center gap-1.5 border border-error/30 text-sm font-semibold text-error/60 transition-all hover:bg-error/5 hover:border-error hover:text-error"
                 >
                   <X size={13} />
                   Cancel Event
@@ -376,7 +376,7 @@ export function ConfirmationClient({
           )}
 
           {/* ── What's Next ── */}
-          <div className="w-full border border-border px-5 py-3.5">
+          <div className="w-full border border-base-300 px-5 py-3.5">
             <p className="mb-2.5 text-xs font-bold uppercase tracking-wider text-muted-foreground">
               What&apos;s Next?
             </p>
@@ -409,7 +409,7 @@ export function ConfirmationClient({
           {hostUsername && (
             <Link
               href={`/${hostUsername}`}
-              className="flex w-full h-10 items-center justify-center gap-1.5 border border-border text-sm font-medium text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+              className="flex w-full h-10 items-center justify-center gap-1.5 border border-base-300 text-sm font-medium text-muted-foreground transition-colors hover:border-primary hover:text-primary"
             >
               <CalendarPlus size={14} />
               Schedule another meeting

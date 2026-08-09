@@ -62,7 +62,7 @@ const CHANNELS = [
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen overflow-x-clip bg-background text-foreground antialiased">
+    <div className="min-h-screen overflow-x-clip bg-base-100 text-base-content antialiased">
 
       <LandingHeader />
 
@@ -94,7 +94,7 @@ export default function ContactPage() {
         </section>
 
         {/* ── Contact channels ───────────────────────────────────────────── */}
-        <section className="py-16 border-b border-border">
+        <section className="py-16 border-b border-base-300">
           <div className="mx-auto max-w-6xl px-5 sm:px-8">
             <div className="grid gap-4 sm:grid-cols-3">
               {CHANNELS.map((c, i) => {
@@ -102,7 +102,7 @@ export default function ContactPage() {
                 return (
                   <Reveal key={c.title} delay={i * 80}>
                   <div
-                    className="group relative overflow-hidden border border-border bg-card p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 h-full"
+                    className="group relative overflow-hidden border border-base-300 bg-base-100 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 h-full"
                   >
                     {/* Accent line */}
                     <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-primary to-teal-400 scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
@@ -150,7 +150,7 @@ export default function ContactPage() {
               {/* Side info */}
               <Reveal delay={160} className="space-y-6">
                 {/* Response time */}
-                <div className="border border-border bg-card p-6">
+                <div className="border border-base-300 bg-base-100 p-6">
                   <div className="mb-3 flex items-center gap-3">
                     <div className="flex h-9 w-9 items-center justify-center bg-primary/10 text-primary">
                       <Clock size={18} weight="duotone" />
@@ -158,12 +158,12 @@ export default function ContactPage() {
                     <p className="font-bold text-sm">Response Time</p>
                   </div>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    We aim to respond to all messages within <strong className="text-foreground">2 business days</strong>. Complex issues may take a little longer.
+                    We aim to respond to all messages within <strong className="text-base-content">2 business days</strong>. Complex issues may take a little longer.
                   </p>
                 </div>
 
                 {/* FAQ link */}
-                <div className="border border-border bg-card p-6">
+                <div className="border border-base-300 bg-base-100 p-6">
                   <div className="mb-3 flex items-center gap-3">
                     <div className="flex h-9 w-9 items-center justify-center bg-primary/10 text-primary">
                       <Question size={18} weight="duotone" />

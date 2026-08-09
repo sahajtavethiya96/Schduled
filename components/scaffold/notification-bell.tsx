@@ -186,14 +186,14 @@ export function NotificationBell() {
         >
           <Bell className="size-[18px]" weight="regular" />
           {unread > 0 && (
-            <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center bg-red-500 px-1 text-[10px] font-bold leading-none text-white ring-2 ring-background">
+            <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center bg-red-500 px-1 text-[10px] font-bold leading-none text-white ring-2 ring-base-100">
               {unread > 9 ? "9+" : unread}
             </span>
           )}
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-80 p-0">
-        <div className="flex items-center justify-between border-b border-border px-4 py-3">
+        <div className="flex items-center justify-between border-b border-base-300 px-4 py-3">
           <span className="text-sm font-semibold">Notifications</span>
           <div className="flex items-center gap-2">
             {unread > 0 && (
@@ -208,7 +208,7 @@ export function NotificationBell() {
             )}
             {items.length > 0 && (
               <button
-                className="text-xs text-muted-foreground hover:text-destructive hover:underline transition-colors"
+                className="text-xs text-muted-foreground hover:text-error hover:underline transition-colors"
                 onClick={clearAll}
                 type="button"
               >
@@ -218,7 +218,7 @@ export function NotificationBell() {
           </div>
         </div>
 
-        <div className="max-h-[304px] overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+        <div className="max-h-[304px] overflow-y-auto scrollbar-thin scrollbar-thumb-base-300 scrollbar-track-transparent">
           {loading && items.length === 0 && (
             <p className="px-4 py-8 text-center text-xs text-muted-foreground">
               Loading…
@@ -236,7 +236,7 @@ export function NotificationBell() {
             const content = (
               <div
                 className={cn(
-                  "flex gap-3 px-4 py-3 transition-colors hover:bg-muted/50",
+                  "flex gap-3 px-4 py-3 transition-colors hover:bg-base-200/50",
                   !n.read && "bg-primary/[0.04]"
                 )}
               >
@@ -244,7 +244,7 @@ export function NotificationBell() {
                   {ICONS[n.type] ?? <Bell size={16} />}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-foreground" title={n.title}>
+                  <p className="truncate text-sm font-medium text-base-content" title={n.title}>
                     {n.title}
                   </p>
                   {n.body && (
@@ -263,7 +263,7 @@ export function NotificationBell() {
             );
             return (
               <div
-                className="group/item relative border-b border-border/60 last:border-0"
+                className="group/item relative border-b border-base-300/60 last:border-0"
                 key={n.id}
               >
                 {n.bookingId ? (
@@ -282,7 +282,7 @@ export function NotificationBell() {
                 {/* Per-notification dismiss button */}
                 <button
                   aria-label="Dismiss notification"
-                  className="absolute right-2 top-2 hidden items-center justify-center h-5 w-5 bg-background text-muted-foreground hover:bg-muted hover:text-foreground group-hover/item:flex [@media(hover:none)]:flex transition-colors border border-border/60"
+                  className="absolute right-2 top-2 hidden items-center justify-center h-5 w-5 bg-base-100 text-muted-foreground hover:bg-base-200 hover:text-base-content group-hover/item:flex [@media(hover:none)]:flex transition-colors border border-base-300/60"
                   onClick={() => dismissOne(n.id)}
                   type="button"
                 >
@@ -293,7 +293,7 @@ export function NotificationBell() {
           })}
         </div>
 
-        <div className="border-t border-border px-4 py-2">
+        <div className="border-t border-base-300 px-4 py-2">
           <Link
             className="block text-center text-xs font-medium text-primary hover:underline"
             href="/bookings"

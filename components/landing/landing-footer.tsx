@@ -48,7 +48,7 @@ const BOTTOM_LINKS = [
 
 export function LandingFooter() {
   return (
-    <footer className="border-t border-border bg-background">
+    <footer className="border-t border-base-300 bg-base-100">
       <div className="mx-auto max-w-[1400px] px-5 py-16 md:px-12 xl:px-20">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
 
@@ -66,7 +66,7 @@ export function LandingFooter() {
                   aria-label={label}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-9 w-9 items-center justify-center border border-border text-muted-foreground transition-all hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
+                  className="flex h-9 w-9 items-center justify-center border border-base-300 text-muted-foreground transition-all hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
                 >
                   <Icon size={18} weight="fill" />
                 </a>
@@ -77,7 +77,7 @@ export function LandingFooter() {
           {/* Link columns — stagger up */}
           {FOOTER_COLS.map((col, i) => (
             <Reveal key={col.title} direction="up" delay={100 + i * 100}>
-              <h4 className="mb-4 text-xs font-black uppercase tracking-eyebrow text-foreground">
+              <h4 className="mb-4 text-xs font-black uppercase tracking-eyebrow text-base-content">
                 {col.title}
               </h4>
               <ul className="space-y-2.5">
@@ -85,7 +85,7 @@ export function LandingFooter() {
                   <li key={label}>
                     <Link
                       href={href}
-                      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                      className="text-sm text-muted-foreground transition-colors hover:text-base-content"
                     >
                       {label}
                     </Link>
@@ -98,7 +98,7 @@ export function LandingFooter() {
 
         {/* Bottom bar — fades up last */}
         <Reveal direction="up" delay={400}>
-          <div className="mt-12 flex flex-col items-center gap-3 border-t border-border pt-8 sm:flex-row sm:justify-between">
+          <div className="mt-12 flex flex-col items-center gap-3 border-t border-base-300 pt-8 sm:flex-row sm:justify-between">
             <p className="text-xs text-muted-foreground">
               © {new Date().getFullYear()} Schduled. All rights reserved.
             </p>
@@ -107,7 +107,7 @@ export function LandingFooter() {
                 <Link
                   key={label}
                   href={href}
-                  className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+                  className="text-xs text-muted-foreground transition-colors hover:text-base-content"
                 >
                   {label}
                 </Link>

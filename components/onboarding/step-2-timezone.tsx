@@ -175,7 +175,7 @@ export function StepTimezone({ onNext, onBack }: StepTimezoneProps) {
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="flex h-10 w-full items-center gap-2 border border-input bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            className="flex h-10 w-full items-center gap-2 border border-input bg-base-100 px-3 py-2 text-sm text-base-content focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           >
             <Globe size={16} className="shrink-0 text-muted-foreground" />
             <span className="flex-1 truncate text-left">
@@ -186,9 +186,9 @@ export function StepTimezone({ onNext, onBack }: StepTimezoneProps) {
 
           {/* Dropdown panel — inline, expands in flow; parent scroll area handles overflow */}
           {open && (
-            <div className="mt-1 border border-border bg-background ring-1 ring-foreground/10">
+            <div className="mt-1 border border-base-300 bg-base-100 ring-1 ring-foreground/10">
               {/* Search */}
-              <div className="flex items-center gap-2 border-b border-border px-3 py-2">
+              <div className="flex items-center gap-2 border-b border-base-300 px-3 py-2">
                 <MagnifyingGlass size={14} className="shrink-0 text-muted-foreground" />
                 <input
                   ref={searchRef}
@@ -196,7 +196,7 @@ export function StepTimezone({ onNext, onBack }: StepTimezoneProps) {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search timezone…"
-                  className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+                  className="flex-1 bg-transparent text-sm text-base-content placeholder:text-muted-foreground focus:outline-none"
                 />
               </div>
 
@@ -219,7 +219,7 @@ export function StepTimezone({ onNext, onBack }: StepTimezoneProps) {
                       type="button"
                       data-selected={timezone === tz.value}
                       onClick={() => { setTimezone(tz.value); setOpen(false) }}
-                      className="flex w-full items-center justify-between px-3 py-2.5 text-left text-sm hover:bg-muted/50 focus:bg-muted/50 focus:outline-none"
+                      className="flex w-full items-center justify-between px-3 py-2.5 text-left text-sm hover:bg-base-200/50 focus:bg-base-200/50 focus:outline-none"
                     >
                       <span>{tz.label}</span>
                       {timezone === tz.value && (
@@ -235,7 +235,7 @@ export function StepTimezone({ onNext, onBack }: StepTimezoneProps) {
       </div>
 
       {!open && localTime && (
-        <div className="flex items-center gap-2 border border-border bg-muted/40 px-4 py-3">
+        <div className="flex items-center gap-2 border border-base-300 bg-base-200/40 px-4 py-3">
           <Globe size={16} className="shrink-0 text-primary" />
           <span className="text-sm">
             Your current local time: <strong>{localTime}</strong>
@@ -243,7 +243,7 @@ export function StepTimezone({ onNext, onBack }: StepTimezoneProps) {
         </div>
       )}
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && <p className="text-sm text-error">{error}</p>}
 
       <div className="flex flex-col gap-2">
         <Button type="submit" className="w-full" disabled={saving || !timezone}>

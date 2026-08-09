@@ -177,18 +177,18 @@ export default async function BookingDetailPage({
           <CaretRight size={10} className="text-muted-foreground/40" />
           <Link href={bookingsHref} className="text-muted-foreground transition-colors hover:text-primary">{BOOKINGS_TAB_LABEL[bookingsTab]}</Link>
           <CaretRight size={10} className="text-muted-foreground/40" />
-          <span className="font-semibold text-foreground">Booking details</span>
+          <span className="font-semibold text-base-content">Booking details</span>
         </nav>
         <Link
           href={bookingsHref}
-          className="inline-flex items-center gap-1.5 border border-border bg-background px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
+          className="inline-flex items-center gap-1.5 border border-base-300 bg-base-100 px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
         >
           <ArrowLeft size={15} /> Back to bookings
         </Link>
       </div>
 
       {/* ── Hero ── */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border border-border border-l-[5px] bg-background p-6" style={{ borderLeftColor: color }}>
+      <div className="flex flex-wrap items-center justify-between gap-4 border border-base-300 border-l-[5px] bg-base-100 p-6" style={{ borderLeftColor: color }}>
         <div className="flex items-center gap-4">
           <span className="flex size-16 shrink-0 items-center justify-center rounded-full text-2xl font-black text-white" style={{ backgroundColor: color }}>
             {b.inviteeName.charAt(0).toUpperCase()}
@@ -213,22 +213,22 @@ export default async function BookingDetailPage({
            card lines up with the Quick Actions column) */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
         <InfoCard icon={<CalendarBlank size={18} />} label="Date">
-          <p className="font-semibold text-foreground">{formatInTimeZone(b.startTime, hostTz, 'EEEE')}</p>
+          <p className="font-semibold text-base-content">{formatInTimeZone(b.startTime, hostTz, 'EEEE')}</p>
           <p className="text-sm text-muted-foreground">{formatInTimeZone(b.startTime, hostTz, 'MMMM d, yyyy')}</p>
         </InfoCard>
         <InfoCard icon={<Clock size={18} />} label="Time">
-          <p className="font-semibold text-foreground">{formatInTimeZone(b.startTime, hostTz, 'h:mm a')} – {formatInTimeZone(b.endTime, hostTz, 'h:mm a')}</p>
+          <p className="font-semibold text-base-content">{formatInTimeZone(b.startTime, hostTz, 'h:mm a')} – {formatInTimeZone(b.endTime, hostTz, 'h:mm a')}</p>
           <p className="text-sm text-muted-foreground">{b.duration} minutes · {normalizeTzName(hostTz)}</p>
         </InfoCard>
         <InfoCard icon={<VideoCamera size={18} />} label="Location">
-          <p className="font-semibold text-foreground">{locationLabel}</p>
+          <p className="font-semibold text-base-content">{locationLabel}</p>
           {joinUrl && (
             <a href={joinUrl} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-primary hover:underline">
               {isLocationLink ? 'View location →' : 'Join meeting →'}
             </a>
           )}
           {videoLinkFailedMessage && (
-            <p className="flex items-start gap-1.5 text-sm text-destructive">
+            <p className="flex items-start gap-1.5 text-sm text-error">
               <Warning size={15} weight="fill" className="mt-0.5 shrink-0" />
               {videoLinkFailedMessage}
             </p>
@@ -249,12 +249,12 @@ export default async function BookingDetailPage({
           {/* Invitee profile */}
           <Card title="Invitee" icon={<EnvelopeSimple size={14} />}>
             <div className="flex items-center gap-3 pb-3">
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-bold text-muted-foreground">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-base-200 text-sm font-bold text-muted-foreground">
                 {b.inviteeName.charAt(0).toUpperCase()}
               </span>
-              <p className="font-semibold text-foreground">{b.inviteeName}</p>
+              <p className="font-semibold text-base-content">{b.inviteeName}</p>
             </div>
-            <div className="space-y-2.5 border-t border-border/60 pt-3">
+            <div className="space-y-2.5 border-t border-base-300/60 pt-3">
               <ProfileRow icon={<EnvelopeSimple size={14} />} label="Email">
                 <a href={`mailto:${b.inviteeEmail}`} className="text-primary hover:underline">{b.inviteeEmail}</a>
               </ProfileRow>
@@ -268,9 +268,9 @@ export default async function BookingDetailPage({
           {answers.length > 0 && (
             <Card title="Responses" icon={<ChatCircleText size={14} />}>
               {answers.map((a, i) => (
-                <div key={i} className="border-b border-border/60 py-2.5 first:pt-0 last:border-0 last:pb-0">
+                <div key={i} className="border-b border-base-300/60 py-2.5 first:pt-0 last:border-0 last:pb-0">
                   <p className="text-xs font-medium uppercase tracking-ui text-muted-foreground">{a.label}</p>
-                  <p className="mt-1 whitespace-pre-wrap text-sm text-foreground">{a.answer}</p>
+                  <p className="mt-1 whitespace-pre-wrap text-sm text-base-content">{a.answer}</p>
                 </div>
               ))}
             </Card>
@@ -280,10 +280,10 @@ export default async function BookingDetailPage({
             <Card title={`Guests (${guests.length})`} icon={<UsersThree size={14} />}>
               {guests.map((g, i) => (
                 <div key={i} className="flex items-center gap-2 py-1.5 text-sm">
-                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold text-muted-foreground">
+                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-base-200 text-xs font-semibold text-muted-foreground">
                     {(g.name || g.email).charAt(0).toUpperCase()}
                   </span>
-                  <span className="text-foreground">{g.name || g.email}</span>
+                  <span className="text-base-content">{g.name || g.email}</span>
                   {g.name && <span className="text-muted-foreground">· {g.email}</span>}
                 </div>
               ))}
@@ -299,14 +299,14 @@ export default async function BookingDetailPage({
           )}
           {b.rejectionReason && (
             <Card title="Decline reason" icon={<X size={14} />}>
-              <p className="text-sm text-foreground">{b.rejectionReason}</p>
+              <p className="text-sm text-base-content">{b.rejectionReason}</p>
             </Card>
           )}
 
           {/* Notes */}
           <Card title="Notes" icon={<NotePencil size={14} />}>
             {b.hostNotes ? (
-              <p className="whitespace-pre-wrap text-sm text-foreground">{b.hostNotes}</p>
+              <p className="whitespace-pre-wrap text-sm text-base-content">{b.hostNotes}</p>
             ) : (
               <p className="text-sm text-muted-foreground">No notes available.</p>
             )}
@@ -314,7 +314,7 @@ export default async function BookingDetailPage({
 
           {/* Booking details */}
           <Card title="Booking details" icon={<Hash size={14} />}>
-            <div className="grid grid-cols-1 divide-y divide-border sm:grid-cols-2 sm:divide-x sm:divide-y-0">
+            <div className="grid grid-cols-1 divide-y divide-base-300 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
               <div className="space-y-2.5 pb-3 sm:pb-0 sm:pr-6">
                 <ProfileRow label="Booking ID"><span className="font-mono text-xs">{b.id}</span></ProfileRow>
                 <ProfileRow label="Duration">{b.duration} minutes</ProfileRow>
@@ -347,7 +347,7 @@ export default async function BookingDetailPage({
                   </Button>
                 )}
                 {isUpcoming && (
-                  <Button asChild variant="outline" className="w-full justify-center gap-1.5 text-destructive hover:border-destructive hover:text-destructive">
+                  <Button asChild variant="outline" className="w-full justify-center gap-1.5 text-error hover:border-error hover:text-error">
                     <Link href={`/cancel/${b.cancelToken}`}><X size={15} /> Cancel booking</Link>
                   </Button>
                 )}
@@ -356,7 +356,7 @@ export default async function BookingDetailPage({
                     <Button asChild className="w-full justify-center gap-1.5">
                       <Link href={`/booking/review/${b.approvalToken}?action=approve`}><Check size={15} weight="bold" /> Approve</Link>
                     </Button>
-                    <Button asChild variant="outline" className="w-full justify-center gap-1.5 text-destructive hover:border-destructive hover:text-destructive">
+                    <Button asChild variant="outline" className="w-full justify-center gap-1.5 text-error hover:border-error hover:text-error">
                       <Link href={`/booking/review/${b.approvalToken}`}><X size={15} weight="bold" /> Decline</Link>
                     </Button>
                   </>
@@ -366,7 +366,7 @@ export default async function BookingDetailPage({
                     {b.rescheduleRequestedStart && (
                       <p className="text-xs text-muted-foreground">
                         {b.inviteeName} requested to move this meeting to{' '}
-                        <span className="font-semibold text-foreground">
+                        <span className="font-semibold text-base-content">
                           {formatInTimeZone(b.rescheduleRequestedStart, hostTz, "EEE, MMM d 'at' h:mm a")}
                         </span>
                         . The current time stays booked until you approve.
@@ -375,7 +375,7 @@ export default async function BookingDetailPage({
                     <Button asChild className="w-full justify-center gap-1.5">
                       <Link href={`/booking/review/${b.approvalToken}?type=reschedule&action=approve`}><Check size={15} weight="bold" /> Approve reschedule</Link>
                     </Button>
-                    <Button asChild variant="outline" className="w-full justify-center gap-1.5 text-destructive hover:border-destructive hover:text-destructive">
+                    <Button asChild variant="outline" className="w-full justify-center gap-1.5 text-error hover:border-error hover:text-error">
                       <Link href={`/booking/review/${b.approvalToken}?type=reschedule`}><X size={15} weight="bold" /> Decline reschedule</Link>
                     </Button>
                   </>
@@ -401,7 +401,7 @@ export default async function BookingDetailPage({
                       connect to the next row, and a flex-stretched inner
                       wrapper's content box doesn't include it. */}
                   {i < timeline.length - 1 && (
-                    <span className="absolute left-2 top-5 h-full w-px -translate-x-1/2 bg-border" aria-hidden />
+                    <span className="absolute left-2 top-5 h-full w-px -translate-x-1/2 bg-base-300" aria-hidden />
                   )}
                   <span className="relative z-10 mt-0.5 flex w-4 shrink-0 justify-center">
                     {t.done
@@ -409,7 +409,7 @@ export default async function BookingDetailPage({
                       : <Circle size={16} className="text-muted-foreground/40" />}
                   </span>
                   <div className="min-w-0">
-                    <p className={cn('text-sm font-medium', t.done ? 'text-foreground' : 'text-muted-foreground')}>{t.label}</p>
+                    <p className={cn('text-sm font-medium', t.done ? 'text-base-content' : 'text-muted-foreground')}>{t.label}</p>
                     {t.time && <p className="text-xs text-muted-foreground">{t.time}</p>}
                   </div>
                 </li>
@@ -431,12 +431,12 @@ export default async function BookingDetailPage({
 
 function Card({ title, icon, children }: { title: string; icon?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <section className="border border-border bg-background">
-      <div className="flex items-center gap-2 border-b border-border bg-muted/20 px-5 py-2.5">
+    <section className="border border-base-300 bg-base-100">
+      <div className="flex items-center gap-2 border-b border-base-300 bg-base-200/20 px-5 py-2.5">
         {icon && (
           <span className="flex size-5 items-center justify-center bg-primary/10 text-primary">{icon}</span>
         )}
-        <h2 className="text-xs font-bold uppercase tracking-ui text-foreground/70">{title}</h2>
+        <h2 className="text-xs font-bold uppercase tracking-ui text-base-content/70">{title}</h2>
       </div>
       <div className="px-5 py-4">{children}</div>
     </section>
@@ -445,7 +445,7 @@ function Card({ title, icon, children }: { title: string; icon?: React.ReactNode
 
 function InfoCard({ icon, label, children }: { icon: React.ReactNode; label: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-start gap-3 border border-border bg-background p-4 transition-colors hover:border-primary/40">
+    <div className="flex items-start gap-3 border border-base-300 bg-base-100 p-4 transition-colors hover:border-primary/40">
       <span className="flex size-9 shrink-0 items-center justify-center bg-primary/10 text-primary">{icon}</span>
       <div className="min-w-0">
         <p className="text-xs font-medium uppercase tracking-ui text-muted-foreground">{label}</p>
@@ -462,7 +462,7 @@ function ProfileRow({ icon, label, children }: { icon?: React.ReactNode; label: 
         {icon && <span className="text-muted-foreground/70">{icon}</span>}
         {label}
       </span>
-      <span className="min-w-0 truncate text-right text-sm text-foreground">{children}</span>
+      <span className="min-w-0 truncate text-right text-sm text-base-content">{children}</span>
     </div>
   )
 }

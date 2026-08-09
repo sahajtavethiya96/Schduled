@@ -40,7 +40,7 @@ export function TabNotifications({ form }: TabNotificationsProps) {
             { icon: <Bell size={15} />, label: 'Booking notification to you', desc: 'Sent to your email when someone books this meeting type.' },
             { icon: <EnvelopeSimple size={15} />, label: 'Reminders (24h + 1h before)', desc: 'Sent to both you and the invitee.' },
           ].map((item) => (
-            <div key={item.label} className="flex items-start gap-3 border border-border bg-muted/20 px-4 py-3">
+            <div key={item.label} className="flex items-start gap-3 border border-base-300 bg-base-200/20 px-4 py-3">
               <span className="mt-0.5 text-primary">{item.icon}</span>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium">{item.label}</p>

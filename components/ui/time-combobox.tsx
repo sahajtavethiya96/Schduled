@@ -88,7 +88,7 @@ export function TimeCombobox({
           ref={triggerRef}
           aria-label={label}
           className={cn(
-            'flex h-9 w-[120px] items-center justify-between gap-1 border border-input bg-background px-3 text-sm transition-colors hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary data-[state=open]:border-primary data-[state=open]:ring-1 data-[state=open]:ring-primary',
+            'flex h-9 w-[120px] items-center justify-between gap-1 border border-input bg-base-100 px-3 text-sm transition-colors hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary data-[state=open]:border-primary data-[state=open]:ring-1 data-[state=open]:ring-primary',
             triggerClassName
           )}
           type="button"
@@ -107,9 +107,9 @@ export function TimeCombobox({
         sideOffset={4}
       >
         {/* Type-to-filter input */}
-        <div className="border-b border-border p-1.5">
+        <div className="border-b border-base-300 p-1.5">
           <input
-            className="h-8 w-full border border-input bg-background px-2 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            className="h-8 w-full border border-input bg-base-100 px-2 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
@@ -140,7 +140,7 @@ export function TimeCombobox({
                     'flex w-full items-center justify-between px-2 py-1.5 text-sm transition-colors',
                     isSelected
                       ? 'bg-primary/10 font-medium text-primary'
-                      : 'hover:bg-muted'
+                      : 'hover:bg-base-200'
                   )}
                   key={t}
                   onClick={() => select(t)}

@@ -7,9 +7,9 @@ const statValueVariants = cva('text-2xl font-bold tabular-nums', {
   variants: {
     tone: {
       default:  'text-primary',
-      positive: 'text-[var(--success-foreground)]',
-      negative: 'text-destructive',
-      neutral:  'text-foreground',
+      positive: 'text-success-content',
+      negative: 'text-error',
+      neutral:  'text-base-content',
     },
   },
   defaultVariants: { tone: 'default' },
@@ -21,9 +21,9 @@ const statIconWrapVariants = cva(
     variants: {
       tone: {
         default:  'bg-primary/10 text-primary',
-        positive: 'bg-[var(--success-subtle)] text-[var(--success-foreground)]',
-        negative: 'bg-destructive/10 text-destructive',
-        neutral:  'bg-muted text-muted-foreground',
+        positive: 'bg-[var(--success-subtle)] text-success-content',
+        negative: 'bg-error/10 text-error',
+        neutral:  'bg-base-200 text-muted-foreground',
       },
     },
     defaultVariants: { tone: 'default' },
@@ -50,7 +50,7 @@ function Stat({ label, value, sublabel, icon, trend, tone = 'default', className
   return (
     <div
       data-slot="stat"
-      className={cn('flex flex-col gap-4 border border-border bg-card p-6', className)}
+      className={cn('flex flex-col gap-4 border border-base-300 bg-base-100 p-6', className)}
     >
       {/* Header row: label + icon */}
       <div className="flex items-start justify-between gap-3">
@@ -72,14 +72,14 @@ function Stat({ label, value, sublabel, icon, trend, tone = 'default', className
       {trend && (
         <div className="flex items-center gap-1">
           {trendUp ? (
-            <ArrowUp className="size-3.5 text-[var(--success-foreground)]" />
+            <ArrowUp className="size-3.5 text-success-content" />
           ) : (
-            <ArrowDown className="size-3.5 text-destructive" />
+            <ArrowDown className="size-3.5 text-error" />
           )}
           <span
             className={cn(
               'text-xs font-semibold',
-              trendUp ? 'text-[var(--success-foreground)]' : 'text-destructive',
+              trendUp ? 'text-success-content' : 'text-error',
             )}
           >
             {trendUp ? '+' : ''}{trend.value}%

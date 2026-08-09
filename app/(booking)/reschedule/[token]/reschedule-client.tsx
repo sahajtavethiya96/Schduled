@@ -175,8 +175,8 @@ export function RescheduleClient(props: Props) {
 
   if (done) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
-        <div className="w-full max-w-md bg-card border border-border overflow-hidden">
+      <main className="flex min-h-screen items-center justify-center bg-base-200/30 p-4">
+        <div className="w-full max-w-md bg-base-100 border border-base-300 overflow-hidden">
           <div className="px-8 py-12 text-center">
             {pendingApproval ? (
               <HourglassMedium
@@ -191,16 +191,16 @@ export function RescheduleClient(props: Props) {
                 weight="fill"
               />
             )}
-            <h1 className="mt-4 text-lg font-bold text-foreground">
+            <h1 className="mt-4 text-lg font-bold text-base-content">
               {pendingApproval ? "Awaiting host approval" : "Booking rescheduled"}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
               {pendingApproval ? (
                 <>
                   Your request to reschedule{" "}
-                  <strong className="text-foreground">{props.eventName}</strong>{" "}
+                  <strong className="text-base-content">{props.eventName}</strong>{" "}
                   to{" "}
-                  <strong className="text-foreground">
+                  <strong className="text-base-content">
                     {newStartUtc &&
                       formatInTimeZone(new Date(newStartUtc), inviteeTz, DATE_FMT)}
                   </strong>{" "}
@@ -210,7 +210,7 @@ export function RescheduleClient(props: Props) {
               ) : (
                 <>
                   Your {props.eventName} with {props.hostName} is now on{" "}
-                  <strong className="text-foreground">
+                  <strong className="text-base-content">
                     {newStartUtc &&
                       formatInTimeZone(new Date(newStartUtc), inviteeTz, DATE_FMT)}
                   </strong>
@@ -219,11 +219,11 @@ export function RescheduleClient(props: Props) {
               )}
             </p>
           </div>
-          <div className="border-t border-border px-5 py-5 sm:px-8">
+          <div className="border-t border-base-300 px-5 py-5 sm:px-8">
             <button
               type="button"
               onClick={() => (window.history.length > 1 ? router.back() : router.push("/"))}
-              className="flex h-10 w-full items-center justify-center gap-2 border border-border text-sm font-semibold text-foreground transition-all hover:bg-muted"
+              className="flex h-10 w-full items-center justify-center gap-2 border border-base-300 text-sm font-semibold text-base-content transition-all hover:bg-base-200"
             >
               <ArrowLeft size={14} />
               Go Back
@@ -235,18 +235,18 @@ export function RescheduleClient(props: Props) {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
-      <div className="w-full max-w-3xl overflow-hidden bg-card border border-border">
-        <div className="border-b border-border bg-muted/30 px-5 py-5 sm:px-8">
+    <main className="flex min-h-screen items-center justify-center bg-base-200/30 p-4">
+      <div className="w-full max-w-3xl overflow-hidden bg-base-100 border border-base-300">
+        <div className="border-b border-base-300 bg-base-200/30 px-5 py-5 sm:px-8">
           <button
             type="button"
             onClick={() => (window.history.length > 1 ? router.back() : router.push("/"))}
-            className="mb-4 inline-flex items-center gap-2 border border-border bg-background px-3.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
+            className="mb-4 inline-flex items-center gap-2 border border-base-300 bg-base-100 px-3.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
           >
             <ArrowLeft size={14} />
             Back
           </button>
-          <h1 className="text-base font-bold text-foreground">
+          <h1 className="text-base font-bold text-base-content">
             Reschedule your booking
           </h1>
           <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -257,21 +257,21 @@ export function RescheduleClient(props: Props) {
 
         <div className="flex flex-col lg:flex-row">
           {/* Calendar */}
-          <div className="shrink-0 border-b border-border p-6 lg:w-[340px] lg:border-b-0 lg:border-r">
+          <div className="shrink-0 border-b border-base-300 p-6 lg:w-[340px] lg:border-b-0 lg:border-r">
             <div className="mb-4 flex items-center justify-between">
               <button
-                className="flex h-8 w-8 items-center justify-center text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
+                className="flex h-8 w-8 items-center justify-center text-muted-foreground transition-colors hover:text-base-content disabled:opacity-30"
                 disabled={format(month, "yyyy-MM") <= today.slice(0, 7)}
                 onClick={() => setMonth((m) => subMonths(m, 1))}
                 type="button"
               >
                 <CaretLeft size={14} weight="bold" />
               </button>
-              <span className="text-sm font-semibold text-foreground">
+              <span className="text-sm font-semibold text-base-content">
                 {format(month, "MMMM yyyy")}
               </span>
               <button
-                className="flex h-8 w-8 items-center justify-center text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
+                className="flex h-8 w-8 items-center justify-center text-muted-foreground transition-colors hover:text-base-content disabled:opacity-30"
                 disabled={
                   format(addMonths(month, 1), "yyyy-MM") >
                   props.maxDate.slice(0, 7)
@@ -318,12 +318,12 @@ export function RescheduleClient(props: Props) {
                           available &&
                           !isSelected &&
                           !isToday &&
-                          "cursor-pointer font-medium text-foreground hover:bg-primary/10 hover:text-primary",
+                          "cursor-pointer font-medium text-base-content hover:bg-primary/10 hover:text-primary",
                         isToday &&
                           !isSelected &&
                           "cursor-pointer font-bold text-primary ring-2 ring-inset ring-primary",
                         isSelected &&
-                          "cursor-pointer bg-primary font-bold text-primary-foreground"
+                          "cursor-pointer bg-primary font-bold text-primary-content"
                       )}
                       disabled={!available}
                       onClick={() => {
@@ -346,8 +346,8 @@ export function RescheduleClient(props: Props) {
           <div className="flex flex-1 flex-col">
             {selectedDate ? (
               <div className="flex flex-1 flex-col">
-                <div className="border-b border-border px-6 py-4">
-                  <h3 className="text-[15px] font-bold text-foreground">
+                <div className="border-b border-base-300 px-6 py-4">
+                  <h3 className="text-[15px] font-bold text-base-content">
                     {formatInTimeZone(
                       new Date(`${selectedDate}T12:00:00Z`),
                       inviteeTz,
@@ -382,8 +382,8 @@ export function RescheduleClient(props: Props) {
                             className={cn(
                               "flex h-11 w-full items-center justify-center gap-2 text-sm font-semibold transition-all",
                               isChosen
-                                ? "bg-primary text-primary-foreground"
-                                : "border border-border bg-background text-foreground hover:border-primary/60 hover:bg-primary/5 hover:text-primary"
+                                ? "bg-primary text-primary-content"
+                                : "border border-base-300 bg-base-100 text-base-content hover:border-primary/60 hover:bg-primary/5 hover:text-primary"
                             )}
                             key={slot.startUtc}
                             onClick={() => setSelectedSlot(slot)}
@@ -404,14 +404,14 @@ export function RescheduleClient(props: Props) {
                   )}
                 </div>
                 {error && (
-                  <p className="px-6 pb-2 text-xs text-destructive">
+                  <p className="px-6 pb-2 text-xs text-error">
                     {error}
                   </p>
                 )}
                 {selectedSlot && (
-                  <div className="border-t border-border p-4">
+                  <div className="border-t border-base-300 p-4">
                     <button
-                      className="flex h-11 w-full items-center justify-center gap-2 bg-primary text-sm font-bold text-primary-foreground transition-all hover:bg-primary/90 disabled:opacity-60"
+                      className="flex h-11 w-full items-center justify-center gap-2 bg-primary text-sm font-bold text-primary-content transition-all hover:bg-primary/90 disabled:opacity-60"
                       disabled={submitting}
                       onClick={handleConfirm}
                       type="button"

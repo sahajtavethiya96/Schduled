@@ -27,7 +27,7 @@ export function UnsavedChangesBar({
 }) {
   return (
     <div
-      className={`fixed bottom-20 right-6 z-30 flex items-center gap-4 border border-border bg-background px-5 py-3 ring-1 ring-foreground/10 transition-all duration-200 ease-out md:bottom-6 ${
+      className={`fixed bottom-20 right-6 z-30 flex items-center gap-4 border border-base-300 bg-base-100 px-5 py-3 ring-1 ring-foreground/10 transition-all duration-200 ease-out md:bottom-6 ${
         visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"
       }`}
     >

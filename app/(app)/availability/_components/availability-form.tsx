@@ -265,9 +265,9 @@ function OverrideDialog({
         <DialogTitle className="sr-only">Set date-specific hours</DialogTitle>
         <DialogDescription className="sr-only">Choose a date and set custom availability hours</DialogDescription>
 
-        <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-border">
+        <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-base-300">
           <p className="font-semibold text-sm">Select the date(s) you want to assign specific hours</p>
-          <DialogClose className="flex h-7 w-7 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+          <DialogClose className="flex h-7 w-7 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:bg-base-200 hover:text-base-content">
             <X size={15} />
             <span className="sr-only">Close</span>
           </DialogClose>
@@ -279,13 +279,13 @@ function OverrideDialog({
             <div className="flex items-center justify-between">
               <button type="button"
                 onClick={() => setCursor(({ year: y, month: m }) => m === 0 ? { year: y - 1, month: 11 } : { year: y, month: m - 1 })}
-                className="p-1.5 text-muted-foreground hover:text-foreground transition-colors">
+                className="p-1.5 text-muted-foreground hover:text-base-content transition-colors">
                 <ArrowLeft size={14} />
               </button>
               <span className="text-sm font-semibold">{monthLabel}</span>
               <button type="button"
                 onClick={() => setCursor(({ year: y, month: m }) => m === 11 ? { year: y + 1, month: 0 } : { year: y, month: m + 1 })}
-                className="p-1.5 text-muted-foreground hover:text-foreground transition-colors">
+                className="p-1.5 text-muted-foreground hover:text-base-content transition-colors">
                 <ArrowRight size={14} />
               </button>
             </div>
@@ -310,8 +310,8 @@ function OverrideDialog({
                         'h-9 w-9 flex items-center justify-center text-sm transition-colors',
                         isPast && 'text-muted-foreground/40 cursor-not-allowed',
                         !isPast && !isSelected && hasWeekly && 'border border-primary/40 text-primary hover:bg-primary/10',
-                        !isPast && !isSelected && !hasWeekly && 'text-muted-foreground hover:bg-muted',
-                        isSelected && 'bg-primary text-primary-foreground font-semibold',
+                        !isPast && !isSelected && !hasWeekly && 'text-muted-foreground hover:bg-base-200',
+                        isSelected && 'bg-primary text-primary-content font-semibold',
                         hasOverride && !isSelected && 'ring-1 ring-primary',
                       )}>
                       {day}
@@ -323,7 +323,7 @@ function OverrideDialog({
             </div>
           </div>
 
-          <div className="border-t border-border" />
+          <div className="border-t border-base-300" />
 
           {/* Hours */}
           <div className="px-5 py-4 space-y-3">
@@ -344,14 +344,14 @@ function OverrideDialog({
                     <TimeSelect value={slot.endTime} onChange={(v) => setSlots((p) => p.map((s, idx) => idx === i ? { ...s, endTime: v } : s))} />
                     {slots.length > 1 && (
                       <button type="button" onClick={() => setSlots((p) => p.filter((_, idx) => idx !== i))}
-                        className="p-1 text-muted-foreground hover:text-destructive transition-colors">
+                        className="p-1 text-muted-foreground hover:text-error transition-colors">
                         <X size={14} />
                       </button>
                     )}
                     {i === slots.length - 1 && (
                       <button type="button"
                         onClick={() => setSlots((p) => [...p, nextIntervalDefaults(p)])}
-                        className="h-9 w-9 flex items-center justify-center border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors shrink-0"
+                        className="h-9 w-9 flex items-center justify-center border border-base-300 text-muted-foreground hover:text-primary hover:border-primary transition-colors shrink-0"
                         aria-label="Add interval">
                         <Plus size={14} />
                       </button>
@@ -371,13 +371,13 @@ function OverrideDialog({
                 onChange={(e) => setReason(e.target.value)}
                 maxLength={200}
                 placeholder="e.g. Public holiday, vacation…"
-                className="w-full border border-input bg-background px-3 h-9 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all placeholder:text-muted-foreground/60"
+                className="w-full border border-input bg-base-100 px-3 h-9 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all placeholder:text-muted-foreground/60"
               />
             </div>
           </div>
         </div>
 
-        <div className="border-t border-border px-5 py-3 flex justify-end gap-2 bg-background">
+        <div className="border-t border-base-300 px-5 py-3 flex justify-end gap-2 bg-base-100">
           <Button variant="outline" size="sm" onClick={onClose}>Cancel</Button>
           <Button size="sm" disabled={isPending || !selDate}
             onClick={() => onApply(selDate, isBlocked, isBlocked ? [] : slots, reason.trim())}>
@@ -418,11 +418,11 @@ function WeekdayDialog({
   return (
     <Dialog open={open} onOpenChange={(o) => { if (!o) onClose() }}>
       <DialogContent showCloseButton={false} className="sm:max-w-sm p-0 gap-0 overflow-visible">
-        <div className="flex items-center justify-between border-b border-border px-5 py-4">
+        <div className="flex items-center justify-between border-b border-base-300 px-5 py-4">
           <DialogTitle className="text-base font-bold">
             {label} availability
           </DialogTitle>
-          <DialogClose className="flex h-7 w-7 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+          <DialogClose className="flex h-7 w-7 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:bg-base-200 hover:text-base-content">
             <X size={15} />
             <span className="sr-only">Close</span>
           </DialogClose>
@@ -449,14 +449,14 @@ function WeekdayDialog({
                   <TimeSelect value={slot.endTime} onChange={(v) => setSlots((p) => p.map((s, idx) => idx === i ? { ...s, endTime: v } : s))} />
                   {slots.length > 1 && (
                     <button type="button" onClick={() => setSlots((p) => p.filter((_, idx) => idx !== i))}
-                      className="p-1 text-muted-foreground hover:text-destructive transition-colors">
+                      className="p-1 text-muted-foreground hover:text-error transition-colors">
                       <X size={14} />
                     </button>
                   )}
                   {i === slots.length - 1 && (
                     <button type="button"
                       onClick={() => setSlots((p) => [...p, nextIntervalDefaults(p)])}
-                      className="h-9 w-9 flex items-center justify-center border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors shrink-0"
+                      className="h-9 w-9 flex items-center justify-center border border-base-300 text-muted-foreground hover:text-primary hover:border-primary transition-colors shrink-0"
                       aria-label="Add interval">
                       <Plus size={14} />
                     </button>
@@ -469,7 +469,7 @@ function WeekdayDialog({
           {isBlocked && <p className="text-sm text-muted-foreground">Every {label} will be marked unavailable.</p>}
         </div>
 
-        <div className="border-t border-border px-5 py-3 flex justify-end gap-2 bg-background">
+        <div className="border-t border-base-300 px-5 py-3 flex justify-end gap-2 bg-base-100">
           <Button variant="outline" size="sm" onClick={onClose}>Cancel</Button>
           <Button size="sm" disabled={isPending || !dow}
             onClick={() => dow && onApply(dow, isBlocked ? [] : slots)}>
@@ -521,14 +521,14 @@ function FullCalendarView({ grid, overrides, currentTz, onTzClick, onEditDate, o
 
   return (
     <div className="overflow-x-auto">
-    <div className="border border-border min-w-[560px]">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30">
+    <div className="border border-base-300 min-w-[560px]">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-base-300 bg-base-200/30">
         <div className="flex items-center gap-2">
           <button type="button" onClick={() => setCursor(({ year: y, month: m }) => m === 0 ? { year: y - 1, month: 11 } : { year: y, month: m - 1 })}
-            className="p-1.5 text-muted-foreground hover:text-foreground transition-colors"><ArrowLeft size={14} /></button>
+            className="p-1.5 text-muted-foreground hover:text-base-content transition-colors"><ArrowLeft size={14} /></button>
           <span className="text-sm font-semibold w-32 text-center">{monthLabel}</span>
           <button type="button" onClick={() => setCursor(({ year: y, month: m }) => m === 11 ? { year: y + 1, month: 0 } : { year: y, month: m + 1 })}
-            className="p-1.5 text-muted-foreground hover:text-foreground transition-colors"><ArrowRight size={14} /></button>
+            className="p-1.5 text-muted-foreground hover:text-base-content transition-colors"><ArrowRight size={14} /></button>
         </div>
         <button type="button" onClick={onTzClick}
           className="flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 transition-colors">
@@ -536,17 +536,17 @@ function FullCalendarView({ grid, overrides, currentTz, onTzClick, onEditDate, o
         </button>
       </div>
 
-      <div className="grid grid-cols-7 border-b border-border bg-muted/20">
+      <div className="grid grid-cols-7 border-b border-base-300 bg-base-200/20">
         {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map((d) => (
-          <div key={d} className="py-2 text-center text-xs font-semibold text-muted-foreground border-r border-border last:border-r-0">{d}</div>
+          <div key={d} className="py-2 text-center text-xs font-semibold text-muted-foreground border-r border-base-300 last:border-r-0">{d}</div>
         ))}
       </div>
 
       {weeks.map((week, wi) => (
-        <div key={wi} className="grid grid-cols-7 border-b border-border last:border-b-0" style={{ minHeight: 90 }}>
+        <div key={wi} className="grid grid-cols-7 border-b border-base-300 last:border-b-0" style={{ minHeight: 90 }}>
           {week.map((day, di) => {
             if (!day) return (
-              <div key={`e-${wi}-${di}`} className="border-r border-border last:border-r-0 bg-muted/10 p-2 text-muted-foreground/30 text-sm" />
+              <div key={`e-${wi}-${di}`} className="border-r border-base-300 last:border-r-0 bg-base-200/10 p-2 text-muted-foreground/30 text-sm" />
             )
             const iso = dateToISO(year, month, day)
             const isToday = iso === today
@@ -563,7 +563,7 @@ function FullCalendarView({ grid, overrides, currentTz, onTzClick, onEditDate, o
               <>
                 <div className="flex items-start justify-between mb-1">
                   <span className={cn('text-sm leading-none',
-                    isToday ? 'font-bold text-primary' : isPast ? 'text-muted-foreground/40' : 'text-foreground'
+                    isToday ? 'font-bold text-primary' : isPast ? 'text-muted-foreground/40' : 'text-base-content'
                   )}>{day}</span>
                   {!isPast && (
                     override
@@ -579,7 +579,7 @@ function FullCalendarView({ grid, overrides, currentTz, onTzClick, onEditDate, o
                       override ? 'text-primary font-medium' : 'text-muted-foreground'
                     )}>{fmt12(s.startTime)} – {fmt12(s.endTime)}</p>
                   ))}
-                  {override?.isBlocked && <p className="text-xs text-destructive/60">Unavailable</p>}
+                  {override?.isBlocked && <p className="text-xs text-error/60">Unavailable</p>}
                 </div>
               </>
             )
@@ -587,7 +587,7 @@ function FullCalendarView({ grid, overrides, currentTz, onTzClick, onEditDate, o
             // Past days are read-only — no menu
             if (isPast) {
               return (
-                <div key={iso} className="border-r border-border last:border-r-0 bg-muted/10 p-2 text-left cursor-default">
+                <div key={iso} className="border-r border-base-300 last:border-r-0 bg-base-200/10 p-2 text-left cursor-default">
                   {cellInner}
                 </div>
               )
@@ -598,7 +598,7 @@ function FullCalendarView({ grid, overrides, currentTz, onTzClick, onEditDate, o
                 <PopoverTrigger asChild>
                   <button type="button"
                     className={cn(
-                      'border-r border-border last:border-r-0 p-2 text-left transition-colors group hover:bg-primary/5 cursor-pointer w-full',
+                      'border-r border-base-300 last:border-r-0 p-2 text-left transition-colors group hover:bg-primary/5 cursor-pointer w-full',
                       isToday && 'border-t-2 border-t-primary',
                       override && 'bg-primary/5',
                       menuDate === iso && 'bg-primary/10',
@@ -609,13 +609,13 @@ function FullCalendarView({ grid, overrides, currentTz, onTzClick, onEditDate, o
                 <PopoverContent align="start" sideOffset={4} className="w-56 gap-0 p-1">
                   <button type="button"
                     onClick={() => { setMenuDate(null); onEditDate(iso) }}
-                    className="flex w-full items-center gap-2.5 px-2.5 py-2 text-sm text-foreground transition-colors hover:bg-muted">
+                    className="flex w-full items-center gap-2.5 px-2.5 py-2 text-sm text-base-content transition-colors hover:bg-base-200">
                     <CalendarBlank size={15} className="shrink-0 text-muted-foreground" />
                     Edit date
                   </button>
                   <button type="button"
                     onClick={() => { setMenuDate(null); onEditWeekday(dow) }}
-                    className="flex w-full items-center gap-2.5 px-2.5 py-2 text-sm text-foreground transition-colors hover:bg-muted">
+                    className="flex w-full items-center gap-2.5 px-2.5 py-2 text-sm text-base-content transition-colors hover:bg-base-200">
                     <ArrowsClockwise size={15} className="shrink-0 text-muted-foreground" />
                     Edit all <span className="font-semibold">{weekdayLabel}s</span>
                   </button>
@@ -1071,7 +1071,7 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
   return (
     <div>
       {/* Page tab bar */}
-      <div className="border-b border-border mb-6">
+      <div className="border-b border-base-300 mb-6">
         <div className="flex overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {([
             { id: 'schedules' as PageTab, label: 'Schedules' },
@@ -1081,7 +1081,7 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
             <button key={tab.id} type="button" onClick={() => setPageTab(tab.id)}
               className={cn(
                 'px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap',
-                pageTab === tab.id ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                pageTab === tab.id ? 'border-primary text-base-content' : 'border-transparent text-muted-foreground hover:text-base-content hover:border-base-300'
               )}>
               {tab.label}
             </button>
@@ -1099,10 +1099,10 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
 
           <div className="space-y-3">
             {/* Google Calendar card */}
-            <div className="flex items-center justify-between border border-border p-4">
+            <div className="flex items-center justify-between border border-base-300 p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center bg-muted">
-                  <CalendarBlank size={18} weight="fill" className="text-foreground" />
+                <div className="flex h-9 w-9 items-center justify-center bg-base-200">
+                  <CalendarBlank size={18} weight="fill" className="text-base-content" />
                 </div>
                 <div>
                   <p className="text-sm font-medium">Google Calendar</p>
@@ -1115,21 +1115,21 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
             </div>
 
             {/* Outlook card */}
-            <div className="flex items-center justify-between border border-border p-4 opacity-60">
+            <div className="flex items-center justify-between border border-base-300 p-4 opacity-60">
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center bg-muted">
-                  <CalendarBlank size={18} className="text-foreground" />
+                <div className="flex h-9 w-9 items-center justify-center bg-base-200">
+                  <CalendarBlank size={18} className="text-base-content" />
                 </div>
                 <div>
                   <p className="text-sm font-medium">Microsoft Outlook</p>
                   <p className="text-xs text-muted-foreground">Coming soon</p>
                 </div>
               </div>
-              <span className="text-xs bg-muted px-2 py-1 text-muted-foreground">Soon</span>
+              <span className="text-xs bg-base-200 px-2 py-1 text-muted-foreground">Soon</span>
             </div>
           </div>
 
-          <div className="pt-2 border-t border-border">
+          <div className="pt-2 border-t border-base-300">
             <p className="text-xs text-muted-foreground">
               Manage all integrations in{' '}
               <a href="/settings/integrations" className="text-primary hover:underline">Settings → Integrations</a>.
@@ -1140,14 +1140,14 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
 
       {/* ── ADVANCED SETTINGS TAB ── */}
       {pageTab === 'advanced' && (
-        <div className="space-y-0 max-w-2xl divide-y divide-border">
+        <div className="space-y-0 max-w-2xl divide-y divide-base-300">
 
           {/* Timezone */}
           <div className="pb-8">
             <h2 className="font-semibold mb-0.5">Timezone</h2>
             <p className="text-sm text-muted-foreground mb-4">All booking times are displayed in this timezone.</p>
             <button type="button" onClick={() => setTzDialogOpen(true)}
-              className="flex items-center gap-2 h-9 px-3 border border-input text-sm hover:bg-muted transition-colors max-w-xs w-full text-left">
+              className="flex items-center gap-2 h-9 px-3 border border-input text-sm hover:bg-base-200 transition-colors max-w-xs w-full text-left">
               <Globe size={14} className="text-muted-foreground shrink-0" />
               <span className="flex-1 truncate">{normalizeTzName(currentTz)}</span>
               <CaretDown size={12} className="text-muted-foreground shrink-0" />
@@ -1164,7 +1164,7 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
 
             {/* Existing limits */}
             {meetingLimits.length > 0 && (
-              <div className="border border-border divide-y divide-border mb-3">
+              <div className="border border-base-300 divide-y divide-base-300 mb-3">
                 {meetingLimits.map((lim) => (
                   <div key={lim.id} className="flex items-center gap-3 px-4 py-3">
                     <input
@@ -1183,7 +1183,7 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
                           })
                         }
                       }}
-                      className="w-16 h-9 border border-input bg-background px-2 text-sm text-center outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
+                      className="w-16 h-9 border border-input bg-base-100 px-2 text-sm text-center outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
                     />
                     <span className="text-sm text-muted-foreground">meetings per</span>
                     <span className="text-sm font-medium capitalize">{lim.period}</span>
@@ -1196,7 +1196,7 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
                         setMeetingLimits((prev) => prev.filter((l) => l.id !== lim.id))
                         toast.success('Limit removed')
                       })}
-                      className="ml-auto flex h-8 w-8 items-center justify-center text-muted-foreground hover:text-destructive transition-colors"
+                      className="ml-auto flex h-8 w-8 items-center justify-center text-muted-foreground hover:text-error transition-colors"
                     >
                       <X size={14} />
                     </button>
@@ -1216,7 +1216,7 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
                   max={999}
                   value={limitCount}
                   onChange={(e) => setLimitCount(e.target.value)}
-                  className="w-16 h-9 border border-input bg-background px-2 text-sm text-center outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
+                  className="w-16 h-9 border border-input bg-base-100 px-2 text-sm text-center outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
                 />
                 <span className="text-sm text-muted-foreground">meetings per</span>
                 <Select
@@ -1271,7 +1271,7 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
               const allBlocked = holidays.length > 0 && holidays.every((h) => overrideMap.get(h.date)?.isBlocked)
               return (
                 <>
-                  <div className="flex items-center justify-between border border-border px-4 py-3 mb-0 bg-muted/50">
+                  <div className="flex items-center justify-between border border-base-300 px-4 py-3 mb-0 bg-base-200/50">
                     <div className="flex items-center gap-3">
                       <CountryCombobox
                         value={holidayCountry}
@@ -1283,7 +1283,7 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
                     <Switch checked={allBlocked} disabled={holidaysLoading || holidays.length === 0} onCheckedChange={handleAllHolidaysToggle} />
                   </div>
 
-                  <div className="border border-t-0 border-border">
+                  <div className="border border-t-0 border-base-300">
                     {holidaysLoading ? (
                       <p className="px-4 py-6 text-center text-sm text-muted-foreground">Loading holidays…</p>
                     ) : holidays.length === 0 ? (
@@ -1292,7 +1292,7 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
                       const isBlocked = overrideMap.get(h.date)?.isBlocked === true
                       return (
                         <div key={h.date}
-                          className="flex items-center justify-between px-4 py-3 border-b border-border last:border-b-0">
+                          className="flex items-center justify-between px-4 py-3 border-b border-base-300 last:border-b-0">
                           <div>
                             <p className="text-sm font-medium">{h.name}</p>
                             <p className="text-xs text-muted-foreground">{fmtDate(h.date)}</p>
@@ -1315,7 +1315,7 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
       {pageTab === 'schedules' && (
         <div className="space-y-5">
           {/* Schedule header bar */}
-          <div className="flex items-center justify-between gap-4 pb-4 border-b border-border flex-wrap">
+          <div className="flex items-center justify-between gap-4 pb-4 border-b border-base-300 flex-wrap">
             <div className="flex items-center gap-2 flex-wrap">
               {scheduleId && schedules.length > 0 ? (
                 <Select value={scheduleId} onValueChange={switchSchedule}>
@@ -1339,36 +1339,36 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
               </Button>
 
               {scheduleId && (
-                <Button size="sm" variant="ghost" onClick={openRenameDialog} disabled={isPending} className="gap-1.5 text-muted-foreground hover:text-foreground" title="Rename schedule">
+                <Button size="sm" variant="ghost" onClick={openRenameDialog} disabled={isPending} className="gap-1.5 text-muted-foreground hover:text-base-content" title="Rename schedule">
                   <PencilSimple size={13} /> Rename
                 </Button>
               )}
               {scheduleId && !activeIsDefault && (
-                <Button size="sm" variant="ghost" onClick={handleSetDefaultSchedule} disabled={isPending} className="gap-1.5 text-muted-foreground hover:text-foreground" title="Set as default">
+                <Button size="sm" variant="ghost" onClick={handleSetDefaultSchedule} disabled={isPending} className="gap-1.5 text-muted-foreground hover:text-base-content" title="Set as default">
                   <Star size={13} /> Set default
                 </Button>
               )}
               {scheduleId && (
-                <Button size="sm" variant="ghost" onClick={handleDuplicateSchedule} disabled={isPending} className="gap-1.5 text-muted-foreground hover:text-foreground" title="Duplicate schedule">
+                <Button size="sm" variant="ghost" onClick={handleDuplicateSchedule} disabled={isPending} className="gap-1.5 text-muted-foreground hover:text-base-content" title="Duplicate schedule">
                   <Copy size={13} /> Duplicate
                 </Button>
               )}
               {scheduleId && schedules.length > 1 && (
-                <Button size="sm" variant="ghost" onClick={() => setDeleteOpen(true)} disabled={isPending} className="gap-1.5 text-muted-foreground hover:text-destructive" title="Delete schedule">
+                <Button size="sm" variant="ghost" onClick={() => setDeleteOpen(true)} disabled={isPending} className="gap-1.5 text-muted-foreground hover:text-error" title="Delete schedule">
                   <Trash size={13} /> Delete
                 </Button>
               )}
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <div className="flex border border-border overflow-hidden">
+              <div className="flex border border-base-300 overflow-hidden">
                 <button type="button" onClick={() => setViewMode('list')}
                   className={cn('flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors',
-                    viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted')}>
+                    viewMode === 'list' ? 'bg-primary text-primary-content' : 'text-muted-foreground hover:bg-base-200')}>
                   <List size={13} /> List
                 </button>
                 <button type="button" onClick={() => setViewMode('calendar')}
-                  className={cn('flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border-l border-border transition-colors',
-                    viewMode === 'calendar' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted')}>
+                  className={cn('flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border-l border-base-300 transition-colors',
+                    viewMode === 'calendar' ? 'bg-primary text-primary-content' : 'text-muted-foreground hover:bg-base-200')}>
                   <CalendarBlank size={13} /> Calendar
                 </button>
               </div>
@@ -1387,7 +1387,7 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
 
           {/* LIST VIEW */}
           {viewMode === 'list' && (
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-0 xl:items-start xl:divide-x xl:divide-border">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-0 xl:items-start xl:divide-x xl:divide-base-300">
 
               {/* Left: Weekly hours */}
               <div className="space-y-4 xl:pr-10">
@@ -1405,14 +1405,14 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
                     const enabled = slots.length > 0
 
                     return (
-                      <div key={key} className={cn("flex gap-3 py-2 border-b border-border/50 last:border-b-0", enabled ? "items-start" : "items-center")}>
+                      <div key={key} className={cn("flex gap-3 py-2 border-b border-base-300/50 last:border-b-0", enabled ? "items-start" : "items-center")}>
                         {/* Day letter badge — click to toggle */}
                         <button type="button" onClick={() => setDay(key, !enabled)}
                           title={enabled ? `Disable ${label}` : `Enable ${label}`}
                           className={cn(
                             'flex size-7 shrink-0 items-center justify-center text-xs font-bold select-none transition-colors',
                             enabled ? 'mt-1' : '',
-                            enabled ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted-foreground/20'
+                            enabled ? 'bg-primary text-primary-content' : 'bg-base-200 text-muted-foreground hover:bg-muted-foreground/20'
                           )}>
                           {letter}
                         </button>
@@ -1429,7 +1429,7 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
                                   type="button"
                                   title={slots.length === 1 ? `Mark ${label} unavailable` : 'Remove this interval'}
                                   onClick={() => slots.length > 1 ? removeSlot(key, i) : setDay(key, false)}
-                                  className="p-1 text-muted-foreground hover:text-destructive transition-colors shrink-0"
+                                  className="p-1 text-muted-foreground hover:text-error transition-colors shrink-0"
                                 >
                                   <X size={13} />
                                 </button>
@@ -1485,12 +1485,12 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
                         onClick={() => openDialog(o.date)}
                         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDialog(o.date) } }}
                         title="Edit this date's hours"
-                        className="flex items-center justify-between border border-border bg-card px-4 py-3 transition-colors hover:border-primary/40 hover:bg-primary/5 cursor-pointer"
+                        className="flex items-center justify-between border border-base-300 bg-base-100 px-4 py-3 transition-colors hover:border-primary/40 hover:bg-primary/5 cursor-pointer"
                       >
                         <div>
                           <p className="text-sm font-medium">{fmtDate(o.date)}</p>
                           {o.isBlocked
-                            ? <span className="inline-block text-xs text-muted-foreground bg-muted px-2 py-0.5 mt-0.5">Unavailable</span>
+                            ? <span className="inline-block text-xs text-muted-foreground bg-base-200 px-2 py-0.5 mt-0.5">Unavailable</span>
                             : <div className="mt-0.5 space-y-0.5">
                                 {o.slots.map((s, i) => (
                                   <p key={i} className="text-xs text-muted-foreground">{fmt12(s.startTime)} – {fmt12(s.endTime)}</p>
@@ -1503,7 +1503,7 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
                           onClick={(e) => { e.stopPropagation(); handleDeleteOverride(o.date) }}
                           disabled={isPending}
                           title="Delete this override"
-                          className="p-1.5 text-muted-foreground hover:text-destructive transition-colors disabled:opacity-40"
+                          className="p-1.5 text-muted-foreground hover:text-error transition-colors disabled:opacity-40"
                         >
                           <Trash size={13} />
                         </button>
@@ -1511,7 +1511,7 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
                     ))}
                   </div>
                 ) : (
-                  <div className="border border-dashed border-border py-10 flex flex-col items-center justify-center gap-2 text-center">
+                  <div className="border border-dashed border-base-300 py-10 flex flex-col items-center justify-center gap-2 text-center">
                     <CalendarCheck size={24} className="text-muted-foreground/40" />
                     <p className="text-sm text-muted-foreground">No date-specific hours yet.</p>
                     <button type="button" onClick={() => openDialog()} className="text-xs text-primary hover:text-primary/80 transition-colors">
@@ -1549,10 +1549,10 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
               <MagnifyingGlass size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <Input placeholder="Search timezones…" value={tzSearch} onChange={(e) => setTzSearch(e.target.value)} autoFocus className="h-9 pl-9" />
             </div>
-            <div className="max-h-64 overflow-y-auto border border-border">
+            <div className="max-h-64 overflow-y-auto border border-base-300">
               {filteredTz.map((tz) => (
                 <button key={tz} type="button" onClick={() => handleTzChange(tz)} disabled={isPending}
-                  className={cn('w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors flex items-center justify-between',
+                  className={cn('w-full text-left px-3 py-2 text-sm hover:bg-base-200 transition-colors flex items-center justify-between',
                     tz === currentTz && 'bg-primary/10 text-primary font-medium')}>
                   <span>{getTzLabel(tz)}</span>
                   {tz === currentTz && <CheckCircle size={14} weight="fill" />}
@@ -1605,7 +1605,7 @@ export function AvailabilityForm({ initialSchedules, initialOverrides, initialMe
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-error text-error-content hover:bg-error/90"
               onClick={confirmDeleteSchedule}
             >
               Delete

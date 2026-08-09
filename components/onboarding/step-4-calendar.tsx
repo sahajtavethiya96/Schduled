@@ -39,10 +39,10 @@ export function StepCalendar({ onNext, onBack }: StepCalendarProps) {
       <button
         type="button"
         onClick={handleConnect}
-        className="group w-full border border-border bg-card p-5 text-left transition hover:border-primary hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="group w-full border border-base-300 bg-base-100 p-5 text-left transition hover:border-primary hover:bg-base-200/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       >
         <div className="flex items-center gap-4">
-          <div className="flex size-12 shrink-0 items-center justify-center border border-border bg-background">
+          <div className="flex size-12 shrink-0 items-center justify-center border border-base-300 bg-base-100">
             <GoogleLogo size={24} weight="bold" className="text-[#4285F4]" />
           </div>
           <div className="min-w-0">
@@ -68,7 +68,7 @@ export function StepCalendar({ onNext, onBack }: StepCalendarProps) {
         ))}
       </ul>
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && <p className="text-sm text-error">{error}</p>}
 
       <div className="flex flex-col gap-2">
         <Button className="w-full" onClick={handleConnect} disabled={loading}>

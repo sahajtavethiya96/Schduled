@@ -122,8 +122,8 @@ export function ReviewClient(props: Props) {
 
   // Booking card shared across views
   const BookingCard = () => (
-    <div className="mb-5 border border-border bg-muted/30 p-4">
-      <p className="text-sm font-semibold text-foreground">{props.eventName}</p>
+    <div className="mb-5 border border-base-300 bg-base-200/30 p-4">
+      <p className="text-sm font-semibold text-base-content">{props.eventName}</p>
       <p className="mt-0.5 text-xs text-muted-foreground">
         with {props.inviteeName} ({props.inviteeEmail})
       </p>
@@ -131,12 +131,12 @@ export function ReviewClient(props: Props) {
         <div className="mt-3 space-y-2">
           <div>
             <p className="text-2xs font-semibold uppercase tracking-wide text-muted-foreground">Current</p>
-            <p className="text-xs text-foreground">{when}</p>
+            <p className="text-xs text-base-content">{when}</p>
           </div>
           <p className="text-xs text-primary">↓</p>
           <div>
             <p className="text-2xs font-semibold uppercase tracking-wide text-muted-foreground">Requested</p>
-            <p className="text-xs font-semibold text-foreground">{requestedWhen}</p>
+            <p className="text-xs font-semibold text-base-content">{requestedWhen}</p>
           </div>
           <p className="text-xs text-muted-foreground">{props.hostTimezone}</p>
         </div>
@@ -166,11 +166,11 @@ export function ReviewClient(props: Props) {
   // error + Approve/Decline) instead of spinning forever.
   if (autoApproving && view === "main" && submitting) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
-        <div className="w-full max-w-md overflow-hidden bg-card border border-border">
+      <main className="flex min-h-screen items-center justify-center bg-base-200/30 p-4">
+        <div className="w-full max-w-md overflow-hidden bg-base-100 border border-base-300">
           <div className="flex flex-col items-center gap-4 px-5 sm:px-8 py-14 text-center">
             <Spinner className="animate-spin text-primary" size={40} />
-            <p className="text-sm font-medium text-foreground">Approving booking…</p>
+            <p className="text-sm font-medium text-base-content">Approving booking…</p>
           </div>
         </div>
       </main>
@@ -179,26 +179,26 @@ export function ReviewClient(props: Props) {
 
   if (props.isPast) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
-        <div className="w-full max-w-md overflow-hidden bg-card border border-border">
+      <main className="flex min-h-screen items-center justify-center bg-base-200/30 p-4">
+        <div className="w-full max-w-md overflow-hidden bg-base-100 border border-base-300">
           <div className="flex flex-col items-center gap-4 px-5 sm:px-8 py-12 text-center">
             <Warning className="text-amber-500" size={48} weight="fill" />
-            <h1 className="text-lg font-bold text-foreground">This booking has passed</h1>
+            <h1 className="text-lg font-bold text-base-content">This booking has passed</h1>
             <p className="text-sm text-muted-foreground">
               It&apos;s no longer possible to approve or decline a past booking.
             </p>
           </div>
-          <div className="border-t border-border px-5 sm:px-8 py-5 flex flex-col sm:flex-row gap-3">
+          <div className="border-t border-base-300 px-5 sm:px-8 py-5 flex flex-col sm:flex-row gap-3">
             <Link
               href="/dashboard"
-              className="flex h-10 flex-1 items-center justify-center gap-2 border border-border text-sm font-semibold text-foreground transition-all hover:bg-muted"
+              className="flex h-10 flex-1 items-center justify-center gap-2 border border-base-300 text-sm font-semibold text-base-content transition-all hover:bg-base-200"
             >
               <House size={15} />
               Dashboard
             </Link>
             <Link
               href="/bookings"
-              className="flex h-10 flex-1 items-center justify-center gap-2 bg-primary text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+              className="flex h-10 flex-1 items-center justify-center gap-2 bg-primary text-sm font-semibold text-primary-content transition-opacity hover:opacity-90"
             >
               <CalendarBlank size={15} />
               View Bookings
@@ -211,11 +211,11 @@ export function ReviewClient(props: Props) {
 
   if (view === "approved") {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
-        <div className="w-full max-w-md overflow-hidden bg-card border border-border">
+      <main className="flex min-h-screen items-center justify-center bg-base-200/30 p-4">
+        <div className="w-full max-w-md overflow-hidden bg-base-100 border border-base-300">
           <div className="flex flex-col items-center gap-4 px-5 sm:px-8 py-12 text-center">
             <CheckCircle className="text-primary" size={48} weight="fill" />
-            <h1 className="text-lg font-bold text-foreground">
+            <h1 className="text-lg font-bold text-base-content">
               {isReschedule ? "Reschedule approved" : "Booking approved"}
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -224,17 +224,17 @@ export function ReviewClient(props: Props) {
                 : `${props.inviteeName} will receive a confirmation email with the booking details.`}
             </p>
           </div>
-          <div className="border-t border-border px-5 sm:px-8 py-5 flex flex-col sm:flex-row gap-3">
+          <div className="border-t border-base-300 px-5 sm:px-8 py-5 flex flex-col sm:flex-row gap-3">
             <Link
               href="/dashboard"
-              className="flex h-10 flex-1 items-center justify-center gap-2 border border-border text-sm font-semibold text-foreground transition-all hover:bg-muted"
+              className="flex h-10 flex-1 items-center justify-center gap-2 border border-base-300 text-sm font-semibold text-base-content transition-all hover:bg-base-200"
             >
               <House size={15} />
               Dashboard
             </Link>
             <Link
               href="/bookings"
-              className="flex h-10 flex-1 items-center justify-center gap-2 bg-primary text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+              className="flex h-10 flex-1 items-center justify-center gap-2 bg-primary text-sm font-semibold text-primary-content transition-opacity hover:opacity-90"
             >
               <CalendarBlank size={15} />
               View Bookings
@@ -247,11 +247,11 @@ export function ReviewClient(props: Props) {
 
   if (view === "rejected") {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
-        <div className="w-full max-w-md overflow-hidden bg-card border border-border">
+      <main className="flex min-h-screen items-center justify-center bg-base-200/30 p-4">
+        <div className="w-full max-w-md overflow-hidden bg-base-100 border border-base-300">
           <div className="flex flex-col items-center gap-4 px-5 sm:px-8 py-12 text-center">
             <CheckCircle className="text-muted-foreground" size={48} weight="fill" />
-            <h1 className="text-lg font-bold text-foreground">
+            <h1 className="text-lg font-bold text-base-content">
               {isReschedule ? "Reschedule declined" : "Booking declined"}
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -260,17 +260,17 @@ export function ReviewClient(props: Props) {
                 : `${props.inviteeName} will be notified that their booking request was declined.`}
             </p>
           </div>
-          <div className="border-t border-border px-5 sm:px-8 py-5 flex flex-col sm:flex-row gap-3">
+          <div className="border-t border-base-300 px-5 sm:px-8 py-5 flex flex-col sm:flex-row gap-3">
             <Link
               href="/dashboard"
-              className="flex h-10 flex-1 items-center justify-center gap-2 border border-border text-sm font-semibold text-foreground transition-all hover:bg-muted"
+              className="flex h-10 flex-1 items-center justify-center gap-2 border border-base-300 text-sm font-semibold text-base-content transition-all hover:bg-base-200"
             >
               <House size={15} />
               Dashboard
             </Link>
             <Link
               href="/bookings"
-              className="flex h-10 flex-1 items-center justify-center gap-2 bg-primary text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+              className="flex h-10 flex-1 items-center justify-center gap-2 bg-primary text-sm font-semibold text-primary-content transition-opacity hover:opacity-90"
             >
               <CalendarBlank size={15} />
               View Bookings
@@ -283,27 +283,27 @@ export function ReviewClient(props: Props) {
 
   if (view === "invalid") {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
-        <div className="w-full max-w-md overflow-hidden bg-card border border-border">
+      <main className="flex min-h-screen items-center justify-center bg-base-200/30 p-4">
+        <div className="w-full max-w-md overflow-hidden bg-base-100 border border-base-300">
           <div className="flex flex-col items-center gap-4 px-5 sm:px-8 py-12 text-center">
             <Warning className="text-amber-500" size={48} weight="fill" />
-            <h1 className="text-lg font-bold text-foreground">This request is no longer valid</h1>
+            <h1 className="text-lg font-bold text-base-content">This request is no longer valid</h1>
             <p className="text-sm text-muted-foreground">
               This reschedule request has already been handled or the booking
               changed. No action is needed.
             </p>
           </div>
-          <div className="border-t border-border px-5 sm:px-8 py-5 flex flex-col sm:flex-row gap-3">
+          <div className="border-t border-base-300 px-5 sm:px-8 py-5 flex flex-col sm:flex-row gap-3">
             <Link
               href="/dashboard"
-              className="flex h-10 flex-1 items-center justify-center gap-2 border border-border text-sm font-semibold text-foreground transition-all hover:bg-muted"
+              className="flex h-10 flex-1 items-center justify-center gap-2 border border-base-300 text-sm font-semibold text-base-content transition-all hover:bg-base-200"
             >
               <House size={15} />
               Dashboard
             </Link>
             <Link
               href="/bookings"
-              className="flex h-10 flex-1 items-center justify-center gap-2 bg-primary text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+              className="flex h-10 flex-1 items-center justify-center gap-2 bg-primary text-sm font-semibold text-primary-content transition-opacity hover:opacity-90"
             >
               <CalendarBlank size={15} />
               View Bookings
@@ -316,11 +316,11 @@ export function ReviewClient(props: Props) {
 
   if (view === "reject") {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
-        <div className="w-full max-w-md overflow-hidden bg-card border border-border">
-          <div className="flex items-center gap-3 border-b border-border bg-muted/30 px-5 sm:px-8 py-6">
-            <X className="text-destructive" size={24} weight="bold" />
-            <h1 className="text-base font-bold text-foreground">
+      <main className="flex min-h-screen items-center justify-center bg-base-200/30 p-4">
+        <div className="w-full max-w-md overflow-hidden bg-base-100 border border-base-300">
+          <div className="flex items-center gap-3 border-b border-base-300 bg-base-200/30 px-5 sm:px-8 py-6">
+            <X className="text-error" size={24} weight="bold" />
+            <h1 className="text-base font-bold text-base-content">
               {isReschedule ? "Decline this reschedule?" : "Decline this booking?"}
             </h1>
           </div>
@@ -340,7 +340,7 @@ export function ReviewClient(props: Props) {
               Reason for declining (optional)
             </label>
             <textarea
-              className="w-full resize-none border border-input bg-background px-3 py-2 text-sm outline-none transition-all placeholder:text-muted-foreground/60 focus:border-primary focus:ring-2 focus:ring-primary/15"
+              className="w-full resize-none border border-input bg-base-100 px-3 py-2 text-sm outline-none transition-all placeholder:text-muted-foreground/60 focus:border-primary focus:ring-2 focus:ring-primary/15"
               id="reject-reason"
               onChange={(e) => setReason(e.target.value)}
               placeholder="Let the invitee know why you're declining…"
@@ -348,11 +348,11 @@ export function ReviewClient(props: Props) {
               value={reason}
             />
 
-            {error && <p className="mt-3 text-xs text-destructive">{error}</p>}
+            {error && <p className="mt-3 text-xs text-error">{error}</p>}
 
             <div className="mt-5 flex gap-3">
               <button
-                className="flex h-11 flex-1 items-center justify-center border border-border text-sm font-semibold text-foreground transition-all hover:bg-muted disabled:opacity-60"
+                className="flex h-11 flex-1 items-center justify-center border border-base-300 text-sm font-semibold text-base-content transition-all hover:bg-base-200 disabled:opacity-60"
                 disabled={submitting}
                 onClick={() => setView("main")}
                 type="button"
@@ -360,7 +360,7 @@ export function ReviewClient(props: Props) {
                 Back
               </button>
               <button
-                className="flex h-11 flex-1 items-center justify-center gap-2 bg-destructive text-sm font-bold text-primary-foreground transition-all hover:bg-destructive/90 disabled:opacity-60"
+                className="flex h-11 flex-1 items-center justify-center gap-2 bg-error text-sm font-bold text-primary-content transition-all hover:bg-error/90 disabled:opacity-60"
                 disabled={submitting}
                 onClick={handleReject}
                 type="button"
@@ -382,15 +382,15 @@ export function ReviewClient(props: Props) {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
-      <div className="w-full max-w-md overflow-hidden bg-card border border-border">
-        <div className="flex items-center gap-3 border-b border-border bg-muted/30 px-5 sm:px-8 py-6">
+    <main className="flex min-h-screen items-center justify-center bg-base-200/30 p-4">
+      <div className="w-full max-w-md overflow-hidden bg-base-100 border border-base-300">
+        <div className="flex items-center gap-3 border-b border-base-300 bg-base-200/30 px-5 sm:px-8 py-6">
           <span className="flex size-7 items-center justify-center bg-amber-500/10 text-amber-600">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
               <path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 3.5a.75.75 0 0 1 .75.75v3a.75.75 0 0 1-1.5 0v-3A.75.75 0 0 1 8 4.5zm0 7a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
             </svg>
           </span>
-          <h1 className="text-base font-bold text-foreground">
+          <h1 className="text-base font-bold text-base-content">
             {isReschedule ? "Review reschedule request" : "Review booking request"}
           </h1>
         </div>
@@ -412,11 +412,11 @@ export function ReviewClient(props: Props) {
 
           <BookingCard />
 
-          {error && <p className="mb-4 text-xs text-destructive">{error}</p>}
+          {error && <p className="mb-4 text-xs text-error">{error}</p>}
 
           <div className="flex gap-3">
             <button
-              className="flex h-11 flex-1 items-center justify-center gap-2 bg-destructive/10 border border-destructive text-sm font-semibold text-destructive transition-all hover:bg-destructive/20 disabled:opacity-60"
+              className="flex h-11 flex-1 items-center justify-center gap-2 bg-error/10 border border-error text-sm font-semibold text-error transition-all hover:bg-error/20 disabled:opacity-60"
               disabled={submitting}
               onClick={() => setView("reject")}
               type="button"
@@ -425,7 +425,7 @@ export function ReviewClient(props: Props) {
               Decline
             </button>
             <button
-              className="flex h-11 flex-1 items-center justify-center gap-2 bg-primary text-sm font-bold text-primary-foreground transition-all hover:bg-primary/90 disabled:opacity-60"
+              className="flex h-11 flex-1 items-center justify-center gap-2 bg-primary text-sm font-bold text-primary-content transition-all hover:bg-primary/90 disabled:opacity-60"
               disabled={submitting}
               onClick={handleApprove}
               type="button"

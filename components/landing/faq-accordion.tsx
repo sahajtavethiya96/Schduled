@@ -65,7 +65,7 @@ function PremiumFaqAccordion({ items, theme }: PremiumFaqProps) {
                     : 'border-white/[0.09] bg-white/[0.05] hover:border-white/[0.15] hover:bg-white/[0.08]'
                   : isOpen
                     ? 'border-primary/40 bg-primary/[0.04]'
-                    : 'border-border bg-card hover:border-primary/25 hover:bg-primary/[0.02]'
+                    : 'border-base-300 bg-base-100 hover:border-primary/25 hover:bg-primary/[0.02]'
               )}
               style={{
                 zIndex: isOpen ? 10 : 1,
@@ -91,8 +91,8 @@ function PremiumFaqAccordion({ items, theme }: PremiumFaqProps) {
                         ? 'font-bold text-white'
                         : 'font-semibold text-white/70'
                       : isOpen
-                        ? 'font-bold text-foreground'
-                        : 'font-semibold text-foreground/70'
+                        ? 'font-bold text-base-content'
+                        : 'font-semibold text-base-content/70'
                   )}
                 >
                   {item.q}

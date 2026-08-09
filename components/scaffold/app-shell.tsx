@@ -49,8 +49,8 @@ export function AppShell({
         )}
 
         {/* Top bar — spans only the content area */}
-        <header className="h-14 shrink-0 flex items-center justify-between gap-3 px-4 md:px-6 border-b border-border bg-background z-40">
-          <Suspense fallback={<div className="h-9 w-48 md:w-72 border border-border bg-page" />}>
+        <header className="h-14 shrink-0 flex items-center justify-between gap-3 px-4 md:px-6 border-b border-base-300 bg-base-100 z-40">
+          <Suspense fallback={<div className="h-9 w-48 md:w-72 border border-base-300 bg-page" />}>
             <GlobalSearch />
           </Suspense>
 

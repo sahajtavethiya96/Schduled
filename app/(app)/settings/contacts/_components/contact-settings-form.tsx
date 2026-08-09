@@ -75,8 +75,8 @@ export function ContactSettingsForm({
 
   return (
     <div className="space-y-6">
-      <section className="border border-border bg-background">
-        <div className="border-b border-border px-5 py-4">
+      <section className="border border-base-300 bg-base-100">
+        <div className="border-b border-base-300 px-5 py-4">
           <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
             Create new contacts automatically
           </h2>
@@ -86,7 +86,7 @@ export function ContactSettingsForm({
           {/* Auto-create toggle */}
           <label className="flex cursor-pointer items-start justify-between gap-4">
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-foreground">
+              <p className="text-sm font-semibold text-base-content">
                 Someone books a meeting with you
               </p>
               <p className="mt-0.5 text-sm text-muted-foreground">
@@ -98,8 +98,8 @@ export function ContactSettingsForm({
           </label>
 
           {/* Exclusion list — tag chip input */}
-          <div className="border-t border-border pt-5">
-            <p className="text-sm font-semibold text-foreground">
+          <div className="border-t border-base-300 pt-5">
+            <p className="text-sm font-semibold text-base-content">
               Exclude domains or email addresses
             </p>
             <p className="mb-3 mt-0.5 text-sm text-muted-foreground">
@@ -111,7 +111,7 @@ export function ContactSettingsForm({
             {/* Tag input box */}
             <div
               className={[
-                'flex min-h-[42px] flex-wrap items-center gap-1.5 border border-input bg-background px-3 py-2 text-sm transition-colors',
+                'flex min-h-[42px] flex-wrap items-center gap-1.5 border border-input bg-base-100 px-3 py-2 text-sm transition-colors',
                 !autoCreate ? 'pointer-events-none opacity-50' : 'cursor-text focus-within:border-primary focus-within:ring-1 focus-within:ring-primary',
               ].join(' ')}
               onClick={() => inputRef.current?.focus()}
@@ -119,13 +119,13 @@ export function ContactSettingsForm({
               {tags.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center gap-1 bg-muted px-2 py-0.5 text-xs font-medium text-foreground"
+                  className="inline-flex items-center gap-1 bg-base-200 px-2 py-0.5 text-xs font-medium text-base-content"
                 >
                   {tag}
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); removeTag(tag) }}
-                    className="text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-muted-foreground hover:text-base-content transition-colors"
                     aria-label={`Remove ${tag}`}
                   >
                     <X size={11} weight="bold" />
@@ -145,8 +145,8 @@ export function ContactSettingsForm({
               />
             </div>
             <p className="mt-1.5 text-xs text-muted-foreground">
-              Press <kbd className="rounded-none border border-border px-1 py-0.5 font-mono text-[10px]">Enter</kbd>{' '}
-              or <kbd className="rounded-none border border-border px-1 py-0.5 font-mono text-[10px]">,</kbd> to add each entry.
+              Press <kbd className="rounded-none border border-base-300 px-1 py-0.5 font-mono text-[10px]">Enter</kbd>{' '}
+              or <kbd className="rounded-none border border-base-300 px-1 py-0.5 font-mono text-[10px]">,</kbd> to add each entry.
             </p>
           </div>
         </div>

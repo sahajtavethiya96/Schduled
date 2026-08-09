@@ -75,7 +75,7 @@ export function BookingVerificationCard({ eventTypes }: { eventTypes: EventTypeR
             placeholder="Search meeting types…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full border border-input bg-background py-2 pl-9 pr-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all placeholder:text-muted-foreground/60 max-w-xs"
+            className="w-full border border-input bg-base-100 py-2 pl-9 pr-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all placeholder:text-muted-foreground/60 max-w-xs"
           />
         </div>
 
@@ -84,9 +84,9 @@ export function BookingVerificationCard({ eventTypes }: { eventTypes: EventTypeR
           <p className="py-6 text-center text-sm text-muted-foreground">No meeting types found.</p>
         ) : (
           <div className="overflow-x-auto">
-          <div className="border border-border min-w-[560px]">
+          <div className="border border-base-300 min-w-[560px]">
             {/* Header */}
-            <div className="grid grid-cols-[1fr_120px_140px_140px] gap-4 border-b border-border bg-muted/40 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <div className="grid grid-cols-[1fr_120px_140px_140px] gap-4 border-b border-base-300 bg-base-200/40 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               <span>Name</span>
               <span>Verification</span>
               <span>Location</span>
@@ -97,7 +97,7 @@ export function BookingVerificationCard({ eventTypes }: { eventTypes: EventTypeR
             {filtered.map((et) => (
               <div
                 key={et.id}
-                className="grid grid-cols-[1fr_120px_140px_140px] gap-4 border-b border-border last:border-b-0 px-4 py-3 items-center hover:bg-muted/20 transition-colors"
+                className="grid grid-cols-[1fr_120px_140px_140px] gap-4 border-b border-base-300 last:border-b-0 px-4 py-3 items-center hover:bg-base-200/20 transition-colors"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <span

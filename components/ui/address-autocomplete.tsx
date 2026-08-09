@@ -180,7 +180,7 @@ export function AddressAutocomplete({
         <ul
           role="listbox"
           className={cn(
-            'absolute z-50 max-h-64 w-full overflow-y-auto border border-border bg-popover py-1 ring-1 ring-foreground/10',
+            'absolute z-50 max-h-64 w-full overflow-y-auto border border-base-300 bg-base-100 py-1 ring-1 ring-foreground/10',
             placement === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'
           )}
         >
@@ -193,7 +193,7 @@ export function AddressAutocomplete({
                 onMouseEnter={() => setActiveIndex(i)}
                 className={cn(
                   'flex w-full items-start gap-2 px-3 py-2 text-left text-sm transition-colors',
-                  i === activeIndex ? 'bg-primary/10 text-foreground' : 'text-muted-foreground hover:bg-muted'
+                  i === activeIndex ? 'bg-primary/10 text-base-content' : 'text-muted-foreground hover:bg-base-200'
                 )}
               >
                 <MapPin size={14} className="mt-0.5 shrink-0 text-primary" />

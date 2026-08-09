@@ -130,7 +130,7 @@ export function JoinSoonBar() {
       </span>
 
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold text-foreground">
+        <p className="truncate text-sm font-semibold text-base-content">
           {meeting.eventName}
           <span className="ml-2 font-normal text-muted-foreground">with {meeting.inviteeName}</span>
         </p>
@@ -144,7 +144,7 @@ export function JoinSoonBar() {
           href={meeting.joinUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex shrink-0 items-center gap-1.5 bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+          className="inline-flex shrink-0 items-center gap-1.5 bg-primary px-3 py-1.5 text-sm font-semibold text-primary-content transition-colors hover:bg-primary/90"
         >
           <VideoCamera size={14} weight="fill" />
           Join now
@@ -155,7 +155,7 @@ export function JoinSoonBar() {
         type="button"
         onClick={dismiss}
         aria-label="Dismiss"
-        className="flex size-7 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+        className="flex size-7 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-base-content"
       >
         <X size={15} />
       </button>

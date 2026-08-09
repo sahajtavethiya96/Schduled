@@ -64,7 +64,7 @@ export function CountryCombobox({
       <PopoverTrigger asChild>
         <button
           className={cn(
-            'flex h-9 items-center justify-between gap-1.5 border border-input bg-background px-3 text-sm transition-colors hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary data-[state=open]:border-primary',
+            'flex h-9 items-center justify-between gap-1.5 border border-input bg-base-100 px-3 text-sm transition-colors hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary data-[state=open]:border-primary',
             triggerClassName
           )}
           type="button"
@@ -81,7 +81,7 @@ export function CountryCombobox({
         sideOffset={4}
       >
         {/* Search input */}
-        <div className="flex items-center gap-2 border-b border-border px-2.5 py-1.5">
+        <div className="flex items-center gap-2 border-b border-base-300 px-2.5 py-1.5">
           <MagnifyingGlass className="shrink-0 text-muted-foreground" size={14} />
           <input
             className="h-7 w-full bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none"
@@ -115,7 +115,7 @@ export function CountryCombobox({
                     'flex w-full items-center justify-between px-2 py-1.5 text-left text-sm transition-colors',
                     isSelected
                       ? 'bg-primary/10 font-medium text-primary'
-                      : 'hover:bg-muted'
+                      : 'hover:bg-base-200'
                   )}
                   key={o.code}
                   onClick={() => select(o.code)}

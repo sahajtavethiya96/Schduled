@@ -285,7 +285,7 @@ export default async function DashboardPage() {
               Your next meeting
             </p>
             <p className="mt-0.5 truncate text-sm">
-              <span className="font-semibold text-foreground">
+              <span className="font-semibold text-base-content">
                 {upcomingMeetings[0].inviteeName}
               </span>
               <span className="text-muted-foreground">
@@ -295,7 +295,7 @@ export default async function DashboardPage() {
             </p>
           </div>
           <div className="shrink-0 text-right">
-            <p className="text-sm font-bold text-foreground">
+            <p className="text-sm font-bold text-base-content">
               {dayLabel(upcomingMeetings[0].startTime, hostTz)}
             </p>
             <p className="text-sm text-muted-foreground">
@@ -353,7 +353,7 @@ export default async function DashboardPage() {
       {/* ── Upcoming meetings + Recent bookings ─────────────────────── */}
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between border-b border-border py-4">
+          <CardHeader className="flex flex-row items-center justify-between border-b border-base-300 py-4">
             <div className="flex items-center gap-2">
               <CardTitle className="text-sm font-bold uppercase tracking-ui">
                 Upcoming Meetings
@@ -379,7 +379,7 @@ export default async function DashboardPage() {
                 <Link
                   key={m.id}
                   href={`/bookings?highlight=${m.id}`}
-                  className="flex items-center justify-between gap-4 border-t border-border px-6 py-3.5 transition-colors duration-150 hover:bg-primary/[0.02] group"
+                  className="flex items-center justify-between gap-4 border-t border-base-300 px-6 py-3.5 transition-colors duration-150 hover:bg-primary/[0.02] group"
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold group-hover:text-primary transition-colors">
@@ -397,7 +397,7 @@ export default async function DashboardPage() {
                     </div>
                   </div>
                   <div className="shrink-0 text-right">
-                    <p className="text-sm font-semibold text-foreground">
+                    <p className="text-sm font-semibold text-base-content">
                       {dayLabel(m.startTime, hostTz)}
                     </p>
                     <p className="text-sm text-muted-foreground">
@@ -411,13 +411,13 @@ export default async function DashboardPage() {
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between border-b border-border py-4">
+          <CardHeader className="flex flex-row items-center justify-between border-b border-base-300 py-4">
             <div className="flex items-center gap-2">
               <CardTitle className="text-sm font-bold uppercase tracking-ui">
                 Recent Bookings
               </CardTitle>
               {recentBookings.length > 0 && (
-                <span className="flex h-5 min-w-5 items-center justify-center bg-muted px-1.5 text-xs font-bold text-muted-foreground">
+                <span className="flex h-5 min-w-5 items-center justify-center bg-base-200 px-1.5 text-xs font-bold text-muted-foreground">
                   {recentBookings.length}
                 </span>
               )}
@@ -434,7 +434,7 @@ export default async function DashboardPage() {
                 <Link
                   key={b.id}
                   href={`/bookings?highlight=${b.id}`}
-                  className="flex items-center justify-between gap-4 border-t border-border px-6 py-3.5 transition-colors duration-150 hover:bg-primary/[0.02] group"
+                  className="flex items-center justify-between gap-4 border-t border-base-300 px-6 py-3.5 transition-colors duration-150 hover:bg-primary/[0.02] group"
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold group-hover:text-primary transition-colors">
@@ -508,7 +508,7 @@ function StatCard({
             <p className="text-xs font-semibold uppercase tracking-ui text-muted-foreground">
               {label}
             </p>
-            <p className="mt-2 font-heading text-4xl font-black leading-none transition-colors duration-200 text-foreground group-hover:text-primary">
+            <p className="mt-2 font-heading text-4xl font-black leading-none transition-colors duration-200 text-base-content group-hover:text-primary">
               {value}
             </p>
             <p className="mt-2 text-sm text-muted-foreground">{subtitle}</p>
@@ -518,14 +518,14 @@ function StatCard({
               "flex h-9 w-9 shrink-0 items-center justify-center transition-all duration-200",
               accent
                 ? "bg-primary/10 text-primary"
-                : "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary",
+                : "bg-base-200 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary",
             ].join(" ")}
           >
             {icon}
           </span>
         </div>
 
-        <div className="mt-3 border-t border-border pt-3">
+        <div className="mt-3 border-t border-base-300 pt-3">
           <p className="text-sm text-muted-foreground">
             {note ?? <span className="invisible">–</span>}
           </p>
@@ -550,7 +550,7 @@ function EmptyUpcoming({
         <div className="mb-4 flex h-14 w-14 items-center justify-center bg-primary/10">
           <ShareNetwork className="text-primary/60" size={28} weight="duotone" />
         </div>
-        <p className="text-base font-semibold text-foreground">
+        <p className="text-base font-semibold text-base-content">
           Your calendar is clear
         </p>
         <p className="mt-1.5 max-w-xs text-sm text-muted-foreground">
@@ -577,10 +577,10 @@ function EmptyUpcoming({
 
   return (
     <div className="flex flex-col items-center px-8 py-12 text-center">
-      <div className="mb-4 flex h-14 w-14 items-center justify-center bg-muted">
+      <div className="mb-4 flex h-14 w-14 items-center justify-center bg-base-200">
         <CalendarBlank className="text-muted-foreground/40" size={28} weight="duotone" />
       </div>
-      <p className="text-base font-semibold text-foreground">
+      <p className="text-base font-semibold text-base-content">
         No meeting types yet
       </p>
       <p className="mt-1.5 max-w-xs text-sm text-muted-foreground">
@@ -599,10 +599,10 @@ function EmptyUpcoming({
 function EmptyBookings({ bookingUrl }: { bookingUrl: string | null }) {
   return (
     <div className="flex flex-col items-center px-8 py-12 text-center">
-      <div className="mb-4 flex h-14 w-14 items-center justify-center bg-muted">
+      <div className="mb-4 flex h-14 w-14 items-center justify-center bg-base-200">
         <CalendarCheck className="text-muted-foreground/40" size={28} weight="duotone" />
       </div>
-      <p className="text-base font-semibold text-foreground">No bookings yet</p>
+      <p className="text-base font-semibold text-base-content">No bookings yet</p>
       <p className="mt-1.5 max-w-xs text-sm text-muted-foreground">
         {bookingUrl
           ? "Share your booking page link and your first booking will show up here."
@@ -629,8 +629,8 @@ const STATUS_STYLES: Record<
   },
   cancelled: {
     badge:
-      "bg-destructive/10 text-destructive border border-destructive/20 text-xs font-medium px-2.5 py-0.5",
-    dotColor: "bg-destructive",
+      "bg-error/10 text-error border border-error/20 text-xs font-medium px-2.5 py-0.5",
+    dotColor: "bg-error",
     label: "Cancelled",
   },
   pending: {
@@ -641,7 +641,7 @@ const STATUS_STYLES: Record<
   },
   no_show: {
     badge:
-      "bg-muted text-muted-foreground border border-border text-xs font-medium px-2.5 py-0.5",
+      "bg-base-200 text-muted-foreground border border-base-300 text-xs font-medium px-2.5 py-0.5",
     dotColor: "bg-muted-foreground",
     label: "No show",
   },
@@ -658,11 +658,11 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 const LOCATION_BADGE_STYLES: Record<string, string> = {
-  zoom: "bg-muted text-muted-foreground border border-border",
-  google_meet: "bg-muted text-muted-foreground border border-border",
-  phone_host_calls: "bg-muted text-muted-foreground border border-border",
-  phone_invitee_calls: "bg-muted text-muted-foreground border border-border",
-  in_person: "bg-muted text-muted-foreground border border-border",
+  zoom: "bg-base-200 text-muted-foreground border border-base-300",
+  google_meet: "bg-base-200 text-muted-foreground border border-base-300",
+  phone_host_calls: "bg-base-200 text-muted-foreground border border-base-300",
+  phone_invitee_calls: "bg-base-200 text-muted-foreground border border-base-300",
+  in_person: "bg-base-200 text-muted-foreground border border-base-300",
 };
 const LOCATION_LABEL: Record<string, string> = {
   zoom: "Zoom",

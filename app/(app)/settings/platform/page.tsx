@@ -267,7 +267,7 @@ function Section({
     <section className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="flex size-8 shrink-0 items-center justify-center border border-border bg-muted/40 text-muted-foreground">
+          <span className="flex size-8 shrink-0 items-center justify-center border border-base-300 bg-base-200/40 text-muted-foreground">
             {icon}
           </span>
           <div>
@@ -283,7 +283,7 @@ function Section({
 }
 
 function SectionDivider() {
-  return <div className="border-t border-border" />;
+  return <div className="border-t border-base-300" />;
 }
 
 function StatChip({
@@ -301,7 +301,7 @@ function StatChip({
         "flex items-baseline gap-2 border px-3.5 py-2",
         tone === "success" && "border-success/25 bg-success/[0.04]",
         tone === "warning" && "border-amber-500/25 bg-amber-500/[0.04]",
-        tone === "neutral" && "border-border bg-muted/30"
+        tone === "neutral" && "border-base-300 bg-base-200/30"
       )}
     >
       <span
@@ -309,7 +309,7 @@ function StatChip({
           "text-lg font-bold tabular-nums",
           tone === "success" && "text-success",
           tone === "warning" && "text-amber-600 dark:text-amber-500",
-          tone === "neutral" && "text-foreground"
+          tone === "neutral" && "text-base-content"
         )}
       >
         {value}
@@ -368,7 +368,7 @@ function ConfigRow({
     <div
       className={cn(
         "flex items-center justify-between px-6 py-3",
-        !first && "border-t border-border"
+        !first && "border-t border-base-300"
       )}
     >
       <p className="text-sm font-medium">{label}</p>
@@ -427,11 +427,11 @@ function StatusRow({
     <div
       className={cn(
         "flex items-center justify-between gap-6 px-6 py-4",
-        !first && "border-t border-border"
+        !first && "border-t border-base-300"
       )}
     >
       <div className="flex items-start gap-3.5">
-        <span className="flex size-9 shrink-0 items-center justify-center border border-border bg-muted/40 text-muted-foreground">
+        <span className="flex size-9 shrink-0 items-center justify-center border border-base-300 bg-base-200/40 text-muted-foreground">
           {icon}
         </span>
         <div>
@@ -444,13 +444,13 @@ function StatusRow({
           "inline-flex shrink-0 items-center gap-1.5 border px-2.5 py-1 text-xs font-semibold",
           ok
             ? "border-success/25 bg-success/10 text-success"
-            : "border-destructive/25 bg-destructive/10 text-destructive"
+            : "border-error/25 bg-error/10 text-error"
         )}
       >
         <span
           className={cn(
             "size-1.5 rounded-full",
-            ok ? "bg-success" : "bg-destructive"
+            ok ? "bg-success" : "bg-error"
           )}
         />
         {ok ? okText : failText}
@@ -478,11 +478,11 @@ function IntegrationCard({
     <div
       className={cn(
         "flex flex-col gap-3 border p-4 transition-colors",
-        ok ? "border-success/20 bg-success/[0.03]" : "border-border"
+        ok ? "border-success/20 bg-success/[0.03]" : "border-base-300"
       )}
     >
       <div className="flex items-center justify-between">
-        <span className="flex size-9 shrink-0 items-center justify-center border border-border bg-muted/40 text-muted-foreground">
+        <span className="flex size-9 shrink-0 items-center justify-center border border-base-300 bg-base-200/40 text-muted-foreground">
           {icon}
         </span>
         <span
@@ -490,13 +490,13 @@ function IntegrationCard({
             "inline-flex shrink-0 items-center gap-1.5 border px-2 py-0.5 text-xs font-semibold",
             ok
               ? "border-success/25 bg-success/10 text-success"
-              : "border-destructive/25 bg-destructive/10 text-destructive"
+              : "border-error/25 bg-error/10 text-error"
           )}
         >
           <span
             className={cn(
               "size-1.5 rounded-full",
-              ok ? "bg-success" : "bg-destructive"
+              ok ? "bg-success" : "bg-error"
             )}
           />
           {ok ? "Configured" : failText}

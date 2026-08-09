@@ -68,7 +68,7 @@ export function MyLinkForm({ currentUsername, appUrl }: MyLinkFormProps) {
 
   const borderColor =
     avail === 'available' ? 'border-primary' :
-    avail === 'taken' || avail === 'invalid' ? 'border-destructive' : ''
+    avail === 'taken' || avail === 'invalid' ? 'border-error' : ''
 
   const availText =
     avail === 'checking'  ? 'Checking…' :
@@ -77,7 +77,7 @@ export function MyLinkForm({ currentUsername, appUrl }: MyLinkFormProps) {
     avail === 'invalid'   ? 'Must be at least 3 characters' : null
 
   const availColor =
-    avail === 'available' ? 'text-primary' : 'text-destructive'
+    avail === 'available' ? 'text-primary' : 'text-error'
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -90,7 +90,7 @@ export function MyLinkForm({ currentUsername, appUrl }: MyLinkFormProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center gap-2 border border-border bg-muted/40 px-4 py-3">
+          <div className="flex items-center gap-2 border border-base-300 bg-base-200/40 px-4 py-3">
             <Link size={16} className="shrink-0 text-muted-foreground" />
             <span className="flex-1 truncate text-sm font-mono">{bookingUrl}</span>
             <Button type="button" variant="ghost" size="icon-sm" onClick={handleCopy}>
@@ -112,7 +112,7 @@ export function MyLinkForm({ currentUsername, appUrl }: MyLinkFormProps) {
           <div className="space-y-1.5">
             <Label htmlFor="username">Username</Label>
             <div className="flex items-center">
-              <span className="flex h-10 items-center border border-r-0 border-border bg-muted px-3 text-sm text-muted-foreground">
+              <span className="flex h-10 items-center border border-r-0 border-base-300 bg-base-200 px-3 text-sm text-muted-foreground">
                 {appUrl.replace(/^https?:\/\//, '')}/
               </span>
               <Input
@@ -137,7 +137,7 @@ export function MyLinkForm({ currentUsername, appUrl }: MyLinkFormProps) {
           </div>
 
           {message && (
-            <div className={`flex items-center gap-2 text-sm ${message.type === 'ok' ? 'text-primary' : 'text-destructive'}`}>
+            <div className={`flex items-center gap-2 text-sm ${message.type === 'ok' ? 'text-primary' : 'text-error'}`}>
               {message.type === 'error' && <Warning size={15} />}
               {message.text}
             </div>

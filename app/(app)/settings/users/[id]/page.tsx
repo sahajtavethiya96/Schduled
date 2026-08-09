@@ -171,14 +171,14 @@ export default async function SettingsUserDetailPage({
       {/* Back link */}
       <Link
         href="/settings/users"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-base-content"
       >
         <ArrowLeft size={14} />
         Back to Members
       </Link>
 
       {/* ── Hero ── */}
-      <div className="border border-border bg-background p-6">
+      <div className="border border-base-300 bg-base-100 p-6">
         <div className="flex flex-wrap items-start justify-between gap-5">
           <div className="flex items-start gap-5">
             <span
@@ -196,17 +196,17 @@ export default async function SettingsUserDetailPage({
                   'inline-flex items-center border px-2 py-0.5 text-xs font-bold uppercase tracking-wide',
                   isAdmin
                     ? 'border-primary/30 bg-primary/10 text-primary'
-                    : 'border-border bg-muted text-muted-foreground'
+                    : 'border-base-300 bg-base-200 text-muted-foreground'
                 )}>
                   {profile.role ?? 'user'}
                 </span>
                 <span className={cn(
                   'inline-flex items-center gap-1 border px-2 py-0.5 text-xs font-bold',
                   profile.banned
-                    ? 'border-destructive/30 bg-destructive/10 text-destructive'
+                    ? 'border-error/30 bg-error/10 text-error'
                     : 'border-success/30 bg-success/10 text-success'
                 )}>
-                  <span className={cn('size-1.5 rounded-full', profile.banned ? 'bg-destructive' : 'bg-success')} />
+                  <span className={cn('size-1.5 rounded-full', profile.banned ? 'bg-error' : 'bg-success')} />
                   {profile.banned ? 'Suspended' : 'Active'}
                 </span>
                 {isSelf && (
@@ -233,9 +233,9 @@ export default async function SettingsUserDetailPage({
           </div>
         </div>
         {profile.banned && profile.banReason && (
-          <div className="mt-4 flex items-start gap-2 border border-destructive/20 bg-destructive/[0.04] px-4 py-3">
-            <Prohibit size={14} className="mt-0.5 shrink-0 text-destructive" />
-            <p className="text-sm text-destructive"><span className="font-semibold">Suspend reason:</span> {profile.banReason}</p>
+          <div className="mt-4 flex items-start gap-2 border border-error/20 bg-error/[0.04] px-4 py-3">
+            <Prohibit size={14} className="mt-0.5 shrink-0 text-error" />
+            <p className="text-sm text-error"><span className="font-semibold">Suspend reason:</span> {profile.banReason}</p>
           </div>
         )}
       </div>
@@ -251,22 +251,22 @@ export default async function SettingsUserDetailPage({
       {/* ── Profile + Actions ── */}
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className={isSelf ? 'lg:col-span-3' : 'lg:col-span-2'}>
-          <CardHeader className="border-b border-border py-3.5">
+          <CardHeader className="border-b border-base-300 py-3.5">
             <div className="flex items-center gap-2">
               <span className="flex size-6 items-center justify-center bg-primary/10 text-primary">
                 <User size={13} weight="bold" />
               </span>
-              <CardTitle className="text-sm font-bold uppercase tracking-ui text-foreground/70">Profile</CardTitle>
+              <CardTitle className="text-sm font-bold uppercase tracking-ui text-base-content/70">Profile</CardTitle>
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="grid divide-y divide-border sm:grid-cols-2 sm:divide-x sm:divide-y-0">
-              <div className="divide-y divide-border">
+            <div className="grid divide-y divide-base-300 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
+              <div className="divide-y divide-base-300">
                 <InfoRow icon={<User size={14} />} label="Username" value={profile.username ? `@${profile.username}` : '—'} />
                 <InfoRow icon={<IdentificationCard size={14} />} label="User ID" value={profile.id} mono />
                 <InfoRow icon={<Clock size={14} />} label="Last Active" value={lastSeenStr} />
               </div>
-              <div className="divide-y divide-border">
+              <div className="divide-y divide-base-300">
                 <InfoRow icon={<Globe size={14} />} label="Timezone" value={profile.timezone ?? 'UTC'} />
                 <InfoRow icon={<CalendarDot size={14} />} label="Joined" value={format(profile.createdAt, 'MMM d, yyyy')} />
                 <InfoRow
@@ -283,12 +283,12 @@ export default async function SettingsUserDetailPage({
         {!isSelf && (
           <div className="lg:sticky lg:top-6 lg:self-start">
             <Card>
-              <CardHeader className="border-b border-border py-3.5">
+              <CardHeader className="border-b border-base-300 py-3.5">
                 <div className="flex items-center gap-2">
                   <span className="flex size-6 items-center justify-center bg-primary/10 text-primary">
                     <ShieldCheck size={13} weight="bold" />
                   </span>
-                  <CardTitle className="text-sm font-bold uppercase tracking-ui text-foreground/70">Account Actions</CardTitle>
+                  <CardTitle className="text-sm font-bold uppercase tracking-ui text-base-content/70">Account Actions</CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="px-4 py-4">
@@ -304,13 +304,13 @@ export default async function SettingsUserDetailPage({
 
       {/* Meeting Types */}
       <Card className="h-full">
-        <CardHeader className="border-b border-border py-3">
+        <CardHeader className="border-b border-base-300 py-3">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <span className="flex size-6 items-center justify-center bg-primary/10 text-primary">
                 <CalendarDot size={13} weight="bold" />
               </span>
-              <CardTitle className="text-sm font-bold uppercase tracking-ui text-foreground/70">Meeting Types</CardTitle>
+              <CardTitle className="text-sm font-bold uppercase tracking-ui text-base-content/70">Meeting Types</CardTitle>
               <span className="text-xs text-muted-foreground">({eventTypeCount?.value ?? 0})</span>
             </div>
             <SectionSearch paramKey="mq" pageKey="mp" placeholder="Search name…" initialValue={mq} />
@@ -323,7 +323,7 @@ export default async function SettingsUserDetailPage({
             userEventTypes.map((et) => (
               <div
                 key={et.id}
-                className="flex items-center justify-between gap-4 border-t border-border px-5 py-4 first:border-0 transition-colors hover:bg-muted/30"
+                className="flex items-center justify-between gap-4 border-t border-base-300 px-5 py-4 first:border-0 transition-colors hover:bg-base-200/30"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <span className="size-3 shrink-0" style={{ backgroundColor: et.color ?? 'var(--primary)' }} />
@@ -334,7 +334,7 @@ export default async function SettingsUserDetailPage({
                         'shrink-0 inline-flex items-center gap-1 border px-1.5 py-0.5 text-xs font-semibold',
                         et.isActive
                           ? 'border-success/25 bg-success/10 text-success'
-                          : 'border-border bg-muted text-muted-foreground'
+                          : 'border-base-300 bg-base-200 text-muted-foreground'
                       )}>
                         <span className={cn('size-1 rounded-full', et.isActive ? 'bg-success' : 'bg-muted-foreground/40')} />
                         {et.isActive ? 'Active' : 'Inactive'}
@@ -357,13 +357,13 @@ export default async function SettingsUserDetailPage({
 
       {/* Bookings */}
       <Card className="h-full">
-        <CardHeader className="border-b border-border py-3">
+        <CardHeader className="border-b border-base-300 py-3">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <span className="flex size-6 items-center justify-center bg-primary/10 text-primary">
                 <CalendarCheck size={13} weight="bold" />
               </span>
-              <CardTitle className="text-sm font-bold uppercase tracking-ui text-foreground/70">Bookings</CardTitle>
+              <CardTitle className="text-sm font-bold uppercase tracking-ui text-base-content/70">Bookings</CardTitle>
               <span className="text-xs text-muted-foreground">({bookingCount?.value ?? 0})</span>
             </div>
             <SectionSearch paramKey="bq" pageKey="bp" placeholder="Search name or email…" initialValue={bq} />
@@ -376,7 +376,7 @@ export default async function SettingsUserDetailPage({
             recentBookings.map((b) => (
               <div
                 key={b.id}
-                className="flex items-center justify-between gap-4 border-t border-border px-5 py-3.5 first:border-0 transition-colors hover:bg-muted/30"
+                className="flex items-center justify-between gap-4 border-t border-base-300 px-5 py-3.5 first:border-0 transition-colors hover:bg-base-200/30"
               >
                 <div className="min-w-0">
                   <p className="text-sm font-semibold truncate">{b.inviteeName}</p>
@@ -391,12 +391,12 @@ export default async function SettingsUserDetailPage({
                     b.status === 'confirmed'
                       ? 'border-success/25 bg-success/10 text-success'
                       : b.status === 'cancelled'
-                        ? 'border-destructive/25 bg-destructive/10 text-destructive'
-                        : 'border-border bg-muted text-muted-foreground'
+                        ? 'border-error/25 bg-error/10 text-error'
+                        : 'border-base-300 bg-base-200 text-muted-foreground'
                   )}>
                     <span className={cn(
                       'size-1 rounded-full',
-                      b.status === 'confirmed' ? 'bg-success' : b.status === 'cancelled' ? 'bg-destructive' : 'bg-muted-foreground/40'
+                      b.status === 'confirmed' ? 'bg-success' : b.status === 'cancelled' ? 'bg-error' : 'bg-muted-foreground/40'
                     )} />
                     {b.status}
                   </span>
@@ -415,13 +415,13 @@ export default async function SettingsUserDetailPage({
 
       {/* ── Activity Timeline ── */}
       <Card>
-        <CardHeader className="border-b border-border py-3">
+        <CardHeader className="border-b border-base-300 py-3">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <span className="flex size-6 items-center justify-center bg-primary/10 text-primary">
                 <ClockCounterClockwise size={13} weight="bold" />
               </span>
-              <CardTitle className="text-sm font-bold uppercase tracking-ui text-foreground/70">Activity Log</CardTitle>
+              <CardTitle className="text-sm font-bold uppercase tracking-ui text-base-content/70">Activity Log</CardTitle>
               <span className="text-xs text-muted-foreground">({auditCount?.value ?? 0})</span>
             </div>
             <SectionSearch paramKey="aq" pageKey="ap" placeholder="Search action…" initialValue={aq} />
@@ -439,7 +439,7 @@ export default async function SettingsUserDetailPage({
                 return (
                   <li key={log.id} className="relative flex gap-4 pb-5 last:pb-0">
                     {i < recentAudit.length - 1 && (
-                      <span className="absolute left-[15px] top-8 h-full w-px bg-border" aria-hidden />
+                      <span className="absolute left-[15px] top-8 h-full w-px bg-base-300" aria-hidden />
                     )}
                     <span className={cn('relative z-10 flex size-8 shrink-0 items-center justify-center', colorClass)}>
                       {iconEl}
@@ -491,10 +491,10 @@ function getAuditMeta(action: string): { iconEl: React.ReactNode; colorClass: st
   if (a.includes('availability'))
     return { iconEl: <CalendarCheck size={14} />, colorClass: 'bg-primary/10 text-primary' }
   if (a.includes('profile') || a.includes('update'))
-    return { iconEl: <PencilSimple size={14} />, colorClass: 'bg-muted text-muted-foreground' }
+    return { iconEl: <PencilSimple size={14} />, colorClass: 'bg-base-200 text-muted-foreground' }
   if (a.includes('ban') || a.includes('suspend'))
-    return { iconEl: <Prohibit size={14} />, colorClass: 'bg-destructive/10 text-destructive' }
-  return { iconEl: <ClockCounterClockwise size={14} />, colorClass: 'bg-muted text-muted-foreground' }
+    return { iconEl: <Prohibit size={14} />, colorClass: 'bg-error/10 text-error' }
+  return { iconEl: <ClockCounterClockwise size={14} />, colorClass: 'bg-base-200 text-muted-foreground' }
 }
 
 // ── Sub-components ─────────────────────────────────────────────────────────────
@@ -503,11 +503,11 @@ function KpiCard({ icon, label, value, numeric = false }: {
   icon: React.ReactNode; label: string; value: string; numeric?: boolean
 }) {
   return (
-    <div className="border border-border bg-background p-4">
+    <div className="border border-base-300 bg-base-100 p-4">
       <div className="flex items-center justify-between">
         <span className="text-muted-foreground">{icon}</span>
       </div>
-      <p className={cn('mt-2 tracking-tight text-foreground', numeric ? 'text-3xl font-bold' : 'text-lg font-semibold leading-tight')}>
+      <p className={cn('mt-2 tracking-tight text-base-content', numeric ? 'text-3xl font-bold' : 'text-lg font-semibold leading-tight')}>
         {value}
       </p>
       <p className="mt-0.5 text-xs font-medium uppercase tracking-ui text-muted-foreground">{label}</p>
@@ -527,7 +527,7 @@ function InfoRow({ icon, label, value, mono = false, highlight }: {
           'mt-0.5 truncate text-sm font-semibold',
           mono && 'font-mono text-xs text-muted-foreground',
           highlight === 'success' && 'text-success',
-          highlight === 'destructive' && 'text-destructive',
+          highlight === 'destructive' && 'text-error',
         )}>
           {value}
         </p>
@@ -541,10 +541,10 @@ function EmptyState({ icon, title, description }: {
 }) {
   return (
     <div className="flex flex-col items-center justify-center py-12 text-center">
-      <span className="flex size-12 items-center justify-center bg-muted text-muted-foreground">
+      <span className="flex size-12 items-center justify-center bg-base-200 text-muted-foreground">
         {icon}
       </span>
-      <p className="mt-3 text-sm font-semibold text-foreground">{title}</p>
+      <p className="mt-3 text-sm font-semibold text-base-content">{title}</p>
       <p className="mt-1 text-sm text-muted-foreground">{description}</p>
     </div>
   )
@@ -564,10 +564,10 @@ function SectionPager({ page, totalPages, total, paramKey, sp, perPage }: {
   }
 
   return (
-    <div className="flex items-center justify-between gap-3 border-t border-border px-5 py-3">
+    <div className="flex items-center justify-between gap-3 border-t border-base-300 px-5 py-3">
       <p className="text-xs text-muted-foreground">
-        <strong className="font-semibold text-foreground">{from}–{to}</strong> of{' '}
-        <strong className="font-semibold text-foreground">{total}</strong>
+        <strong className="font-semibold text-base-content">{from}–{to}</strong> of{' '}
+        <strong className="font-semibold text-base-content">{total}</strong>
       </p>
       <Pagination className="mx-0 w-auto">
         <PaginationContent>

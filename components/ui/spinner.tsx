@@ -2,9 +2,9 @@ import * as React from 'react'
 import { cn } from '@/lib/utils'
 
 const sizeClass = {
-  sm: 'size-4 border-2',
-  md: 'size-6 border-2',
-  lg: 'size-8 border-[3px]',
+  sm: 'loading-xs',
+  md: 'loading-md',
+  lg: 'loading-xl',
 } as const
 
 interface SpinnerProps extends React.HTMLAttributes<HTMLSpanElement> {
@@ -16,11 +16,7 @@ function Spinner({ size = 'md', className, ...props }: SpinnerProps) {
     <span
       role="status"
       aria-label="Loading"
-      className={cn(
-        'inline-block animate-spin rounded-full border-current border-t-transparent',
-        sizeClass[size],
-        className,
-      )}
+      className={cn('loading loading-spinner', sizeClass[size], className)}
       {...props}
     />
   )

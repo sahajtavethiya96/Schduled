@@ -65,7 +65,7 @@ export function CommunicationForm({ initial }: CommunicationFormProps) {
           <CardTitle>Your Notifications</CardTitle>
           <CardDescription>Emails sent to you when scheduling events occur.</CardDescription>
         </CardHeader>
-        <CardContent className="divide-y divide-border">
+        <CardContent className="divide-y divide-base-300">
           {HOST_NOTIFICATIONS.map((item, i) => (
             <div key={item.key} className={`flex items-center justify-between gap-4 ${i === 0 ? 'pb-4' : 'py-4'}`}>
               <div>
@@ -87,7 +87,7 @@ export function CommunicationForm({ initial }: CommunicationFormProps) {
           <CardTitle>Invitee Notifications</CardTitle>
           <CardDescription>Emails sent to the people who book with you.</CardDescription>
         </CardHeader>
-        <CardContent className="divide-y divide-border">
+        <CardContent className="divide-y divide-base-300">
           {INVITEE_NOTIFICATIONS.map((item, i) => (
             <div key={item.key} className={`flex items-center justify-between gap-4 ${i === 0 ? 'pb-4' : 'py-4'}`}>
               <div>

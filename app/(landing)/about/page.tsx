@@ -77,7 +77,7 @@ const TEAM = [
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen overflow-x-clip bg-background text-foreground antialiased">
+    <div className="min-h-screen overflow-x-clip bg-base-100 text-base-content antialiased">
 
       <LandingHeader />
 
@@ -129,9 +129,9 @@ export default function AboutPage() {
         </section>
 
         {/* ── Stats strip ────────────────────────────────────────────────── */}
-        <section className="border-b border-border">
+        <section className="border-b border-base-300">
           <div className="mx-auto max-w-6xl px-5 sm:px-8">
-            <div className="grid divide-y divide-border sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
+            <div className="grid divide-y divide-base-300 sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
               {STATS.map((s, i) => (
                 <Reveal key={s.label} delay={i * 80} className="px-8 py-10 text-center">
                   <p
@@ -182,7 +182,7 @@ export default function AboutPage() {
                 <div className="mt-8 flex flex-wrap gap-3">
                   <Link
                     href="/login"
-                    className="inline-flex items-center gap-2 bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+                    className="inline-flex items-center gap-2 bg-primary px-5 py-2.5 text-sm font-semibold text-primary-content transition-opacity hover:opacity-90"
                   >
                     Start for free
                     <ArrowRight size={14} weight="bold" />
@@ -191,7 +191,7 @@ export default function AboutPage() {
                     href="https://github.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 border border-border px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:border-primary/40 hover:text-primary"
+                    className="inline-flex items-center gap-2 border border-base-300 px-5 py-2.5 text-sm font-medium text-base-content transition-colors hover:border-primary/40 hover:text-primary"
                   >
                     View on GitHub
                     <ArrowUpRight size={14} />
@@ -233,14 +233,14 @@ export default function AboutPage() {
                     <div key={i} className="group relative flex gap-5">
                       {/* Vertical line */}
                       <div className="flex flex-col items-center">
-                        <div className={`flex h-10 w-10 shrink-0 items-center justify-center border ${item.accent ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-primary"}`}>
+                        <div className={`flex h-10 w-10 shrink-0 items-center justify-center border ${item.accent ? "border-primary bg-primary text-primary-content" : "border-base-300 bg-base-100 text-primary"}`}>
                           <Icon size={18} weight="duotone" />
                         </div>
-                        {i < 3 && <div className="mt-1 w-px flex-1 border-l border-dashed border-border" style={{ minHeight: "2rem" }} />}
+                        {i < 3 && <div className="mt-1 w-px flex-1 border-l border-dashed border-base-300" style={{ minHeight: "2rem" }} />}
                       </div>
 
                       <div className="pb-8">
-                        <p className="font-bold text-foreground">{item.heading}</p>
+                        <p className="font-bold text-base-content">{item.heading}</p>
                         <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{item.body}</p>
                       </div>
                     </div>
@@ -252,7 +252,7 @@ export default function AboutPage() {
         </section>
 
         {/* ── Values ─────────────────────────────────────────────────────── */}
-        <section className="border-t border-border bg-muted/20 py-28">
+        <section className="border-t border-base-300 bg-base-200/20 py-28">
           <div className="mx-auto max-w-6xl px-5 sm:px-8">
             <Reveal>
             <div className="mb-16 text-center">
@@ -269,7 +269,7 @@ export default function AboutPage() {
                 return (
                   <Reveal key={v.title} delay={i * 80}>
                   <div
-                    className="group relative overflow-hidden border border-border bg-card p-7 transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/50 h-full"
+                    className="group relative overflow-hidden border border-base-300 bg-base-100 p-7 transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/50 h-full"
                   >
                     {/* Top accent line */}
                     <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-primary to-teal-400 scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
@@ -373,14 +373,14 @@ export default function AboutPage() {
             <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
               <Link
                 href="/login"
-                className="inline-flex items-center gap-2 bg-primary px-8 py-3.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+                className="inline-flex items-center gap-2 bg-primary px-8 py-3.5 text-sm font-semibold text-primary-content transition-opacity hover:opacity-90"
               >
                 Start for free
                 <ArrowRight size={14} weight="bold" />
               </Link>
               <Link
                 href="/contact"
-                className="inline-flex items-center gap-2 border border-border px-8 py-3.5 text-sm font-medium transition-colors hover:border-primary/40 hover:text-primary"
+                className="inline-flex items-center gap-2 border border-base-300 px-8 py-3.5 text-sm font-medium transition-colors hover:border-primary/40 hover:text-primary"
               >
                 Get in touch
               </Link>

@@ -110,7 +110,7 @@ export function UserDetailActions({
       </Button>
 
       {impersonateError && (
-        <p className="text-xs text-destructive">{impersonateError}</p>
+        <p className="text-xs text-error">{impersonateError}</p>
       )}
 
       {!banned && (
@@ -121,10 +121,10 @@ export function UserDetailActions({
       )}
 
       {/* Danger zone — permanent delete */}
-      <div className="mt-3 border-t border-destructive/20 pt-3">
+      <div className="mt-3 border-t border-error/20 pt-3">
         {confirmDelete ? (
           <div className="space-y-2">
-            <p className="text-2xs text-destructive">
+            <p className="text-2xs text-error">
               This permanently deletes the user and all their bookings, event
               types and data. This cannot be undone.
             </p>
@@ -153,7 +153,7 @@ export function UserDetailActions({
           </div>
         ) : (
           <Button
-            className="w-full justify-start border-destructive/40 text-xs text-destructive hover:bg-destructive/10 hover:text-destructive"
+            className="w-full justify-start border-error/40 text-xs text-error hover:bg-error/10 hover:text-error"
             onClick={() => setConfirmDelete(true)}
             size="sm"
             type="button"

@@ -102,10 +102,10 @@ export function ResetPasswordForm() {
             </div>
           ) : invalidLink ? (
             <div className="space-y-5">
-              <div className="flex items-start gap-3 border border-destructive/25 bg-destructive/[0.06] px-4 py-3">
-                <WarningCircle size={18} weight="fill" className="mt-0.5 shrink-0 text-destructive" />
+              <div className="flex items-start gap-3 border border-error/25 bg-error/[0.06] px-4 py-3">
+                <WarningCircle size={18} weight="fill" className="mt-0.5 shrink-0 text-error" />
                 <div>
-                  <p className="text-sm font-semibold text-destructive">Invalid or expired link</p>
+                  <p className="text-sm font-semibold text-error">Invalid or expired link</p>
                   <p className="mt-0.5 text-xs text-muted-foreground">
                     This password reset link is missing, invalid, or has expired.
                     Request a new one from the sign-in page.
@@ -119,7 +119,7 @@ export function ResetPasswordForm() {
           ) : (
             <form className="space-y-4" onSubmit={onSubmit}>
               <label className="block" htmlFor="new-password">
-                <span className="mb-2 block font-semibold text-foreground text-sm">
+                <span className="mb-2 block font-semibold text-base-content text-sm">
                   New password
                 </span>
                 <div className="relative">
@@ -140,14 +140,14 @@ export function ResetPasswordForm() {
                     onClick={() => setShowPassword((s) => !s)}
                     aria-label={showPassword ? "Hide password" : "Show password"}
                     tabIndex={-1}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-base-content"
                   >
                     {showPassword ? <Eye size={16} /> : <EyeSlash size={16} />}
                   </button>
                 </div>
               </label>
               <label className="block" htmlFor="confirm-password">
-                <span className="mb-2 block font-semibold text-foreground text-sm">
+                <span className="mb-2 block font-semibold text-base-content text-sm">
                   Confirm new password
                 </span>
                 <div className="relative">
@@ -168,14 +168,14 @@ export function ResetPasswordForm() {
                     onClick={() => setShowPassword((s) => !s)}
                     aria-label={showPassword ? "Hide password" : "Show password"}
                     tabIndex={-1}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-base-content"
                   >
                     {showPassword ? <Eye size={16} /> : <EyeSlash size={16} />}
                   </button>
                 </div>
               </label>
               {error && (
-                <p className="rounded-none bg-destructive/10 p-3 text-destructive text-sm">
+                <p className="rounded-none bg-error/10 p-3 text-error text-sm">
                   {error}
                 </p>
               )}

@@ -24,7 +24,7 @@ function RescheduleNotice({ children, backHref }: { children: ReactNode; backHre
           <div className="mt-6 flex justify-center">
             <Link
               href={backHref}
-              className="inline-flex items-center gap-2 border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
+              className="inline-flex items-center gap-2 border border-base-300 px-4 py-2 text-sm font-semibold text-base-content transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
             >
               <ArrowLeft size={14} />
               Back to booking page

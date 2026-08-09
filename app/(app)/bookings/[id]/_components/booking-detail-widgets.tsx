@@ -59,12 +59,12 @@ export function Countdown({ startUtc }: { startUtc: string }) {
 
   return (
     <div className="flex items-center gap-3 border border-primary/30 bg-primary/[0.06] px-5 py-4">
-      <span className="flex size-9 shrink-0 items-center justify-center bg-primary text-primary-foreground">
+      <span className="flex size-9 shrink-0 items-center justify-center bg-primary text-primary-content">
         <Timer size={18} weight="fill" />
       </span>
       <div>
         <p className="text-xs font-medium uppercase tracking-ui text-primary">Meeting starts in</p>
-        <p className="font-black text-xl tabular-nums text-foreground" style={{ fontFamily: 'var(--font-heading)' }}>
+        <p className="font-black text-xl tabular-nums text-base-content" style={{ fontFamily: 'var(--font-heading)' }}>
           {label}
         </p>
       </div>
@@ -85,7 +85,7 @@ export function MeetingLink({ url }: { url: string }) {
   }
 
   return (
-    <div className="flex items-stretch border border-border">
+    <div className="flex items-stretch border border-base-300">
       <span className="flex min-w-0 flex-1 items-center truncate px-3 py-2.5 font-mono text-xs text-muted-foreground">
         {url}
       </span>
@@ -94,7 +94,7 @@ export function MeetingLink({ url }: { url: string }) {
         onClick={copy}
         title="Copy link"
         aria-label="Copy meeting link"
-        className="flex w-10 shrink-0 items-center justify-center border-l border-border text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+        className="flex w-10 shrink-0 items-center justify-center border-l border-base-300 text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
       >
         {copied ? <Check size={15} weight="bold" className="text-emerald-600" /> : <Copy size={15} />}
       </button>
@@ -104,7 +104,7 @@ export function MeetingLink({ url }: { url: string }) {
         rel="noopener noreferrer"
         title="Open link"
         aria-label="Open meeting link"
-        className="flex w-10 shrink-0 items-center justify-center border-l border-border text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+        className="flex w-10 shrink-0 items-center justify-center border-l border-base-300 text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
       >
         <ArrowSquareOut size={15} />
       </a>
@@ -170,14 +170,14 @@ export function AddToCalendar({
         href={googleUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex h-9 items-center justify-center gap-2 border border-border text-sm font-medium text-foreground transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
+        className="flex h-9 items-center justify-center gap-2 border border-base-300 text-sm font-medium text-base-content transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
       >
         <GoogleLogo size={15} weight="bold" /> Google Calendar
       </a>
       <a
         href={icsHref}
         download={filename}
-        className="flex h-9 items-center justify-center gap-2 border border-border text-sm font-medium text-foreground transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
+        className="flex h-9 items-center justify-center gap-2 border border-base-300 text-sm font-medium text-base-content transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
       >
         <DownloadSimple size={15} /> Apple / Outlook (.ics)
       </a>

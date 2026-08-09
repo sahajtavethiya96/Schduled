@@ -41,7 +41,7 @@ export function EventTypeDeleteButton({
       type="button"
       variant="outline"
       size="sm"
-      className="h-6 px-2 text-xs border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+      className="h-6 px-2 text-xs border-error/40 text-error hover:bg-error/10 hover:text-error"
       onClick={() => setConfirm(true)}
     >
       Delete

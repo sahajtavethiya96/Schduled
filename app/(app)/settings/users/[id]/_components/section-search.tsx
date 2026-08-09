@@ -60,7 +60,7 @@ export function SectionSearch({ paramKey, pageKey, placeholder = 'Search…', in
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="h-9 w-full rounded-none border border-border bg-page pl-8 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:w-56"
+        className="h-9 w-full rounded-none border border-base-300 bg-page pl-8 pr-3 text-sm text-base-content placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:w-56"
       />
     </form>
   )

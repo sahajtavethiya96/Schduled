@@ -28,10 +28,10 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }}
       style={
         {
-          "--normal-bg": "var(--popover)",
-          "--normal-text": "var(--popover-foreground)",
-          "--normal-border": "var(--border)",
-          "--border-radius": "var(--radius)",
+          "--normal-bg": "var(--color-base-100)",
+          "--normal-text": "var(--color-base-content)",
+          "--normal-border": "var(--color-base-300)",
+          "--border-radius": "var(--radius-box)",
         } as React.CSSProperties
       }
       toastOptions={{
@@ -41,13 +41,13 @@ const Toaster = ({ ...props }: ToasterProps) => {
         classNames: {
           toast: "!rounded-none",
           description: "text-muted-foreground",
-          actionButton: "bg-primary text-primary-foreground rounded-none",
-          cancelButton: "bg-muted text-muted-foreground rounded-none",
-          default: "!border-border !bg-popover !text-popover-foreground",
-          loading: "!border-border !bg-popover !text-popover-foreground",
-          success: "!border-success/40 !bg-success-subtle !text-success-foreground",
-          error: "!border-destructive/40 !bg-destructive/10 !text-destructive",
-          warning: "!border-warning/40 !bg-warning/15 !text-foreground",
+          actionButton: "bg-primary text-primary-content rounded-none",
+          cancelButton: "bg-base-200 text-muted-foreground rounded-none",
+          default: "!border-base-300 !bg-base-100 !text-base-content",
+          loading: "!border-base-300 !bg-base-100 !text-base-content",
+          success: "!border-success/40 !bg-success-subtle !text-success-content",
+          error: "!border-error/40 !bg-error/10 !text-error",
+          warning: "!border-warning/40 !bg-warning/15 !text-base-content",
           info: "!border-primary/40 !bg-primary/10 !text-primary",
         },
       }}

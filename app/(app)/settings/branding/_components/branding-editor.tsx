@@ -105,7 +105,7 @@ export function BrandingEditor({
             <div className="flex items-center gap-3">
               <input
                 aria-label="Brand color picker"
-                className="size-9 shrink-0 cursor-pointer border border-input bg-background p-0.5"
+                className="size-9 shrink-0 cursor-pointer border border-input bg-base-100 p-0.5"
                 onChange={(e) =>
                   setForm((f) => ({ ...f, brandColor: e.target.value }))
                 }
@@ -151,8 +151,8 @@ export function BrandingEditor({
 
         <div className="space-y-2">
           <Label>Logo</Label>
-          <div className="flex flex-col gap-3 border border-border p-5">
-            <div className="flex h-20 items-center justify-center border border-dashed border-border bg-muted/20">
+          <div className="flex flex-col gap-3 border border-base-300 p-5">
+            <div className="flex h-20 items-center justify-center border border-dashed border-base-300 bg-base-200/20">
               {form.logoUrl ? (
                 // Arbitrary admin-supplied/self-hosted URL — next/image would
                 // need it added to next.config's remotePatterns allowlist.
@@ -192,7 +192,7 @@ export function BrandingEditor({
               </Button>
               {form.logoUrl && (
                 <Button
-                  className="gap-1.5 text-destructive hover:border-destructive hover:text-destructive"
+                  className="gap-1.5 text-error hover:border-error hover:text-error"
                   onClick={() => setForm((f) => ({ ...f, logoUrl: "" }))}
                   size="sm"
                   type="button"

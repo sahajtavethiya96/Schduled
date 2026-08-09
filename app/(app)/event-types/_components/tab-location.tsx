@@ -340,8 +340,8 @@ export function TabLocation({
                             ? "border-amber-400 bg-amber-50/50 dark:border-amber-700 dark:bg-amber-950/20"
                             : "border-primary bg-primary/5 ring-1 ring-primary"
                           : isDisabled
-                            ? "border-border bg-muted/30 opacity-60 cursor-not-allowed"
-                            : "border-border bg-card hover:border-primary/50 hover:bg-muted/30"
+                            ? "border-base-300 bg-base-200/30 opacity-60 cursor-not-allowed"
+                            : "border-base-300 bg-base-100 hover:border-primary/50 hover:bg-base-200/30"
                       )}
                       disabled={isDisabled}
                       onClick={() => {
@@ -381,7 +381,7 @@ export function TabLocation({
                               ? showWarning
                                 ? "border-amber-500 bg-amber-500"
                                 : "border-primary bg-primary"
-                              : "border-border"
+                              : "border-base-300"
                           )}
                         />
                       )}

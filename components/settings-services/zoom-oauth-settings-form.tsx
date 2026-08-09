@@ -87,7 +87,7 @@ export function ZoomOAuthSettingsForm({ initial, onSaved }: Props) {
         </div>
       </div>
 
-      <div className="border-t border-border pt-4">
+      <div className="border-t border-base-300 pt-4">
         <Button
           className="gap-1.5"
           disabled={saving}

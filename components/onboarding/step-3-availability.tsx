@@ -117,8 +117,8 @@ export function StepAvailability({ onNext, onBack }: StepAvailabilityProps) {
                 className={[
                   'flex size-8 shrink-0 items-center justify-center text-xs font-bold select-none',
                   day.enabled
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-muted-foreground',
+                    ? 'bg-primary text-primary-content'
+                    : 'bg-base-200 text-muted-foreground',
                 ].join(' ')}
               >
                 {letter}
@@ -144,7 +144,7 @@ export function StepAvailability({ onNext, onBack }: StepAvailabilityProps) {
                     type="button"
                     onClick={() => toggleDay(key)}
                     aria-label={`Remove ${label}`}
-                    className="shrink-0 p-1 text-muted-foreground transition hover:text-foreground hover:bg-muted"
+                    className="shrink-0 p-1 text-muted-foreground transition hover:text-base-content hover:bg-base-200"
                   >
                     <X size={15} />
                   </button>
@@ -158,7 +158,7 @@ export function StepAvailability({ onNext, onBack }: StepAvailabilityProps) {
                     type="button"
                     onClick={() => toggleDay(key)}
                     aria-label={`Add hours for ${label}`}
-                    className="shrink-0 p-1 text-muted-foreground transition hover:text-foreground hover:bg-muted"
+                    className="shrink-0 p-1 text-muted-foreground transition hover:text-base-content hover:bg-base-200"
                   >
                     <Plus size={15} />
                   </button>
@@ -171,13 +171,13 @@ export function StepAvailability({ onNext, onBack }: StepAvailabilityProps) {
 
       {/* Timezone hint */}
       {timezone && (
-        <div className="flex items-center gap-2 border-t border-border pt-4 text-sm text-muted-foreground">
+        <div className="flex items-center gap-2 border-t border-base-300 pt-4 text-sm text-muted-foreground">
           <Globe size={15} className="shrink-0 text-primary" />
           <span className="truncate">{tzDisplay}</span>
         </div>
       )}
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && <p className="text-sm text-error">{error}</p>}
 
       <div className="flex flex-col gap-2">
         <Button type="submit" className="w-full" disabled={saving}>

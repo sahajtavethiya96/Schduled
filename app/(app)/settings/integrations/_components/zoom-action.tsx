@@ -50,7 +50,7 @@ export function ZoomDisconnectButton() {
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className="bg-error text-error-content hover:bg-error/90"
             onClick={handleDisconnect}
           >
             Disconnect

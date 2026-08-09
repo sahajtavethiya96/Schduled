@@ -43,14 +43,14 @@ export const metadata = { title: 'Bookings' }
 type Tab = 'upcoming' | 'past' | 'cancelled' | 'pending'
 
 const PLATFORM_META: Record<string, { label: string; color: string; icon: React.ElementType }> = {
-  zoom:                { label: 'Zoom',        color: 'bg-muted text-muted-foreground', icon: VideoCamera },
+  zoom:                { label: 'Zoom',        color: 'bg-base-200 text-muted-foreground', icon: VideoCamera },
   google_meet:         { label: 'Google Meet', color: 'bg-primary/10 text-primary',     icon: VideoCamera },
   teams:               { label: 'Teams',       color: 'bg-purple-500/10 text-purple-600', icon: VideoCamera },
-  phone_host_calls:    { label: 'Phone',       color: 'bg-muted text-muted-foreground', icon: Phone },
-  phone_invitee_calls: { label: 'Phone',       color: 'bg-muted text-muted-foreground', icon: Phone },
+  phone_host_calls:    { label: 'Phone',       color: 'bg-base-200 text-muted-foreground', icon: Phone },
+  phone_invitee_calls: { label: 'Phone',       color: 'bg-base-200 text-muted-foreground', icon: Phone },
   in_person:           { label: 'In-person',   color: 'bg-amber-500/10 text-amber-700', icon: MapPin },
-  invitees_choice:     { label: 'Flexible',    color: 'bg-muted text-muted-foreground', icon: VideoCamera },
-  custom:              { label: 'Online',      color: 'bg-muted text-muted-foreground', icon: VideoCamera },
+  invitees_choice:     { label: 'Flexible',    color: 'bg-base-200 text-muted-foreground', icon: VideoCamera },
+  custom:              { label: 'Online',      color: 'bg-base-200 text-muted-foreground', icon: VideoCamera },
 }
 
 import { STATUS_STYLES } from '@/lib/booking-status'
@@ -58,7 +58,7 @@ import { STATUS_STYLES } from '@/lib/booking-status'
 const TAB_DOTS: Record<Tab, string> = {
   upcoming:  'bg-primary',
   past:      'bg-muted-foreground/60',
-  cancelled: 'bg-destructive',
+  cancelled: 'bg-error',
   pending:   'bg-amber-500',
 }
 
@@ -237,18 +237,18 @@ export default async function BookingsPage({
               className={cn(
                 'inline-flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-medium border transition-all',
                 tab === key
-                  ? 'bg-primary text-primary-foreground border-primary'
-                  : 'bg-background text-muted-foreground border-border hover:text-foreground hover:border-primary/40',
+                  ? 'bg-primary text-primary-content border-primary'
+                  : 'bg-base-100 text-muted-foreground border-base-300 hover:text-base-content hover:border-primary/40',
               )}
             >
               <span className={cn(
                 'size-2 rounded-full shrink-0',
-                tab === key ? 'bg-primary-foreground/70' : TAB_DOTS[key],
+                tab === key ? 'bg-primary-content/70' : TAB_DOTS[key],
               )} />
               {label}
               <span className={cn(
                 'text-xs font-bold',
-                tab === key ? 'text-primary-foreground/80' : 'text-muted-foreground',
+                tab === key ? 'text-primary-content/80' : 'text-muted-foreground',
               )}>
                 {counts[key]}
               </span>
@@ -276,7 +276,7 @@ export default async function BookingsPage({
             <div key={g.key}>
               {/* Day header */}
               <div className="mb-2 flex items-center gap-2">
-                <h3 className="text-sm font-semibold text-foreground">{g.label}</h3>
+                <h3 className="text-sm font-semibold text-base-content">{g.label}</h3>
                 {g.isToday && (
                   <span className="border border-primary/30 bg-primary/5 px-1.5 py-0.5 text-xs font-medium text-primary">
                     Today
@@ -285,7 +285,7 @@ export default async function BookingsPage({
               </div>
 
               {/* Rows for the day */}
-              <div className="divide-y divide-border border border-border bg-background">
+              <div className="divide-y divide-base-300 border border-base-300 bg-base-100">
                 {g.items.map((b) => {
                   const isUpcoming = tab === 'upcoming'
                   const isPending = tab === 'pending'
@@ -334,7 +334,7 @@ export default async function BookingsPage({
                           <div className="flex flex-wrap items-baseline gap-x-2 min-w-0">
                             <Link
                               href={`/bookings/${b.id}`}
-                              className="truncate font-semibold text-foreground underline-offset-2 transition-colors hover:underline group-hover:text-primary"
+                              className="truncate font-semibold text-base-content underline-offset-2 transition-colors hover:underline group-hover:text-primary"
                             >
                               {b.inviteeName}
                             </Link>
@@ -346,7 +346,7 @@ export default async function BookingsPage({
                               <span className="truncate">{b.inviteeEmail}</span>
                             </span>
                             {tab === 'cancelled' && b.cancellationReason && (
-                              <span className="max-w-xs truncate text-destructive/70">
+                              <span className="max-w-xs truncate text-error/70">
                                 &ldquo;{b.cancellationReason}&rdquo;
                               </span>
                             )}
@@ -414,7 +414,7 @@ export default async function BookingsPage({
                               </Button>
                             )}
                             {b.cancelToken && (
-                              <Button asChild variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground hover:bg-destructive/5 hover:text-destructive" title="Cancel">
+                              <Button asChild variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground hover:bg-error/5 hover:text-error" title="Cancel">
                                 <Link href={`/cancel/${b.cancelToken}`}>
                                   <X size={14} />
                                 </Link>
@@ -431,7 +431,7 @@ export default async function BookingsPage({
                                 Approve
                               </Link>
                             </Button>
-                            <Button asChild variant="outline" size="sm" className="h-7 gap-1 border-destructive/40 px-2 text-xs text-destructive hover:border-destructive hover:bg-destructive/5">
+                            <Button asChild variant="outline" size="sm" className="h-7 gap-1 border-error/40 px-2 text-xs text-error hover:border-error hover:bg-error/5">
                               <Link href={isRescheduleReq ? `/booking/review/${b.approvalToken}?type=reschedule` : `/booking/review/${b.approvalToken}`}>
                                 <X size={13} weight="bold" />
                                 Decline
@@ -451,11 +451,11 @@ export default async function BookingsPage({
 
       {/* ── Pagination ── */}
       {total > 0 && (
-        <div className="mt-4 flex items-center justify-between gap-3 border-t border-border pt-4">
+        <div className="mt-4 flex items-center justify-between gap-3 border-t border-base-300 pt-4">
           <p className="text-xs text-muted-foreground">
             {totalPages > 1
-              ? <><strong className="font-semibold text-foreground">{(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, total)}</strong> of <strong className="font-semibold text-foreground">{total}</strong> bookings</>
-              : <><strong className="font-semibold text-foreground">{total}</strong> booking{total !== 1 ? 's' : ''}</>}
+              ? <><strong className="font-semibold text-base-content">{(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, total)}</strong> of <strong className="font-semibold text-base-content">{total}</strong> bookings</>
+              : <><strong className="font-semibold text-base-content">{total}</strong> booking{total !== 1 ? 's' : ''}</>}
           </p>
           {totalPages > 1 && (
             <Pagination className="mx-0 w-auto">
@@ -499,7 +499,7 @@ function EmptyState({ tab, hasSearch }: { tab: Tab; hasSearch: boolean }) {
     return (
       <div className="flex flex-col items-center py-20 text-center">
         <MagnifyingGlass size={40} weight="thin" className="mb-3 text-muted-foreground/30" />
-        <p className="font-medium text-foreground">No results found</p>
+        <p className="font-medium text-base-content">No results found</p>
         <p className="mt-1 text-sm text-muted-foreground">Try a different name or email address.</p>
         <Button asChild size="sm" variant="outline" className="mt-4">
           <Link href={`/bookings?tab=${tab}`}>Clear search</Link>
@@ -511,14 +511,14 @@ function EmptyState({ tab, hasSearch }: { tab: Tab; hasSearch: boolean }) {
   if (tab === 'pending') {
     return (
       <div className="flex justify-center py-10">
-        <div className="w-full max-w-lg border border-border bg-background overflow-hidden">
+        <div className="w-full max-w-lg border border-base-300 bg-base-100 overflow-hidden">
           {/* Header */}
-          <div className="flex items-center gap-3 border-b border-border bg-amber-500/[0.06] px-6 py-5">
+          <div className="flex items-center gap-3 border-b border-base-300 bg-amber-500/[0.06] px-6 py-5">
             <span className="flex size-10 shrink-0 items-center justify-center bg-amber-500/10 text-amber-600">
               <Hourglass size={20} weight="fill" />
             </span>
             <div>
-              <p className="font-semibold text-foreground text-sm">No pending requests</p>
+              <p className="font-semibold text-base-content text-sm">No pending requests</p>
               <p className="text-xs text-muted-foreground mt-0.5">
                 Booking requests awaiting your approval will appear here.
               </p>
@@ -536,7 +536,7 @@ function EmptyState({ tab, hasSearch }: { tab: Tab; hasSearch: boolean }) {
                   1
                 </span>
                 <div>
-                  <p className="text-sm font-medium text-foreground">Enable approval on a meeting type</p>
+                  <p className="text-sm font-medium text-base-content">Enable approval on a meeting type</p>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     Edit any meeting type → Details tab → turn on <strong>Require Approval</strong>.
                   </p>
@@ -547,7 +547,7 @@ function EmptyState({ tab, hasSearch }: { tab: Tab; hasSearch: boolean }) {
                   2
                 </span>
                 <div>
-                  <p className="text-sm font-medium text-foreground">Invitee submits a request</p>
+                  <p className="text-sm font-medium text-base-content">Invitee submits a request</p>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     They book a time slot and see "Awaiting Approval" instead of a confirmation.
                   </p>
@@ -558,7 +558,7 @@ function EmptyState({ tab, hasSearch }: { tab: Tab; hasSearch: boolean }) {
                   3
                 </span>
                 <div>
-                  <p className="text-sm font-medium text-foreground">You approve or decline</p>
+                  <p className="text-sm font-medium text-base-content">You approve or decline</p>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     Requests appear here with <strong>Approve</strong> and <strong>Decline</strong> buttons,
                     or act directly from the email notification you receive.
@@ -569,7 +569,7 @@ function EmptyState({ tab, hasSearch }: { tab: Tab; hasSearch: boolean }) {
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-3 border-t border-border bg-muted/30 px-6 py-4">
+          <div className="flex items-center gap-3 border-t border-base-300 bg-base-200/30 px-6 py-4">
             <Button asChild size="sm" className="gap-1.5">
               <Link href="/event-types">
                 <Sliders size={15} weight="bold" />
@@ -591,14 +591,14 @@ function EmptyState({ tab, hasSearch }: { tab: Tab; hasSearch: boolean }) {
   if (tab === 'upcoming') {
     return (
       <div className="flex justify-center py-6">
-        <div className="w-full max-w-lg border border-border bg-background overflow-hidden">
+        <div className="w-full max-w-lg border border-base-300 bg-base-100 overflow-hidden">
           {/* Header */}
-          <div className="flex items-center gap-3 border-b border-border bg-primary/[0.04] px-6 py-5">
+          <div className="flex items-center gap-3 border-b border-base-300 bg-primary/[0.04] px-6 py-5">
             <span className="flex size-10 shrink-0 items-center justify-center bg-primary/10 text-primary">
               <CalendarBlank size={20} weight="duotone" />
             </span>
             <div>
-              <p className="font-semibold text-foreground text-base">No upcoming bookings</p>
+              <p className="font-semibold text-base-content text-base">No upcoming bookings</p>
               <p className="text-sm text-muted-foreground mt-0.5">
                 Your confirmed meetings will appear here once people start booking.
               </p>
@@ -639,7 +639,7 @@ function EmptyState({ tab, hasSearch }: { tab: Tab; hasSearch: boolean }) {
                     {step}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-foreground">{title}</p>
+                    <p className="text-sm font-semibold text-base-content">{title}</p>
                     <p className="text-sm text-muted-foreground mt-0.5">{desc}</p>
                   </div>
                   <Button asChild size="sm" variant="outline" className="shrink-0 text-xs h-7 px-2.5">
@@ -651,7 +651,7 @@ function EmptyState({ tab, hasSearch }: { tab: Tab; hasSearch: boolean }) {
           </div>
 
           {/* Footer CTA */}
-          <div className="flex items-center gap-3 border-t border-border bg-muted/30 px-6 py-4">
+          <div className="flex items-center gap-3 border-t border-base-300 bg-base-200/30 px-6 py-4">
             <Button asChild size="sm" className="gap-1.5">
               <Link href="/event-types">
                 <CalendarBlank size={15} weight="bold" />
@@ -672,13 +672,13 @@ function EmptyState({ tab, hasSearch }: { tab: Tab; hasSearch: boolean }) {
   if (tab === 'past') {
     return (
       <div className="flex justify-center py-6">
-        <div className="w-full max-w-lg border border-border bg-background overflow-hidden">
-          <div className="flex items-center gap-3 border-b border-border bg-muted/30 px-6 py-5">
-            <span className="flex size-10 shrink-0 items-center justify-center bg-muted text-muted-foreground">
+        <div className="w-full max-w-lg border border-base-300 bg-base-100 overflow-hidden">
+          <div className="flex items-center gap-3 border-b border-base-300 bg-base-200/30 px-6 py-5">
+            <span className="flex size-10 shrink-0 items-center justify-center bg-base-200 text-muted-foreground">
               <CalendarCheck size={20} weight="duotone" />
             </span>
             <div>
-              <p className="font-semibold text-foreground text-sm">No past bookings yet</p>
+              <p className="font-semibold text-base-content text-sm">No past bookings yet</p>
               <p className="text-xs text-muted-foreground mt-0.5">
                 Completed meetings will appear here once they have passed.
               </p>
@@ -687,7 +687,7 @@ function EmptyState({ tab, hasSearch }: { tab: Tab; hasSearch: boolean }) {
           <div className="px-6 py-5 text-sm text-muted-foreground leading-relaxed">
             Once you have upcoming bookings confirmed and those meetings pass, they will automatically move here. You can review details, see who attended, and download ICS files.
           </div>
-          <div className="flex items-center border-t border-border bg-muted/30 px-6 py-4">
+          <div className="flex items-center border-t border-base-300 bg-base-200/30 px-6 py-4">
             <Button asChild size="sm" variant="outline" className="gap-1.5">
               <Link href="/bookings?tab=upcoming">
                 <CalendarBlank size={15} />
@@ -703,13 +703,13 @@ function EmptyState({ tab, hasSearch }: { tab: Tab; hasSearch: boolean }) {
   // cancelled
   return (
     <div className="flex justify-center py-6">
-      <div className="w-full max-w-lg border border-border bg-background overflow-hidden">
-        <div className="flex items-center gap-3 border-b border-border bg-muted/30 px-6 py-5">
-          <span className="flex size-10 shrink-0 items-center justify-center bg-muted text-muted-foreground">
+      <div className="w-full max-w-lg border border-base-300 bg-base-100 overflow-hidden">
+        <div className="flex items-center gap-3 border-b border-base-300 bg-base-200/30 px-6 py-5">
+          <span className="flex size-10 shrink-0 items-center justify-center bg-base-200 text-muted-foreground">
             <CalendarX size={20} weight="duotone" />
           </span>
           <div>
-            <p className="font-semibold text-foreground text-sm">No cancelled bookings</p>
+            <p className="font-semibold text-base-content text-sm">No cancelled bookings</p>
             <p className="text-xs text-muted-foreground mt-0.5">
               Meetings that are cancelled will be logged here for reference.
             </p>
@@ -718,7 +718,7 @@ function EmptyState({ tab, hasSearch }: { tab: Tab; hasSearch: boolean }) {
         <div className="px-6 py-5 text-sm text-muted-foreground leading-relaxed">
           When you or an invitee cancels a meeting, it moves here along with the cancellation reason. You can use this history to spot patterns or follow up with invitees.
         </div>
-        <div className="flex items-center border-t border-border bg-muted/30 px-6 py-4">
+        <div className="flex items-center border-t border-base-300 bg-base-200/30 px-6 py-4">
           <Button asChild size="sm" variant="outline" className="gap-1.5">
             <Link href="/bookings?tab=upcoming">
               <CalendarBlank size={13} />

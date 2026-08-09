@@ -199,8 +199,8 @@ export function ContactsTable({ contacts, total, page, pageSize, search, archive
             className={cn(
               'inline-flex items-center gap-1.5 border px-3 py-1.5 text-sm font-medium transition-colors',
               active
-                ? 'border-primary bg-primary text-primary-foreground'
-                : 'border-border bg-background text-muted-foreground hover:border-primary/40 hover:text-foreground'
+                ? 'border-primary bg-primary text-primary-content'
+                : 'border-base-300 bg-base-100 text-muted-foreground hover:border-primary/40 hover:text-base-content'
             )}
           >
             {label}
@@ -210,11 +210,11 @@ export function ContactsTable({ contacts, total, page, pageSize, search, archive
 
       {/* True empty state — no contacts at all, no active filters */}
       {total === 0 && !search && !archived && filter === 'all' ? (
-        <div className="flex flex-col items-center justify-center border border-border bg-card py-20 text-center">
+        <div className="flex flex-col items-center justify-center border border-base-300 bg-base-100 py-20 text-center">
           <div className="mb-4 flex h-14 w-14 items-center justify-center bg-primary/10 text-primary">
             <Users size={28} weight="duotone" />
           </div>
-          <p className="text-base font-semibold text-foreground">No contacts yet</p>
+          <p className="text-base font-semibold text-base-content">No contacts yet</p>
           <p className="mt-1.5 max-w-xs text-sm text-muted-foreground">
             Contacts appear here automatically when someone books a meeting with you.
           </p>
@@ -222,7 +222,7 @@ export function ContactsTable({ contacts, total, page, pageSize, search, archive
       ) : (
 
       /* Table */
-      <div className="overflow-x-auto border border-border">
+      <div className="overflow-x-auto border border-base-300">
         <Table className="w-full min-w-[640px] table-fixed">
           <TableHeader>
             <TableRow className="hover:bg-transparent">
@@ -332,7 +332,7 @@ export function ContactsTable({ contacts, total, page, pageSize, search, archive
                             variant="ghost"
                             size="icon-sm"
                             title="Delete" aria-label="Delete"
-                            className="text-destructive hover:text-destructive"
+                            className="text-error hover:text-error"
                             disabled={isPending}
                           >
                             <Trash size={15} />
@@ -369,11 +369,11 @@ export function ContactsTable({ contacts, total, page, pageSize, search, archive
 
       {/* Pagination — always show count; page numbers when more than one page */}
       {total > 0 && (
-        <div className="flex items-center justify-between gap-3 border-t border-border px-6 py-3">
+        <div className="flex items-center justify-between gap-3 border-t border-base-300 px-6 py-3">
           <p className="text-xs text-muted-foreground">
             {totalPages > 1
-              ? <>Showing <strong className="font-semibold text-foreground">{(page - 1) * pageSize + 1}–{Math.min(page * pageSize, total)}</strong> of <strong className="font-semibold text-foreground">{total}</strong></>
-              : <><strong className="font-semibold text-foreground">{total}</strong> contact{total !== 1 ? 's' : ''}</>}
+              ? <>Showing <strong className="font-semibold text-base-content">{(page - 1) * pageSize + 1}–{Math.min(page * pageSize, total)}</strong> of <strong className="font-semibold text-base-content">{total}</strong></>
+              : <><strong className="font-semibold text-base-content">{total}</strong> contact{total !== 1 ? 's' : ''}</>}
           </p>
           {totalPages > 1 && (
             <Pagination className="mx-0 w-auto">
