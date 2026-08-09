@@ -401,9 +401,9 @@ export function EventTypeBuilder({
       <form onSubmit={form.handleSubmit(onSubmit, onInvalid)}>
         {/* Header + tab bar stick together as one unit while the form scrolls */}
         <div className="sticky top-0 z-20 bg-page">
-          <div className="border border-border bg-background">
+          <div className="border border-base-300 bg-base-100">
             {/* Breadcrumb row */}
-            <Breadcrumb className="border-b border-border/60 px-4 py-1.5 text-xs">
+            <Breadcrumb className="border-b border-base-300/60 px-4 py-1.5 text-xs">
               <BreadcrumbList className="gap-1.5 font-sans text-xs font-normal normal-case tracking-normal sm:gap-1.5">
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
@@ -436,7 +436,7 @@ export function EventTypeBuilder({
               </span>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h1 className="truncate text-lg font-bold text-foreground">
+                  <h1 className="truncate text-lg font-bold text-base-content">
                     {form.watch("name") ||
                       (mode === "create" ? "New Meeting Type" : "Untitled")}
                   </h1>
@@ -479,15 +479,15 @@ export function EventTypeBuilder({
   
           {/* Tab bar — custom, avoids scroll arrows. Aligns to the
               header card above (no edge-to-edge bleed) so the borders line up. */}
-          <div className="border-b border-border bg-page">
+          <div className="border-b border-base-300 bg-page">
             <div className="flex overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {TABS.map((tab) => (
                 <button
                   className={cn(
                     "shrink-0 flex-1 min-w-[80px] border-b-2 py-3 text-xs font-semibold uppercase tracking-wide whitespace-nowrap transition-colors",
                     activeTab === tab.id
-                      ? "border-primary text-foreground"
-                      : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
+                      ? "border-primary text-base-content"
+                      : "border-transparent text-muted-foreground hover:text-base-content hover:border-base-300"
                   )}
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
@@ -530,7 +530,7 @@ export function EventTypeBuilder({
 
             {/* Prev / Next — sticky three-column nav. Aligns to the form column
                 (no edge-to-edge bleed) so its border lines up with the fields. */}
-            <div className="mt-8 sticky bottom-0 py-3 border-t border-border bg-page flex items-center justify-between">
+            <div className="mt-8 sticky bottom-0 py-3 border-t border-base-300 bg-page flex items-center justify-between">
               <Button
                 className="gap-1.5"
                 disabled={isFirst}
@@ -629,7 +629,7 @@ export function EventTypeBuilder({
             {/* Preview booking page */}
             {username && (
               <a
-                className="inline-flex items-center justify-center gap-2 h-9 px-4 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                className="inline-flex items-center justify-center gap-2 h-9 px-4 text-sm font-medium bg-primary text-primary-content hover:bg-primary/90 transition-colors"
                 href={`/${username}/${successInfo?.slug}`}
                 rel="noopener noreferrer"
                 target="_blank"
@@ -641,7 +641,7 @@ export function EventTypeBuilder({
 
             {/* Go to event list */}
             <Link
-              className="inline-flex items-center justify-center gap-2 h-9 px-4 text-sm font-medium border border-border hover:bg-muted transition-colors"
+              className="inline-flex items-center justify-center gap-2 h-9 px-4 text-sm font-medium border border-base-300 hover:bg-base-200 transition-colors"
               href="/event-types"
             >
               <List size={14} />
@@ -651,7 +651,7 @@ export function EventTypeBuilder({
             {/* Continue editing (create mode only) */}
             {successInfo?.isCreate && (
               <button
-                className="inline-flex items-center justify-center h-9 px-4 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="inline-flex items-center justify-center h-9 px-4 text-sm text-muted-foreground hover:text-base-content transition-colors"
                 onClick={() => {
                   router.push(`/event-types/${successInfo.id}`);
                 }}

@@ -71,9 +71,9 @@ export default async function SettingsUsersPage({
       />
 
       <Card>
-        <div className="flex flex-col gap-3 border-b border-border p-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-3 border-b border-base-300 p-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="min-w-0">
-            <p className="text-base font-semibold text-foreground">All Members</p>
+            <p className="text-base font-semibold text-base-content">All Members</p>
             <p className="text-sm text-muted-foreground">
               All registered accounts ordered by sign-up date.
             </p>
@@ -84,12 +84,12 @@ export default async function SettingsUsersPage({
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5 border-b border-border px-4 py-2 text-xs text-muted-foreground">
-          <span><strong className="font-semibold text-foreground">{allResult[0]?.value ?? 0}</strong> total</span>
-          <span className="text-border">·</span>
-          <span><strong className="font-semibold text-foreground">{adminResult[0]?.value ?? 0}</strong> admin{(adminResult[0]?.value ?? 0) !== 1 ? "s" : ""}</span>
-          <span className="text-border">·</span>
-          <span><strong className="font-semibold text-foreground">{suspendedResult[0]?.value ?? 0}</strong> suspended</span>
+        <div className="flex items-center gap-2.5 border-b border-base-300 px-4 py-2 text-xs text-muted-foreground">
+          <span><strong className="font-semibold text-base-content">{allResult[0]?.value ?? 0}</strong> total</span>
+          <span className="text-base-300">·</span>
+          <span><strong className="font-semibold text-base-content">{adminResult[0]?.value ?? 0}</strong> admin{(adminResult[0]?.value ?? 0) !== 1 ? "s" : ""}</span>
+          <span className="text-base-300">·</span>
+          <span><strong className="font-semibold text-base-content">{suspendedResult[0]?.value ?? 0}</strong> suspended</span>
         </div>
 
         <CardContent className="p-0">

@@ -29,7 +29,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
       </div>
 
       {/* ── One unified card holding both halves ── */}
-      <div className="relative z-10 grid w-full max-w-7xl overflow-hidden border border-border bg-background ring-1 ring-foreground/10 lg:grid-cols-2">
+      <div className="relative z-10 grid w-full max-w-7xl overflow-hidden border border-base-300 bg-base-100 ring-1 ring-foreground/10 lg:grid-cols-2">
         {/* ── Brand hero (desktop only) ── */}
         <div
           className="relative hidden flex-col justify-between gap-8 overflow-hidden p-8 text-white lg:flex xl:p-10"
@@ -150,9 +150,9 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         </div>
 
         {/* ── Form column ── */}
-        <div className="relative flex items-center justify-center overflow-hidden bg-background px-6 py-12 sm:px-12">
+        <div className="relative flex items-center justify-center overflow-hidden bg-base-100 px-6 py-12 sm:px-12">
           {/* Teal → cyan wash so the form half is a designed surface, not flat white */}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/[0.07] via-background to-cyan-400/[0.05]" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/[0.07] via-base-100 to-cyan-400/[0.05]" />
           {/* Faint dot grid for texture */}
           <div
             className="pointer-events-none absolute inset-0 opacity-[0.5]"

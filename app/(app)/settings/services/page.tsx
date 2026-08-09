@@ -31,7 +31,7 @@ function ServiceSection({
     <Card>
       <CardHeader>
         <div className="flex items-center gap-3">
-          <span className="flex size-9 shrink-0 items-center justify-center border border-border bg-muted/40 text-muted-foreground">
+          <span className="flex size-9 shrink-0 items-center justify-center border border-base-300 bg-base-200/40 text-muted-foreground">
             {icon}
           </span>
           <div>

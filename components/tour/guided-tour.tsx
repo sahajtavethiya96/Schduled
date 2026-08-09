@@ -231,7 +231,7 @@ export function GuidedTour({ userId }: { userId: string }) {
           type="button"
           onClick={finish}
           aria-label="Close tour"
-          className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+          className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center text-muted-foreground transition-colors hover:text-base-content"
         >
           <X size={16} weight="bold" />
         </button>
@@ -245,7 +245,7 @@ export function GuidedTour({ userId }: { userId: string }) {
         <p className={cn('mb-1.5 text-2xs font-bold uppercase tracking-eyebrow text-primary', isFirst || isLast ? 'text-center' : '')}>
           Step {step + 1} of {total}
         </p>
-        <h2 className={cn('mb-2 text-base font-bold text-foreground', isFirst || isLast ? 'text-center text-lg' : '')}>
+        <h2 className={cn('mb-2 text-base font-bold text-base-content', isFirst || isLast ? 'text-center text-lg' : '')}>
           {cur.title}
         </h2>
         <p className={cn('text-sm leading-relaxed text-muted-foreground', isFirst || isLast ? 'text-center' : '')}>
@@ -262,7 +262,7 @@ export function GuidedTour({ userId }: { userId: string }) {
               aria-label={`Go to step ${i + 1}`}
               className={cn(
                 'h-1.5 transition-all duration-200',
-                i === step ? 'w-5 bg-primary' : 'w-1.5 bg-border hover:bg-muted-foreground/40',
+                i === step ? 'w-5 bg-primary' : 'w-1.5 bg-base-300 hover:bg-muted-foreground/40',
               )}
             />
           ))}
@@ -275,7 +275,7 @@ export function GuidedTour({ userId }: { userId: string }) {
               <button
                 type="button"
                 onClick={() => setStep(0)}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-base-content"
               >
                 Replay tour
               </button>
@@ -296,7 +296,7 @@ export function GuidedTour({ userId }: { userId: string }) {
               <button
                 type="button"
                 onClick={finish}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-base-content"
               >
                 Skip tour
               </button>

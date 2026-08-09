@@ -23,14 +23,14 @@ const STATUS_LABEL: Record<IntegrationCardStatus, string> = {
 
 const STATUS_CLASSES: Record<IntegrationCardStatus, string> = {
   configured: "border-success/25 bg-success/10 text-success",
-  "not-configured": "border-destructive/25 bg-destructive/10 text-destructive",
+  "not-configured": "border-error/25 bg-error/10 text-error",
   "restart-required":
     "border-amber-500/25 bg-amber-500/10 text-amber-600 dark:text-amber-500",
 };
 
 const STATUS_DOT_CLASSES: Record<IntegrationCardStatus, string> = {
   configured: "bg-success",
-  "not-configured": "bg-destructive",
+  "not-configured": "bg-error",
   "restart-required": "bg-amber-500",
 };
 
@@ -62,8 +62,8 @@ export function IntegrationConfigCard({
 }: Props) {
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
-      <div className="flex items-center gap-3 border border-border p-3">
-        <span className="flex size-9 shrink-0 items-center justify-center border border-border bg-muted/40 text-muted-foreground">
+      <div className="flex items-center gap-3 border border-base-300 p-3">
+        <span className="flex size-9 shrink-0 items-center justify-center border border-base-300 bg-base-200/40 text-muted-foreground">
           {icon}
         </span>
         <div className="min-w-0 flex-1">

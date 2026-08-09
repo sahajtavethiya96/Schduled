@@ -97,7 +97,7 @@ const LOCATION_META: Record<string, { label: string; icon: React.ReactNode; cls:
   phone_host_calls:    { label: 'Phone call',       icon: <Phone       size={13} weight="fill" />, cls: 'bg-primary/10 text-primary'                          },
   phone_invitee_calls: { label: 'Phone (invitee)',  icon: <Phone       size={13} weight="fill" />, cls: 'bg-primary/10 text-primary'                          },
   in_person:           { label: 'In-person',        icon: <MapPin      size={13} weight="fill" />, cls: 'bg-orange-500/10 text-orange-600 dark:text-orange-400'},
-  custom:              { label: 'Custom',           icon: <Globe       size={13} weight="fill" />, cls: 'bg-muted text-muted-foreground'                       },
+  custom:              { label: 'Custom',           icon: <Globe       size={13} weight="fill" />, cls: 'bg-base-200 text-muted-foreground'                       },
   invitees_choice:     { label: "Invitee's choice", icon: <Screencast  size={13} weight="fill" />, cls: 'bg-violet-500/10 text-violet-600 dark:text-violet-400'},
 }
 
@@ -212,7 +212,7 @@ export function EventTypeCard({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={handleDelete}>
+          <AlertDialogAction className="bg-error text-error-content hover:bg-error/90" onClick={handleDelete}>
             Delete
           </AlertDialogAction>
         </AlertDialogFooter>
@@ -242,7 +242,7 @@ export function EventTypeCard({
             <Copy size={14} /> Duplicate
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className="flex items-center gap-2 text-destructive data-focus:text-destructive" onClick={() => setDeleteOpen(true)}>
+          <DropdownMenuItem className="flex items-center gap-2 text-error data-focus:text-error" onClick={() => setDeleteOpen(true)}>
             <Trash size={14} /> Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -255,7 +255,7 @@ export function EventTypeCard({
 
   const badges = (
     <div className="flex flex-wrap items-center gap-1.5">
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-muted text-muted-foreground">
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-base-200 text-muted-foreground">
         <User size={11} weight="bold" />
         {MEETING_TYPE_LABEL[meetingType] ?? 'One-on-One'}
       </span>
@@ -294,7 +294,7 @@ export function EventTypeCard({
   if (viewMode === 'grid') {
     return (
       <div
-        className={cn('group flex flex-col border bg-card transition-all duration-200', !isActive && 'opacity-60')}
+        className={cn('group flex flex-col border bg-base-100 transition-all duration-200', !isActive && 'opacity-60')}
         style={cardStyle}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -338,7 +338,7 @@ export function EventTypeCard({
         </div>
 
         {/* Action bar */}
-        <div className="flex items-center justify-between border-t border-border px-3 py-2">
+        <div className="flex items-center justify-between border-t border-base-300 px-3 py-2">
           <div className="flex items-center gap-0.5">
             {isActive && (
               <button type="button" data-tour="booking-link" title={copied ? 'Copied!' : 'Copy link'} onClick={copyLink} disabled={!bookingUrl}
@@ -376,7 +376,7 @@ export function EventTypeCard({
                   <Copy size={14} /> Duplicate
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="flex items-center gap-2 text-destructive data-focus:text-destructive" onClick={() => setDeleteOpen(true)}>
+                <DropdownMenuItem className="flex items-center gap-2 text-error data-focus:text-error" onClick={() => setDeleteOpen(true)}>
                   <Trash size={14} /> Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -395,7 +395,7 @@ export function EventTypeCard({
 
   return (
     <div
-      className={cn('group flex items-stretch border bg-card transition-all duration-200', !isActive_ && 'border-border', !isActive && 'opacity-60')}
+      className={cn('group flex items-stretch border bg-base-100 transition-all duration-200', !isActive_ && 'border-base-300', !isActive && 'opacity-60')}
       style={cardStyle}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}

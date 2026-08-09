@@ -63,10 +63,10 @@ export function TabGeneral({ form, meetingType, onMeetingTypeChange }: TabGenera
               className={cn(
                 'flex items-start gap-2.5 p-3 border text-left transition-colors',
                 mt.disabled
-                  ? 'border-border opacity-40 cursor-not-allowed'
+                  ? 'border-base-300 opacity-40 cursor-not-allowed'
                   : meetingType === mt.id
                     ? 'border-primary bg-primary/5'
-                    : 'border-border hover:border-primary/40 hover:bg-muted/40'
+                    : 'border-base-300 hover:border-primary/40 hover:bg-base-200/40'
               )}
             >
               <span className={cn(
@@ -76,7 +76,7 @@ export function TabGeneral({ form, meetingType, onMeetingTypeChange }: TabGenera
                 {mt.icon}
               </span>
               <div>
-                <p className={cn('text-xs font-semibold', mt.disabled ? 'text-muted-foreground' : 'text-foreground')}>{mt.label}</p>
+                <p className={cn('text-xs font-semibold', mt.disabled ? 'text-muted-foreground' : 'text-base-content')}>{mt.label}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">{mt.desc}</p>
               </div>
             </button>
@@ -92,7 +92,7 @@ export function TabGeneral({ form, meetingType, onMeetingTypeChange }: TabGenera
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Event name <span className="text-destructive">*</span></FormLabel>
+            <FormLabel>Event name <span className="text-error">*</span></FormLabel>
             <FormControl>
               <Input placeholder="e.g. 30 Minute Meeting" maxLength={100} {...field} />
             </FormControl>

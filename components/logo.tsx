@@ -76,7 +76,7 @@ export function Logo({
     inner = (
       <span className={cn('inline-flex items-center', className)}>
         <span
-          className={cn(textSizes[size], 'font-bold tracking-tight text-foreground')}
+          className={cn(textSizes[size], 'font-bold tracking-tight text-base-content')}
           style={{ fontFamily: 'var(--font-jakarta)' }}
         >
           Schduled

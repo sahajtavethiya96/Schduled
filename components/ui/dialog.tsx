@@ -167,7 +167,7 @@ function DialogContent({
         data-slot="dialog-content"
         transition
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-6 rounded-none bg-popover p-6 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-md data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-leave:animate-out data-leave:fade-out-0 data-leave:zoom-out-95",
+          "fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-6 rounded-none bg-base-100 p-6 text-sm text-base-content ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-md data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-leave:animate-out data-leave:fade-out-0 data-leave:zoom-out-95",
           className
         )}
         {...props}
@@ -178,7 +178,7 @@ function DialogContent({
             <Button
               variant="ghost"
               size="icon-sm"
-              className="absolute top-4 right-4 size-7 text-muted-foreground hover:text-foreground"
+              className="absolute top-4 right-4 size-7 text-muted-foreground hover:text-base-content"
             >
               <XIcon size={15} />
               <span className="sr-only">Close</span>
@@ -251,7 +251,7 @@ function DialogDescription({
     <Description
       data-slot="dialog-description"
       className={cn(
-        "mt-0.5 text-sm leading-relaxed text-muted-foreground *:[a]:underline *:[a]:underline-offset-3 *:[a]:hover:text-foreground",
+        "mt-0.5 text-sm leading-relaxed text-muted-foreground *:[a]:underline *:[a]:underline-offset-3 *:[a]:hover:text-base-content",
         className
       )}
       {...props}

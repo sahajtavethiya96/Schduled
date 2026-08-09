@@ -119,7 +119,7 @@ export function TimezoneCard({ timezone }: { timezone: string }) {
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-sm">
             <Globe className="shrink-0 text-muted-foreground" size={16} />
-            <span className="font-medium text-foreground">
+            <span className="font-medium text-base-content">
               {getTzLabel(currentTz)}
             </span>
           </div>
@@ -159,11 +159,11 @@ export function TimezoneCard({ timezone }: { timezone: string }) {
                 value={search}
               />
             </div>
-            <div className="max-h-64 overflow-y-auto border border-border">
+            <div className="max-h-64 overflow-y-auto border border-base-300">
               {filteredTz.map((tz) => (
                 <button
                   className={cn(
-                    "flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors hover:bg-muted",
+                    "flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors hover:bg-base-200",
                     tz === currentTz && "bg-primary/10 font-medium text-primary"
                   )}
                   disabled={isPending}

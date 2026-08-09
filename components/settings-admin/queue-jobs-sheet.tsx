@@ -212,7 +212,7 @@ export function QueueJobsSheet({
       <Sheet onOpenChange={onOpenChange} open={queue !== null}>
         <SheetContent className="w-full gap-0 p-0 data-[side=right]:sm:max-w-[30.6rem]">
           {/* ── Header ───────────────────────────────────────────────── */}
-          <SheetHeader className="gap-1 border-b border-border p-6 pr-14">
+          <SheetHeader className="gap-1 border-b border-base-300 p-6 pr-14">
             <SheetTitle>
               {queue ? getFriendlyName(queue.name) : "Queue"}
             </SheetTitle>
@@ -223,7 +223,7 @@ export function QueueJobsSheet({
               {queue?.name}
             </p>
 
-            <div className="mt-4 grid grid-cols-4 gap-px border border-border bg-border">
+            <div className="mt-4 grid grid-cols-4 gap-px border border-base-300 bg-base-300">
               <HeaderStat label="Total" value={totalJobs.toLocaleString()} />
               <HeaderStat
                 danger={failedCount > 0}
@@ -244,7 +244,7 @@ export function QueueJobsSheet({
           </SheetHeader>
 
           {/* ── Search + filter tabs ─────────────────────────────────── */}
-          <div className="space-y-3 border-b border-border px-6 py-3">
+          <div className="space-y-3 border-b border-base-300 px-6 py-3">
             <div className="relative">
               <MagnifyingGlass
                 className="-translate-y-1/2 absolute top-1/2 left-2.5 text-muted-foreground"
@@ -285,7 +285,7 @@ export function QueueJobsSheet({
                 <span className="text-muted-foreground/25">
                   <Stack size={40} weight="duotone" />
                 </span>
-                <p className="text-sm font-medium text-foreground">
+                <p className="text-sm font-medium text-base-content">
                   No jobs found
                 </p>
                 <p className="text-xs text-muted-foreground">
@@ -307,7 +307,7 @@ export function QueueJobsSheet({
 
           {/* ── Pagination ───────────────────────────────────────────── */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between gap-3 border-t border-border px-6 py-3">
+            <div className="flex items-center justify-between gap-3 border-t border-base-300 px-6 py-3">
               <p className="text-xs text-muted-foreground">
                 Page {safePage} of {totalPages} · {total} jobs
               </p>
@@ -385,7 +385,7 @@ function HeaderStat({
         className={cn(
           "mt-0.5 font-heading font-bold tabular-nums",
           small ? "text-sm" : "text-lg",
-          danger && "text-destructive"
+          danger && "text-error"
         )}
       >
         {value}
@@ -411,7 +411,7 @@ function FilterTab({
         "inline-flex items-center gap-1.5 border px-2.5 py-1 text-xs font-semibold transition-colors",
         active
           ? "border-primary bg-primary/10 text-primary"
-          : "border-border text-muted-foreground hover:bg-muted"
+          : "border-base-300 text-muted-foreground hover:bg-base-200"
       )}
       onClick={onClick}
       type="button"
@@ -426,7 +426,7 @@ function JobCard({ job, onView }: { job: QueueJobRow; onView: () => void }) {
   const summary = errorSummary(job.output);
   return (
     <button
-      className="block w-full border border-border bg-muted/20 p-3.5 text-left transition-colors hover:bg-muted/40"
+      className="block w-full border border-base-300 bg-base-200/20 p-3.5 text-left transition-colors hover:bg-base-200/40"
       onClick={onView}
       type="button"
     >
@@ -450,7 +450,7 @@ function JobCard({ job, onView }: { job: QueueJobRow; onView: () => void }) {
       )}
 
       {summary && (
-        <p className="mt-2 flex items-start gap-1.5 text-sm text-destructive">
+        <p className="mt-2 flex items-start gap-1.5 text-sm text-error">
           <WarningCircle className="mt-0.5 shrink-0" size={15} />
           <span className="line-clamp-2">{summary}</span>
         </p>
@@ -508,7 +508,7 @@ function JobDetailDialog({
         {job && (
           <div className="space-y-4">
             {/* Meta grid */}
-            <div className="grid grid-cols-2 gap-px border border-border bg-border sm:grid-cols-3">
+            <div className="grid grid-cols-2 gap-px border border-base-300 bg-base-300 sm:grid-cols-3">
               <MetaCell label="Status">
                 <StateBadge state={job.state} />
               </MetaCell>
@@ -555,7 +555,7 @@ function JobDetailDialog({
             )}
 
             {canRetry && (
-              <div className="flex justify-end border-t border-border pt-4">
+              <div className="flex justify-end border-t border-base-300 pt-4">
                 <Button
                   className="gap-1.5"
                   disabled={isRetrying}
@@ -611,7 +611,7 @@ function Field({
       </p>
       <pre
         className={cn(
-          "max-h-60 overflow-auto whitespace-pre-wrap wrap-break-word border border-border bg-muted/40 p-3 text-xs",
+          "max-h-60 overflow-auto whitespace-pre-wrap wrap-break-word border border-base-300 bg-base-200/40 p-3 text-xs",
           mono ? "font-mono" : "font-sans text-sm"
         )}
       >

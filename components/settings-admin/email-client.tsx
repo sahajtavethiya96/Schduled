@@ -132,8 +132,8 @@ const STATUS_CONFIG: Record<
   },
   failed: {
     label: "Failed",
-    cls: "bg-destructive/10 text-destructive border-destructive/20",
-    dot: "bg-destructive",
+    cls: "bg-error/10 text-error border-error/20",
+    dot: "bg-error",
   },
   queued: {
     label: "Queued",
@@ -150,7 +150,7 @@ const STATUS_CONFIG: Record<
 function StatusBadge({ status }: { status: string }) {
   const cfg = STATUS_CONFIG[status] ?? {
     label: status,
-    cls: "bg-muted text-muted-foreground border-border",
+    cls: "bg-base-200 text-muted-foreground border-base-300",
     dot: "bg-muted-foreground",
   };
   return (
@@ -186,13 +186,13 @@ const EVENT_CONFIG: Record<
   },
   bounced: {
     label: "Bounced",
-    cls: "bg-destructive/10 text-destructive border-destructive/20",
-    dot: "bg-destructive",
+    cls: "bg-error/10 text-error border-error/20",
+    dot: "bg-error",
   },
   bounce: {
     label: "Bounced",
-    cls: "bg-destructive/10 text-destructive border-destructive/20",
-    dot: "bg-destructive",
+    cls: "bg-error/10 text-error border-error/20",
+    dot: "bg-error",
   },
   complained: {
     label: "Complained",
@@ -210,7 +210,7 @@ function EventTypeBadge({ type }: { type: string }) {
   const key = type.toLowerCase();
   const cfg = EVENT_CONFIG[key] ?? {
     label: type,
-    cls: "bg-muted text-muted-foreground border-border",
+    cls: "bg-base-200 text-muted-foreground border-base-300",
     dot: "bg-muted-foreground",
   };
   return (
@@ -244,7 +244,7 @@ function StatCard({
         accent
           ? "border-primary/40 bg-primary/[0.04]"
           : danger
-            ? "border-destructive/30 bg-destructive/[0.03]"
+            ? "border-error/30 bg-error/[0.03]"
             : ""
       }
     >
@@ -254,7 +254,7 @@ function StatCard({
             <p className="text-xs font-semibold uppercase tracking-ui text-muted-foreground">
               {label}
             </p>
-            <p className="mt-1.5 font-heading text-3xl font-bold text-foreground">
+            <p className="mt-1.5 font-heading text-3xl font-bold text-base-content">
               {value}
             </p>
           </div>
@@ -263,7 +263,7 @@ function StatCard({
               accent
                 ? "text-primary"
                 : danger
-                  ? "text-destructive"
+                  ? "text-error"
                   : "text-muted-foreground/60"
             }
           >
@@ -413,7 +413,7 @@ export function EmailClient({
       {/* ── Header ──────────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="text-lg font-bold text-foreground">Email</h2>
+          <h2 className="text-lg font-bold text-base-content">Email</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Transactional email queue and inbound delivery events.
           </p>
@@ -468,7 +468,7 @@ export function EmailClient({
       <div className="grid gap-6 xl:grid-cols-3">
         {/* Outbox — 2/3 width */}
         <Card className="xl:col-span-2">
-          <CardHeader className="flex flex-col gap-3 border-b border-border py-4 lg:flex-row lg:items-center lg:justify-between">
+          <CardHeader className="flex flex-col gap-3 border-b border-base-300 py-4 lg:flex-row lg:items-center lg:justify-between">
             <CardTitle className="text-base font-semibold">
               Outbox{" "}
               <span className="font-normal text-muted-foreground">
@@ -512,8 +512,8 @@ export function EmailClient({
                       className={cn(
                         'h-9 gap-2 px-3 font-normal',
                         (filter.from || filter.to)
-                          ? 'border-primary/50 text-foreground'
-                          : 'text-muted-foreground hover:text-foreground'
+                          ? 'border-primary/50 text-base-content'
+                          : 'text-muted-foreground hover:text-base-content'
                       )}
                     >
                       <CalendarBlank
@@ -532,7 +532,7 @@ export function EmailClient({
                           role="button"
                           aria-label="Clear date filter"
                           onClick={(e) => { e.stopPropagation(); navigate({ from: '', to: '' }) }}
-                          className="ml-0.5 flex h-4 w-4 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+                          className="ml-0.5 flex h-4 w-4 items-center justify-center text-muted-foreground transition-colors hover:text-base-content"
                         >
                           <X size={11} weight="bold" />
                         </span>
@@ -572,7 +572,7 @@ export function EmailClient({
                   <Envelope size={40} weight="duotone" />
                 </span>
                 <div>
-                  <p className="text-sm font-medium text-foreground">
+                  <p className="text-sm font-medium text-base-content">
                     {filtersActive ? "No emails match" : "No emails yet"}
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
@@ -586,7 +586,7 @@ export function EmailClient({
               <TooltipProvider delayDuration={200}>
                 <Table className="w-full table-fixed text-sm">
                   <TableHeader>
-                    <TableRow className="border-b border-border bg-muted/40">
+                    <TableRow className="border-b border-base-300 bg-base-200/40">
                       <TableHead className="w-[28%] px-5 py-3 text-left text-xs font-semibold uppercase tracking-ui text-muted-foreground">
                         Recipient
                       </TableHead>
@@ -614,7 +614,7 @@ export function EmailClient({
                       );
                       return (
                         <TableRow
-                          className="border-b border-border transition-colors hover:bg-muted/20 last:border-0"
+                          className="border-b border-base-300 transition-colors hover:bg-base-200/20 last:border-0"
                           key={email.id}
                         >
                           {/* Recipient */}
@@ -687,10 +687,10 @@ export function EmailClient({
 
             {/* Pagination */}
             {outboxTotalPages > 1 && (
-              <div className="flex items-center justify-between border-t border-border px-5 py-3">
+              <div className="flex items-center justify-between border-t border-base-300 px-5 py-3">
                 <p className="text-xs text-muted-foreground">
                   Page{" "}
-                  <span className="font-semibold text-foreground">
+                  <span className="font-semibold text-base-content">
                     {outboxPage}
                   </span>{" "}
                   of {outboxTotalPages}
@@ -771,7 +771,7 @@ export function EmailClient({
                   <EnvelopeSimple size={40} weight="duotone" />
                 </span>
                 <div>
-                  <p className="text-sm font-medium text-foreground">
+                  <p className="text-sm font-medium text-base-content">
                     No email events yet
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
@@ -787,7 +787,7 @@ export function EmailClient({
                   const received = formatDate(event.receivedAt);
                   return (
                     <div
-                      className="flex items-start justify-between gap-4 border-b border-border px-5 py-3 last:border-0"
+                      className="flex items-start justify-between gap-4 border-b border-base-300 px-5 py-3 last:border-0"
                       key={event.id}
                     >
                       <div className="min-w-0">

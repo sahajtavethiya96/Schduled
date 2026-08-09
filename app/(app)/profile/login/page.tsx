@@ -28,7 +28,7 @@ interface LoginRowProps {
 function LoginRow({ icon, name, description, badge, action }: LoginRowProps) {
   return (
     <div className="flex items-center gap-4 py-5">
-      <div className="flex size-10 shrink-0 items-center justify-center bg-muted">
+      <div className="flex size-10 shrink-0 items-center justify-center bg-base-200">
         {icon}
       </div>
       <div className="min-w-0 flex-1">
@@ -74,7 +74,7 @@ export default async function LoginPage() {
             Choose how you access your Schduled account.
           </CardDescription>
         </CardHeader>
-        <CardContent className="divide-y divide-border p-0 px-6">
+        <CardContent className="divide-y divide-base-300 p-0 px-6">
           {/* Magic Link — always active */}
           <LoginRow
             badge={

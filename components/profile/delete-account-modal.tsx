@@ -122,9 +122,9 @@ export function DeleteAccountModal({ email }: Props) {
           <DialogDescription className="sr-only">Permanently delete your Schduled account.</DialogDescription>
 
           {/* Progress bar */}
-          <div className="h-1 w-full bg-muted">
+          <div className="h-1 w-full bg-base-200">
             <div
-              className="h-full bg-destructive transition-all duration-500"
+              className="h-full bg-error transition-all duration-500"
               style={{ width: `${progressPct}%` }}
             />
           </div>
@@ -156,14 +156,14 @@ export function DeleteAccountModal({ email }: Props) {
                       className={cn(
                         'w-full flex items-center gap-3 border px-4 py-3 text-left text-sm transition',
                         reason === r.value
-                          ? 'border-destructive bg-destructive/5 ring-1 ring-destructive'
-                          : 'border-border bg-card hover:border-destructive/50 hover:bg-muted/30',
+                          ? 'border-error bg-error/5 ring-1 ring-error'
+                          : 'border-base-300 bg-base-100 hover:border-error/50 hover:bg-base-200/30',
                       )}
                     >
                       <span
                         className={cn(
                           'h-4 w-4 shrink-0 border-2 transition',
-                          reason === r.value ? 'border-destructive bg-destructive' : 'border-muted-foreground',
+                          reason === r.value ? 'border-error bg-error' : 'border-muted-foreground',
                         )}
                       />
                       {r.label}
@@ -200,14 +200,14 @@ export function DeleteAccountModal({ email }: Props) {
                   <h2 className="text-lg font-bold">Verify your identity</h2>
                   <p className="mt-1 text-sm text-muted-foreground">
                     We&apos;ll send a 6-digit code to{' '}
-                    <strong className="text-foreground">{email}</strong> to confirm
+                    <strong className="text-base-content">{email}</strong> to confirm
                     it&apos;s really you.
                   </p>
                 </div>
 
                 {!codeSent ? (
                   <div className="space-y-4">
-                    <div className="flex items-start gap-3 border border-border bg-muted/40 p-4">
+                    <div className="flex items-start gap-3 border border-base-300 bg-base-200/40 p-4">
                       <Envelope size={20} className="mt-0.5 shrink-0 text-muted-foreground" />
                       <div>
                         <p className="text-sm font-medium">Confirmation code via email</p>
@@ -218,7 +218,7 @@ export function DeleteAccountModal({ email }: Props) {
                     </div>
 
                     {sendState.error && (
-                      <p className="text-sm text-destructive">{sendState.error}</p>
+                      <p className="text-sm text-error">{sendState.error}</p>
                     )}
 
                     <Button
@@ -243,7 +243,7 @@ export function DeleteAccountModal({ email }: Props) {
                     <div className="flex items-start gap-3 border border-primary/20 bg-primary/[0.06] p-4">
                       <CheckCircle size={20} weight="fill" className="mt-0.5 shrink-0 text-primary" />
                       <div>
-                        <p className="text-sm font-semibold text-foreground">Code sent!</p>
+                        <p className="text-sm font-semibold text-base-content">Code sent!</p>
                         <p className="text-xs text-muted-foreground mt-0.5">
                           Check your inbox at <strong>{email}</strong>.
                           It expires in 15 minutes.
@@ -256,7 +256,7 @@ export function DeleteAccountModal({ email }: Props) {
                       {countdown > 0 ? (
                         <p className="text-xs text-muted-foreground">
                           Resend available in{' '}
-                          <span className="font-semibold tabular-nums text-foreground">
+                          <span className="font-semibold tabular-nums text-base-content">
                             {countdown}s
                           </span>
                         </p>
@@ -295,11 +295,11 @@ export function DeleteAccountModal({ email }: Props) {
               <div className="space-y-5">
                 <div>
                   <div className="flex items-center gap-2">
-                    <WarningCircle size={22} weight="fill" className="text-destructive shrink-0" />
-                    <h2 className="text-lg font-bold text-destructive">Permanently delete account</h2>
+                    <WarningCircle size={22} weight="fill" className="text-error shrink-0" />
+                    <h2 className="text-lg font-bold text-error">Permanently delete account</h2>
                   </div>
                   <p className="mt-2 text-sm text-muted-foreground">
-                    This action <strong className="text-foreground">cannot be undone</strong>. The
+                    This action <strong className="text-base-content">cannot be undone</strong>. The
                     following will be permanently removed:
                   </p>
                 </div>
@@ -313,7 +313,7 @@ export function DeleteAccountModal({ email }: Props) {
                     'All active sessions',
                   ].map((item) => (
                     <li key={item} className="flex items-center gap-2 text-muted-foreground">
-                      <X size={13} weight="bold" className="shrink-0 text-destructive" />
+                      <X size={13} weight="bold" className="shrink-0 text-error" />
                       {item}
                     </li>
                   ))}
@@ -339,7 +339,7 @@ export function DeleteAccountModal({ email }: Props) {
                   </div>
 
                   {deleteState.error && (
-                    <p className="text-sm text-destructive">{deleteState.error}</p>
+                    <p className="text-sm text-error">{deleteState.error}</p>
                   )}
 
                   <Button

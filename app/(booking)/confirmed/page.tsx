@@ -33,7 +33,7 @@ export default async function ConfirmedPage({
 
   if (!p.start || !p.tz || !p.event) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
+      <main className="flex min-h-screen items-center justify-center bg-base-200/30 p-4">
         <p className="text-sm text-muted-foreground">Invalid confirmation link.</p>
       </main>
     )

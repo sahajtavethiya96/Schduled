@@ -78,8 +78,8 @@ export function BookingsDateFilter({ tab, dateFrom, dateTo }: BookingsDateFilter
           className={cn(
             'h-9 gap-2 px-3 font-normal',
             hasFilter
-              ? 'border-primary/50 text-foreground'
-              : 'text-muted-foreground hover:text-foreground'
+              ? 'border-primary/50 text-base-content'
+              : 'text-muted-foreground hover:text-base-content'
           )}
         >
           <CalendarBlank
@@ -92,7 +92,7 @@ export function BookingsDateFilter({ tab, dateFrom, dateTo }: BookingsDateFilter
               role="button"
               aria-label="Clear date filter"
               onClick={clear}
-              className="ml-0.5 flex h-4 w-4 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+              className="ml-0.5 flex h-4 w-4 items-center justify-center text-muted-foreground transition-colors hover:text-base-content"
             >
               <X size={11} weight="bold" />
             </span>

@@ -14,10 +14,10 @@ import { cn } from "@/lib/utils"
 // viewport now styles its own scrollbar directly, so there's no separate
 // scrollbar element to compose.
 const scrollbarClassName = cn(
-  "[scrollbar-width:thin] [scrollbar-color:var(--color-border)_transparent]",
+  "[scrollbar-width:thin] [scrollbar-color:var(--color-base-300)_transparent]",
   "[&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar]:h-2.5",
   "[&::-webkit-scrollbar-track]:bg-transparent",
-  "[&::-webkit-scrollbar-thumb]:rounded-none [&::-webkit-scrollbar-thumb]:border-2 [&::-webkit-scrollbar-thumb]:border-solid [&::-webkit-scrollbar-thumb]:border-transparent [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-thumb]:bg-clip-padding"
+  "[&::-webkit-scrollbar-thumb]:rounded-none [&::-webkit-scrollbar-thumb]:border-2 [&::-webkit-scrollbar-thumb]:border-solid [&::-webkit-scrollbar-thumb]:border-transparent [&::-webkit-scrollbar-thumb]:bg-base-300 [&::-webkit-scrollbar-thumb]:bg-clip-padding"
 )
 
 function ScrollArea({
@@ -30,7 +30,7 @@ function ScrollArea({
       <div
         data-slot="scroll-area-viewport"
         className={cn(
-          "size-full overflow-auto rounded-[inherit] outline-none transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1",
+          "size-full overflow-auto rounded-[inherit] outline-none transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:ring-primary/50 focus-visible:outline-1",
           scrollbarClassName
         )}
       >

@@ -124,7 +124,7 @@ export function UsersTable({
       <div className="overflow-x-auto">
         <Table className="w-full text-sm">
           <TableHeader>
-            <TableRow className="border-b border-border bg-muted/40">
+            <TableRow className="border-b border-base-300 bg-base-200/40">
               <TableHead className="w-10 px-4 py-3">
                 <Checkbox
                   checked={allSelected}
@@ -165,7 +165,7 @@ export function UsersTable({
                 return (
                   <TableRow
                     key={u.id}
-                    className={`border-b border-border transition-colors last:border-0 ${isChecked ? "bg-primary/[0.04]" : "hover:bg-muted/20"}`}
+                    className={`border-b border-base-300 transition-colors last:border-0 ${isChecked ? "bg-primary/[0.04]" : "hover:bg-base-200/20"}`}
                   >
                     {/* Checkbox */}
                     <TableCell className="w-10 px-4 py-3">
@@ -210,8 +210,8 @@ export function UsersTable({
                     {/* Status */}
                     <TableCell className="px-4 py-3">
                       {u.banned ? (
-                        <span className="inline-flex items-center gap-1.5 rounded-none border border-destructive/20 bg-destructive/10 px-2 py-0.5 text-xs font-medium text-destructive">
-                          <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
+                        <span className="inline-flex items-center gap-1.5 rounded-none border border-error/20 bg-error/10 px-2 py-0.5 text-xs font-medium text-error">
+                          <span className="h-1.5 w-1.5 rounded-full bg-error" />
                           Suspended
                         </span>
                       ) : (
@@ -235,7 +235,7 @@ export function UsersTable({
                         )}
                         <Link
                           href={`/settings/users/${u.id}`}
-                          className="inline-flex items-center gap-1 rounded-none border border-border px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+                          className="inline-flex items-center gap-1 rounded-none border border-base-300 px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
                         >
                           View <ArrowRight size={11} />
                         </Link>
@@ -251,7 +251,7 @@ export function UsersTable({
 
       {/* Row count + pagination */}
       {total > 0 && selected.size === 0 && (
-        <div className="flex items-center justify-between gap-3 border-t border-border px-6 py-3">
+        <div className="flex items-center justify-between gap-3 border-t border-base-300 px-6 py-3">
           <p className="text-xs text-muted-foreground">
             Page {page} of {totalPages} · {total} user{total !== 1 ? "s" : ""}
           </p>
@@ -291,7 +291,7 @@ export function UsersTable({
 
       {/* ── Bulk action toolbar ──────────────────────────────────────── */}
       {selected.size > 0 && (
-        <div className="sticky bottom-0 flex items-center justify-between gap-4 border-t border-primary/20 bg-background px-6 py-3">
+        <div className="sticky bottom-0 flex items-center justify-between gap-4 border-t border-primary/20 bg-base-100 px-6 py-3">
           <p className="text-sm font-medium">
             <span className="text-primary font-bold">{selected.size}</span> user{selected.size !== 1 ? "s" : ""} selected
           </p>
@@ -313,7 +313,7 @@ export function UsersTable({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="gap-1.5 text-xs border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                  className="gap-1.5 text-xs border-error/40 text-error hover:bg-error/10 hover:text-error"
                   disabled={isPending}
                 >
                   <ProhibitInset size={13} />
@@ -333,7 +333,7 @@ export function UsersTable({
                 <AlertDialogFooter>
                   <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
                   <AlertDialogAction
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    className="bg-error text-error-content hover:bg-error/90"
                     onClick={handleBulkSuspend}
                     disabled={isPending}
                   >
@@ -349,7 +349,7 @@ export function UsersTable({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="gap-1.5 text-xs border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                  className="gap-1.5 text-xs border-error/40 text-error hover:bg-error/10 hover:text-error"
                   disabled={isPending}
                 >
                   <Trash size={13} />
@@ -369,7 +369,7 @@ export function UsersTable({
                 <AlertDialogFooter>
                   <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
                   <AlertDialogAction
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    className="bg-error text-error-content hover:bg-error/90"
                     onClick={handleBulkDelete}
                     disabled={isPending}
                   >

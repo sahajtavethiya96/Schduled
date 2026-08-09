@@ -36,7 +36,7 @@ export function LegalShell({
   children,
 }: LegalShellProps) {
   return (
-    <div className="min-h-screen overflow-x-clip bg-background text-foreground antialiased">
+    <div className="min-h-screen overflow-x-clip bg-base-100 text-base-content antialiased">
       <LandingHeader />
 
       {/* ── Hero ──────────────────────────────────────────────────────────── */}
@@ -91,7 +91,7 @@ export function LegalShell({
               <TocNav toc={toc} />
 
               {/* Back to home */}
-              <div className="mt-8 border-t border-border pt-6">
+              <div className="mt-8 border-t border-base-300 pt-6">
                 <Link
                   href="/"
                   className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary transition-opacity hover:opacity-75"
@@ -110,7 +110,7 @@ export function LegalShell({
       </div>
 
       {/* ── CTA band ──────────────────────────────────────────────────────── */}
-      <section className="border-t border-border bg-muted/20 py-16">
+      <section className="border-t border-base-300 bg-base-200/20 py-16">
         <Reveal>
         <div className="mx-auto max-w-4xl px-5 text-center sm:px-8">
           <p className="mb-2 text-xs font-black uppercase tracking-eyebrow text-primary">
@@ -124,7 +124,7 @@ export function LegalShell({
           </p>
           <Link
             href="/login"
-            className="mt-7 inline-flex items-center gap-2 bg-primary px-7 py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+            className="mt-7 inline-flex items-center gap-2 bg-primary px-7 py-3 text-sm font-semibold text-primary-content transition-opacity hover:opacity-90"
           >
             Get started free
             <ArrowRight size={14} weight="bold" />
@@ -153,7 +153,7 @@ export function LegalSection({
     <section id={id} className="mb-12 scroll-mt-28">
       <div className="mb-5 flex items-center gap-3">
         <div className="h-5 w-1 bg-primary" />
-        <h2 className="font-black text-xl text-foreground">{title}</h2>
+        <h2 className="font-black text-xl text-base-content">{title}</h2>
       </div>
       <div className="space-y-4 text-sm leading-relaxed text-muted-foreground pl-4">
         {children}
@@ -185,7 +185,7 @@ export function LegalLi({ children }: { children: React.ReactNode }) {
 export function LegalHighlight({ children }: { children: React.ReactNode }) {
   return (
     <div className="border border-primary/20 bg-primary/5 px-5 py-4 text-sm">
-      <p className="font-medium text-foreground">{children}</p>
+      <p className="font-medium text-base-content">{children}</p>
     </div>
   );
 }
@@ -198,10 +198,10 @@ export function LegalTable({
   rows: string[][];
 }) {
   return (
-    <div className="overflow-x-auto border border-border">
+    <div className="overflow-x-auto border border-base-300">
       <table className="w-full text-sm">
         <thead>
-          <tr className="bg-muted/50">
+          <tr className="bg-base-200/50">
             {headers.map((h) => (
               <th
                 key={h}
@@ -214,7 +214,7 @@ export function LegalTable({
         </thead>
         <tbody>
           {rows.map((row, i) => (
-            <tr key={i} className="border-t border-border">
+            <tr key={i} className="border-t border-base-300">
               {row.map((cell, j) => (
                 <td key={j} className="px-4 py-3 text-muted-foreground">
                   {cell}

@@ -57,14 +57,14 @@ export function LivePreview({ form, username, meetingType }: LivePreviewProps) {
         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Live Preview</p>
         <span className={cn(
           'text-2xs font-bold px-2 py-0.5',
-          isActive ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
+          isActive ? 'bg-primary/10 text-primary' : 'bg-base-200 text-muted-foreground'
         )}>
           {isActive ? 'Active' : 'Inactive'}
         </span>
       </div>
 
       {/* Booking card mockup */}
-      <div className="border border-border bg-card overflow-hidden">
+      <div className="border border-base-300 bg-base-100 overflow-hidden">
         {/* Color accent bar */}
         <div className="h-1 w-full" style={{ backgroundColor: color }} />
 
@@ -78,11 +78,11 @@ export function LivePreview({ form, username, meetingType }: LivePreviewProps) {
               {initials}
             </div>
             <div className="min-w-0">
-              <h3 className="text-sm font-bold text-foreground truncate">{name}</h3>
+              <h3 className="text-sm font-bold text-base-content truncate">{name}</h3>
               <span className="text-2xs text-muted-foreground">{meetingLabel}</span>
             </div>
             {isHidden && (
-              <span className="ml-auto shrink-0 text-[9px] font-bold px-1.5 py-0.5 bg-muted text-muted-foreground">
+              <span className="ml-auto shrink-0 text-[9px] font-bold px-1.5 py-0.5 bg-base-200 text-muted-foreground">
                 Private
               </span>
             )}
@@ -107,7 +107,7 @@ export function LivePreview({ form, username, meetingType }: LivePreviewProps) {
                   {formatDuration(d)}
                 </span>
               ))}
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-muted text-muted-foreground text-xs font-medium">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-base-200 text-muted-foreground text-xs font-medium">
                 {loc.icon}
                 {loc.label}
               </span>
@@ -116,7 +116,7 @@ export function LivePreview({ form, username, meetingType }: LivePreviewProps) {
 
           {/* Booking URL */}
           {displayUrl && (
-            <div className="text-2xs font-mono text-muted-foreground/70 truncate pt-1 border-t border-border/60">
+            <div className="text-2xs font-mono text-muted-foreground/70 truncate pt-1 border-t border-base-300/60">
               {displayUrl}
             </div>
           )}

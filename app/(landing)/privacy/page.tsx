@@ -45,16 +45,16 @@ export default function PrivacyPage() {
         </LegalP>
         <LegalUl>
           <LegalLi>
-            <strong className="text-foreground">Account information</strong> — your name, email address, and profile photo when you sign up with Google or via magic link.
+            <strong className="text-base-content">Account information</strong> — your name, email address, and profile photo when you sign up with Google or via magic link.
           </LegalLi>
           <LegalLi>
-            <strong className="text-foreground">Booking data</strong> — when invitees book time with you, we collect their name, email, phone number (if requested), timezone, and answers to any custom questions you configured.
+            <strong className="text-base-content">Booking data</strong> — when invitees book time with you, we collect their name, email, phone number (if requested), timezone, and answers to any custom questions you configured.
           </LegalLi>
           <LegalLi>
-            <strong className="text-foreground">Availability preferences</strong> — the working hours, buffer times, and scheduling rules you configure so we know when you're available.
+            <strong className="text-base-content">Availability preferences</strong> — the working hours, buffer times, and scheduling rules you configure so we know when you're available.
           </LegalLi>
           <LegalLi>
-            <strong className="text-foreground">Usage data</strong> — basic server logs (IP address, browser type, page visited, timestamps) to maintain service reliability and diagnose errors.
+            <strong className="text-base-content">Usage data</strong> — basic server logs (IP address, browser type, page visited, timestamps) to maintain service reliability and diagnose errors.
           </LegalLi>
         </LegalUl>
         <LegalP>
@@ -116,19 +116,19 @@ export default function PrivacyPage() {
         </LegalP>
         <LegalUl>
           <LegalLi>
-            <strong className="text-foreground">Google</strong> — used for Google OAuth sign-in and Google Calendar integration. Governed by{" "}
+            <strong className="text-base-content">Google</strong> — used for Google OAuth sign-in and Google Calendar integration. Governed by{" "}
             <a href="https://policies.google.com/privacy" className="text-primary underline-offset-2 hover:underline" target="_blank" rel="noopener noreferrer">
               Google Privacy Policy
             </a>.
           </LegalLi>
           <LegalLi>
-            <strong className="text-foreground">Zoom</strong> — used to generate Zoom meeting links when the host has connected their Zoom account. Governed by{" "}
+            <strong className="text-base-content">Zoom</strong> — used to generate Zoom meeting links when the host has connected their Zoom account. Governed by{" "}
             <a href="https://explore.zoom.us/en/privacy/" className="text-primary underline-offset-2 hover:underline" target="_blank" rel="noopener noreferrer">
               Zoom Privacy Policy
             </a>.
           </LegalLi>
           <LegalLi>
-            <strong className="text-foreground">SMTP provider</strong> — transactional emails (confirmations, reminders) are sent through your configured SMTP server.
+            <strong className="text-base-content">SMTP provider</strong> — transactional emails (confirmations, reminders) are sent through your configured SMTP server.
           </LegalLi>
         </LegalUl>
         <LegalP>
@@ -141,11 +141,11 @@ export default function PrivacyPage() {
           Depending on your jurisdiction, you may have the following rights regarding your personal data:
         </LegalP>
         <LegalUl>
-          <LegalLi><strong className="text-foreground">Access</strong> — request a copy of the personal data we hold about you.</LegalLi>
-          <LegalLi><strong className="text-foreground">Correction</strong> — ask us to correct inaccurate information.</LegalLi>
-          <LegalLi><strong className="text-foreground">Deletion</strong> — request that we delete your account and all associated data. You can do this at any time from your Account Settings page.</LegalLi>
-          <LegalLi><strong className="text-foreground">Portability</strong> — request your data in a structured, machine-readable format.</LegalLi>
-          <LegalLi><strong className="text-foreground">Revoke calendar access</strong> — disconnect your Google or Zoom account at any time from the Integrations settings page.</LegalLi>
+          <LegalLi><strong className="text-base-content">Access</strong> — request a copy of the personal data we hold about you.</LegalLi>
+          <LegalLi><strong className="text-base-content">Correction</strong> — ask us to correct inaccurate information.</LegalLi>
+          <LegalLi><strong className="text-base-content">Deletion</strong> — request that we delete your account and all associated data. You can do this at any time from your Account Settings page.</LegalLi>
+          <LegalLi><strong className="text-base-content">Portability</strong> — request your data in a structured, machine-readable format.</LegalLi>
+          <LegalLi><strong className="text-base-content">Revoke calendar access</strong> — disconnect your Google or Zoom account at any time from the Integrations settings page.</LegalLi>
         </LegalUl>
         <LegalP>
           To exercise any of these rights, contact us at the address in the Contact section below.

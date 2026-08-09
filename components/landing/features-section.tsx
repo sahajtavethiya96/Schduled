@@ -71,7 +71,7 @@ function CalendarMockup() {
           </svg>
         </div>
         <div>
-          <p className="text-sm font-bold text-foreground">Google Calendar</p>
+          <p className="text-sm font-bold text-base-content">Google Calendar</p>
           <p className="text-xs text-muted-foreground">jane@example.com</p>
         </div>
         <div className="ml-auto flex items-center gap-1.5 border border-primary/30 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-primary">
@@ -79,8 +79,8 @@ function CalendarMockup() {
           Connected
         </div>
       </div>
-      <div className="mb-3 border border-border">
-        <div className="border-b border-border bg-muted/40 px-4 py-2.5">
+      <div className="mb-3 border border-base-300">
+        <div className="border-b border-base-300 bg-base-200/40 px-4 py-2.5">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Today&apos;s events (hidden from bookers)</p>
         </div>
         {[
@@ -88,7 +88,7 @@ function CalendarMockup() {
           { time: '1:00 – 2:00 PM',  label: 'Product review',   busy: true },
           { time: '3:00 – 3:30 PM',  label: 'Focus block',      busy: true },
         ].map((ev) => (
-          <div key={ev.label} className="flex items-center gap-3 border-b border-border/50 px-4 py-3 last:border-0">
+          <div key={ev.label} className="flex items-center gap-3 border-b border-base-300/50 px-4 py-3 last:border-0">
             <div className="h-2 w-2 shrink-0 bg-muted-foreground/30" />
             <div className="min-w-0 flex-1">
               <p className="text-sm line-through text-muted-foreground/50">{ev.label}</p>
@@ -119,7 +119,7 @@ function AvailabilityMockup() {
     <div className="w-full">
       <div className="mb-1 flex items-center gap-2">
         <Clock size={15} className="text-primary" />
-        <p className="text-sm font-bold text-foreground">Weekly hours</p>
+        <p className="text-sm font-bold text-base-content">Weekly hours</p>
       </div>
       <p className="mb-5 text-xs text-muted-foreground">Set when you are typically available for meetings</p>
       <div className="space-y-1">
@@ -127,27 +127,27 @@ function AvailabilityMockup() {
           <div key={i} className={cn('flex items-center gap-3 px-1 py-2.5', d.avail ? '' : 'opacity-50')}>
             <div className={cn(
               'flex h-7 w-7 shrink-0 items-center justify-center text-xs font-black',
-              d.avail ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground',
+              d.avail ? 'bg-primary text-primary-content' : 'bg-base-200 text-muted-foreground',
             )}>
               {d.short}
             </div>
             {d.avail ? (
               <div className="flex flex-1 items-center gap-2">
-                <div className="flex h-8 items-center border border-border bg-background px-3 text-xs font-medium text-foreground min-w-[78px]">
+                <div className="flex h-8 items-center border border-base-300 bg-base-100 px-3 text-xs font-medium text-base-content min-w-[78px]">
                   {d.from}
                 </div>
                 <span className="text-xs text-muted-foreground">–</span>
-                <div className="flex h-8 items-center border border-border bg-background px-3 text-xs font-medium text-foreground min-w-[72px]">
+                <div className="flex h-8 items-center border border-base-300 bg-base-100 px-3 text-xs font-medium text-base-content min-w-[72px]">
                   {d.to}
                 </div>
                 <div className="ml-auto flex items-center gap-1">
-                  <button className="flex h-7 w-7 items-center justify-center text-muted-foreground/50 hover:text-foreground transition-colors">
+                  <button className="flex h-7 w-7 items-center justify-center text-muted-foreground/50 hover:text-base-content transition-colors">
                     <X size={12} />
                   </button>
-                  <button className="flex h-7 w-7 items-center justify-center text-muted-foreground/50 hover:text-foreground transition-colors">
+                  <button className="flex h-7 w-7 items-center justify-center text-muted-foreground/50 hover:text-base-content transition-colors">
                     <Plus size={12} />
                   </button>
-                  <button className="flex h-7 w-7 items-center justify-center text-muted-foreground/50 hover:text-foreground transition-colors">
+                  <button className="flex h-7 w-7 items-center justify-center text-muted-foreground/50 hover:text-base-content transition-colors">
                     <Copy size={12} />
                   </button>
                 </div>
@@ -163,9 +163,9 @@ function AvailabilityMockup() {
           </div>
         ))}
       </div>
-      <div className="mt-4 flex items-center gap-2 border-t border-border pt-4">
+      <div className="mt-4 flex items-center gap-2 border-t border-base-300 pt-4">
         <span className="text-xs text-muted-foreground">Timezone:</span>
-        <span className="text-xs font-semibold text-foreground">Asia/Kolkata</span>
+        <span className="text-xs font-semibold text-base-content">Asia/Kolkata</span>
         <span className="text-xs text-muted-foreground">▾</span>
       </div>
     </div>
@@ -186,13 +186,13 @@ function MeetingTypesMockup() {
           key={t.label}
           className={cn(
             'flex items-center justify-between border px-4 py-4 transition-all',
-            t.active ? 'border-primary/40 bg-primary/5' : 'border-border hover:border-primary/20',
+            t.active ? 'border-primary/40 bg-primary/5' : 'border-base-300 hover:border-primary/20',
           )}
         >
           <div className="flex items-center gap-3">
             <div className={cn('h-2.5 w-2.5 shrink-0', t.active ? 'bg-primary' : 'bg-muted-foreground/30')} />
             <div>
-              <p className={cn('text-sm font-semibold', t.active ? 'text-foreground' : 'text-foreground/80')}>{t.label}</p>
+              <p className={cn('text-sm font-semibold', t.active ? 'text-base-content' : 'text-base-content/80')}>{t.label}</p>
               <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
                 <Clock size={11} /> {t.dur} · Video call
               </p>
@@ -205,7 +205,7 @@ function MeetingTypesMockup() {
           )}
         </div>
       ))}
-      <div className="flex items-center justify-center border border-dashed border-border py-3">
+      <div className="flex items-center justify-center border border-dashed border-base-300 py-3">
         <button className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors">
           <Plus size={13} /> Add meeting type
         </button>
@@ -219,16 +219,16 @@ function BookingLinkMockup() {
     <div className="w-full">
       <div className="mb-5 flex items-center gap-2 border border-primary/30 bg-primary/5 px-4 py-3">
         <LinkSimple size={14} className="shrink-0 text-primary" />
-        <span className="min-w-0 flex-1 overflow-hidden text-ellipsis font-mono text-sm text-foreground/60">
+        <span className="min-w-0 flex-1 overflow-hidden text-ellipsis font-mono text-sm text-base-content/60">
           schduled.com/<span className="font-bold text-primary">yourname</span>
         </span>
         <button className="shrink-0 text-xs font-semibold text-primary hover:underline">Copy</button>
       </div>
-      <div className="overflow-hidden border border-border">
-        <div className="flex items-center gap-3 border-b border-border px-5 py-4">
+      <div className="overflow-hidden border border-base-300">
+        <div className="flex items-center gap-3 border-b border-base-300 px-5 py-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center bg-primary/10 font-black text-lg text-primary">JS</div>
           <div>
-            <p className="font-bold text-foreground">Jane Smith</p>
+            <p className="font-bold text-base-content">Jane Smith</p>
             <p className="text-xs text-muted-foreground">Product Lead · San Francisco</p>
           </div>
         </div>
@@ -239,16 +239,16 @@ function BookingLinkMockup() {
           ].map((et, i) => (
             <div key={et.label} className={cn(
               'flex items-center justify-between border px-4 py-3',
-              i === 0 ? 'border-primary/30 bg-primary/5' : 'border-border',
+              i === 0 ? 'border-primary/30 bg-primary/5' : 'border-base-300',
             )}>
-              <span className="text-sm font-medium text-foreground">{et.label}</span>
+              <span className="text-sm font-medium text-base-content">{et.label}</span>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Clock size={11} /> {et.dur}
               </div>
             </div>
           ))}
         </div>
-        <div className="border-t border-border bg-muted/30 px-4 py-2.5">
+        <div className="border-t border-base-300 bg-base-200/30 px-4 py-2.5">
           <p className="text-xs text-muted-foreground">Powered by Schduled · Free forever</p>
         </div>
       </div>
@@ -272,18 +272,18 @@ function RemindersMockup() {
             key={n.label}
             className={cn(
               'flex items-start gap-3 border p-4',
-              n.accent ? 'border-primary/40 bg-primary/5' : 'border-border',
+              n.accent ? 'border-primary/40 bg-primary/5' : 'border-base-300',
             )}
           >
             <div className={cn(
               'mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center',
-              n.accent ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground',
+              n.accent ? 'bg-primary text-primary-content' : 'bg-base-200 text-muted-foreground',
             )}>
               <Icon size={15} weight={n.accent ? 'fill' : 'regular'} />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-sm font-semibold text-foreground">{n.label}</p>
+                <p className="text-sm font-semibold text-base-content">{n.label}</p>
                 <span className="shrink-0 text-[10px] text-muted-foreground/50">{n.t}</span>
               </div>
               <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{n.sub}</p>
@@ -291,7 +291,7 @@ function RemindersMockup() {
           </div>
         )
       })}
-      <div className="border border-dashed border-border px-4 py-3 text-center">
+      <div className="border border-dashed border-base-300 px-4 py-3 text-center">
         <p className="text-xs text-muted-foreground/50">Every email includes a one-click reschedule link</p>
       </div>
     </div>
@@ -341,7 +341,7 @@ export function FeaturesSection() {
   }, [active, paused])
 
   return (
-    <section id="features" className="relative overflow-clip border-t border-border bg-muted/20 py-24">
+    <section id="features" className="relative overflow-clip border-t border-base-300 bg-base-200/20 py-24">
       {/* Subtle grid texture + teal glow */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.04]"
@@ -390,21 +390,21 @@ export function FeaturesSection() {
                   onClick={() => switchTo(i)}
                   onMouseEnter={() => { setHovered(i); setPaused(true) }}
                   className={cn(
-                    'w-full border-b border-l-2 border-border text-left transition-colors duration-[250ms] last:border-b-0',
-                    isActive ? 'border-l-primary bg-primary/[0.03]' : isExpanded ? 'border-l-primary/40 bg-muted/30' : 'border-l-transparent',
+                    'w-full border-b border-l-2 border-base-300 text-left transition-colors duration-[250ms] last:border-b-0',
+                    isActive ? 'border-l-primary bg-primary/[0.03]' : isExpanded ? 'border-l-primary/40 bg-base-200/30' : 'border-l-transparent',
                   )}
                 >
                   <div className="flex items-center gap-4 px-4 py-5">
                     <div className={cn(
                       'flex h-10 w-10 shrink-0 items-center justify-center transition-colors duration-[250ms]',
-                      isActive ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground',
+                      isActive ? 'bg-primary text-primary-content' : 'bg-base-200 text-muted-foreground',
                     )}>
                       <Icon size={18} weight={isExpanded ? 'fill' : 'regular'} />
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className={cn(
                         'text-sm font-bold transition-colors duration-[250ms]',
-                        isActive ? 'text-foreground' : 'text-foreground/50',
+                        isActive ? 'text-base-content' : 'text-base-content/50',
                       )}>
                         {step.title}
                       </p>
@@ -414,7 +414,7 @@ export function FeaturesSection() {
                         isExpanded ? 'mt-2 grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0',
                       )}>
                         <div className="overflow-hidden">
-                          <p className={cn('text-sm leading-relaxed', isActive ? 'text-foreground/70' : 'text-muted-foreground')}>
+                          <p className={cn('text-sm leading-relaxed', isActive ? 'text-base-content/70' : 'text-muted-foreground')}>
                             {step.description}
                           </p>
                         </div>
@@ -435,7 +435,7 @@ export function FeaturesSection() {
 
           {/* Right: sticky mockup panel */}
           <Reveal className="lg:sticky lg:top-28" delay={150}>
-            <div className="border border-border bg-background p-7 shadow-none ring-1 ring-foreground/10">
+            <div className="border border-base-300 bg-base-100 p-7 shadow-none ring-1 ring-foreground/10">
               {/* Progress bar — one segment per step */}
               <div className="mb-5 flex items-center gap-1.5">
                 {STEPS.map((s, i) => (
@@ -455,11 +455,11 @@ export function FeaturesSection() {
               </div>
 
               {/* Tab bar */}
-              <div className="mb-6 flex items-center gap-2 border-b border-border pb-4">
+              <div className="mb-6 flex items-center gap-2 border-b border-base-300 pb-4">
                 <div className="flex h-8 w-8 items-center justify-center bg-primary/10 text-primary">
                   {(() => { const Icon = STEPS[active].icon; return <Icon size={15} weight="fill" /> })()}
                 </div>
-                <p className="text-sm font-bold text-foreground">{STEPS[active].title}</p>
+                <p className="text-sm font-bold text-base-content">{STEPS[active].title}</p>
               </div>
 
               {/* Mockup — slide + fade + scale transition */}
@@ -484,7 +484,7 @@ export function FeaturesSection() {
               <button
                 type="button"
                 onClick={() => step(-1)}
-                className="flex h-10 w-10 shrink-0 items-center justify-center border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+                className="flex h-10 w-10 shrink-0 items-center justify-center border border-base-300 text-muted-foreground transition-colors hover:border-primary hover:text-primary"
                 aria-label="Previous step"
               >
                 <ArrowLeft size={16} />
@@ -495,7 +495,7 @@ export function FeaturesSection() {
               <button
                 type="button"
                 onClick={() => step(1)}
-                className="flex h-10 w-10 shrink-0 items-center justify-center border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+                className="flex h-10 w-10 shrink-0 items-center justify-center border border-base-300 text-muted-foreground transition-colors hover:border-primary hover:text-primary"
                 aria-label="Next step"
               >
                 <ArrowRight size={16} />

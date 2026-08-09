@@ -71,7 +71,7 @@ export function TabCancellation({ form }: TabCancellationProps) {
                     {...field}
                     onChange={(e) => field.onChange(parseInt(e.target.value, 10) || 0)}
                   />
-                  <span className="flex items-center bg-muted px-3 text-xs text-muted-foreground border-l border-input whitespace-nowrap">
+                  <span className="flex items-center bg-base-200 px-3 text-xs text-muted-foreground border-l border-input whitespace-nowrap">
                     hours before
                   </span>
                 </div>
@@ -123,7 +123,7 @@ export function TabCancellation({ form }: TabCancellationProps) {
                     {...field}
                     onChange={(e) => field.onChange(parseInt(e.target.value, 10) || 0)}
                   />
-                  <span className="flex items-center bg-muted px-3 text-xs text-muted-foreground border-l border-input whitespace-nowrap">
+                  <span className="flex items-center bg-base-200 px-3 text-xs text-muted-foreground border-l border-input whitespace-nowrap">
                     hours before
                   </span>
                 </div>

@@ -264,7 +264,7 @@ function AuthFormInner({ allowPublicSignup, googleEnabled, passwordEnabled, magi
             {unauthorized ? (
               <div className="space-y-5">
                 <div className="flex flex-col items-center gap-3 py-2 text-center">
-                  <span className="flex size-12 items-center justify-center bg-destructive/10 text-destructive">
+                  <span className="flex size-12 items-center justify-center bg-error/10 text-error">
                     <Prohibit size={24} weight="fill" />
                   </span>
                   <p className="text-sm text-muted-foreground">
@@ -294,16 +294,16 @@ function AuthFormInner({ allowPublicSignup, googleEnabled, passwordEnabled, magi
                   <p className="text-sm text-muted-foreground">
                     We sent a sign-in link to
                     <br />
-                    <strong className="text-foreground">{email}</strong>
+                    <strong className="text-base-content">{email}</strong>
                   </p>
                   {resent && (
-                    <p className="bg-success-subtle px-3 py-1.5 text-success-foreground text-xs">
+                    <p className="bg-success-subtle px-3 py-1.5 text-success-content text-xs">
                       Link resent.
                     </p>
                   )}
                 </div>
                 {error && (
-                  <p className="bg-destructive/10 p-3 text-destructive text-sm">{error}</p>
+                  <p className="bg-error/10 p-3 text-error text-sm">{error}</p>
                 )}
                 <div className="flex flex-col gap-2">
                   <Button className="w-full gap-2" onClick={resend} disabled={resending} type="button" variant="outline">
@@ -326,7 +326,7 @@ function AuthFormInner({ allowPublicSignup, googleEnabled, passwordEnabled, magi
                       <p className="text-sm text-muted-foreground">
                         If an account exists for
                         <br />
-                        <strong className="text-foreground">{email}</strong>,
+                        <strong className="text-base-content">{email}</strong>,
                         <br />
                         a password reset link is on its way.
                       </p>
@@ -338,7 +338,7 @@ function AuthFormInner({ allowPublicSignup, googleEnabled, passwordEnabled, magi
                 ) : (
                   <form className="space-y-4" onSubmit={onForgotSubmit}>
                     <label className="block" htmlFor="forgot-email">
-                      <span className="mb-2 block font-semibold text-foreground text-sm">
+                      <span className="mb-2 block font-semibold text-base-content text-sm">
                         Email
                       </span>
                       <div className="relative">
@@ -356,7 +356,7 @@ function AuthFormInner({ allowPublicSignup, googleEnabled, passwordEnabled, magi
                       </div>
                     </label>
                     {error && (
-                      <p className="rounded-none bg-destructive/10 p-3 text-destructive text-sm">
+                      <p className="rounded-none bg-error/10 p-3 text-error text-sm">
                         {error}
                       </p>
                     )}
@@ -364,7 +364,7 @@ function AuthFormInner({ allowPublicSignup, googleEnabled, passwordEnabled, magi
                       {submitting ? <><CircleNotch size={15} className="animate-spin" /> Sending…</> : "Send reset link"}
                     </Button>
                     <button
-                      className="w-full text-center text-xs font-medium text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                      className="w-full text-center text-xs font-medium text-muted-foreground underline-offset-2 hover:text-base-content hover:underline"
                       onClick={() => switchMode("password-signin")}
                       type="button"
                     >
@@ -390,7 +390,7 @@ function AuthFormInner({ allowPublicSignup, googleEnabled, passwordEnabled, magi
                         Continue with Google
                       </Button>
                     ) : (
-                      <p className="rounded-none bg-destructive/10 p-3 text-destructive text-sm">
+                      <p className="rounded-none bg-error/10 p-3 text-error text-sm">
                         No sign-in methods are currently available. Please contact
                         the administrator.
                       </p>
@@ -400,7 +400,7 @@ function AuthFormInner({ allowPublicSignup, googleEnabled, passwordEnabled, magi
                   <form className="space-y-4" onSubmit={onPasswordSubmit}>
                     {mode === "password-signup" && (
                       <label className="block" htmlFor="name">
-                        <span className="mb-2 block font-semibold text-foreground text-sm">
+                        <span className="mb-2 block font-semibold text-base-content text-sm">
                           Name
                         </span>
                         <Input
@@ -415,7 +415,7 @@ function AuthFormInner({ allowPublicSignup, googleEnabled, passwordEnabled, magi
                       </label>
                     )}
                     <label className="block" htmlFor="password-email">
-                      <span className="mb-2 block font-semibold text-foreground text-sm">
+                      <span className="mb-2 block font-semibold text-base-content text-sm">
                         Email
                       </span>
                       <div className="relative">
@@ -433,7 +433,7 @@ function AuthFormInner({ allowPublicSignup, googleEnabled, passwordEnabled, magi
                       </div>
                     </label>
                     <label className="block" htmlFor="password">
-                      <span className="mb-2 block font-semibold text-foreground text-sm">
+                      <span className="mb-2 block font-semibold text-base-content text-sm">
                         Password
                       </span>
                       <div className="relative">
@@ -454,20 +454,20 @@ function AuthFormInner({ allowPublicSignup, googleEnabled, passwordEnabled, magi
                           onClick={() => setShowPassword((s) => !s)}
                           aria-label={showPassword ? "Hide password" : "Show password"}
                           tabIndex={-1}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-base-content"
                         >
                           {showPassword ? <Eye size={16} /> : <EyeSlash size={16} />}
                         </button>
                       </div>
                     </label>
                     {error && (
-                      <div className="rounded-none bg-destructive/10 p-3 text-sm">
-                        <p className="text-destructive">{error}</p>
+                      <div className="rounded-none bg-error/10 p-3 text-sm">
+                        <p className="text-error">{error}</p>
                         {mode === "password-signin" && allowPublicSignup && (
                           <button
                             type="button"
                             onClick={() => switchMode("password-signup")}
-                            className="mt-1.5 font-semibold text-destructive underline underline-offset-2 hover:opacity-80"
+                            className="mt-1.5 font-semibold text-error underline underline-offset-2 hover:opacity-80"
                           >
                             New here? Create an account →
                           </button>
@@ -482,7 +482,7 @@ function AuthFormInner({ allowPublicSignup, googleEnabled, passwordEnabled, magi
                     <div className="flex flex-col items-center gap-1.5 text-center text-xs">
                       {(allowPublicSignup || mode === "password-signup") && (
                         <button
-                          className="font-medium text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                          className="font-medium text-muted-foreground underline-offset-2 hover:text-base-content hover:underline"
                           onClick={() => switchMode(mode === "password-signup" ? "password-signin" : "password-signup")}
                           type="button"
                         >
@@ -493,7 +493,7 @@ function AuthFormInner({ allowPublicSignup, googleEnabled, passwordEnabled, magi
                       )}
                       {mode === "password-signin" && (
                         <button
-                          className="font-medium text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                          className="font-medium text-muted-foreground underline-offset-2 hover:text-base-content hover:underline"
                           onClick={() => switchMode("forgot-password")}
                           type="button"
                         >
@@ -506,7 +506,7 @@ function AuthFormInner({ allowPublicSignup, googleEnabled, passwordEnabled, magi
                   /* ── Magic-link mode ── */
                   <form className="space-y-4" onSubmit={onMagicLinkSubmit}>
                     <label className="block" htmlFor="email">
-                      <span className="mb-2 block font-semibold text-foreground text-sm">
+                      <span className="mb-2 block font-semibold text-base-content text-sm">
                         Email
                       </span>
                       <div className="relative">
@@ -524,7 +524,7 @@ function AuthFormInner({ allowPublicSignup, googleEnabled, passwordEnabled, magi
                       </div>
                     </label>
                     {error && (
-                      <p className="rounded-none bg-destructive/10 p-3 text-destructive text-sm">
+                      <p className="rounded-none bg-error/10 p-3 text-error text-sm">
                         {error}
                       </p>
                     )}
@@ -541,11 +541,11 @@ function AuthFormInner({ allowPublicSignup, googleEnabled, passwordEnabled, magi
                 {hasFormMethod && hasSecondary && (
                   <>
                     <div className="relative flex items-center gap-3">
-                      <div className="h-px flex-1 bg-border" />
+                      <div className="h-px flex-1 bg-base-300" />
                       <span className="shrink-0 text-2xs font-medium uppercase tracking-wider text-muted-foreground">
                         or
                       </span>
-                      <div className="h-px flex-1 bg-border" />
+                      <div className="h-px flex-1 bg-base-300" />
                     </div>
 
                     <div className="flex flex-col gap-2">
@@ -587,7 +587,7 @@ function AuthFormInner({ allowPublicSignup, googleEnabled, passwordEnabled, magi
                 )}
 
                 {/* Security indicators */}
-                <div className="flex items-center justify-center gap-4 border-t border-border pt-4 text-xs text-muted-foreground">
+                <div className="flex items-center justify-center gap-4 border-t border-base-300 pt-4 text-xs text-muted-foreground">
                   <span className="inline-flex items-center gap-1.5"><LockKey size={13} /> {mode === "magic-link" ? "Passwordless" : "Secure login"}</span>
                   <span className="inline-flex items-center gap-1.5"><ShieldCheck size={13} /> Encrypted</span>
                 </div>

@@ -118,7 +118,7 @@ interface Props {
 // ── Outer helpers (stable identity — no remount on every render) ──────────────
 
 const inputCls =
-  'w-full border border-input bg-background px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all placeholder:text-muted-foreground/60'
+  'w-full border border-input bg-base-100 px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all placeholder:text-muted-foreground/60'
 
 function FormField({
   label,
@@ -131,9 +131,9 @@ function FormField({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-semibold text-foreground">
+      <label className="text-sm font-semibold text-base-content">
         {label}
-        {required && <span className="ml-0.5 text-destructive">*</span>}
+        {required && <span className="ml-0.5 text-error">*</span>}
       </label>
       {children}
     </div>
@@ -190,7 +190,7 @@ function QuestionInput({
           return (
             <label
               key={opt}
-              className="flex cursor-pointer items-center gap-2 text-sm text-foreground"
+              className="flex cursor-pointer items-center gap-2 text-sm text-base-content"
             >
               <Checkbox
                 checked={arr.includes(opt)}
@@ -329,7 +329,7 @@ function TimezoneSearch({ value, onChange }: { value: string; onChange: (tz: str
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="flex w-full items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          className="flex w-full items-center gap-1.5 text-sm text-muted-foreground hover:text-base-content transition-colors"
         >
           <Globe size={14} className="shrink-0" />
           <span className="flex-1 truncate text-left">{currentLabel}</span>
@@ -343,7 +343,7 @@ function TimezoneSearch({ value, onChange }: { value: string; onChange: (tz: str
         onOpenAutoFocus={e => e.preventDefault()}
       >
         {/* Search input */}
-        <div className="flex items-center gap-2 border-b border-border px-3 py-2">
+        <div className="flex items-center gap-2 border-b border-base-300 px-3 py-2">
           <MagnifyingGlass size={14} className="shrink-0 text-muted-foreground" />
           <input
             ref={inputRef}
@@ -356,7 +356,7 @@ function TimezoneSearch({ value, onChange }: { value: string; onChange: (tz: str
             <button
               type="button"
               onClick={() => setSearch('')}
-              className="text-muted-foreground/60 hover:text-foreground transition-colors"
+              className="text-muted-foreground/60 hover:text-base-content transition-colors"
             >
               ✕
             </button>
@@ -377,7 +377,7 @@ function TimezoneSearch({ value, onChange }: { value: string; onChange: (tz: str
                   type="button"
                   onClick={() => { onChange(entry.tz); setOpen(false) }}
                   className={cn(
-                    'flex w-full items-center justify-between px-3 py-2 text-sm transition-colors hover:bg-muted',
+                    'flex w-full items-center justify-between px-3 py-2 text-sm transition-colors hover:bg-base-200',
                     isSelected && 'bg-primary/8 font-medium text-primary',
                   )}
                 >
@@ -390,7 +390,7 @@ function TimezoneSearch({ value, onChange }: { value: string; onChange: (tz: str
         </div>
 
         {!search && (
-          <p className="border-t border-border px-3 py-2 text-xs text-muted-foreground/60">
+          <p className="border-t border-base-300 px-3 py-2 text-xs text-muted-foreground/60">
             {ALL_TIMEZONES.length} timezones · type to search
           </p>
         )}
@@ -858,10 +858,10 @@ export function BookingCalendar({
 
   if (availableDaysOfWeek.length === 0 && specialDates.length === 0) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background p-6">
-        <div className="w-full max-w-sm border border-border bg-card p-8 text-center">
+      <div className="flex min-h-screen items-center justify-center bg-base-100 p-6">
+        <div className="w-full max-w-sm border border-base-300 bg-base-100 p-8 text-center">
           <CalendarBlank size={40} className="mx-auto mb-4 text-muted-foreground/40" />
-          <h2 className="text-base font-semibold text-foreground">{host.name} isn&apos;t available right now</h2>
+          <h2 className="text-base font-semibold text-base-content">{host.name} isn&apos;t available right now</h2>
           <p className="mt-2 text-sm text-muted-foreground">
             This booking page is not currently accepting new meetings. Please check back later or contact the host directly.
           </p>
@@ -882,7 +882,7 @@ export function BookingCalendar({
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-background p-4 md:p-6 lg:flex lg:h-screen lg:items-center lg:overflow-hidden lg:p-8">
+    <div className="relative min-h-screen overflow-x-hidden bg-base-100 p-4 md:p-6 lg:flex lg:h-screen lg:items-center lg:overflow-hidden lg:p-8">
 
       {/* Decorative blur circles */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
@@ -891,10 +891,10 @@ export function BookingCalendar({
       </div>
 
       {/* Card */}
-      <div className="relative z-10 mx-auto w-full max-w-[900px] overflow-hidden bg-background border border-border lg:flex lg:h-full lg:max-h-[680px] lg:flex-col">
+      <div className="relative z-10 mx-auto w-full max-w-[900px] overflow-hidden bg-base-100 border border-base-300 lg:flex lg:h-full lg:max-h-[680px] lg:flex-col">
 
         {/* ── Progress bar ── */}
-        <div className="flex items-center gap-2 border-b border-border bg-background px-3 py-3">
+        <div className="flex items-center gap-2 border-b border-base-300 bg-base-100 px-3 py-3">
           {/* Back — shown only to the host previewing their own page; returns
               them to the event-type list / dashboard they came from. */}
           <div className="flex w-24 shrink-0 justify-start">
@@ -903,7 +903,7 @@ export function BookingCalendar({
                 type="button"
                 onClick={goBack}
                 aria-label="Go back"
-                className="flex items-center gap-1.5 border border-border px-2.5 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
+                className="flex items-center gap-1.5 border border-base-300 px-2.5 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
               >
                 <ArrowLeft size={14} weight="bold" />
                 <span className="hidden sm:inline">Back</span>
@@ -923,7 +923,7 @@ export function BookingCalendar({
                   <div
                     className={cn(
                       'h-px flex-1 transition-colors',
-                      done ? 'bg-primary/50' : 'bg-border'
+                      done ? 'bg-primary/50' : 'bg-base-300'
                     )}
                   />
                 )}
@@ -933,7 +933,7 @@ export function BookingCalendar({
                       'flex h-5 w-5 items-center justify-center text-xs font-bold transition-all',
                       done && 'bg-primary text-white',
                       active && 'bg-primary text-white ring-[3px] ring-primary/20 ring-offset-1',
-                      !done && !active && 'bg-muted text-muted-foreground'
+                      !done && !active && 'bg-base-200 text-muted-foreground'
                     )}
                   >
                     {done ? <CheckCircle size={10} weight="bold" /> : n}
@@ -960,7 +960,7 @@ export function BookingCalendar({
                   <DropdownMenuTrigger asChild>
                     <button
                       type="button"
-                      className="flex items-center gap-1.5 border border-border px-2.5 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
+                      className="flex items-center gap-1.5 border border-base-300 px-2.5 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
                     >
                       Menu
                       <CaretDown size={11} weight="bold" />
@@ -985,7 +985,7 @@ export function BookingCalendar({
                 <button
                   type="button"
                   onClick={copyPageLink}
-                  className="flex items-center gap-1.5 border border-border px-2.5 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary sm:w-[104px] sm:justify-center"
+                  className="flex items-center gap-1.5 border border-base-300 px-2.5 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary sm:w-[104px] sm:justify-center"
                 >
                   {copyLinkDone
                     ? <Check size={13} weight="bold" className="text-primary shrink-0" />
@@ -1003,7 +1003,7 @@ export function BookingCalendar({
         <div className="flex flex-1 flex-col overflow-hidden lg:flex-row">
 
           {/* ── Left info panel ── */}
-          <div className="flex shrink-0 flex-col gap-0 overflow-x-hidden border-b border-border bg-card lg:w-[230px] lg:border-b-0 lg:border-r lg:overflow-y-auto">
+          <div className="flex shrink-0 flex-col gap-0 overflow-x-hidden border-b border-base-300 bg-base-100 lg:w-[230px] lg:border-b-0 lg:border-r lg:overflow-y-auto">
             <div className="flex min-w-0 flex-col gap-5 p-6">
 
               {/* Avatar */}
@@ -1013,10 +1013,10 @@ export function BookingCalendar({
                   alt={host.name}
                   width={48}
                   height={48}
-                  className="h-12 w-12 rounded-none object-cover ring-1 ring-border"
+                  className="h-12 w-12 rounded-none object-cover ring-1 ring-base-300"
                 />
               ) : (
-                <div className="flex h-12 w-12 items-center justify-center rounded-none bg-primary text-xl font-bold text-white ring-1 ring-border">
+                <div className="flex h-12 w-12 items-center justify-center rounded-none bg-primary text-xl font-bold text-white ring-1 ring-base-300">
                   {host.name.charAt(0).toUpperCase()}
                 </div>
               )}
@@ -1026,7 +1026,7 @@ export function BookingCalendar({
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">
                   Meeting with
                 </p>
-                <p className="mt-0.5 text-sm font-bold text-foreground">{host.name}</p>
+                <p className="mt-0.5 text-sm font-bold text-base-content">{host.name}</p>
                 {hostCompany && (
                   <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
                     <Briefcase size={11} className="shrink-0" />
@@ -1035,11 +1035,11 @@ export function BookingCalendar({
                 )}
               </div>
 
-              <div className="-mx-6 border-t border-border" />
+              <div className="-mx-6 border-t border-base-300" />
 
               {/* Event info */}
               <div>
-                <h1 className="text-[15px] font-bold leading-snug text-foreground">
+                <h1 className="text-[15px] font-bold leading-snug text-base-content">
                   {eventType.name}
                 </h1>
                 {eventType.description && (
@@ -1068,7 +1068,7 @@ export function BookingCalendar({
                           'inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold border transition-all',
                           selectedDuration === d.duration
                             ? 'bg-primary border-primary text-white'
-                            : 'border-border text-muted-foreground hover:border-primary/50 hover:text-primary',
+                            : 'border-base-300 text-muted-foreground hover:border-primary/50 hover:text-primary',
                         )}
                       >
                         <Clock size={10} className="shrink-0" />
@@ -1125,7 +1125,7 @@ export function BookingCalendar({
                 )}
               </div>
 
-              <div className="-mx-6 border-t border-border" />
+              <div className="-mx-6 border-t border-base-300" />
 
               {/* Available days chips */}
               <div>
@@ -1140,7 +1140,7 @@ export function BookingCalendar({
                         'px-1.5 py-0.5 text-xs font-semibold transition-colors',
                         availableDowSet.has(d)
                           ? 'bg-primary/10 text-primary'
-                          : 'bg-muted text-muted-foreground/30'
+                          : 'bg-base-200 text-muted-foreground/30'
                       )}
                     >
                       {DAY_LABELS[i]}
@@ -1153,8 +1153,8 @@ export function BookingCalendar({
 
           {/* ── Calendar panel (hidden in form step) ── */}
           {step !== 'form' && (
-            <div className="shrink-0 border-b border-border p-6 lg:w-[320px] lg:border-b-0 lg:border-r lg:overflow-y-auto">
-              <h2 className="mb-5 text-sm font-semibold text-foreground">
+            <div className="shrink-0 border-b border-base-300 p-6 lg:w-[320px] lg:border-b-0 lg:border-r lg:overflow-y-auto">
+              <h2 className="mb-5 text-sm font-semibold text-base-content">
                 Select a Date &amp; Time
               </h2>
 
@@ -1163,11 +1163,11 @@ export function BookingCalendar({
                 <button
                   onClick={handlePrevMonth}
                   disabled={format(month, 'yyyy-MM') <= today.slice(0, 7)}
-                  className="flex h-11 w-11 items-center justify-center text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-30"
+                  className="flex h-11 w-11 items-center justify-center text-muted-foreground transition-colors hover:text-base-content disabled:cursor-not-allowed disabled:opacity-30"
                 >
                   <CaretLeft size={14} weight="bold" />
                 </button>
-                <span className="text-sm font-semibold text-foreground">
+                <span className="text-sm font-semibold text-base-content">
                   {format(month, 'MMMM yyyy')}
                 </span>
                 <button
@@ -1175,7 +1175,7 @@ export function BookingCalendar({
                   disabled={
                     format(addMonths(month, 1), 'yyyy-MM') > maxDate.slice(0, 7)
                   }
-                  className="flex h-11 w-11 items-center justify-center text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-30"
+                  className="flex h-11 w-11 items-center justify-center text-muted-foreground transition-colors hover:text-base-content disabled:cursor-not-allowed disabled:opacity-30"
                 >
                   <CaretRight size={14} weight="bold" />
                 </button>
@@ -1215,7 +1215,7 @@ export function BookingCalendar({
                           inMonth && !available && isToday && 'cursor-default font-bold text-muted-foreground/30 ring-2 ring-inset ring-muted-foreground/20',
                           // Available, not today, not selected
                           inMonth && available && !isSelected && !isToday &&
-                            'cursor-pointer font-medium text-foreground hover:bg-primary/10 hover:text-primary',
+                            'cursor-pointer font-medium text-base-content hover:bg-primary/10 hover:text-primary',
                           // Available, is today, not selected
                           inMonth && available && isToday && !isSelected &&
                             'cursor-pointer font-bold text-primary ring-2 ring-inset ring-primary',
@@ -1232,7 +1232,7 @@ export function BookingCalendar({
               </div>
 
               {/* Timezone picker */}
-              <div className="mt-5 border-t border-border pt-4">
+              <div className="mt-5 border-t border-base-300 pt-4">
                 <TimezoneSearch value={inviteeTz} onChange={setInviteeTz} />
               </div>
             </div>
@@ -1257,9 +1257,9 @@ export function BookingCalendar({
                         <button
                           key={pick.date}
                           onClick={() => handleDateClick(pick.date)}
-                          className="flex items-center justify-between border border-border bg-background px-4 py-3 text-left text-sm transition-all hover:border-primary/60 hover:bg-primary/5"
+                          className="flex items-center justify-between border border-base-300 bg-base-100 px-4 py-3 text-left text-sm transition-all hover:border-primary/60 hover:bg-primary/5"
                         >
-                          <span className="font-semibold text-foreground">{pick.label}</span>
+                          <span className="font-semibold text-base-content">{pick.label}</span>
                           <span className="text-xs text-muted-foreground">{pick.sub}</span>
                         </button>
                       ))}
@@ -1267,9 +1267,9 @@ export function BookingCalendar({
                   )}
 
                   <div className="flex items-center gap-3 text-muted-foreground">
-                    <div className="h-px flex-1 bg-border" />
+                    <div className="h-px flex-1 bg-base-300" />
                     <span className="text-xs">or pick from calendar</span>
-                    <div className="h-px flex-1 bg-border" />
+                    <div className="h-px flex-1 bg-base-300" />
                   </div>
 
                   <div className="flex items-center gap-2 text-muted-foreground/60">
@@ -1280,7 +1280,7 @@ export function BookingCalendar({
               ) : (
                 /* Slot list */
                 <div className="flex flex-1 flex-col overflow-hidden">
-                  <div className="shrink-0 border-b border-border px-6 py-4">
+                  <div className="shrink-0 border-b border-base-300 px-6 py-4">
                     <p className="text-xs font-medium text-muted-foreground">
                       {formatInTimeZone(
                         new Date(`${selectedDate}T12:00:00Z`),
@@ -1288,7 +1288,7 @@ export function BookingCalendar({
                         'EEEE'
                       )}
                     </p>
-                    <h3 className="text-[15px] font-bold text-foreground">
+                    <h3 className="text-[15px] font-bold text-base-content">
                       {formatInTimeZone(
                         new Date(`${selectedDate}T12:00:00Z`),
                         inviteeTz,
@@ -1329,7 +1329,7 @@ export function BookingCalendar({
                                 'flex h-11 w-full items-center justify-center gap-2 text-sm font-semibold transition-all duration-150',
                                 isChosen
                                   ? 'bg-primary text-white'
-                                  : 'border border-border bg-background text-foreground hover:border-primary/60 hover:bg-primary/5 hover:text-primary'
+                                  : 'border border-base-300 bg-base-100 text-base-content hover:border-primary/60 hover:bg-primary/5 hover:text-primary'
                               )}
                             >
                               {isChosen && <CheckCircle size={14} weight="fill" />}
@@ -1346,7 +1346,7 @@ export function BookingCalendar({
 
                   {/* Continue CTA */}
                   {selectedSlot && (
-                    <div className="shrink-0 border-t border-border bg-background p-4">
+                    <div className="shrink-0 border-t border-base-300 bg-base-100 p-4">
                       <button
                         onClick={handleContinue}
                         className="flex h-11 w-full items-center justify-center gap-2 bg-primary text-sm font-bold text-white transition-all hover:bg-primary/90"
@@ -1370,13 +1370,13 @@ export function BookingCalendar({
                     setStep('calendar')
                     setSubmitError(null)
                   }}
-                  className="mb-5 flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+                  className="mb-5 flex items-center gap-1.5 text-xs text-muted-foreground hover:text-base-content"
                 >
                   <ArrowLeft size={13} />
                   Back to times
                 </button>
 
-                <h3 className="mb-1 text-[15px] font-bold text-foreground">Your details</h3>
+                <h3 className="mb-1 text-[15px] font-bold text-base-content">Your details</h3>
                 <p className="mb-5 text-xs text-muted-foreground">
                   Fill in your info to confirm the booking.
                 </p>
@@ -1406,7 +1406,7 @@ export function BookingCalendar({
                         }}
                         required
                         placeholder="you@example.com"
-                        className={`${inputCls} h-9 ${emailBlocked ? 'border-destructive focus:border-destructive focus:ring-destructive/15 pr-8' : ''}`}
+                        className={`${inputCls} h-9 ${emailBlocked ? 'border-error focus:border-error focus:ring-error/15 pr-8' : ''}`}
                       />
                       {checkingBlocked && (
                         <Spinner size={13} className="absolute right-2.5 top-1/2 -translate-y-1/2 animate-spin text-muted-foreground" />
@@ -1421,17 +1421,17 @@ export function BookingCalendar({
                             setPrefilled(false)
                             if (submitError === '__blocked__') setSubmitError(null)
                           }}
-                          className="absolute right-2 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center text-destructive transition-colors hover:text-destructive/70"
+                          className="absolute right-2 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center text-error transition-colors hover:text-error/70"
                         >
                           ✕
                         </button>
                       )}
                     </div>
                     {emailBlocked && (
-                      <div className="mt-2 border border-destructive/30 bg-destructive/5 px-4 py-3">
-                        <p className="text-sm font-bold text-destructive">Booking Unavailable</p>
-                        <p className="mt-1 text-sm text-destructive">You have been blocked from booking with this host.</p>
-                        <p className="mt-0.5 text-xs text-destructive/70">Please contact the host if you believe this is an error.</p>
+                      <div className="mt-2 border border-error/30 bg-error/5 px-4 py-3">
+                        <p className="text-sm font-bold text-error">Booking Unavailable</p>
+                        <p className="mt-1 text-sm text-error">You have been blocked from booking with this host.</p>
+                        <p className="mt-0.5 text-xs text-error/70">Please contact the host if you believe this is an error.</p>
                       </div>
                     )}
                     {!emailBlocked && prefilled && (
@@ -1453,10 +1453,10 @@ export function BookingCalendar({
                               <div className={cn(
                                 'flex items-stretch border transition-all h-9',
                                 phoneError
-                                  ? 'border-destructive focus-within:border-destructive focus-within:ring-1 focus-within:ring-destructive/40'
+                                  ? 'border-error focus-within:border-error focus-within:ring-1 focus-within:ring-error/40'
                                   : 'border-input focus-within:border-primary focus-within:ring-1 focus-within:ring-primary'
                               )}>
-                                <div className="flex shrink-0 items-center border-r border-input bg-muted px-2.5 text-sm font-mono font-semibold text-foreground min-w-[48px] justify-center select-none">
+                                <div className="flex shrink-0 items-center border-r border-input bg-base-200 px-2.5 text-sm font-mono font-semibold text-base-content min-w-[48px] justify-center select-none">
                                   {dialCode || '+'}
                                 </div>
                                 <input
@@ -1484,11 +1484,11 @@ export function BookingCalendar({
                                   }}
                                   required={phoneRequired}
                                   placeholder={dialCode ? `${dialCode} XXXXX XXXXX` : '+91 98765 43210'}
-                                  className="flex-1 bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/50 outline-none"
+                                  className="flex-1 bg-base-100 px-3 text-sm font-mono text-base-content placeholder:text-muted-foreground/50 outline-none"
                                 />
                               </div>
                               {phoneError && (
-                                <p className="mt-1 text-xs text-destructive">{phoneError}</p>
+                                <p className="mt-1 text-xs text-error">{phoneError}</p>
                               )}
                             </>
                           )
@@ -1506,15 +1506,15 @@ export function BookingCalendar({
                     ))}
 
                   {submitError && (
-                    <div className="border border-destructive/30 bg-destructive/5 px-4 py-3">
+                    <div className="border border-error/30 bg-error/5 px-4 py-3">
                       {submitError === '__blocked__' ? (
                         <>
-                          <p className="text-sm font-bold text-destructive">Booking Unavailable</p>
-                          <p className="mt-1 text-sm text-destructive">You have been blocked from booking with this host.</p>
-                          <p className="mt-0.5 text-xs text-destructive/70">Please contact the host if you believe this is an error.</p>
+                          <p className="text-sm font-bold text-error">Booking Unavailable</p>
+                          <p className="mt-1 text-sm text-error">You have been blocked from booking with this host.</p>
+                          <p className="mt-0.5 text-xs text-error/70">Please contact the host if you believe this is an error.</p>
                         </>
                       ) : (
-                        <p className="text-sm font-medium text-destructive">{submitError}</p>
+                        <p className="text-sm font-medium text-error">{submitError}</p>
                       )}
                     </div>
                   )}
@@ -1548,7 +1548,7 @@ export function BookingCalendar({
           <a
             href="/"
             aria-label={`Powered by ${PRODUCT_NAME}`}
-            className="flex shrink-0 items-center justify-center gap-1.5 border-t border-border bg-muted/30 py-2.5 text-xs font-medium text-muted-foreground transition-colors hover:text-primary"
+            className="flex shrink-0 items-center justify-center gap-1.5 border-t border-base-300 bg-base-200/30 py-2.5 text-xs font-medium text-muted-foreground transition-colors hover:text-primary"
           >
             Powered by <span className="font-bold text-primary">{PRODUCT_NAME}</span>
           </a>

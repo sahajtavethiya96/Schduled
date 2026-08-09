@@ -106,9 +106,9 @@ export function PasswordCard({ hasPassword: initialHasPassword, passwordAuthEnab
   if (!passwordAuthEnabled) {
     return (
       <Card>
-        <CardHeader className="gap-2.5 border-b border-border">
+        <CardHeader className="gap-2.5 border-b border-base-300">
           <div className="flex items-center gap-2.5">
-            <span className="flex size-7 shrink-0 items-center justify-center border border-border bg-muted/40 text-muted-foreground">
+            <span className="flex size-7 shrink-0 items-center justify-center border border-base-300 bg-base-200/40 text-muted-foreground">
               <LockKey size={15} weight="bold" />
             </span>
             <CardTitle className="text-base font-semibold">Password</CardTitle>
@@ -125,9 +125,9 @@ export function PasswordCard({ hasPassword: initialHasPassword, passwordAuthEnab
 
   return (
     <Card>
-      <CardHeader className="gap-2.5 border-b border-border">
+      <CardHeader className="gap-2.5 border-b border-base-300">
         <div className="flex items-center gap-2.5">
-          <span className="flex size-7 shrink-0 items-center justify-center border border-border bg-muted/40 text-muted-foreground">
+          <span className="flex size-7 shrink-0 items-center justify-center border border-base-300 bg-base-200/40 text-muted-foreground">
             <LockKey size={15} weight="bold" />
           </span>
           <CardTitle className="text-base font-semibold">

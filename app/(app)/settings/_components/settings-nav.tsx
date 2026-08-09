@@ -58,8 +58,8 @@ function NavLinks({ links }: { links: { href: string; label: string }[] }) {
             className={cn(
               "border-l-2 px-3 py-2 text-sm transition-colors",
               active
-                ? "border-primary font-medium text-foreground"
-                : "border-transparent text-muted-foreground hover:border-border hover:text-foreground"
+                ? "border-primary font-medium text-base-content"
+                : "border-transparent text-muted-foreground hover:border-base-300 hover:text-base-content"
             )}
             href={href}
             key={href}
@@ -114,7 +114,7 @@ export function SettingsMobileNav({ isAdmin = false }: { isAdmin?: boolean }) {
       : WORKSPACE_LINKS;
 
   return (
-    <nav className="flex overflow-x-auto gap-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden border-b border-border pb-1">
+    <nav className="flex overflow-x-auto gap-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden border-b border-base-300 pb-1">
       {links.map(({ href, label }) => {
         const active = pathname === href || pathname.startsWith(href + "/");
         return (
@@ -123,7 +123,7 @@ export function SettingsMobileNav({ isAdmin = false }: { isAdmin?: boolean }) {
               "shrink-0 px-3 py-1.5 text-xs font-medium whitespace-nowrap border transition-colors",
               active
                 ? "border-primary bg-primary/[0.08] text-primary font-semibold"
-                : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
+                : "border-transparent text-muted-foreground hover:text-base-content hover:border-base-300"
             )}
             href={href}
             key={href}

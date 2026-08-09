@@ -74,11 +74,11 @@ export function CancelClient(props: Props) {
 
   if (props.blockedByPolicy) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
-        <div className="w-full max-w-md overflow-hidden bg-card border border-border">
+      <main className="flex min-h-screen items-center justify-center bg-base-200/30 p-4">
+        <div className="w-full max-w-md overflow-hidden bg-base-100 border border-base-300">
           <div className="flex flex-col items-center gap-4 px-5 sm:px-8 py-12 text-center">
             <Warning className="text-amber-500" size={48} weight="fill" />
-            <h1 className="text-lg font-bold text-foreground">
+            <h1 className="text-lg font-bold text-base-content">
               Cancellation not available
             </h1>
             {props.policyText ? (
@@ -96,11 +96,11 @@ export function CancelClient(props: Props) {
               </p>
             )}
           </div>
-          <div className="border-t border-border px-5 sm:px-8 py-5">
+          <div className="border-t border-base-300 px-5 sm:px-8 py-5">
             <button
               type="button"
               onClick={() => (window.history.length > 1 ? router.back() : router.push("/"))}
-              className="flex h-10 w-full items-center justify-center gap-2 border border-border text-sm font-semibold text-foreground transition-all hover:bg-muted"
+              className="flex h-10 w-full items-center justify-center gap-2 border border-base-300 text-sm font-semibold text-base-content transition-all hover:bg-base-200"
             >
               <ArrowLeft size={14} />
               Go Back
@@ -112,13 +112,13 @@ export function CancelClient(props: Props) {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
-      <div className="w-full max-w-md overflow-hidden bg-card border border-border">
+    <main className="flex min-h-screen items-center justify-center bg-base-200/30 p-4">
+      <div className="w-full max-w-md overflow-hidden bg-base-100 border border-base-300">
         {done ? (
           <>
             <div className="flex flex-col items-center gap-4 px-5 sm:px-8 py-12 text-center">
               <CheckCircle className="text-primary" size={48} weight="fill" />
-              <h1 className="text-lg font-bold text-foreground">
+              <h1 className="text-lg font-bold text-base-content">
                 Booking cancelled
               </h1>
               <p className="text-sm text-muted-foreground">
@@ -126,11 +126,11 @@ export function CancelClient(props: Props) {
                 confirmation email is on its way.
               </p>
             </div>
-            <div className="border-t border-border px-5 sm:px-8 py-5">
+            <div className="border-t border-base-300 px-5 sm:px-8 py-5">
               <button
                 type="button"
                 onClick={() => (window.history.length > 1 ? router.back() : router.push("/"))}
-                className="flex h-10 w-full items-center justify-center gap-2 border border-border text-sm font-semibold text-foreground transition-all hover:bg-muted"
+                className="flex h-10 w-full items-center justify-center gap-2 border border-base-300 text-sm font-semibold text-base-content transition-all hover:bg-base-200"
               >
                 <ArrowLeft size={14} />
                 Go Back
@@ -141,7 +141,7 @@ export function CancelClient(props: Props) {
           <>
             <div className="flex flex-col items-center gap-4 px-5 sm:px-8 py-12 text-center">
               <Warning className="text-amber-500" size={48} weight="fill" />
-              <h1 className="text-lg font-bold text-foreground">
+              <h1 className="text-lg font-bold text-base-content">
                 This booking has passed
               </h1>
               <p className="text-sm text-muted-foreground">
@@ -149,11 +149,11 @@ export function CancelClient(props: Props) {
                 taken place.
               </p>
             </div>
-            <div className="border-t border-border px-5 sm:px-8 py-5">
+            <div className="border-t border-base-300 px-5 sm:px-8 py-5">
               <button
                 type="button"
                 onClick={() => (window.history.length > 1 ? router.back() : router.push("/"))}
-                className="flex h-10 w-full items-center justify-center gap-2 border border-border text-sm font-semibold text-foreground transition-all hover:bg-muted"
+                className="flex h-10 w-full items-center justify-center gap-2 border border-base-300 text-sm font-semibold text-base-content transition-all hover:bg-base-200"
               >
                 <ArrowLeft size={14} />
                 Go Back
@@ -162,25 +162,25 @@ export function CancelClient(props: Props) {
           </>
         ) : (
           <>
-            <div className="border-b border-border bg-muted/30 px-5 sm:px-8 py-5">
+            <div className="border-b border-base-300 bg-base-200/30 px-5 sm:px-8 py-5">
               <button
                 type="button"
                 onClick={() => (window.history.length > 1 ? router.back() : router.push("/"))}
-                className="mb-4 inline-flex items-center gap-2 border border-border bg-background px-3.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
+                className="mb-4 inline-flex items-center gap-2 border border-base-300 bg-base-100 px-3.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
               >
                 <ArrowLeft size={14} />
                 Back
               </button>
               <div className="flex items-center gap-3">
-                <CalendarX className="text-destructive" size={24} />
-                <h1 className="text-base font-bold text-foreground">
+                <CalendarX className="text-error" size={24} />
+                <h1 className="text-base font-bold text-base-content">
                   Cancel this booking?
                 </h1>
               </div>
             </div>
             <div className="px-5 sm:px-8 py-6">
-              <div className="mb-5 border border-border bg-muted/30 p-4">
-                <p className="text-sm font-semibold text-foreground">
+              <div className="mb-5 border border-base-300 bg-base-200/30 p-4">
+                <p className="text-sm font-semibold text-base-content">
                   {props.eventName}
                 </p>
                 <p className="mt-0.5 text-xs text-muted-foreground">
@@ -208,11 +208,11 @@ export function CancelClient(props: Props) {
                 htmlFor="cancel-reason"
               >
                 Reason{props.requireCancellationReason
-                  ? <span className="text-destructive ml-0.5">*</span>
+                  ? <span className="text-error ml-0.5">*</span>
                   : <span className="font-normal"> (optional)</span>}
               </label>
               <textarea
-                className="w-full resize-none border border-input bg-background px-3 py-2 text-sm outline-none transition-all placeholder:text-muted-foreground/60 focus:border-primary focus:ring-2 focus:ring-primary/15"
+                className="w-full resize-none border border-input bg-base-100 px-3 py-2 text-sm outline-none transition-all placeholder:text-muted-foreground/60 focus:border-primary focus:ring-2 focus:ring-primary/15"
                 id="cancel-reason"
                 onChange={(e) => setReason(e.target.value)}
                 placeholder="Let the host know why you're cancelling…"
@@ -222,11 +222,11 @@ export function CancelClient(props: Props) {
               />
 
               {error && (
-                <p className="mt-3 text-xs text-destructive">{error}</p>
+                <p className="mt-3 text-xs text-error">{error}</p>
               )}
 
               <button
-                className="mt-5 flex h-11 w-full items-center justify-center gap-2 bg-destructive text-sm font-bold text-primary-foreground transition-all hover:bg-destructive/90 disabled:opacity-60"
+                className="mt-5 flex h-11 w-full items-center justify-center gap-2 bg-error text-sm font-bold text-primary-content transition-all hover:bg-error/90 disabled:opacity-60"
                 disabled={submitting}
                 onClick={handleCancel}
                 type="button"

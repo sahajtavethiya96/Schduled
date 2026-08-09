@@ -71,7 +71,7 @@ export function CookiePreferences() {
             You can opt out of non-essential cookies at any time.
           </CardDescription>
         </CardHeader>
-        <CardContent className="divide-y divide-border">
+        <CardContent className="divide-y divide-base-300">
           {COOKIE_TYPES.map((item, i) => (
             <div key={item.key} className={`flex items-start justify-between gap-4 ${i === 0 ? 'pb-4' : 'py-4'}`}>
               <div className="flex-1">

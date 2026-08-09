@@ -57,10 +57,10 @@ export default function CookiesPage() {
         </LegalP>
         <LegalUl>
           <LegalLi>
-            <strong className="text-foreground">Authentication</strong> — keeping you signed in across page navigations without requiring you to log in again.
+            <strong className="text-base-content">Authentication</strong> — keeping you signed in across page navigations without requiring you to log in again.
           </LegalLi>
           <LegalLi>
-            <strong className="text-foreground">Preferences</strong> — remembering small UI preferences (such as the last selected timezone or notification state) to improve your experience.
+            <strong className="text-base-content">Preferences</strong> — remembering small UI preferences (such as the last selected timezone or notification state) to improve your experience.
           </LegalLi>
         </LegalUl>
         <LegalP>
@@ -142,16 +142,16 @@ export default function CookiesPage() {
         </LegalP>
         <LegalUl>
           <LegalLi>
-            <strong className="text-foreground">Chrome</strong> — Settings → Privacy and security → Cookies and other site data
+            <strong className="text-base-content">Chrome</strong> — Settings → Privacy and security → Cookies and other site data
           </LegalLi>
           <LegalLi>
-            <strong className="text-foreground">Firefox</strong> — Settings → Privacy &amp; Security → Cookies and Site Data
+            <strong className="text-base-content">Firefox</strong> — Settings → Privacy &amp; Security → Cookies and Site Data
           </LegalLi>
           <LegalLi>
-            <strong className="text-foreground">Safari</strong> — Preferences → Privacy → Manage Website Data
+            <strong className="text-base-content">Safari</strong> — Preferences → Privacy → Manage Website Data
           </LegalLi>
           <LegalLi>
-            <strong className="text-foreground">Edge</strong> — Settings → Cookies and site permissions → Manage and delete cookies
+            <strong className="text-base-content">Edge</strong> — Settings → Cookies and site permissions → Manage and delete cookies
           </LegalLi>
         </LegalUl>
         <LegalP>

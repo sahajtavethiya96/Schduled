@@ -147,7 +147,7 @@ export function StepProfile({ defaultName, defaultUsername, defaultImage, onNext
     usernameState === 'available'
       ? 'border-primary focus-visible:ring-primary'
       : usernameState === 'taken' || usernameState === 'invalid'
-        ? 'border-destructive focus-visible:ring-destructive'
+        ? 'border-error focus-visible:ring-error'
         : ''
 
   return (
@@ -157,7 +157,7 @@ export function StepProfile({ defaultName, defaultUsername, defaultImage, onNext
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="group relative size-20 shrink-0 overflow-hidden rounded-none border-2 border-dashed border-border bg-muted transition hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="group relative size-20 shrink-0 overflow-hidden rounded-none border-2 border-dashed border-base-300 bg-base-200 transition hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           aria-label="Upload profile photo"
         >
           {avatarPreview ? (
@@ -198,7 +198,7 @@ export function StepProfile({ defaultName, defaultUsername, defaultImage, onNext
       {/* Username */}
       <div className="space-y-1.5">
         <Label htmlFor="ob-username">Username</Label>
-        <div className={`relative flex h-9 items-center border bg-background px-3 text-sm transition-colors focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/15 ${borderColor}`}>
+        <div className={`relative flex h-9 items-center border bg-base-100 px-3 text-sm transition-colors focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/15 ${borderColor}`}>
           <span className="shrink-0 select-none whitespace-nowrap text-muted-foreground">
             {appOrigin.replace(/^https?:\/\//, '')}/
           </span>
@@ -229,14 +229,14 @@ export function StepProfile({ defaultName, defaultUsername, defaultImage, onNext
           )}
         </div>
         {(usernameState === 'taken' || usernameState === 'invalid') && (
-          <p className="text-xs text-destructive">{usernameMsg}</p>
+          <p className="text-xs text-error">{usernameMsg}</p>
         )}
         <p className="text-xs text-muted-foreground">
           3–30 characters · letters, numbers, and hyphens only
         </p>
       </div>
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && <p className="text-sm text-error">{error}</p>}
 
       <Button
         type="submit"

@@ -312,23 +312,23 @@ export function EventTypeList({
       {/* ── Stats summary ─────────────────────────────────────────────────── */}
       <div className="mb-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
         <span className="text-muted-foreground">
-          <span className="font-semibold text-foreground">{orderedTypes.length}</span>
+          <span className="font-semibold text-base-content">{orderedTypes.length}</span>
           {' '}meeting {orderedTypes.length === 1 ? 'type' : 'types'}
         </span>
-        <span className="h-3.5 w-px bg-border" />
+        <span className="h-3.5 w-px bg-base-300" />
         <span className="text-muted-foreground">
           <span className="font-semibold text-primary">{activeCount}</span> active
         </span>
         {lastUpdated && lastUpdated.getTime() > 0 && (
           <>
-            <span className="h-3.5 w-px bg-border" />
+            <span className="h-3.5 w-px bg-base-300" />
             <span className="text-muted-foreground">Updated {relativeDate(lastUpdated)}</span>
           </>
         )}
       </div>
 
       {/* ── Search bar ────────────────────────────────────────────────────── */}
-      <div className="mb-3 flex items-center gap-3 border border-border bg-card px-4 py-3 transition-all duration-150 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
+      <div className="mb-3 flex items-center gap-3 border border-base-300 bg-base-100 px-4 py-3 transition-all duration-150 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
         <MagnifyingGlass size={17} weight="regular" className="shrink-0 text-muted-foreground" />
         <input
           ref={searchRef}
@@ -336,15 +336,15 @@ export function EventTypeList({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search meeting types..."
-          className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/50 outline-none"
+          className="flex-1 bg-transparent text-sm text-base-content placeholder:text-muted-foreground/50 outline-none"
         />
         {searchQuery ? (
           <button type="button" onClick={() => setSearchQuery('')} aria-label="Clear search"
-            className="shrink-0 text-muted-foreground transition-colors hover:text-foreground">
+            className="shrink-0 text-muted-foreground transition-colors hover:text-base-content">
             <X size={15} weight="bold" />
           </button>
         ) : (
-          <kbd className="hidden select-none items-center gap-0.5 border border-border bg-muted px-1.5 py-0.5 font-mono text-xs text-muted-foreground sm:inline-flex">
+          <kbd className="hidden select-none items-center gap-0.5 border border-base-300 bg-base-200 px-1.5 py-0.5 font-mono text-xs text-muted-foreground sm:inline-flex">
             ⌘K
           </kbd>
         )}
@@ -361,8 +361,8 @@ export function EventTypeList({
               className={cn(
                 'inline-flex items-center gap-2 border px-3 py-1.5 text-xs font-semibold transition-colors duration-150',
                 active
-                  ? 'border-primary bg-primary text-primary-foreground'
-                  : 'border-border text-muted-foreground hover:border-primary/50 hover:text-foreground',
+                  ? 'border-primary bg-primary text-primary-content'
+                  : 'border-base-300 text-muted-foreground hover:border-primary/50 hover:text-base-content',
               )}
             >
               {f.label}
@@ -373,7 +373,7 @@ export function EventTypeList({
           )
         })}
 
-        <div className="mx-0.5 h-4 w-px bg-border" />
+        <div className="mx-0.5 h-4 w-px bg-base-300" />
 
         {/* Location chips */}
         {LOCATION_FILTERS.map((f) => {
@@ -385,8 +385,8 @@ export function EventTypeList({
               className={cn(
                 'inline-flex items-center gap-1.5 border px-3 py-1.5 text-xs font-semibold transition-colors duration-150',
                 active
-                  ? 'border-primary bg-primary text-primary-foreground'
-                  : 'border-border text-muted-foreground hover:border-primary/50 hover:text-foreground',
+                  ? 'border-primary bg-primary text-primary-content'
+                  : 'border-base-300 text-muted-foreground hover:border-primary/50 hover:text-base-content',
               )}
             >
               {Icon && <Icon size={11} weight={active ? 'fill' : 'regular'} />}
@@ -405,7 +405,7 @@ export function EventTypeList({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button type="button"
-              className="inline-flex items-center gap-1.5 border border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground transition-colors duration-150 hover:border-primary/50 hover:text-foreground">
+              className="inline-flex items-center gap-1.5 border border-base-300 px-3 py-1.5 text-xs font-semibold text-muted-foreground transition-colors duration-150 hover:border-primary/50 hover:text-base-content">
               <ArrowsDownUp size={13} />
               {SORT_OPTIONS.find((s) => s.value === sortBy)?.label}
               <CaretDown size={11} />
@@ -428,8 +428,8 @@ export function EventTypeList({
             className={cn(
               'flex h-8 w-8 items-center justify-center border transition-colors duration-150',
               viewMode === 'list'
-                ? 'border-primary bg-primary text-primary-foreground'
-                : 'border-border text-muted-foreground hover:text-foreground',
+                ? 'border-primary bg-primary text-primary-content'
+                : 'border-base-300 text-muted-foreground hover:text-base-content',
             )}>
             <ListIcon size={14} />
           </button>
@@ -437,8 +437,8 @@ export function EventTypeList({
             className={cn(
               'flex h-8 w-8 items-center justify-center border border-l-0 transition-colors duration-150',
               viewMode === 'grid'
-                ? 'border-primary bg-primary text-primary-foreground'
-                : 'border-border text-muted-foreground hover:text-foreground',
+                ? 'border-primary bg-primary text-primary-content'
+                : 'border-base-300 text-muted-foreground hover:text-base-content',
             )}>
             <SquaresFour size={14} />
           </button>
@@ -447,7 +447,7 @@ export function EventTypeList({
         {/* Clear filters */}
         {isFiltered && (
           <button type="button" onClick={clearFilters}
-            className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">
+            className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground transition-colors hover:text-base-content">
             <X size={12} weight="bold" /> Clear
           </button>
         )}
@@ -456,7 +456,7 @@ export function EventTypeList({
       {/* Results count */}
       {isFiltered && (
         <p className="mb-3 text-xs text-muted-foreground">
-          Showing <span className="font-semibold text-foreground">{filteredTypes.length}</span> of {orderedTypes.length} meeting types
+          Showing <span className="font-semibold text-base-content">{filteredTypes.length}</span> of {orderedTypes.length} meeting types
         </p>
       )}
 
@@ -528,12 +528,12 @@ export function EventTypeList({
 
       {/* ── Bottom bulk action bar ─────────────────────────────────────────── */}
       {selCount > 0 && (
-        <div className="fixed bottom-4 left-4 right-4 z-50 flex items-center gap-3 border border-border bg-background px-5 py-3 ring-1 ring-foreground/10 md:left-[256px]">
+        <div className="fixed bottom-4 left-4 right-4 z-50 flex items-center gap-3 border border-base-300 bg-base-100 px-5 py-3 ring-1 ring-foreground/10 md:left-[256px]">
           <button type="button" onClick={clearSelection} aria-label="Clear selection"
-            className="flex h-8 w-8 items-center justify-center text-muted-foreground transition-colors hover:text-foreground">
+            className="flex h-8 w-8 items-center justify-center text-muted-foreground transition-colors hover:text-base-content">
             <X size={16} weight="bold" />
           </button>
-          <span className="text-sm font-semibold text-foreground">{selCount} selected</span>
+          <span className="text-sm font-semibold text-base-content">{selCount} selected</span>
           <div className="flex-1" />
           {!allOn && (
             <Button variant="outline" size="sm" disabled={isPending} onClick={() => handleBulkToggle(true)} className="gap-1.5">
@@ -560,7 +560,7 @@ export function EventTypeList({
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={handleBulkDelete}>
+                <AlertDialogAction className="bg-error text-error-content hover:bg-error/90" onClick={handleBulkDelete}>
                   Delete {selCount}
                 </AlertDialogAction>
               </AlertDialogFooter>

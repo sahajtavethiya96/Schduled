@@ -71,8 +71,8 @@ export function StepShareLink({ username, onBack }: StepShareLinkProps) {
         <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
           Your booking link
         </p>
-        <div className="flex items-center gap-2 border border-border bg-muted/40 px-4 py-3">
-          <span className="min-w-0 truncate font-mono text-sm text-foreground">
+        <div className="flex items-center gap-2 border border-base-300 bg-base-200/40 px-4 py-3">
+          <span className="min-w-0 truncate font-mono text-sm text-base-content">
             {bookingUrl}
           </span>
           <button
@@ -92,7 +92,7 @@ export function StepShareLink({ username, onBack }: StepShareLinkProps) {
 
       {/* QR Code */}
       {username && (
-        <div className="flex flex-col items-center gap-3 border border-border bg-card p-5">
+        <div className="flex flex-col items-center gap-3 border border-base-300 bg-base-100 p-5">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest">
             QR Code
           </p>
@@ -103,7 +103,7 @@ export function StepShareLink({ username, onBack }: StepShareLinkProps) {
             style={{ display: 'none' }}
             width={160}
             height={160}
-            className="border border-border"
+            className="border border-base-300"
           />
           <p className="text-xs text-muted-foreground text-center">
             Let clients scan to book from their phone
@@ -125,7 +125,7 @@ export function StepShareLink({ username, onBack }: StepShareLinkProps) {
         ))}
       </ul>
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && <p className="text-sm text-error">{error}</p>}
 
       <div className="flex flex-col gap-2">
         <Button className="w-full" onClick={handleFinish} disabled={finishing}>

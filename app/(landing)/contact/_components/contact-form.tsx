@@ -34,7 +34,7 @@ export function ContactForm() {
         <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center bg-success/10">
           <PaperPlaneTilt size={24} weight="duotone" className="text-success" />
         </div>
-        <p className="font-bold text-foreground">Message sent!</p>
+        <p className="font-bold text-base-content">Message sent!</p>
         <p className="mt-2 text-sm text-muted-foreground">
           We'll get back to you at the email you provided, usually within 2 business days.
         </p>
@@ -45,7 +45,7 @@ export function ContactForm() {
   return (
     <form action={action} className="space-y-5">
       {state.error && (
-        <div className="border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+        <div className="border border-error/30 bg-error/5 px-4 py-3 text-sm text-error">
           {state.error}
         </div>
       )}
@@ -60,7 +60,7 @@ export function ContactForm() {
             type="text"
             required
             placeholder="Jane Smith"
-            className="h-10 w-full border border-border bg-page px-3 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            className="h-10 w-full border border-base-300 bg-page px-3 text-sm text-base-content placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
         </div>
         <div>
@@ -72,7 +72,7 @@ export function ContactForm() {
             type="email"
             required
             placeholder="jane@example.com"
-            className="h-10 w-full border border-border bg-page px-3 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            className="h-10 w-full border border-base-300 bg-page px-3 text-sm text-base-content placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
         </div>
       </div>
@@ -102,14 +102,14 @@ export function ContactForm() {
           required
           rows={6}
           placeholder="Tell us what's on your mind…"
-          className="w-full border border-border bg-page px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+          className="w-full border border-base-300 bg-page px-3 py-2.5 text-sm text-base-content placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"
         />
       </div>
 
       <button
         type="submit"
         disabled={isPending}
-        className="inline-flex w-full items-center justify-center gap-2 bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
+        className="inline-flex w-full items-center justify-center gap-2 bg-primary px-6 py-3 text-sm font-semibold text-primary-content transition-opacity hover:opacity-90 disabled:opacity-60"
       >
         {isPending ? (
           <>

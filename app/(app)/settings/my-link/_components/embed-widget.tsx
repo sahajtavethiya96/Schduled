@@ -59,14 +59,14 @@ export function EmbedWidget({ eventTypes, appUrl, username }: EmbedWidgetProps) 
         )}
 
         <div className="relative">
-          <pre className="overflow-x-auto border border-border bg-muted/40 px-4 py-3 font-mono text-xs leading-relaxed text-foreground">
+          <pre className="overflow-x-auto border border-base-300 bg-base-200/40 px-4 py-3 font-mono text-xs leading-relaxed text-base-content">
             {snippet}
           </pre>
           <button
             type="button"
             onClick={copy}
             title="Copy embed code"
-            className="absolute right-2 top-2 flex size-7 items-center justify-center border border-border bg-background text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+            className="absolute right-2 top-2 flex size-7 items-center justify-center border border-base-300 bg-base-100 text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
           >
             {copied ? <Check size={13} weight="bold" className="text-primary" /> : <Copy size={13} />}
           </button>

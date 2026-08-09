@@ -35,9 +35,9 @@ export function OnboardingWizard({ name, username: initialUsername, onboardingSt
   const progressPct = Math.round((step / TOTAL_STEPS) * 100)
 
   return (
-    <div className="w-full max-w-lg border border-border bg-background ring-1 ring-foreground/10">
+    <div className="w-full max-w-lg border border-base-300 bg-base-100 ring-1 ring-foreground/10">
       {/* Progress bar */}
-      <div className="h-1 w-full bg-muted">
+      <div className="h-1 w-full bg-base-200">
         <div
           className="h-full bg-primary transition-all duration-500"
           style={{ width: `${progressPct}%` }}

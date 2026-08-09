@@ -178,7 +178,7 @@ function SelectTrigger({
       data-size={size}
       data-placeholder={hasValue ? undefined : ""}
       className={cn(
-        "select bg-none flex w-full items-center justify-between gap-2 rounded-none border border-input bg-background px-3 py-2 text-sm whitespace-nowrap transition-[color,box-shadow] outline-none focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive data-placeholder:text-muted-foreground data-[size=default]:h-10 data-[size=sm]:h-9 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+        "select bg-none flex w-full items-center justify-between gap-2 rounded-none border border-input bg-base-100 px-3 py-2 text-sm whitespace-nowrap transition-[color,box-shadow] outline-none focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-error data-placeholder:text-muted-foreground data-[size=default]:h-10 data-[size=sm]:h-9 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
         className
       )}
       {...props}
@@ -223,7 +223,7 @@ function SelectContent({
         // starts), which made data-closed:animate-out fight data-open:
         // animate-in and produced a visible pop-then-re-animate glitch on
         // every open. data-leave is only ever set while actually closing.
-        "z-50 max-h-(--anchor-max-height) min-w-36 w-(--button-width) overflow-x-hidden overflow-y-auto rounded-none bg-popover text-popover-foreground ring-1 ring-foreground/10 transition-none duration-100 data-[anchor~=bottom]:slide-in-from-top-2 data-[anchor~=left]:slide-in-from-right-2 data-[anchor~=right]:slide-in-from-left-2 data-[anchor~=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-leave:animate-out data-leave:fade-out-0 data-leave:zoom-out-95",
+        "z-50 max-h-(--anchor-max-height) min-w-36 w-(--button-width) overflow-x-hidden overflow-y-auto rounded-none bg-base-100 text-base-content ring-1 ring-foreground/10 transition-none duration-100 data-[anchor~=bottom]:slide-in-from-top-2 data-[anchor~=left]:slide-in-from-right-2 data-[anchor~=right]:slide-in-from-left-2 data-[anchor~=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-leave:animate-out data-leave:fade-out-0 data-leave:zoom-out-95",
         className
       )}
       {...props}
@@ -268,7 +268,7 @@ function SelectItem({
       as="div"
       data-slot="select-item"
       className={cn(
-        "relative flex w-full cursor-pointer items-center gap-2 rounded-none py-1.5 pr-8 pl-2.5 text-sm transition-colors outline-hidden select-none data-focus:bg-accent data-focus:text-accent-foreground data-focus:**:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
+        "relative flex w-full cursor-pointer items-center gap-2 rounded-none py-1.5 pr-8 pl-2.5 text-sm transition-colors outline-hidden select-none data-focus:bg-accent data-focus:text-accent-content data-focus:**:text-accent-content data-disabled:pointer-events-none data-disabled:opacity-40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
         className
       )}
       {...props}
@@ -290,7 +290,7 @@ function SelectSeparator({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="select-separator"
       role="separator"
-      className={cn("pointer-events-none -mx-1 my-1 h-px bg-border/60", className)}
+      className={cn("pointer-events-none -mx-1 my-1 h-px bg-base-300/60", className)}
       {...props}
     />
   )

@@ -5,20 +5,19 @@ import { Slot } from "@/components/ui/slot"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "btn group/button rounded-none border border-transparent bg-clip-padding text-xs tracking-widest whitespace-nowrap uppercase transition-all outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+  "btn group/button rounded-none border border-transparent bg-clip-padding text-xs tracking-widest whitespace-nowrap uppercase transition-all outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-error aria-invalid:ring-2 aria-invalid:ring-error/20 dark:aria-invalid:border-error/50 dark:aria-invalid:ring-error/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/80",
+        default: "btn-primary",
         outline:
-          "border-border bg-transparent hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-input/30",
+          "btn-outline border-base-300 aria-expanded:bg-base-200 aria-expanded:text-base-content",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
-        ghost:
-          "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
+          "btn-secondary aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+        ghost: "btn-ghost aria-expanded:bg-base-200 aria-expanded:text-base-content",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-visible:border-destructive/60 focus-visible:ring-destructive/30",
-        link: "text-primary underline underline-offset-4 hover:text-primary/80",
+          "btn-error focus-visible:border-error/60 focus-visible:ring-error/30",
+        link: "btn-link",
       },
       size: {
         default:
@@ -26,10 +25,10 @@ const buttonVariants = cva(
         xs: "h-7 gap-1 px-3 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 [&_svg:not([class*='size-'])]:size-3",
         sm: "h-9 gap-1 px-4 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3",
         lg: "h-11 gap-1.5 px-8 has-data-[icon=inline-end]:pr-5 has-data-[icon=inline-start]:pl-5",
-        icon: "size-10",
-        "icon-xs": "size-7 [&_svg:not([class*='size-'])]:size-3",
-        "icon-sm": "size-9",
-        "icon-lg": "size-11",
+        icon: "btn-square size-10",
+        "icon-xs": "btn-square size-7 [&_svg:not([class*='size-'])]:size-3",
+        "icon-sm": "btn-square size-9",
+        "icon-lg": "btn-square size-11",
       },
     },
     defaultVariants: {

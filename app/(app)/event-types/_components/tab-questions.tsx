@@ -230,7 +230,7 @@ export function TabQuestions({ eventTypeId, questions: initialQuestions, mode, l
       <div className="space-y-2">
         <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Always included</p>
         {builtinQuestions.map((q) => (
-          <div key={q.label} className="flex items-center gap-3 border border-border bg-muted/30 px-4 py-3">
+          <div key={q.label} className="flex items-center gap-3 border border-base-300 bg-base-200/30 px-4 py-3">
             <DotsSixVertical size={14} className="text-muted-foreground/30" />
             <span className="flex-1 text-sm">{q.label}</span>
             <Badge variant="outline" className="text-xs">Required</Badge>
@@ -249,14 +249,14 @@ export function TabQuestions({ eventTypeId, questions: initialQuestions, mode, l
         <div className="space-y-2">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Custom questions</p>
           {displayQuestions.map((q, i) => (
-            <div key={q.id} className="flex items-center gap-3 border border-border bg-card px-4 py-3">
+            <div key={q.id} className="flex items-center gap-3 border border-base-300 bg-base-100 px-4 py-3">
               <div className="flex flex-col gap-0.5">
                 <button
                   type="button"
                   aria-label="Move question up"
                   onClick={() => moveUp(i)}
                   disabled={i === 0 || isPending}
-                  className="flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-30"
+                  className="flex items-center justify-center text-muted-foreground hover:text-base-content disabled:opacity-30"
                 ><CaretUp size={10} weight="bold" /></button>
                 <DotsSixVertical size={14} className="text-muted-foreground/50" />
                 <button
@@ -264,7 +264,7 @@ export function TabQuestions({ eventTypeId, questions: initialQuestions, mode, l
                   aria-label="Move question down"
                   onClick={() => moveDown(i)}
                   disabled={i === displayQuestions.length - 1 || isPending}
-                  className="flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-30"
+                  className="flex items-center justify-center text-muted-foreground hover:text-base-content disabled:opacity-30"
                 ><CaretDown size={10} weight="bold" /></button>
               </div>
               <span className="flex-1 min-w-0">
@@ -286,7 +286,7 @@ export function TabQuestions({ eventTypeId, questions: initialQuestions, mode, l
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-7 w-7 text-destructive/70 hover:text-destructive"
+                className="h-7 w-7 text-error/70 hover:text-error"
                 onClick={() => setDeleteConfirmId(q.id)}
                 disabled={isPending}
                 type="button"
@@ -310,7 +310,7 @@ export function TabQuestions({ eventTypeId, questions: initialQuestions, mode, l
 
           <div className="space-y-4 pt-1">
             <div className="space-y-1.5">
-              <Label>Question label <span className="text-destructive">*</span></Label>
+              <Label>Question label <span className="text-error">*</span></Label>
               <Input
                 placeholder="e.g. What would you like to discuss?"
                 value={form.label}

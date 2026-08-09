@@ -110,7 +110,7 @@ function Slider({
           <div
             data-slot="slider-thumb"
             aria-hidden="true"
-            className="pointer-events-none absolute block size-3 shrink-0 border-none bg-primary transition-colors select-none peer-hover:ring-2 peer-hover:ring-ring/30 peer-focus-visible:ring-2 peer-focus-visible:ring-ring/30 peer-disabled:opacity-50"
+            className="pointer-events-none absolute block size-3 shrink-0 border-none bg-primary transition-colors select-none peer-hover:ring-2 peer-hover:ring-primary/30 peer-focus-visible:ring-2 peer-focus-visible:ring-primary/30 peer-disabled:opacity-50"
             style={
               isVertical
                 ? { bottom: `${percent(v)}%`, left: "50%", transform: "translate(-50%, 50%)" }

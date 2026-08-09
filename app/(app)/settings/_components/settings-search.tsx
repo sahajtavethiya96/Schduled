@@ -156,13 +156,13 @@ export function SettingsSearch({ isAdmin = false }: { isAdmin?: boolean }) {
           <button
             className={cn(
               "flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm transition-colors",
-              "hover:bg-muted"
+              "hover:bg-base-200"
             )}
             key={r.href}
             onClick={() => go(r.href)}
             type="button"
           >
-            <span className="font-medium text-foreground">{r.label}</span>
+            <span className="font-medium text-base-content">{r.label}</span>
             <span className="text-2xs font-semibold uppercase tracking-ui text-muted-foreground/70">
               {r.group}
             </span>

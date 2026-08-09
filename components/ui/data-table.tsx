@@ -146,7 +146,7 @@ function DataTable<T extends Record<string, unknown>>({
 
       {/* Pagination footer — only shown when there's data or we're loading */}
       {(totalCount > 0 || loading) && (
-        <div className="flex items-center justify-between border-t border-border px-4 py-3">
+        <div className="flex items-center justify-between border-t border-base-300 px-4 py-3">
           <p className="text-xs text-muted-foreground">
             {loading
               ? 'Loading…'

@@ -86,10 +86,10 @@ export default async function HostProfilePage({
             alt={host.name}
             width={72}
             height={72}
-            className="h-[72px] w-[72px] rounded-none object-cover ring-1 ring-border"
+            className="h-[72px] w-[72px] rounded-none object-cover ring-1 ring-base-300"
           />
         ) : (
-          <div className="flex h-[72px] w-[72px] items-center justify-center rounded-none bg-primary text-2xl font-semibold text-primary-foreground">
+          <div className="flex h-[72px] w-[72px] items-center justify-center rounded-none bg-primary text-2xl font-semibold text-primary-content">
             {host.name.charAt(0).toUpperCase()}
           </div>
         )}
@@ -114,9 +114,9 @@ export default async function HostProfilePage({
       </p>
 
       {eventTypes.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 border border-dashed border-border py-16 text-center">
+        <div className="flex flex-col items-center gap-3 border border-dashed border-base-300 py-16 text-center">
           <CalendarBlank size={36} weight="duotone" className="text-muted-foreground/40" />
-          <p className="text-sm font-semibold text-foreground">No meeting types available</p>
+          <p className="text-sm font-semibold text-base-content">No meeting types available</p>
           <p className="max-w-xs text-sm text-muted-foreground">
             {host.name.split(' ')[0]} hasn&apos;t published any meeting types yet. Check back soon.
           </p>
@@ -136,7 +136,7 @@ export default async function HostProfilePage({
               <Link
                 key={et.id}
                 href={`/${username}/${et.slug}`}
-                className="group flex items-center gap-4 border border-border bg-background p-5 transition-colors hover:border-primary hover:bg-primary/5"
+                className="group flex items-center gap-4 border border-base-300 bg-base-100 p-5 transition-colors hover:border-primary hover:bg-primary/5"
               >
                 <div
                   className="h-12 w-1 shrink-0"

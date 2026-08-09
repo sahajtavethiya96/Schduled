@@ -197,7 +197,7 @@ export function SmtpSettingsForm({ initial, onSaved }: Props) {
         </Label>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 border-t border-border pt-4">
+      <div className="flex flex-wrap items-center gap-2 border-t border-base-300 pt-4">
         <Button
           className="gap-1.5"
           disabled={saving || testing}

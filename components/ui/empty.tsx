@@ -19,7 +19,7 @@ function Empty({ icon, title, description, action, className }: EmptyProps) {
       )}
     >
       {icon && (
-        <div className="flex size-12 items-center justify-center bg-muted text-muted-foreground [&_svg]:size-6">
+        <div className="flex size-12 items-center justify-center bg-base-200 text-muted-foreground [&_svg]:size-6">
           {icon}
         </div>
       )}

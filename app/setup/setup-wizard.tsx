@@ -87,16 +87,16 @@ function Stepper({ step }: { step: 1 | 2 | 3 | 4 }) {
           <div
             className={cn(
               "flex size-7 items-center justify-center text-xs font-semibold transition-colors",
-              n < step && "bg-primary text-primary-foreground",
-              n === step && "bg-primary text-primary-foreground",
-              n > step && "bg-muted text-muted-foreground"
+              n < step && "bg-primary text-primary-content",
+              n === step && "bg-primary text-primary-content",
+              n > step && "bg-base-200 text-muted-foreground"
             )}
           >
             {n < step ? <Check size={14} weight="bold" /> : n}
           </div>
           {i < 3 && (
             <div
-              className={cn("h-px w-10", n < step ? "bg-primary" : "bg-border")}
+              className={cn("h-px w-10", n < step ? "bg-primary" : "bg-base-300")}
             />
           )}
         </React.Fragment>
@@ -206,11 +206,11 @@ export function SetupWizard({
       <div className="w-full max-w-md">
         <Stepper step={stepNumber} />
 
-        <div className="border border-border bg-background p-8">
+        <div className="border border-base-300 bg-base-100 p-8">
           {step === "theme" && (
             <div className="space-y-6">
               <div className="text-center">
-                <div className="mx-auto flex size-12 items-center justify-center bg-primary text-primary-foreground">
+                <div className="mx-auto flex size-12 items-center justify-center bg-primary text-primary-content">
                   <Rocket size={24} weight="fill" />
                 </div>
                 <h1 className="mt-4 text-xl font-bold">
@@ -230,10 +230,10 @@ export function SetupWizard({
                     return (
                       <button
                         className={cn(
-                          "flex flex-col items-center gap-1.5 border p-3 transition-colors hover:bg-muted/50",
+                          "flex flex-col items-center gap-1.5 border p-3 transition-colors hover:bg-base-200/50",
                           selected
                             ? "border-primary ring-2 ring-primary/20"
-                            : "border-border"
+                            : "border-base-300"
                         )}
                         key={value}
                         onClick={() => setTheme(value)}
@@ -265,8 +265,8 @@ export function SetupWizard({
               </div>
 
               {error && (
-                <div className="rounded-none border border-destructive/30 bg-destructive/10 p-3">
-                  <p className="text-sm text-destructive">{error}</p>
+                <div className="rounded-none border border-error/30 bg-error/10 p-3">
+                  <p className="text-sm text-error">{error}</p>
                 </div>
               )}
 
@@ -311,7 +311,7 @@ export function SetupWizard({
                     aria-label={
                       showPassword ? "Hide password" : "Show password"
                     }
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-base-content"
                     onClick={() => setShowPassword((s) => !s)}
                     tabIndex={-1}
                     type="button"

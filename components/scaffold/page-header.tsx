@@ -13,9 +13,9 @@ export function PageHeader({
   action?:      ReactNode
 }) {
   return (
-    <div className="mb-5 flex flex-col gap-3 border-b border-border pb-4 sm:flex-row sm:items-start sm:justify-between">
+    <div className="mb-5 flex flex-col gap-3 border-b border-base-300 pb-4 sm:flex-row sm:items-start sm:justify-between">
       <div>
-        <h1 className="font-black text-xl text-foreground tracking-tight sm:text-2xl" style={{ fontFamily: 'var(--font-heading)' }}>
+        <h1 className="font-black text-xl text-base-content tracking-tight sm:text-2xl" style={{ fontFamily: 'var(--font-heading)' }}>
           {title}
         </h1>
         {description && (

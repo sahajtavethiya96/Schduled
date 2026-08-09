@@ -88,7 +88,7 @@ function getFriendlyLabel(action: string): string {
 
 function EntityBadge({ type }: { type: string }) {
   return (
-    <span className="inline-flex items-center rounded-none border border-border bg-muted px-2 py-0.5 text-xs font-semibold uppercase tracking-ui text-muted-foreground">
+    <span className="inline-flex items-center rounded-none border border-base-300 bg-base-200 px-2 py-0.5 text-xs font-semibold uppercase tracking-ui text-muted-foreground">
       {type.replace(/_/g, " ")}
     </span>
   );
@@ -111,12 +111,12 @@ function getAuditMeta(action: string): { icon: Icon; colorClass: string } {
   if (a.includes("email"))
     return { icon: Envelope, colorClass: "bg-primary/10 text-primary" };
   if (a.includes("ban") || a.includes("suspend") || a.includes("delet"))
-    return { icon: Prohibit, colorClass: "bg-destructive/10 text-destructive" };
+    return { icon: Prohibit, colorClass: "bg-error/10 text-error" };
   if (a.includes("profile") || a.includes("updat"))
-    return { icon: PencilSimple, colorClass: "bg-muted text-muted-foreground" };
+    return { icon: PencilSimple, colorClass: "bg-base-200 text-muted-foreground" };
   if (a.includes("creat") || a.includes("activat") || a.includes("connect") || a.includes("reactivat"))
     return { icon: CheckCircle, colorClass: "bg-success/10 text-success" };
-  return { icon: ClockCounterClockwise, colorClass: "bg-muted text-muted-foreground" };
+  return { icon: ClockCounterClockwise, colorClass: "bg-base-200 text-muted-foreground" };
 }
 
 // Groups already-sorted (newest-first) rows into consecutive same-day
@@ -225,7 +225,7 @@ export function AuditTable({
   return (
     <div>
       {/* ── Toolbar ───────────────────────────────────────────────────── */}
-      <div className="flex flex-col gap-3 border-b border-border p-4 lg:flex-row lg:items-start lg:justify-between">
+      <div className="flex flex-col gap-3 border-b border-base-300 p-4 lg:flex-row lg:items-start lg:justify-between">
         <AuditFiltersBar
           entityTypes={entityTypes}
           category={filters.category}
@@ -277,7 +277,7 @@ export function AuditTable({
                   return (
                     <li key={log.id} className="relative flex gap-4 pb-5 last:pb-0">
                       {i < group.rows.length - 1 && (
-                        <span className="absolute left-[15px] top-8 h-full w-px bg-border" aria-hidden />
+                        <span className="absolute left-[15px] top-8 h-full w-px bg-base-300" aria-hidden />
                       )}
                       <span className={cn("relative z-10 flex size-8 shrink-0 items-center justify-center", colorClass)}>
                         <EventIcon size={14} weight="bold" />
@@ -309,7 +309,7 @@ export function AuditTable({
       )}
 
       {/* Row count + pagination */}
-      <div className="flex items-center justify-between gap-3 border-t border-border px-6 py-3">
+      <div className="flex items-center justify-between gap-3 border-t border-base-300 px-6 py-3">
         <p className="text-xs text-muted-foreground">
           Page {page} of {totalPages} · {total} log{total === 1 ? "" : "s"}
         </p>

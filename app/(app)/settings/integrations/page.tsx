@@ -43,7 +43,7 @@ function IntegrationRow({
 }: IntegrationRowProps) {
   return (
     <div className="flex items-center gap-4 py-5">
-      <div className="flex size-12 shrink-0 items-center justify-center border border-border bg-muted/50">
+      <div className="flex size-12 shrink-0 items-center justify-center border border-base-300 bg-base-200/50">
         {icon}
       </div>
       <div className="min-w-0 flex-1">
@@ -107,7 +107,7 @@ export default async function IntegrationsPage() {
             Automatically generate meeting links for your bookings.
           </CardDescription>
         </CardHeader>
-        <CardContent className="divide-y divide-border p-0 px-6">
+        <CardContent className="divide-y divide-base-300 p-0 px-6">
           {/* Google Meet */}
           <IntegrationRow
             action={
@@ -181,7 +181,7 @@ export default async function IntegrationsPage() {
             Manage calendar connections used for scheduling.
           </CardDescription>
         </CardHeader>
-        <CardContent className="divide-y divide-border p-0 px-6">
+        <CardContent className="divide-y divide-base-300 p-0 px-6">
           <IntegrationRow
             action={
               <Button asChild size="sm" variant="outline">
@@ -210,7 +210,7 @@ export default async function IntegrationsPage() {
           <div className="opacity-60">
             <IntegrationRow
               action={
-                <span className="bg-muted px-2 py-1 text-xs text-muted-foreground">
+                <span className="bg-base-200 px-2 py-1 text-xs text-muted-foreground">
                   Soon
                 </span>
               }

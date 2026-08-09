@@ -173,7 +173,7 @@ export default async function LandingPage() {
   const todayDayName = DAY_SHORT[now.getDay()]
 
   return (
-    <div className="min-h-screen overflow-x-clip bg-background text-foreground antialiased">
+    <div className="min-h-screen overflow-x-clip bg-base-100 text-base-content antialiased">
 
       {/* ─── NAVBAR ──────────────────────────────────────────────────────────── */}
       <LandingHeader />
@@ -262,7 +262,7 @@ export default async function LandingPage() {
                 <div className="mt-9 flex flex-wrap items-center gap-3">
                   <Link
                     href="/login"
-                    className="relative inline-flex items-center gap-2 overflow-hidden bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90"
+                    className="relative inline-flex items-center gap-2 overflow-hidden bg-primary px-7 py-3.5 text-sm font-semibold text-primary-content transition-all hover:opacity-90"
                   >
                     <span className="animate-schduled-sheen pointer-events-none absolute inset-0"
                       style={{ background: 'linear-gradient(105deg,transparent 40%,rgba(255,255,255,.22) 50%,transparent 60%)', backgroundSize: '200% auto' }} />
@@ -319,7 +319,7 @@ export default async function LandingPage() {
                               day === null
                                 ? ''
                                 : day === selectedDay
-                                ? 'bg-primary text-primary-foreground font-bold'
+                                ? 'bg-primary text-primary-content font-bold'
                                 : day < today
                                 ? 'text-white/20'
                                 : 'cursor-default text-white/55 hover:bg-white/8'
@@ -381,7 +381,7 @@ export default async function LandingPage() {
                             key={t}
                             className={`flex cursor-default items-center justify-between px-4 py-2.5 text-sm animate-schduled-reveal ${
                               sel
-                                ? 'bg-primary text-primary-foreground'
+                                ? 'bg-primary text-primary-content'
                                 : `border border-white/8 text-white/55 ${fade ? 'opacity-40' : ''}`
                             }`}
                             style={{ animationDelay: `${400 + i * 70}ms` }}
@@ -394,7 +394,7 @@ export default async function LandingPage() {
                     </div>
 
                     <div className="border-t border-white/8 px-6 py-5">
-                      <div className="relative overflow-hidden bg-primary py-3.5 text-center text-sm font-semibold text-primary-foreground">
+                      <div className="relative overflow-hidden bg-primary py-3.5 text-center text-sm font-semibold text-primary-content">
                         <span className="animate-schduled-sheen pointer-events-none absolute inset-0"
                           style={{ background: 'linear-gradient(105deg,transparent 40%,rgba(255,255,255,.18) 50%,transparent 60%)', backgroundSize: '200% auto' }} />
                         Confirm booking
@@ -436,9 +436,9 @@ export default async function LandingPage() {
         </section>
 
         {/* ─── TECH STACK ──────────────────────────────────────────────────────── */}
-        <section className="border-y border-border bg-background py-7">
+        <section className="border-y border-base-300 bg-base-100 py-7">
           <Reveal className="mb-6 text-center" direction="fade">
-            <p className="text-xs font-black uppercase tracking-[0.22em] text-foreground/50">
+            <p className="text-xs font-black uppercase tracking-[0.22em] text-base-content/50">
               Built on a real open-source stack
             </p>
           </Reveal>
@@ -451,7 +451,7 @@ export default async function LandingPage() {
                 return (
                   <div
                     key={`${tech.id}-${i}`}
-                    className="mx-12 inline-flex shrink-0 items-center gap-2.5 text-foreground/55 transition-colors duration-300 hover:text-foreground"
+                    className="mx-12 inline-flex shrink-0 items-center gap-2.5 text-base-content/55 transition-colors duration-300 hover:text-base-content"
                   >
                     <Icon size={22} weight="duotone" className="text-primary" />
                     <span className="text-[19px] font-black tracking-tight">{tech.label}</span>
@@ -463,7 +463,7 @@ export default async function LandingPage() {
         </section>
 
         {/* ─── STATS ───────────────────────────────────────────────────────────── */}
-        <section className="relative overflow-hidden border-y border-border bg-muted/20">
+        <section className="relative overflow-hidden border-y border-base-300 bg-base-200/20">
           {/* Soft centered glow */}
           <div
             className="pointer-events-none absolute left-1/2 top-1/2 h-[380px] w-[760px] -translate-x-1/2 -translate-y-1/2"
@@ -482,7 +482,7 @@ export default async function LandingPage() {
               <p className="mb-4 text-xs font-black uppercase tracking-eyebrow text-primary">
                 Why people choose Schduled
               </p>
-              <h2 className="mb-4 text-3xl font-black text-foreground sm:text-4xl">
+              <h2 className="mb-4 text-3xl font-black text-base-content sm:text-4xl">
                 Scheduling that{' '}
                 <span
                   className="animate-schduled-text-gradient"
@@ -505,7 +505,7 @@ export default async function LandingPage() {
             </Reveal>
 
             {/* Stats row — each card slides in from its own direction */}
-            <div className="flex flex-col divide-y divide-border sm:flex-row sm:divide-x sm:divide-y-0">
+            <div className="flex flex-col divide-y divide-base-300 sm:flex-row sm:divide-x sm:divide-y-0">
               {STATS.map((s, idx) => {
                 const Icon = s.icon
                 const dirs = ['left', 'up', 'right'] as const
@@ -538,7 +538,7 @@ export default async function LandingPage() {
                     </div>
 
                     {/* Uppercase label */}
-                    <p className="mb-2.5 text-[11px] font-black uppercase tracking-[0.18em] text-foreground/60">
+                    <p className="mb-2.5 text-[11px] font-black uppercase tracking-[0.18em] text-base-content/60">
                       {s.title}
                     </p>
 
@@ -665,14 +665,14 @@ export default async function LandingPage() {
                   <div className="flex-1 overflow-hidden" style={{ background: 'oklch(0.97 0.004 85)' }}>
 
                     {/* Top bar */}
-                    <div className="flex items-center gap-3 border-b border-border/60 bg-background/80 px-5 py-2.5">
-                      <div className="flex flex-1 items-center gap-2 border border-border bg-card px-3 py-1.5">
+                    <div className="flex items-center gap-3 border-b border-base-300/60 bg-base-100/80 px-5 py-2.5">
+                      <div className="flex flex-1 items-center gap-2 border border-base-300 bg-base-100 px-3 py-1.5">
                         <div className="h-2.5 w-2.5 bg-muted-foreground/30" />
                         <div className="h-2 w-36 bg-muted-foreground/15" />
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="h-7 w-7 border border-border bg-card" />
-                        <div className="h-7 w-7 border border-border bg-card" />
+                        <div className="h-7 w-7 border border-base-300 bg-base-100" />
+                        <div className="h-7 w-7 border border-base-300 bg-base-100" />
                         <div className="h-7 w-7 bg-primary/20" />
                       </div>
                     </div>
@@ -687,8 +687,8 @@ export default async function LandingPage() {
                         </div>
                         <div className="hidden items-center gap-1.5 sm:flex">
                           <div className="h-7 w-28 bg-primary" />
-                          <div className="h-7 w-24 border border-border bg-card" />
-                          <div className="h-7 w-24 border border-border bg-card" />
+                          <div className="h-7 w-24 border border-base-300 bg-base-100" />
+                          <div className="h-7 w-24 border border-base-300 bg-base-100" />
                         </div>
                       </div>
 
@@ -705,7 +705,7 @@ export default async function LandingPage() {
                           </div>
                         </div>
                         <div className="shrink-0 text-right">
-                          <p className="text-[10px] font-bold text-foreground">Jul 15</p>
+                          <p className="text-[10px] font-bold text-base-content">Jul 15</p>
                           <p className="text-[9px] text-muted-foreground">10:00 AM</p>
                         </div>
                       </div>
@@ -719,10 +719,10 @@ export default async function LandingPage() {
                           { label: 'COMPLETED',     val: '19', sub: '1 this month',  accent: false },
                           { label: 'CANCELLED',     val: '2',  sub: '0 this month',  accent: false },
                         ].map(({ label, val, sub, accent }) => (
-                          <div key={label} className={`relative overflow-hidden border p-2.5 ${accent ? 'border-primary/40 bg-primary/[0.06]' : 'border-border bg-card'}`}>
+                          <div key={label} className={`relative overflow-hidden border p-2.5 ${accent ? 'border-primary/40 bg-primary/[0.06]' : 'border-base-300 bg-base-100'}`}>
                             <div className={`absolute inset-x-0 top-0 h-[2px] bg-primary ${accent ? 'opacity-100' : 'opacity-0'}`} />
                             <p className="text-[7px] font-black uppercase tracking-wider text-muted-foreground">{label}</p>
-                            <p className={`mt-0.5 text-xl font-black leading-none ${accent ? 'text-primary' : 'text-foreground'}`} style={{ fontFamily: 'var(--font-heading)' }}>{val}</p>
+                            <p className={`mt-0.5 text-xl font-black leading-none ${accent ? 'text-primary' : 'text-base-content'}`} style={{ fontFamily: 'var(--font-heading)' }}>{val}</p>
                             <p className="mt-0.5 text-[7px] text-muted-foreground/70">{sub}</p>
                           </div>
                         ))}
@@ -731,10 +731,10 @@ export default async function LandingPage() {
                       {/* Two-column lists */}
                       <div className="grid gap-2.5 sm:grid-cols-2">
                         {/* Upcoming meetings */}
-                        <div className="border border-border bg-card">
-                          <div className="flex items-center justify-between border-b border-border px-3 py-2">
+                        <div className="border border-base-300 bg-base-100">
+                          <div className="flex items-center justify-between border-b border-base-300 px-3 py-2">
                             <div className="flex items-center gap-1.5">
-                              <span className="text-[9px] font-black uppercase tracking-wider text-foreground">Upcoming Meetings</span>
+                              <span className="text-[9px] font-black uppercase tracking-wider text-base-content">Upcoming Meetings</span>
                               <span className="flex h-4 min-w-4 items-center justify-center bg-primary/10 px-1 text-[8px] font-bold text-primary">3</span>
                             </div>
                             <span className="text-[9px] font-semibold text-primary">View all</span>
@@ -744,9 +744,9 @@ export default async function LandingPage() {
                             { name: 'Maria Garcia', label: 'Strategy Session', date: 'Jul 16 · 2:00 PM', color: '#8b5cf6' },
                             { name: 'Tom Lee',      label: 'Quick Sync', date: 'Jul 17 · 11:00 AM', color: '#f59e0b' },
                           ].map((r) => (
-                            <div key={r.name} className="flex items-center justify-between gap-2 border-t border-border/50 px-3 py-2">
+                            <div key={r.name} className="flex items-center justify-between gap-2 border-t border-base-300/50 px-3 py-2">
                               <div className="min-w-0">
-                                <p className="text-[10px] font-semibold text-foreground truncate">{r.name}</p>
+                                <p className="text-[10px] font-semibold text-base-content truncate">{r.name}</p>
                                 <div className="mt-0.5 flex items-center gap-1">
                                   <span className="h-1.5 w-1.5 shrink-0" style={{ backgroundColor: r.color }} />
                                   <p className="text-[9px] text-muted-foreground truncate">{r.label}</p>
@@ -758,11 +758,11 @@ export default async function LandingPage() {
                         </div>
 
                         {/* Recent bookings */}
-                        <div className="border border-border bg-card">
-                          <div className="flex items-center justify-between border-b border-border px-3 py-2">
+                        <div className="border border-base-300 bg-base-100">
+                          <div className="flex items-center justify-between border-b border-base-300 px-3 py-2">
                             <div className="flex items-center gap-1.5">
-                              <span className="text-[9px] font-black uppercase tracking-wider text-foreground">Recent Bookings</span>
-                              <span className="flex h-4 min-w-4 items-center justify-center bg-muted px-1 text-[8px] font-bold text-muted-foreground">5</span>
+                              <span className="text-[9px] font-black uppercase tracking-wider text-base-content">Recent Bookings</span>
+                              <span className="flex h-4 min-w-4 items-center justify-center bg-base-200 px-1 text-[8px] font-bold text-muted-foreground">5</span>
                             </div>
                             <span className="text-[9px] font-semibold text-primary">View all</span>
                           </div>
@@ -771,15 +771,15 @@ export default async function LandingPage() {
                             { name: 'James Park',  label: 'Strategy Session',  status: 'confirmed', color: '#8b5cf6'        },
                             { name: 'Nina Patel',  label: 'Quick Sync',        status: 'cancelled', color: '#f59e0b'        },
                           ].map((b) => (
-                            <div key={b.name} className="flex items-center justify-between gap-2 border-t border-border/50 px-3 py-2">
+                            <div key={b.name} className="flex items-center justify-between gap-2 border-t border-base-300/50 px-3 py-2">
                               <div className="min-w-0">
-                                <p className="text-[10px] font-semibold text-foreground truncate">{b.name}</p>
+                                <p className="text-[10px] font-semibold text-base-content truncate">{b.name}</p>
                                 <div className="mt-0.5 flex items-center gap-1">
                                   <span className="h-1.5 w-1.5 shrink-0" style={{ backgroundColor: b.color }} />
                                   <p className="text-[9px] text-muted-foreground truncate">{b.label}</p>
                                 </div>
                               </div>
-                              <span className={`shrink-0 text-[8px] font-bold px-1.5 py-0.5 ${b.status === 'confirmed' ? 'bg-primary/10 text-primary' : 'bg-destructive/10 text-destructive'}`}>
+                              <span className={`shrink-0 text-[8px] font-bold px-1.5 py-0.5 ${b.status === 'confirmed' ? 'bg-primary/10 text-primary' : 'bg-error/10 text-error'}`}>
                                 {b.status === 'confirmed' ? '● Confirmed' : '● Cancelled'}
                               </span>
                             </div>
@@ -844,13 +844,13 @@ export default async function LandingPage() {
                     key={step.num}
                     delay={i * 140}
                     direction={stepDirs[i]}
-                    className="group relative flex flex-col border border-border bg-card px-8 py-10 transition-all duration-300 hover:-translate-y-2 hover:border-primary/50 hover:bg-primary/[0.025]"
+                    className="group relative flex flex-col border border-base-300 bg-base-100 px-8 py-10 transition-all duration-300 hover:-translate-y-2 hover:border-primary/50 hover:bg-primary/[0.025]"
                   >
                     {/* Top accent bar */}
                     <div className="absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 bg-gradient-to-r from-primary to-teal-400 transition-transform duration-300 group-hover:scale-x-100" />
 
                     {/* Step badge */}
-                    <span className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center bg-primary text-[10px] font-black text-primary-foreground">
+                    <span className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center bg-primary text-[10px] font-black text-primary-content">
                       {step.num}
                     </span>
 
@@ -874,7 +874,7 @@ export default async function LandingPage() {
 
                 const connector = (
                   <div key={`connector-${i}`} className="flex flex-col items-center justify-center gap-1.5">
-                    <div className="h-px w-5 bg-border" />
+                    <div className="h-px w-5 bg-base-300" />
                     <ArrowRight size={14} weight="bold" className="text-primary/50" />
                   </div>
                 )
@@ -893,13 +893,13 @@ export default async function LandingPage() {
                     <Reveal
                       delay={i * 130}
                       direction={mobileDirs[i]}
-                      className="group relative flex flex-col border border-border bg-card px-7 py-9 transition-all duration-300"
+                      className="group relative flex flex-col border border-base-300 bg-base-100 px-7 py-9 transition-all duration-300"
                     >
                       {/* Top accent bar */}
                       <div className="absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 bg-gradient-to-r from-primary to-teal-400 transition-transform duration-300 group-hover:scale-x-100" />
 
                       {/* Step badge */}
-                      <span className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center bg-primary text-[10px] font-black text-primary-foreground">
+                      <span className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center bg-primary text-[10px] font-black text-primary-content">
                         {step.num}
                       </span>
 
@@ -930,7 +930,7 @@ export default async function LandingPage() {
         </section>
 
         {/* ─── FULL FEATURE LIST ────────────────────────────────────────────────── */}
-        <section className="border-t border-border bg-muted/20 py-24">
+        <section className="border-t border-base-300 bg-base-200/20 py-24">
           <div className="mx-auto max-w-[1400px] px-5 md:px-12 xl:px-20">
             <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
 
@@ -944,7 +944,7 @@ export default async function LandingPage() {
                   We don&apos;t have a paid plan. There&apos;s nothing to unlock.
                   Everything listed here is yours from the moment you sign up.
                 </p>
-                <Link href="/login" className="inline-flex items-center gap-2 bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90">
+                <Link href="/login" className="inline-flex items-center gap-2 bg-primary px-5 py-2.5 text-sm font-semibold text-primary-content transition-opacity hover:opacity-90">
                   Start free today <ArrowRight size={14} weight="bold" />
                 </Link>
               </Reveal>
@@ -959,7 +959,7 @@ export default async function LandingPage() {
                         <div className="flex h-7 w-7 shrink-0 items-center justify-center bg-primary/10 text-primary">
                           <Icon size={14} weight="duotone" />
                         </div>
-                        <span className="text-xs font-black uppercase tracking-eyebrow text-foreground">{group.label}</span>
+                        <span className="text-xs font-black uppercase tracking-eyebrow text-base-content">{group.label}</span>
                       </div>
                       <ul className="space-y-2">
                         {group.items.map((item) => (
@@ -978,7 +978,7 @@ export default async function LandingPage() {
         </section>
 
         {/* ─── FAQ ─────────────────────────────────────────────────────────────── */}
-        <section id="faq" className="relative overflow-hidden border-t border-border bg-background py-24 lg:py-32">
+        <section id="faq" className="relative overflow-hidden border-t border-base-300 bg-base-100 py-24 lg:py-32">
           <div className="relative mx-auto max-w-[1400px] px-5 md:px-12 xl:px-20">
             <div className="grid grid-cols-1 items-start gap-14 lg:grid-cols-2 lg:gap-20">
 
@@ -1071,7 +1071,7 @@ export default async function LandingPage() {
               {/* ── Right: FAQ accordion on white background ── */}
               <Reveal delay={100} direction="right">
                 <p className="mb-3 text-[11px] font-black uppercase tracking-eyebrow text-primary">FAQ</p>
-                <h2 className="mb-8 font-black text-3xl leading-tight text-foreground sm:text-4xl">
+                <h2 className="mb-8 font-black text-3xl leading-tight text-base-content sm:text-4xl">
                   Frequently Asked<br className="hidden sm:block" /> Questions
                 </h2>
                 <FaqAccordion items={FAQ_ITEMS} variant="light" />
@@ -1118,7 +1118,7 @@ export default async function LandingPage() {
             </Reveal>
             <Reveal delay={150} direction="up" className="mt-10 flex flex-col items-center gap-4">
               <div className="flex flex-wrap items-center justify-center gap-3">
-                <Link href="/login" className="relative inline-flex items-center gap-2 overflow-hidden bg-primary px-9 py-4 text-base font-semibold text-primary-foreground transition-opacity hover:opacity-90">
+                <Link href="/login" className="relative inline-flex items-center gap-2 overflow-hidden bg-primary px-9 py-4 text-base font-semibold text-primary-content transition-opacity hover:opacity-90">
                   <span className="animate-schduled-sheen pointer-events-none absolute inset-0"
                     style={{ background: 'linear-gradient(105deg,transparent 40%,rgba(255,255,255,.22) 50%,transparent 60%)', backgroundSize: '200% auto' }} />
                   Start Free

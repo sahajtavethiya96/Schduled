@@ -101,15 +101,15 @@ export function TabAvailability({ form, schedules, globalLimits: initialLimits }
     <div className="space-y-6">
 
       {/* ── Section 1: Duration ───────────────────────────────────────── */}
-      <div className="border border-border bg-background">
-        <div className="px-5 py-4 border-b border-border/60">
+      <div className="border border-base-300 bg-base-100">
+        <div className="px-5 py-4 border-b border-base-300/60">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Duration</p>
         </div>
 
         <div className="px-5 py-5 space-y-6">
           {/* Duration chips */}
           <div>
-            <p className="text-sm font-medium text-foreground mb-4">Meeting Durations</p>
+            <p className="text-sm font-medium text-base-content mb-4">Meeting Durations</p>
 
             <div className="flex flex-wrap gap-x-2 gap-y-7">
               {allChips.map((d) => {
@@ -121,8 +121,8 @@ export function TabAvailability({ form, schedules, globalLimits: initialLimits }
                       className={cn(
                         'flex items-center border transition-all',
                         selected
-                          ? 'bg-primary border-primary text-primary-foreground'
-                          : 'border-border bg-card text-foreground hover:border-primary/60'
+                          ? 'bg-primary border-primary text-primary-content'
+                          : 'border-base-300 bg-base-100 text-base-content hover:border-primary/60'
                       )}
                     >
                       <button
@@ -130,7 +130,7 @@ export function TabAvailability({ form, schedules, globalLimits: initialLimits }
                         onClick={() => selected ? setDefault(d) : addDuration(d)}
                         className={cn(
                           'h-8 px-2.5 text-xs font-medium flex items-center gap-1 transition-colors',
-                          selected ? 'text-primary-foreground' : 'hover:text-primary'
+                          selected ? 'text-primary-content' : 'hover:text-primary'
                         )}
                       >
                         {selected && <Check size={11} weight="bold" />}
@@ -140,7 +140,7 @@ export function TabAvailability({ form, schedules, globalLimits: initialLimits }
                         <button
                           type="button"
                           onClick={() => removeDuration(d)}
-                          className="h-8 w-6 flex items-center justify-center border-l border-primary-foreground/20 text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                          className="h-8 w-6 flex items-center justify-center border-l border-primary-content/20 text-primary-content/70 hover:text-primary-content transition-colors"
                         >
                           <X size={10} />
                         </button>
@@ -174,14 +174,14 @@ export function TabAvailability({ form, schedules, globalLimits: initialLimits }
                   <button
                     type="button"
                     onClick={addCustom}
-                    className="h-8 w-8 flex items-center justify-center border border-primary bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                    className="h-8 w-8 flex items-center justify-center border border-primary bg-primary text-primary-content hover:bg-primary/90 transition-colors"
                   >
                     <Check size={13} weight="bold" />
                   </button>
                   <button
                     type="button"
                     onClick={() => { setShowCustom(false); setCustomInput('') }}
-                    className="h-8 w-8 flex items-center justify-center border border-border text-muted-foreground hover:text-foreground transition-colors"
+                    className="h-8 w-8 flex items-center justify-center border border-base-300 text-muted-foreground hover:text-base-content transition-colors"
                   >
                     <X size={13} />
                   </button>
@@ -191,7 +191,7 @@ export function TabAvailability({ form, schedules, globalLimits: initialLimits }
                   <button
                     type="button"
                     onClick={() => setShowCustom(true)}
-                    className="h-8 px-2.5 text-xs font-medium border border-dashed border-border text-muted-foreground hover:border-primary hover:text-primary transition-all flex items-center gap-1"
+                    className="h-8 px-2.5 text-xs font-medium border border-dashed border-base-300 text-muted-foreground hover:border-primary hover:text-primary transition-all flex items-center gap-1"
                   >
                     <Plus size={11} />
                     Custom
@@ -202,13 +202,13 @@ export function TabAvailability({ form, schedules, globalLimits: initialLimits }
             </div>
 
             {form.formState.errors.durations && (
-              <p className="mt-2 text-xs text-destructive">{form.formState.errors.durations.message}</p>
+              <p className="mt-2 text-xs text-error">{form.formState.errors.durations.message}</p>
             )}
           </div>
 
           {/* Start time increment */}
           <div>
-            <p className="text-sm font-medium text-foreground mb-1">Start Time Increment</p>
+            <p className="text-sm font-medium text-base-content mb-1">Start Time Increment</p>
             <p className="text-xs text-muted-foreground mb-3">How often available start times appear on your booking page.</p>
             <div className="flex gap-2">
               {INCREMENT_OPTIONS.map((n) => {
@@ -221,8 +221,8 @@ export function TabAvailability({ form, schedules, globalLimits: initialLimits }
                     className={cn(
                       'h-8 px-3 text-xs font-medium border transition-all flex items-center gap-1',
                       active
-                        ? 'bg-primary border-primary text-primary-foreground'
-                        : 'border-border bg-card text-foreground hover:border-primary/60 hover:text-primary'
+                        ? 'bg-primary border-primary text-primary-content'
+                        : 'border-base-300 bg-base-100 text-base-content hover:border-primary/60 hover:text-primary'
                     )}
                   >
                     {active && <Check size={11} weight="bold" />}
@@ -237,18 +237,18 @@ export function TabAvailability({ form, schedules, globalLimits: initialLimits }
 
       {/* ── Section 2: Schedule ───────────────────────────────────────── */}
       {schedules.length === 0 && (
-        <div className="border border-border bg-background">
-          <div className="px-5 py-4 border-b border-border/60">
+        <div className="border border-base-300 bg-base-100">
+          <div className="px-5 py-4 border-b border-base-300/60">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Schedule</p>
           </div>
           <div className="flex flex-col items-start gap-2 px-5 py-6">
-            <p className="text-sm font-medium text-foreground">No availability schedule yet</p>
+            <p className="text-sm font-medium text-base-content">No availability schedule yet</p>
             <p className="text-sm text-muted-foreground">
               Invitees can only book when you have availability hours set. Create a schedule to start taking bookings.
             </p>
             <Link
               href="/availability"
-              className="mt-1 inline-flex items-center gap-1.5 border border-primary px-3 h-8 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+              className="mt-1 inline-flex items-center gap-1.5 border border-primary px-3 h-8 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-content"
             >
               <Plus size={14} /> Set your availability
             </Link>
@@ -257,13 +257,13 @@ export function TabAvailability({ form, schedules, globalLimits: initialLimits }
       )}
 
       {schedules.length > 0 && (
-        <div className="border border-border bg-background">
-          <div className="px-5 py-4 border-b border-border/60">
+        <div className="border border-base-300 bg-base-100">
+          <div className="px-5 py-4 border-b border-base-300/60">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Schedule</p>
           </div>
 
           <div className="px-5 py-5 space-y-3">
-            <p className="text-sm font-medium text-foreground">Availability Schedule</p>
+            <p className="text-sm font-medium text-base-content">Availability Schedule</p>
 
             <FormField
               control={form.control}
@@ -295,9 +295,9 @@ export function TabAvailability({ form, schedules, globalLimits: initialLimits }
 
             {/* Schedule preview */}
             {selectedSchedule && (
-              <div className="flex items-center justify-between p-3 border border-border bg-muted/30">
+              <div className="flex items-center justify-between p-3 border border-base-300 bg-base-200/30">
                 <div>
-                  <p className="text-sm font-medium text-foreground">{selectedSchedule.name}</p>
+                  <p className="text-sm font-medium text-base-content">{selectedSchedule.name}</p>
                   {selectedSchedule.summary ? (
                     <p className="text-xs text-muted-foreground mt-0.5">
                       {selectedSchedule.summary.days} · {selectedSchedule.summary.time}
@@ -320,12 +320,12 @@ export function TabAvailability({ form, schedules, globalLimits: initialLimits }
       )}
 
       {/* ── Section 3: Booking Rules (collapsible — advanced/optional) ──── */}
-      <div className="border border-border bg-background">
+      <div className="border border-base-300 bg-base-100">
         <button
           type="button"
           onClick={() => setShowBookingRules((v) => !v)}
           aria-expanded={showBookingRules}
-          className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left transition-colors hover:bg-muted/30"
+          className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left transition-colors hover:bg-base-200/30"
         >
           <span className="flex items-center gap-1.5">
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -342,12 +342,12 @@ export function TabAvailability({ form, schedules, globalLimits: initialLimits }
         </button>
 
         {showBookingRules && (
-        <div className="px-5 py-5 space-y-5 border-t border-border/60">
+        <div className="px-5 py-5 space-y-5 border-t border-base-300/60">
 
           {/* Booking Window — type selector + (rolling days | fixed range) on one row */}
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-1.5 w-40 shrink-0">
-              <span className="text-sm font-medium text-foreground">Booking Window</span>
+              <span className="text-sm font-medium text-base-content">Booking Window</span>
               <InfoTip text="How far ahead invitees can book — a rolling window (next N days from today) or a fixed calendar date range." />
             </div>
 
@@ -386,7 +386,7 @@ export function TabAvailability({ form, schedules, globalLimits: initialLimits }
                           field.onChange(Number.isFinite(n) ? n : field.value)
                         }}
                       />
-                      <span className="flex items-center bg-muted px-2.5 text-xs text-muted-foreground border-l border-input shrink-0">
+                      <span className="flex items-center bg-base-200 px-2.5 text-xs text-muted-foreground border-l border-input shrink-0">
                         days
                       </span>
                     </div>
@@ -438,7 +438,7 @@ export function TabAvailability({ form, schedules, globalLimits: initialLimits }
             render={({ field }) => (
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1.5 w-40 shrink-0">
-                  <span className="text-sm font-medium text-foreground">Minimum Notice</span>
+                  <span className="text-sm font-medium text-base-content">Minimum Notice</span>
                   <InfoTip text="Minimum lead time required before someone can book. E.g. 60 min means no same-hour bookings." />
                 </div>
                 <div className="flex items-stretch border border-input w-28">
@@ -450,7 +450,7 @@ export function TabAvailability({ form, schedules, globalLimits: initialLimits }
                     value={field.value}
                     onChange={(e) => field.onChange(parseInt(e.target.value, 10) || 0)}
                   />
-                  <span className="flex items-center bg-muted px-2.5 text-xs text-muted-foreground border-l border-input shrink-0">
+                  <span className="flex items-center bg-base-200 px-2.5 text-xs text-muted-foreground border-l border-input shrink-0">
                     min
                   </span>
                 </div>
@@ -466,7 +466,7 @@ export function TabAvailability({ form, schedules, globalLimits: initialLimits }
             render={({ field }) => (
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1.5 w-40 shrink-0">
-                  <span className="text-sm font-medium text-foreground">Buffer Before</span>
+                  <span className="text-sm font-medium text-base-content">Buffer Before</span>
                   <InfoTip text="Blocked time before each meeting starts, so you can prepare." />
                 </div>
                 <div className="flex items-stretch border border-input w-28">
@@ -478,7 +478,7 @@ export function TabAvailability({ form, schedules, globalLimits: initialLimits }
                     value={field.value}
                     onChange={(e) => field.onChange(parseInt(e.target.value, 10) || 0)}
                   />
-                  <span className="flex items-center bg-muted px-2.5 text-xs text-muted-foreground border-l border-input shrink-0">
+                  <span className="flex items-center bg-base-200 px-2.5 text-xs text-muted-foreground border-l border-input shrink-0">
                     min
                   </span>
                 </div>
@@ -494,7 +494,7 @@ export function TabAvailability({ form, schedules, globalLimits: initialLimits }
             render={({ field }) => (
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1.5 w-40 shrink-0">
-                  <span className="text-sm font-medium text-foreground">Buffer After</span>
+                  <span className="text-sm font-medium text-base-content">Buffer After</span>
                   <InfoTip text="Blocked time after each meeting ends, so you can wrap up." />
                 </div>
                 <div className="flex items-stretch border border-input w-28">
@@ -506,7 +506,7 @@ export function TabAvailability({ form, schedules, globalLimits: initialLimits }
                     value={field.value}
                     onChange={(e) => field.onChange(parseInt(e.target.value, 10) || 0)}
                   />
-                  <span className="flex items-center bg-muted px-2.5 text-xs text-muted-foreground border-l border-input shrink-0">
+                  <span className="flex items-center bg-base-200 px-2.5 text-xs text-muted-foreground border-l border-input shrink-0">
                     min
                   </span>
                 </div>
@@ -565,9 +565,9 @@ export function TabAvailability({ form, schedules, globalLimits: initialLimits }
             control={form.control}
             name="maxBookingsPerDay"
             render={({ field }) => (
-              <div className="flex items-center gap-3 border-t border-border/60 pt-5">
+              <div className="flex items-center gap-3 border-t border-base-300/60 pt-5">
                 <div className="flex items-center gap-1.5 w-40 shrink-0">
-                  <span className="text-sm font-medium text-foreground">Max per day</span>
+                  <span className="text-sm font-medium text-base-content">Max per day</span>
                   <InfoTip text="Caps how many times THIS event type can be booked in a single day. Leave empty for no limit. This works alongside your global limit — whichever limit is reached first blocks further bookings." />
                 </div>
                 <div className="flex items-stretch border border-input w-28">
@@ -583,7 +583,7 @@ export function TabAvailability({ form, schedules, globalLimits: initialLimits }
                       field.onChange(Number.isFinite(n) && n > 0 ? n : null)
                     }}
                   />
-                  <span className="flex items-center bg-muted px-2.5 text-xs text-muted-foreground border-l border-input shrink-0">
+                  <span className="flex items-center bg-base-200 px-2.5 text-xs text-muted-foreground border-l border-input shrink-0">
                     /day
                   </span>
                 </div>
@@ -593,9 +593,9 @@ export function TabAvailability({ form, schedules, globalLimits: initialLimits }
           />
 
           {/* Global Meeting Limits — read-only */}
-          <div className="border-t border-border/60 pt-5">
+          <div className="border-t border-base-300/60 pt-5">
             <div className="flex items-center gap-1.5 mb-1">
-              <p className="text-sm font-medium text-foreground">Global Meeting Limits</p>
+              <p className="text-sm font-medium text-base-content">Global Meeting Limits</p>
               <InfoTip text="Counts bookings across ALL your event types combined, not just this one. Set in Availability → Advanced." />
             </div>
             <p className="text-sm text-muted-foreground">
@@ -612,13 +612,13 @@ export function TabAvailability({ form, schedules, globalLimits: initialLimits }
             {/* Explain how per-event and global limits interact */}
             {maxPerDay != null && limits.some((l) => l.period === 'day') && (
               <p className="mt-2 border-l-2 border-primary/40 bg-primary/[0.04] px-3 py-2 text-xs text-muted-foreground">
-                Both limits apply — the <span className="font-medium text-foreground">stricter</span> one wins.
+                Both limits apply — the <span className="font-medium text-base-content">stricter</span> one wins.
                 Here, this event is capped at{' '}
-                <span className="font-medium text-foreground">{maxPerDay}/day</span> while all events share{' '}
-                <span className="font-medium text-foreground">
+                <span className="font-medium text-base-content">{maxPerDay}/day</span> while all events share{' '}
+                <span className="font-medium text-base-content">
                   {limits.find((l) => l.period === 'day')?.count}/day
                 </span>
-                , so at most <span className="font-medium text-foreground">{maxPerDay}</span> of this event can be
+                , so at most <span className="font-medium text-base-content">{maxPerDay}</span> of this event can be
                 booked per day.
               </p>
             )}

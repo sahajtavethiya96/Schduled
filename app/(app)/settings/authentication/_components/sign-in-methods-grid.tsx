@@ -94,7 +94,7 @@ export function SignInMethodsGrid({ initial, availability, smtpConfigured }: Pro
               key={key}
               className={cn(
                 "flex flex-col gap-4 border p-5 transition-colors",
-                checked ? "border-primary/30 bg-primary/[0.03]" : "border-border"
+                checked ? "border-primary/30 bg-primary/[0.03]" : "border-base-300"
               )}
             >
               <div className="flex items-start justify-between gap-3">
@@ -103,7 +103,7 @@ export function SignInMethodsGrid({ initial, availability, smtpConfigured }: Pro
                     "flex size-10 shrink-0 items-center justify-center border transition-colors",
                     checked
                       ? "border-primary/30 bg-primary/10 text-primary"
-                      : "border-border bg-muted/40 text-muted-foreground"
+                      : "border-base-300 bg-base-200/40 text-muted-foreground"
                   )}
                 >
                   <MethodIcon size={18} weight="bold" />

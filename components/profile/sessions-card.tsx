@@ -78,7 +78,7 @@ export function SessionsCard({ sessions }: { sessions: SessionRow[] }) {
           {sessions.map((session, i) => (
             <div
               key={session.id}
-              className={`flex items-start justify-between gap-4 px-6 py-4 transition-colors duration-150 hover:bg-muted/40 ${i !== 0 ? "border-t border-border" : ""}`}
+              className={`flex items-start justify-between gap-4 px-6 py-4 transition-colors duration-150 hover:bg-base-200/40 ${i !== 0 ? "border-t border-base-300" : ""}`}
             >
               <div className="min-w-0 flex-1 space-y-1">
                 <div className="flex min-w-0 flex-wrap items-center gap-2">
@@ -129,7 +129,7 @@ export function SessionsCard({ sessions }: { sessions: SessionRow[] }) {
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="text-xs border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    className="text-xs border-error/40 text-error hover:bg-error/10 hover:text-error"
                     onClick={() => setRevokeId(session.id)}
                   >
                     Revoke

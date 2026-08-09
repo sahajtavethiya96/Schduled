@@ -125,7 +125,7 @@ export function SidebarNav({
         <form action={logoutAction.bind(null, "/login")}>
           <button
             type="submit"
-            className="flex w-full items-center gap-3 border-l-[3px] border-l-transparent px-3 py-2.5 text-sm font-medium text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent/40 hover:text-destructive"
+            className="flex w-full items-center gap-3 border-l-[3px] border-l-transparent px-3 py-2.5 text-sm font-medium text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent/40 hover:text-error"
           >
             <SignOut size={17} />
             Sign out

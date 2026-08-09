@@ -94,7 +94,7 @@ export default async function CalendarsPage() {
               bookings to your write target.
             </CardDescription>
           </CardHeader>
-          <CardContent className="divide-y divide-border p-0">
+          <CardContent className="divide-y divide-base-300 p-0">
             {calendars.map((cal) => (
               <CalendarActions
                 calendar={{
@@ -108,8 +108,8 @@ export default async function CalendarsPage() {
 
             {/* Microsoft Outlook — coming soon */}
             <div className="flex items-center gap-4 px-6 py-4 opacity-60">
-              <div className="flex size-10 shrink-0 items-center justify-center bg-muted">
-                <MicrosoftOutlookLogo className="text-foreground" size={20} />
+              <div className="flex size-10 shrink-0 items-center justify-center bg-base-200">
+                <MicrosoftOutlookLogo className="text-base-content" size={20} />
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">
@@ -119,7 +119,7 @@ export default async function CalendarsPage() {
                   Sync availability and add events to Outlook Calendar
                 </p>
               </div>
-              <span className="shrink-0 bg-muted px-2 py-1 text-xs text-muted-foreground">
+              <span className="shrink-0 bg-base-200 px-2 py-1 text-xs text-muted-foreground">
                 Soon
               </span>
             </div>

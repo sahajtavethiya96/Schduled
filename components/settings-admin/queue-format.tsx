@@ -85,8 +85,8 @@ const STATE_CONFIG: Record<
   },
   failed: {
     label: "Failed",
-    cls: "bg-destructive/10 text-destructive border-destructive/20",
-    dot: "bg-destructive",
+    cls: "bg-error/10 text-error border-error/20",
+    dot: "bg-error",
   },
   active: {
     label: "Running",
@@ -105,12 +105,12 @@ const STATE_CONFIG: Record<
   },
   expired: {
     label: "Expired",
-    cls: "bg-muted text-muted-foreground border-border",
+    cls: "bg-base-200 text-muted-foreground border-base-300",
     dot: "bg-muted-foreground",
   },
   cancelled: {
     label: "Cancelled",
-    cls: "bg-muted text-muted-foreground border-border",
+    cls: "bg-base-200 text-muted-foreground border-base-300",
     dot: "bg-muted-foreground",
   },
 };
@@ -118,7 +118,7 @@ const STATE_CONFIG: Record<
 export function StateBadge({ state }: { state: string }) {
   const cfg = STATE_CONFIG[state] ?? {
     label: state,
-    cls: "bg-muted text-muted-foreground border-border",
+    cls: "bg-base-200 text-muted-foreground border-base-300",
     dot: "bg-muted-foreground",
   };
   return (

@@ -74,7 +74,7 @@ export function BlockedSourcesCard({ entries: initial }: { entries: BlocklistEnt
         <CardContent className="space-y-5">
 
           {/* Add form */}
-          <div className="border border-border bg-muted/20 p-4 space-y-3">
+          <div className="border border-base-300 bg-base-200/20 p-4 space-y-3">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Add blocked source</p>
             <div className="flex gap-2 flex-wrap">
               {/* Type selector */}
@@ -83,7 +83,7 @@ export function BlockedSourcesCard({ entries: initial }: { entries: BlocklistEnt
                   type="button"
                   onClick={() => setType('email')}
                   className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition-colors ${
-                    type === 'email' ? 'bg-primary text-primary-foreground' : 'bg-background text-muted-foreground hover:bg-muted'
+                    type === 'email' ? 'bg-primary text-primary-content' : 'bg-base-100 text-muted-foreground hover:bg-base-200'
                   }`}
                 >
                   <EnvelopeSimple size={14} /> Email
@@ -92,7 +92,7 @@ export function BlockedSourcesCard({ entries: initial }: { entries: BlocklistEnt
                   type="button"
                   onClick={() => setType('domain')}
                   className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition-colors ${
-                    type === 'domain' ? 'bg-primary text-primary-foreground' : 'bg-background text-muted-foreground hover:bg-muted'
+                    type === 'domain' ? 'bg-primary text-primary-content' : 'bg-base-100 text-muted-foreground hover:bg-base-200'
                   }`}
                 >
                   <Globe size={14} /> Domain
@@ -117,7 +117,7 @@ export function BlockedSourcesCard({ entries: initial }: { entries: BlocklistEnt
               </Button>
             </div>
             {error && (
-              <p className="flex items-center gap-1.5 text-sm text-destructive">
+              <p className="flex items-center gap-1.5 text-sm text-error">
                 <Warning size={14} /> {error}
               </p>
             )}
@@ -129,10 +129,10 @@ export function BlockedSourcesCard({ entries: initial }: { entries: BlocklistEnt
               No blocked sources. Invitees from all email addresses can book your meetings.
             </p>
           ) : (
-            <div className="border border-border divide-y divide-border">
+            <div className="border border-base-300 divide-y divide-base-300">
               {entries.map((entry) => (
-                <div key={entry.id} className="flex items-center gap-3 px-4 py-3 hover:bg-muted/20 transition-colors">
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center bg-destructive/10 text-destructive">
+                <div key={entry.id} className="flex items-center gap-3 px-4 py-3 hover:bg-base-200/20 transition-colors">
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center bg-error/10 text-error">
                     {entry.type === 'email'
                       ? <EnvelopeSimple size={14} />
                       : <Globe size={14} />
@@ -153,7 +153,7 @@ export function BlockedSourcesCard({ entries: initial }: { entries: BlocklistEnt
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="h-9 w-9 text-muted-foreground hover:text-destructive"
+                    className="h-9 w-9 text-muted-foreground hover:text-error"
                     onClick={() => setDeleteId(entry.id)}
                   >
                     <Trash size={14} />

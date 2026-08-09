@@ -55,8 +55,8 @@ export function CalendarActions({ calendar, connectUrl }: CalendarActionsProps) 
   return (
     <div className="flex items-center gap-4 px-6 py-4">
       {/* Provider icon */}
-      <div className="flex size-10 shrink-0 items-center justify-center bg-muted">
-        <GoogleLogo size={20} className="text-foreground" weight="bold" />
+      <div className="flex size-10 shrink-0 items-center justify-center bg-base-200">
+        <GoogleLogo size={20} className="text-base-content" weight="bold" />
       </div>
 
       {/* Info */}
@@ -72,11 +72,11 @@ export function CalendarActions({ calendar, connectUrl }: CalendarActionsProps) 
       {/* Status badge */}
       <div className="flex shrink-0 items-center gap-1.5">
         {isConnected ? (
-          <CheckCircle size={16} className="text-[var(--success-foreground)]" weight="fill" />
+          <CheckCircle size={16} className="text-success-content" weight="fill" />
         ) : (
-          <XCircle size={16} className="text-destructive" weight="fill" />
+          <XCircle size={16} className="text-error" weight="fill" />
         )}
-        <span className={`text-xs font-medium ${isConnected ? 'text-[var(--success-foreground)]' : 'text-destructive'}`}>
+        <span className={`text-xs font-medium ${isConnected ? 'text-success-content' : 'text-error'}`}>
           {isConnected ? 'Connected' : 'Disconnected'}
         </span>
       </div>
@@ -99,7 +99,7 @@ export function CalendarActions({ calendar, connectUrl }: CalendarActionsProps) 
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                className="bg-error text-error-content hover:bg-error/90"
                 onClick={handleDisconnect}
               >
                 Disconnect

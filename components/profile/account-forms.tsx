@@ -104,7 +104,7 @@ export function AvatarUploadCard({
         <div className="flex items-center gap-6">
           <button
             aria-label="Upload profile image"
-            className="group relative size-20 shrink-0 overflow-hidden border-2 border-dashed border-border bg-muted transition hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
+            className="group relative size-20 shrink-0 overflow-hidden border-2 border-dashed border-base-300 bg-base-200 transition hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-60"
             disabled={uploading}
             onClick={() => fileInputRef.current?.click()}
             type="button"
@@ -154,7 +154,7 @@ export function AvatarUploadCard({
               </Button>
               {preview && (
                 <Button
-                  className="text-destructive hover:bg-destructive/5 hover:text-destructive"
+                  className="text-error hover:bg-error/5 hover:text-error"
                   disabled={uploading || removing}
                   onClick={async () => {
                     setRemoving(true);
@@ -186,7 +186,7 @@ export function AvatarUploadCard({
                 {preview ? "Image updated!" : "Image removed."}
               </p>
             )}
-            {error && <p className="text-xs text-destructive">{error}</p>}
+            {error && <p className="text-xs text-error">{error}</p>}
           </div>
         </div>
       </CardContent>
@@ -197,14 +197,14 @@ export function AvatarUploadCard({
 function ActionMessage({ state }: { state: ActionState }) {
   if (state.error) {
     return (
-      <p className="rounded-none bg-destructive/10 p-3 text-destructive text-sm">
+      <p className="rounded-none bg-error/10 p-3 text-error text-sm">
         {state.error}
       </p>
     );
   }
   if (state.success) {
     return (
-      <p className="rounded-none bg-success-subtle p-3 text-success-foreground text-sm">
+      <p className="rounded-none bg-success-subtle p-3 text-success-content text-sm">
         {state.success}
       </p>
     );
@@ -277,7 +277,7 @@ export function AccountIdentityForms({
         <CardContent className="flex flex-1 flex-col">
           <form action={nameAction} className="flex flex-1 flex-col space-y-4">
             <label className="block" htmlFor="name">
-              <span className="mb-2 block font-semibold text-foreground text-sm">
+              <span className="mb-2 block font-semibold text-base-content text-sm">
                 Name
               </span>
               <Input
@@ -310,7 +310,7 @@ export function AccountIdentityForms({
             onSubmit={onEmailSubmit}
           >
             <label className="block" htmlFor="email">
-              <span className="mb-2 block font-semibold text-foreground text-sm">
+              <span className="mb-2 block font-semibold text-base-content text-sm">
                 Email
               </span>
               <Input
@@ -337,9 +337,9 @@ export function AccountIdentityForms({
 
 export function DeleteAccountForm({ email }: { email: string }) {
   return (
-    <Card className="border-destructive/30">
+    <Card className="border-error/30">
       <CardHeader>
-        <CardTitle className="text-destructive">Delete Account</CardTitle>
+        <CardTitle className="text-error">Delete Account</CardTitle>
         <CardDescription>
           Permanently delete your account, sessions, meeting types, and all
           connected data. Audit records remain for operator history. This cannot
