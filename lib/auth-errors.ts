@@ -27,6 +27,8 @@ export function authErrorMessage(
   code: string | null | undefined,
   fallback = "Something went wrong. Please try again."
 ): string {
-  if (!code) return fallback;
+  if (!code) {
+    return fallback;
+  }
   return MESSAGES[code] ?? fallback;
 }

@@ -55,7 +55,6 @@ export interface VideoLinkGeneratePayload {
   bookingId: string;
 }
 
-
 export interface CalendarWritePayload {
   bookingId: string;
 }
@@ -91,8 +90,8 @@ export interface BookingCancelRemindersPayload {
 }
 
 export interface BookingFollowUpPayload {
-  bookingId: string
-  bookingEndUtc: string
+  bookingEndUtc: string;
+  bookingId: string;
 }
 
 export interface BookingRescheduleRemindersPayload {
@@ -136,10 +135,10 @@ export interface BookingRescheduleRequestPayload {
 
 export interface BookingRescheduleDeclinedPayload {
   bookingId: string;
-  /** Optional host-provided decline reason (not persisted on the booking). */
-  reason?: string;
   /** ISO — the still-confirmed original start time to show in the email. */
   originalStartUtc: string;
+  /** Optional host-provided decline reason (not persisted on the booking). */
+  reason?: string;
 }
 
 export type JobPayloads = {

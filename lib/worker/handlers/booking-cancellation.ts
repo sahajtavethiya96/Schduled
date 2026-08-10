@@ -34,8 +34,16 @@ async function processOne(bookingId: string) {
 
   const prefs = await loadHostPrefs(b.hostUserId);
   const hostTimezone = b.hostTimezone ?? "UTC";
-  const locationLabelInvitee = resolveLocationLabel(b.etLocationType, b.etLocationValue, b.inviteePhone);
-  const locationLabelHost = resolveLocationLabelHost(b.etLocationType, b.etLocationValue, b.inviteePhone);
+  const locationLabelInvitee = resolveLocationLabel(
+    b.etLocationType,
+    b.etLocationValue,
+    b.inviteePhone
+  );
+  const locationLabelHost = resolveLocationLabelHost(
+    b.etLocationType,
+    b.etLocationValue,
+    b.inviteePhone
+  );
   const startUtc = new Date(b.startTime);
 
   const baseShared = {

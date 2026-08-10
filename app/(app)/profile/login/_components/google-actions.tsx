@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,14 +14,18 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 
 interface GoogleActionsProps {
-  hasGoogle: boolean;
   canDisconnect: boolean;
+  hasGoogle: boolean;
 }
 
-export function GoogleActions({ hasGoogle, canDisconnect }: GoogleActionsProps) {
+export function GoogleActions({
+  hasGoogle,
+  canDisconnect,
+}: GoogleActionsProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -64,7 +67,7 @@ export function GoogleActions({ hasGoogle, canDisconnect }: GoogleActionsProps) 
     return (
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button size="sm" disabled={loading}>
+          <Button disabled={loading} size="sm">
             {loading ? "Redirecting…" : "Connect"}
           </Button>
         </AlertDialogTrigger>
@@ -72,7 +75,8 @@ export function GoogleActions({ hasGoogle, canDisconnect }: GoogleActionsProps) 
           <AlertDialogHeader>
             <AlertDialogTitle>Connect Google?</AlertDialogTitle>
             <AlertDialogDescription>
-              You will be redirected to Google to authorise access. Once connected, you can sign in to Schduled using your Google account.
+              You will be redirected to Google to authorise access. Once
+              connected, you can sign in to Schduled using your Google account.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -88,14 +92,16 @@ export function GoogleActions({ hasGoogle, canDisconnect }: GoogleActionsProps) 
 
   if (!canDisconnect) {
     return (
-      <span className="text-xs text-muted-foreground">Only method — cannot remove</span>
+      <span className="text-xs text-muted-foreground">
+        Only method — cannot remove
+      </span>
     );
   }
 
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button size="sm" variant="outline" disabled={loading}>
+        <Button disabled={loading} size="sm" variant="outline">
           {loading ? "Disconnecting…" : "Disconnect"}
         </Button>
       </AlertDialogTrigger>
@@ -103,12 +109,13 @@ export function GoogleActions({ hasGoogle, canDisconnect }: GoogleActionsProps) 
         <AlertDialogHeader>
           <AlertDialogTitle>Disconnect Google?</AlertDialogTitle>
           <AlertDialogDescription>
-            You will no longer be able to sign in with Google. You can reconnect at any time — magic link sign-in will still work.
+            You will no longer be able to sign in with Google. You can reconnect
+            at any time — magic link sign-in will still work.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction variant="destructive" onClick={handleDisconnect}>
+          <AlertDialogAction onClick={handleDisconnect} variant="destructive">
             Disconnect
           </AlertDialogAction>
         </AlertDialogFooter>

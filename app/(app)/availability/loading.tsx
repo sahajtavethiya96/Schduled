@@ -1,4 +1,4 @@
-const days = ['d1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7']
+const days = ["d1", "d2", "d3", "d4", "d5", "d6", "d7"];
 
 export default function AvailabilityLoading() {
   return (
@@ -13,8 +13,8 @@ export default function AvailabilityLoading() {
       <div className="border border-base-300">
         {days.map((d, i) => (
           <div
+            className={`flex items-center gap-4 px-5 py-4 ${i < days.length - 1 ? "border-b border-base-300" : ""}`}
             key={d}
-            className={`flex items-center gap-4 px-5 py-4 ${i < days.length - 1 ? 'border-b border-base-300' : ''}`}
           >
             <div className="h-4 w-4 bg-base-200 shrink-0" />
             <div className="w-24 shrink-0 h-3.5 bg-base-200" />
@@ -34,5 +34,5 @@ export default function AvailabilityLoading() {
         <div className="h-9 w-40 bg-base-200" />
       </div>
     </div>
-  )
+  );
 }

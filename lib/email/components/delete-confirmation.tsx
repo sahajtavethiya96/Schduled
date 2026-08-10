@@ -1,5 +1,5 @@
 import { Section, Text } from "react-email";
-import { emailBranding, type EmailBranding } from "@/lib/email/branding";
+import { type EmailBranding, emailBranding } from "@/lib/email/branding";
 import { buildEmailStyles, EmailLayout } from "@/lib/email/components/layout";
 
 export function DeleteConfirmationEmail({
@@ -15,18 +15,16 @@ export function DeleteConfirmationEmail({
   const emailStyles = buildEmailStyles(branding.brandColor);
   return (
     <EmailLayout
+      logoUrl={branding.logoUrl}
       preview={`${code} is your ${productName} account deletion code`}
       productName={productName}
-      logoUrl={branding.logoUrl}
     >
       <Text style={emailStyles.heading}>Confirm account deletion</Text>
       <Text style={emailStyles.paragraph}>
         We received a request to permanently delete the {productName} account
         for <strong style={{ color: "#171717" }}>{email}</strong>.
       </Text>
-      <Text style={emailStyles.paragraph}>
-        Enter this code to confirm:
-      </Text>
+      <Text style={emailStyles.paragraph}>Enter this code to confirm:</Text>
 
       {/* OTP code block */}
       <Section style={{ margin: "24px 0" }}>
@@ -49,9 +47,9 @@ export function DeleteConfirmationEmail({
       </Section>
 
       <Text style={emailStyles.muted}>
-        This code expires in <strong>15 minutes</strong>. If you did not
-        request account deletion, you can safely ignore this email — your
-        account will not be affected.
+        This code expires in <strong>15 minutes</strong>. If you did not request
+        account deletion, you can safely ignore this email — your account will
+        not be affected.
       </Text>
     </EmailLayout>
   );

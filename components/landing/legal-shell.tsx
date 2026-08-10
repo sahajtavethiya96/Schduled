@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "@phosphor-icons/react/dist/ssr";
-import { LandingHeader } from "./landing-header";
+import Link from "next/link";
 import { LandingFooter } from "./landing-footer";
-import { TocNav } from "./toc-nav";
+import { LandingHeader } from "./landing-header";
 import { Reveal } from "./reveal";
+import { TocNav } from "./toc-nav";
 
 const DARK_BG: React.CSSProperties = {
   background: `
@@ -19,12 +19,12 @@ export interface TocEntry {
 }
 
 interface LegalShellProps {
-  eyebrow: string;
-  title: string;
-  description: string;
-  lastUpdated: string;
-  toc: TocEntry[];
   children: React.ReactNode;
+  description: string;
+  eyebrow: string;
+  lastUpdated: string;
+  title: string;
+  toc: TocEntry[];
 }
 
 export function LegalShell({
@@ -40,7 +40,10 @@ export function LegalShell({
       <LandingHeader />
 
       {/* ── Hero ──────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden py-20 sm:py-28" style={DARK_BG}>
+      <section
+        className="relative overflow-hidden py-20 sm:py-28"
+        style={DARK_BG}
+      >
         {/* Glow orb */}
         <div
           className="pointer-events-none absolute right-0 top-0 h-[500px] w-[500px]"
@@ -61,21 +64,21 @@ export function LegalShell({
         />
 
         <Reveal>
-        <div className="relative mx-auto max-w-4xl px-5 sm:px-8">
-          <p className="mb-4 text-2xs font-black uppercase tracking-[0.22em] text-teal-400/60">
-            {eyebrow}
-          </p>
-          <h1 className="font-black text-4xl leading-tight text-white sm:text-5xl lg:text-6xl">
-            {title}
-          </h1>
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-white/50">
-            {description}
-          </p>
-          <div className="mt-8 inline-flex items-center gap-2 border border-teal-700/35 bg-teal-950/60 px-4 py-2 text-xs text-teal-300/80">
-            <span className="h-1.5 w-1.5 rounded-full bg-teal-400/60" />
-            Last updated: {lastUpdated}
+          <div className="relative mx-auto max-w-4xl px-5 sm:px-8">
+            <p className="mb-4 text-2xs font-black uppercase tracking-[0.22em] text-teal-400/60">
+              {eyebrow}
+            </p>
+            <h1 className="font-black text-4xl leading-tight text-white sm:text-5xl lg:text-6xl">
+              {title}
+            </h1>
+            <p className="mt-5 max-w-xl text-base leading-relaxed text-white/50">
+              {description}
+            </p>
+            <div className="mt-8 inline-flex items-center gap-2 border border-teal-700/35 bg-teal-950/60 px-4 py-2 text-xs text-teal-300/80">
+              <span className="h-1.5 w-1.5 rounded-full bg-teal-400/60" />
+              Last updated: {lastUpdated}
+            </div>
           </div>
-        </div>
         </Reveal>
       </section>
 
@@ -93,10 +96,10 @@ export function LegalShell({
               {/* Back to home */}
               <div className="mt-8 border-t border-base-300 pt-6">
                 <Link
-                  href="/"
                   className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary transition-opacity hover:opacity-75"
+                  href="/"
                 >
-                  <ArrowLeft size={12} className="shrink-0" /> Back to Schduled
+                  <ArrowLeft className="shrink-0" size={12} /> Back to Schduled
                 </Link>
               </div>
             </div>
@@ -104,7 +107,7 @@ export function LegalShell({
 
           {/* Content */}
           <Reveal>
-          <article className="prose-legal">{children}</article>
+            <article className="prose-legal">{children}</article>
           </Reveal>
         </div>
       </div>
@@ -112,24 +115,25 @@ export function LegalShell({
       {/* ── CTA band ──────────────────────────────────────────────────────── */}
       <section className="border-t border-base-300 bg-base-200/20 py-16">
         <Reveal>
-        <div className="mx-auto max-w-4xl px-5 text-center sm:px-8">
-          <p className="mb-2 text-xs font-black uppercase tracking-eyebrow text-primary">
-            Ready to start?
-          </p>
-          <h2 className="font-black text-2xl sm:text-3xl">
-            Scheduling made simple. Free forever.
-          </h2>
-          <p className="mt-3 text-muted-foreground">
-            No credit card, no paid plans. Your booking link is ready in 2 minutes.
-          </p>
-          <Link
-            href="/login"
-            className="mt-7 inline-flex items-center gap-2 bg-primary px-7 py-3 text-sm font-semibold text-primary-content transition-opacity hover:opacity-90"
-          >
-            Get started free
-            <ArrowRight size={14} weight="bold" />
-          </Link>
-        </div>
+          <div className="mx-auto max-w-4xl px-5 text-center sm:px-8">
+            <p className="mb-2 text-xs font-black uppercase tracking-eyebrow text-primary">
+              Ready to start?
+            </p>
+            <h2 className="font-black text-2xl sm:text-3xl">
+              Scheduling made simple. Free forever.
+            </h2>
+            <p className="mt-3 text-muted-foreground">
+              No credit card, no paid plans. Your booking link is ready in 2
+              minutes.
+            </p>
+            <Link
+              className="mt-7 inline-flex items-center gap-2 bg-primary px-7 py-3 text-sm font-semibold text-primary-content transition-opacity hover:opacity-90"
+              href="/login"
+            >
+              Get started free
+              <ArrowRight size={14} weight="bold" />
+            </Link>
+          </div>
         </Reveal>
       </section>
 
@@ -150,7 +154,7 @@ export function LegalSection({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="mb-12 scroll-mt-28">
+    <section className="mb-12 scroll-mt-28" id={id}>
       <div className="mb-5 flex items-center gap-3">
         <div className="h-5 w-1 bg-primary" />
         <h2 className="font-black text-xl text-base-content">{title}</h2>
@@ -204,8 +208,8 @@ export function LegalTable({
           <tr className="bg-base-200/50">
             {headers.map((h) => (
               <th
-                key={h}
                 className="px-4 py-2.5 text-left text-xs font-black uppercase tracking-ui text-muted-foreground"
+                key={h}
               >
                 {h}
               </th>
@@ -213,13 +217,15 @@ export function LegalTable({
           </tr>
         </thead>
         <tbody>
-          {rows.map((row, i) => (
-            <tr key={i} className="border-t border-base-300">
-              {row.map((cell, j) => (
-                <td key={j} className="px-4 py-3 text-muted-foreground">
-                  {cell}
-                </td>
-              ))}
+          {rows.map((row) => (
+            <tr className="border-t border-base-300" key={row.join("|")}>
+              {row
+                .map((cell, colIndex) => ({ cell, header: headers[colIndex] }))
+                .map(({ cell, header }) => (
+                  <td className="px-4 py-3 text-muted-foreground" key={header}>
+                    {cell}
+                  </td>
+                ))}
             </tr>
           ))}
         </tbody>

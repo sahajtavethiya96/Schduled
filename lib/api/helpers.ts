@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
 import { sql } from "drizzle-orm";
+import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
 // ── Redirect-target sanitization ──────────────────────────────────────────────
@@ -14,12 +14,20 @@ export function safeReturnTo(
   value: string | null | undefined,
   fallback = "/dashboard"
 ): string {
-  if (!value) return fallback;
+  if (!value) {
+    return fallback;
+  }
   // Must be a relative path: starts with exactly one slash, no scheme, no
   // protocol-relative "//" or "/\" host-injection.
-  if (!value.startsWith("/")) return fallback;
-  if (value.startsWith("//") || value.startsWith("/\\")) return fallback;
-  if (value.includes("://")) return fallback;
+  if (!value.startsWith("/")) {
+    return fallback;
+  }
+  if (value.startsWith("//") || value.startsWith("/\\")) {
+    return fallback;
+  }
+  if (value.includes("://")) {
+    return fallback;
+  }
   return value;
 }
 
@@ -77,7 +85,9 @@ export async function checkRateLimit(
   // Opportunistic cleanup — cheap, and harmless if it runs on every replica
   // concurrently (DELETE is idempotent). No dedicated cron needed.
   if (Math.random() < 0.01) {
-    void db.execute(sql`DELETE FROM rate_limit_bucket WHERE reset_at < now() - interval '1 day'`);
+    void db.execute(
+      sql`DELETE FROM rate_limit_bucket WHERE reset_at < now() - interval '1 day'`
+    );
   }
 
   return count <= limit;
@@ -90,10 +100,14 @@ export async function checkRateLimit(
 export function getClientIp(request: Request): string {
   // Prefer headers set exclusively by trusted infrastructure (cannot be spoofed by clients).
   const cfIp = request.headers.get("cf-connecting-ip");
-  if (cfIp) return cfIp.trim();
+  if (cfIp) {
+    return cfIp.trim();
+  }
 
   const realIp = request.headers.get("x-real-ip");
-  if (realIp) return realIp.trim();
+  if (realIp) {
+    return realIp.trim();
+  }
 
   // X-Forwarded-For: leftmost value is client-controlled and spoofable.
   // The rightmost value is appended by the server's direct upstream proxy and is trustworthy.

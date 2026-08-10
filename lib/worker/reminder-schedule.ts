@@ -32,12 +32,20 @@ export function computeReminderSchedule(
 
   const remind24h = subHours(startTime, 24);
   if (remind24h.getTime() > now.getTime()) {
-    entries.push({ jobName: JOB_NAMES.BOOKING_REMINDER_24H, singletonTag: "24h", startAfter: remind24h });
+    entries.push({
+      jobName: JOB_NAMES.BOOKING_REMINDER_24H,
+      singletonTag: "24h",
+      startAfter: remind24h,
+    });
   }
 
   const remind1h = subHours(startTime, 1);
   if (remind1h.getTime() > now.getTime()) {
-    entries.push({ jobName: JOB_NAMES.BOOKING_REMINDER_1H, singletonTag: "1h", startAfter: remind1h });
+    entries.push({
+      jobName: JOB_NAMES.BOOKING_REMINDER_1H,
+      singletonTag: "1h",
+      startAfter: remind1h,
+    });
     return entries;
   }
 

@@ -10,7 +10,6 @@ import {
   HourglassMedium,
   Spinner,
 } from "@phosphor-icons/react";
-import { useRouter } from "next/navigation";
 import {
   addMonths,
   eachDayOfInterval,
@@ -23,6 +22,7 @@ import {
   subMonths,
 } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -56,7 +56,9 @@ export function RescheduleClient(props: Props) {
   const [inviteeTz, setInviteeTz] = useState(props.inviteeTimezone);
   useEffect(() => {
     const detected = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    if (detected && detected !== props.inviteeTimezone) setInviteeTz(detected);
+    if (detected && detected !== props.inviteeTimezone) {
+      setInviteeTz(detected);
+    }
   }, [props.inviteeTimezone]);
   const [today, setToday] = useState(props.today);
   const [month, setMonth] = useState(() => {
@@ -192,27 +194,39 @@ export function RescheduleClient(props: Props) {
               />
             )}
             <h1 className="mt-4 text-lg font-bold text-base-content">
-              {pendingApproval ? "Awaiting host approval" : "Booking rescheduled"}
+              {pendingApproval
+                ? "Awaiting host approval"
+                : "Booking rescheduled"}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
               {pendingApproval ? (
                 <>
                   Your request to reschedule{" "}
-                  <strong className="text-base-content">{props.eventName}</strong>{" "}
+                  <strong className="text-base-content">
+                    {props.eventName}
+                  </strong>{" "}
                   to{" "}
                   <strong className="text-base-content">
                     {newStartUtc &&
-                      formatInTimeZone(new Date(newStartUtc), inviteeTz, DATE_FMT)}
+                      formatInTimeZone(
+                        new Date(newStartUtc),
+                        inviteeTz,
+                        DATE_FMT
+                      )}
                   </strong>{" "}
-                  has been sent to {props.hostName} for approval. You'll receive a
-                  confirmation email once approved.
+                  has been sent to {props.hostName} for approval. You'll receive
+                  a confirmation email once approved.
                 </>
               ) : (
                 <>
                   Your {props.eventName} with {props.hostName} is now on{" "}
                   <strong className="text-base-content">
                     {newStartUtc &&
-                      formatInTimeZone(new Date(newStartUtc), inviteeTz, DATE_FMT)}
+                      formatInTimeZone(
+                        new Date(newStartUtc),
+                        inviteeTz,
+                        DATE_FMT
+                      )}
                   </strong>
                   . A confirmation email is on its way.
                 </>
@@ -221,9 +235,11 @@ export function RescheduleClient(props: Props) {
           </div>
           <div className="border-t border-base-300 px-5 py-5 sm:px-8">
             <button
-              type="button"
-              onClick={() => (window.history.length > 1 ? router.back() : router.push("/"))}
               className="flex h-10 w-full items-center justify-center gap-2 border border-base-300 text-sm font-semibold text-base-content transition-all hover:bg-base-200"
+              onClick={() =>
+                window.history.length > 1 ? router.back() : router.push("/")
+              }
+              type="button"
             >
               <ArrowLeft size={14} />
               Go Back
@@ -239,9 +255,11 @@ export function RescheduleClient(props: Props) {
       <div className="w-full max-w-3xl overflow-hidden bg-base-100 border border-base-300">
         <div className="border-b border-base-300 bg-base-200/30 px-5 py-5 sm:px-8">
           <button
-            type="button"
-            onClick={() => (window.history.length > 1 ? router.back() : router.push("/"))}
             className="mb-4 inline-flex items-center gap-2 border border-base-300 bg-base-100 px-3.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
+            onClick={() =>
+              window.history.length > 1 ? router.back() : router.push("/")
+            }
+            type="button"
           >
             <ArrowLeft size={14} />
             Back
@@ -313,7 +331,9 @@ export function RescheduleClient(props: Props) {
                       className={cn(
                         "flex h-10 w-10 items-center justify-center text-sm transition-all",
                         !inMonth && "invisible pointer-events-none",
-                        inMonth && !available && "cursor-default text-muted-foreground/20",
+                        inMonth &&
+                          !available &&
+                          "cursor-default text-muted-foreground/20",
                         inMonth &&
                           available &&
                           !isSelected &&
@@ -404,9 +424,7 @@ export function RescheduleClient(props: Props) {
                   )}
                 </div>
                 {error && (
-                  <p className="px-6 pb-2 text-xs text-error">
-                    {error}
-                  </p>
+                  <p className="px-6 pb-2 text-xs text-error">{error}</p>
                 )}
                 {selectedSlot && (
                   <div className="border-t border-base-300 p-4">

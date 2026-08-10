@@ -1,5 +1,5 @@
 import { Button, Hr, Link, Section, Text } from "react-email";
-import { emailBranding, type EmailBranding } from "@/lib/email/branding";
+import { type EmailBranding, emailBranding } from "@/lib/email/branding";
 import { canonicalizeTz } from "@/lib/utils";
 import { buildEmailStyles, EmailLayout } from "./layout";
 
@@ -10,7 +10,9 @@ interface ApprovalOutcomeEmailProps {
   confirmationNote?: string | null;
   eventName: string;
   hostName: string;
+  hostTimezone: string;
   inviteeName: string;
+  inviteeTimezone: string;
   locationLabel: string;
   locationType?: string;
   meetLabel?: string;
@@ -20,8 +22,6 @@ interface ApprovalOutcomeEmailProps {
   rescheduleUrl?: string | null;
   whenHost: string;
   whenInvitee: string;
-  hostTimezone: string;
-  inviteeTimezone: string;
 }
 
 const red = "#EF4444";
@@ -52,7 +52,9 @@ export function ApprovalOutcomeEmail({
   const badgeBg = approved ? "#CCFBF1" : "#FEE2E2";
   const badgeText = approved ? "Booking Confirmed" : "Booking Declined";
   const linkMissing =
-    approved && !meetLink && ["google_meet", "zoom", "teams"].includes(locationType ?? "");
+    approved &&
+    !meetLink &&
+    ["google_meet", "zoom", "teams"].includes(locationType ?? "");
   const providerName =
     locationType === "google_meet"
       ? "Google Meet"
@@ -63,13 +65,13 @@ export function ApprovalOutcomeEmail({
           : "video";
   return (
     <EmailLayout
+      logoUrl={branding.logoUrl}
       preview={
         approved
           ? `Confirmed: ${eventName} with ${hostName}`
           : `Declined: ${eventName} with ${hostName}`
       }
       productName={branding.appName}
-      logoUrl={branding.logoUrl}
     >
       {/* Badge */}
       <Section style={{ marginBottom: "8px" }}>
@@ -91,7 +93,9 @@ export function ApprovalOutcomeEmail({
       </Section>
 
       <Text style={{ ...emailStyles.heading, color: "#171717" }}>
-        {approved ? "Your booking is confirmed!" : "Your booking request was declined"}
+        {approved
+          ? "Your booking is confirmed!"
+          : "Your booking request was declined"}
       </Text>
 
       <Text style={emailStyles.paragraph}>
@@ -125,11 +129,22 @@ export function ApprovalOutcomeEmail({
       <Section>
         <DetailRow label="Event" value={eventName} />
         <DetailRow label="With" value={hostName} />
-        <DetailRow label={`Date & Time (${canonicalizeTz(hostTimezone)})`} value={whenHost} />
+        <DetailRow
+          label={`Date & Time (${canonicalizeTz(hostTimezone)})`}
+          value={whenHost}
+        />
         {canonicalizeTz(inviteeTimezone) !== canonicalizeTz(hostTimezone) && (
-          <DetailRow label={`Date & Time (${canonicalizeTz(inviteeTimezone)})`} value={whenInvitee} />
+          <DetailRow
+            label={`Date & Time (${canonicalizeTz(inviteeTimezone)})`}
+            value={whenInvitee}
+          />
         )}
-        <DetailRow label="Location" value={locationLabel} href={locationLabel.startsWith('http') ? locationLabel : undefined} linkColor={teal} />
+        <DetailRow
+          href={locationLabel.startsWith("http") ? locationLabel : undefined}
+          label="Location"
+          linkColor={teal}
+          value={locationLabel}
+        />
       </Section>
 
       {approved && confirmationNote && (
@@ -141,7 +156,14 @@ export function ApprovalOutcomeEmail({
             marginTop: "16px",
           }}
         >
-          <Text style={{ ...emailStyles.paragraph, color: "#166534", margin: 0, lineHeight: "1.6" }}>
+          <Text
+            style={{
+              ...emailStyles.paragraph,
+              color: "#166534",
+              margin: 0,
+              lineHeight: "1.6",
+            }}
+          >
             {confirmationNote}
           </Text>
         </Section>
@@ -156,9 +178,16 @@ export function ApprovalOutcomeEmail({
             marginTop: "16px",
           }}
         >
-          <Text style={{ color: "#92400E", fontSize: "13px", margin: 0, lineHeight: "1.6" }}>
-            The {providerName} link isn&apos;t ready yet — {hostName} will share it with you
-            before the meeting.
+          <Text
+            style={{
+              color: "#92400E",
+              fontSize: "13px",
+              margin: 0,
+              lineHeight: "1.6",
+            }}
+          >
+            The {providerName} link isn&apos;t ready yet — {hostName} will share
+            it with you before the meeting.
           </Text>
         </Section>
       )}
@@ -181,9 +210,15 @@ export function ApprovalOutcomeEmail({
             )}
           </Section>
           {meetLink && meetPassword && (
-            <Section style={{ textAlign: "center" as const, marginBottom: "12px" }}>
-              <Text style={{ ...emailStyles.muted, margin: "0 0 2px" }}>Meeting Password</Text>
-              <Text style={{ ...emailStyles.paragraph, fontWeight: 700, margin: 0 }}>
+            <Section
+              style={{ textAlign: "center" as const, marginBottom: "12px" }}
+            >
+              <Text style={{ ...emailStyles.muted, margin: "0 0 2px" }}>
+                Meeting Password
+              </Text>
+              <Text
+                style={{ ...emailStyles.paragraph, fontWeight: 700, margin: 0 }}
+              >
                 {meetPassword}
               </Text>
             </Section>
@@ -213,7 +248,13 @@ export function ApprovalOutcomeEmail({
       )}
 
       {!approved && (
-        <Text style={{ ...emailStyles.muted, textAlign: "center" as const, marginTop: "16px" }}>
+        <Text
+          style={{
+            ...emailStyles.muted,
+            textAlign: "center" as const,
+            marginTop: "16px",
+          }}
+        >
           Feel free to reach out to {hostName} directly if you have questions.
         </Text>
       )}
@@ -221,17 +262,42 @@ export function ApprovalOutcomeEmail({
   );
 }
 
-function DetailRow({ label, value, href, linkColor = emailBranding.brandColor }: { label: string; value: string; href?: string; linkColor?: string }) {
+function DetailRow({
+  label,
+  value,
+  href,
+  linkColor = emailBranding.brandColor,
+}: {
+  label: string;
+  value: string;
+  href?: string;
+  linkColor?: string;
+}) {
   const emailStyles = buildEmailStyles(linkColor);
   return (
     <Section style={{ marginBottom: "8px" }}>
       <Text style={{ ...emailStyles.muted, margin: "0" }}>{label}</Text>
       {href ? (
-        <Link href={href} style={{ color: linkColor, fontSize: "14px", fontWeight: 600, display: "block", textDecoration: "underline" }}>
+        <Link
+          href={href}
+          style={{
+            color: linkColor,
+            fontSize: "14px",
+            fontWeight: 600,
+            display: "block",
+            textDecoration: "underline",
+          }}
+        >
           View Location
         </Link>
       ) : (
-        <Text style={{ ...emailStyles.paragraph, fontWeight: 600, margin: "2px 0 0" }}>
+        <Text
+          style={{
+            ...emailStyles.paragraph,
+            fontWeight: 600,
+            margin: "2px 0 0",
+          }}
+        >
           {value}
         </Text>
       )}

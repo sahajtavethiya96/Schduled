@@ -28,20 +28,36 @@ export function UnsavedChangesBar({
   return (
     <div
       className={`fixed bottom-20 right-6 z-30 flex items-center gap-4 border border-base-300 bg-base-100 px-5 py-3 ring-1 ring-foreground/10 transition-all duration-200 ease-out md:bottom-6 ${
-        visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"
+        visible
+          ? "translate-y-0 opacity-100"
+          : "pointer-events-none translate-y-2 opacity-0"
       }`}
     >
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Warning size={15} weight="fill" className="text-amber-500" />
+        <Warning className="text-amber-500" size={15} weight="fill" />
         <span>{label}</span>
       </div>
       <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" disabled={pending} onClick={onCancel} type="button">
+        <Button
+          disabled={pending}
+          onClick={onCancel}
+          size="sm"
+          type="button"
+          variant="outline"
+        >
           Cancel
         </Button>
-        <Button size="sm" className="gap-1.5" disabled={pending} onClick={onSave} type="button">
+        <Button
+          className="gap-1.5"
+          disabled={pending}
+          onClick={onSave}
+          size="sm"
+          type="button"
+        >
           {pending ? (
-            <><CircleNotch className="animate-spin" size={13} /> Saving…</>
+            <>
+              <CircleNotch className="animate-spin" size={13} /> Saving…
+            </>
           ) : (
             "Save changes"
           )}

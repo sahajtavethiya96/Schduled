@@ -1,18 +1,28 @@
-import { notFound } from "next/navigation";
 import { eq } from "drizzle-orm";
+import { notFound } from "next/navigation";
 import { booking, eventType, user } from "@/db/schema";
 import { db } from "@/lib/db";
 import { ReviewClient } from "./_components/review-client";
 
-function resolveLocationLabel(locationType: string, locationValue: string | null): string {
+function resolveLocationLabel(
+  locationType: string,
+  locationValue: string | null
+): string {
   switch (locationType) {
-    case "google_meet": return "Google Meet";
-    case "zoom": return "Zoom";
-    case "phone_host_calls": return "Phone (host will call you)";
-    case "phone_invitee_calls": return locationValue ? `Call: ${locationValue}` : "Phone (you call host)";
-    case "in_person": return locationValue ?? "In person";
-    case "custom": return locationValue ?? "See invite for details";
-    default: return locationValue ?? "See invite for details";
+    case "google_meet":
+      return "Google Meet";
+    case "zoom":
+      return "Zoom";
+    case "phone_host_calls":
+      return "Phone (host will call you)";
+    case "phone_invitee_calls":
+      return locationValue ? `Call: ${locationValue}` : "Phone (you call host)";
+    case "in_person":
+      return locationValue ?? "In person";
+    case "custom":
+      return locationValue ?? "See invite for details";
+    default:
+      return locationValue ?? "See invite for details";
   }
 }
 
@@ -47,11 +57,17 @@ export default async function ReviewPage({
     .where(eq(booking.approvalToken, token))
     .limit(1);
 
-  if (!b) notFound();
+  if (!b) {
+    notFound();
+  }
 
-  const isReschedule = type === "reschedule" || b.status === "reschedule_requested";
+  const isReschedule =
+    type === "reschedule" || b.status === "reschedule_requested";
   const isPast = new Date(b.startTime).getTime() < Date.now();
-  const locationLabel = resolveLocationLabel(b.etLocationType, b.etLocationValue);
+  const locationLabel = resolveLocationLabel(
+    b.etLocationType,
+    b.etLocationValue
+  );
 
   // For a reschedule review, the request is actionable only while it's still
   // pending. If the booking moved on (approved, declined, or cancelled while the
@@ -67,15 +83,19 @@ export default async function ReviewPage({
       eventName={b.etName}
       hostName={b.hostName ?? "your host"}
       hostTimezone={b.hostTimezone ?? "UTC"}
+      initialAction={action === "approve" ? "approve" : null}
       inviteeEmail={b.inviteeEmail}
       inviteeName={b.inviteeName}
-      isPast={isPast}
       isAlreadyActioned={isAlreadyActioned}
-      initialAction={action === "approve" ? "approve" : null}
-      startUtc={new Date(b.startTime).toISOString()}
-      requestedStartUtc={b.rescheduleRequestedStart ? new Date(b.rescheduleRequestedStart).toISOString() : null}
-      mode={isReschedule ? "reschedule" : "booking"}
+      isPast={isPast}
       locationLabel={locationLabel}
+      mode={isReschedule ? "reschedule" : "booking"}
+      requestedStartUtc={
+        b.rescheduleRequestedStart
+          ? new Date(b.rescheduleRequestedStart).toISOString()
+          : null
+      }
+      startUtc={new Date(b.startTime).toISOString()}
     />
   );
 }

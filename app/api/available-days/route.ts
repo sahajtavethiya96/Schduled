@@ -100,9 +100,13 @@ export async function GET(request: Request) {
   // For a fixed window, clamp the bookable range to [rangeStart, rangeEnd];
   // otherwise use the rolling window from today.
   const isFixed =
-    et.bookingWindowType === "fixed" && !!et.bookingRangeStart && !!et.bookingRangeEnd;
+    et.bookingWindowType === "fixed" &&
+    !!et.bookingRangeStart &&
+    !!et.bookingRangeEnd;
   const today =
-    isFixed && et.bookingRangeStart! > todayStr ? et.bookingRangeStart! : todayStr;
+    isFixed && et.bookingRangeStart! > todayStr
+      ? et.bookingRangeStart!
+      : todayStr;
   const maxDate = isFixed ? et.bookingRangeEnd! : rollingMax;
 
   // Build day list using UTC-based iteration — local-time Date constructors
@@ -158,7 +162,11 @@ export async function GET(request: Request) {
         eq(booking.hostUserId, host.id),
         // pending + reschedule_requested bookings also occupy the day (the
         // latter still holds its original slot) — keep them out of open slots
-        inArray(booking.status, ["confirmed", "pending", "reschedule_requested"]),
+        inArray(booking.status, [
+          "confirmed",
+          "pending",
+          "reschedule_requested",
+        ]),
         lte(booking.startTime, monthEndUtc),
         gte(booking.endTime, monthStartUtc)
       )

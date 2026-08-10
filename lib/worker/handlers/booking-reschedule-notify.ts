@@ -1,7 +1,7 @@
 import { formatInTimeZone } from "date-fns-tz";
 import type { Job } from "pg-boss";
-import { enqueueEmail } from "@/lib/email";
 import { generateBookingICS } from "@/lib/calendar/ics";
+import { enqueueEmail } from "@/lib/email";
 import { bookingEmail } from "@/lib/email/templates/booking-emails";
 import { createNotification } from "@/lib/notifications/create";
 import type { BookingRescheduleNotifyPayload } from "@/lib/worker/job-types";
@@ -36,8 +36,16 @@ async function processOne(bookingId: string, previousStartUtc: string) {
 
   const prefs = await loadHostPrefs(b.hostUserId);
   const hostTimezone = b.hostTimezone ?? "UTC";
-  const locationLabelInvitee = resolveLocationLabel(b.etLocationType, b.etLocationValue, b.inviteePhone);
-  const locationLabelHost = resolveLocationLabelHost(b.etLocationType, b.etLocationValue, b.inviteePhone);
+  const locationLabelInvitee = resolveLocationLabel(
+    b.etLocationType,
+    b.etLocationValue,
+    b.inviteePhone
+  );
+  const locationLabelHost = resolveLocationLabelHost(
+    b.etLocationType,
+    b.etLocationValue,
+    b.inviteePhone
+  );
   const meetLabel = resolveMeetButtonLabel(b.etLocationType);
 
   const baseShared = {
@@ -72,7 +80,7 @@ async function processOne(bookingId: string, previousStartUtc: string) {
       description: `${b.etName} meeting via Schduled`,
       startUtc,
       durationMinutes: Math.round(
-        (new Date(b.endTime).getTime() - startUtc.getTime()) / 60000
+        (new Date(b.endTime).getTime() - startUtc.getTime()) / 60_000
       ),
       organizerName: b.hostName ?? "Your host",
       organizerEmail: b.hostEmail ?? "",

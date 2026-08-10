@@ -84,13 +84,13 @@ export function UserDetailActions({
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              variant={banned ? "default" : "destructive"}
               onClick={() => {
                 const fd = new FormData();
                 fd.append("userId", userId);
                 fd.append("banned", String(!banned));
                 startTransition(() => toggleUserBanAction(fd));
               }}
+              variant={banned ? "default" : "destructive"}
             >
               {banned ? "Reactivate" : "Suspend"}
             </AlertDialogAction>

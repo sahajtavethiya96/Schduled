@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
 import { eq } from "drizzle-orm";
+import type { Metadata } from "next";
 import { Card, CardContent } from "@/components/ui/card";
 import { booking, cancellationPolicy, eventType, user } from "@/db/schema";
 import { db } from "@/lib/db";
@@ -47,11 +47,11 @@ export default async function CancelPage({
 
   const [policy] = await db
     .select({
-      allowCancellation:         cancellationPolicy.allowCancellation,
-      cutoffHours:               cancellationPolicy.cutoffHours,
+      allowCancellation: cancellationPolicy.allowCancellation,
+      cutoffHours: cancellationPolicy.cutoffHours,
       requireCancellationReason: cancellationPolicy.requireCancellationReason,
-      showPolicyText:            cancellationPolicy.showPolicyText,
-      policyText:                cancellationPolicy.policyText,
+      showPolicyText: cancellationPolicy.showPolicyText,
+      policyText: cancellationPolicy.policyText,
     })
     .from(cancellationPolicy)
     .where(eq(cancellationPolicy.eventTypeId, b.etId))

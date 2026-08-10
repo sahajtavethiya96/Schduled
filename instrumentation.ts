@@ -73,9 +73,14 @@ export const onRequestError: Instrumentation.onRequestError = async (
   // fall back to plain console output there instead of importing it.
   if (process.env.NEXT_RUNTIME === "nodejs") {
     const { createLogger } = await import("@/lib/logger");
-    createLogger("server-error").error({ ...fields, err }, "unhandled server error");
+    createLogger("server-error").error(
+      { ...fields, err },
+      "unhandled server error"
+    );
     return;
   }
 
-  console.error(`[server-error] ${fields.method} ${fields.path}\n${formatError(err)}`);
+  console.error(
+    `[server-error] ${fields.method} ${fields.path}\n${formatError(err)}`
+  );
 };

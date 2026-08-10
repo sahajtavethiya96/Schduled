@@ -24,7 +24,10 @@ import { paginationRange } from "@/lib/utils";
 const PAGE_SIZE = 10;
 
 import { retryFailedJobsAction } from "@/app/actions/queues";
-import { getFriendlyName, StateBadge } from "@/components/settings-admin/queue-format";
+import {
+  getFriendlyName,
+  StateBadge,
+} from "@/components/settings-admin/queue-format";
 import { QueueJobsSheet } from "@/components/settings-admin/queue-jobs-sheet";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -186,17 +189,39 @@ function QueueOverviewCard({
 }) {
   const status =
     failed > 0
-      ? { label: `${failed} Failed`, cls: "text-error", dot: "bg-error", border: "border-error/25" }
+      ? {
+          label: `${failed} Failed`,
+          cls: "text-error",
+          dot: "bg-error",
+          border: "border-error/25",
+        }
       : active > 0
-        ? { label: `${active} Running`, cls: "text-primary", dot: "bg-primary", border: "border-primary/25" }
+        ? {
+            label: `${active} Running`,
+            cls: "text-primary",
+            dot: "bg-primary",
+            border: "border-primary/25",
+          }
         : pending > 0
-          ? { label: `${pending} Pending`, cls: "text-amber-600 dark:text-amber-500", dot: "bg-amber-500", border: "border-amber-500/25" }
-          : { label: "Healthy", cls: "text-success", dot: "bg-success", border: "border-success/20" };
+          ? {
+              label: `${pending} Pending`,
+              cls: "text-amber-600 dark:text-amber-500",
+              dot: "bg-amber-500",
+              border: "border-amber-500/25",
+            }
+          : {
+              label: "Healthy",
+              cls: "text-success",
+              dot: "bg-success",
+              border: "border-success/20",
+            };
 
   return (
     <div className={`flex flex-col gap-2 border p-3.5 ${status.border}`}>
       <p className="truncate text-sm font-medium text-base-content">{name}</p>
-      <span className={`flex items-center gap-1.5 text-xs font-semibold ${status.cls}`}>
+      <span
+        className={`flex items-center gap-1.5 text-xs font-semibold ${status.cls}`}
+      >
         <span className={`size-1.5 rounded-full ${status.dot}`} />
         {status.label}
       </span>
@@ -252,6 +277,7 @@ export function QueuesClient({
   const router = useRouter();
 
   // Reset and tick timer whenever fresh data arrives
+  // biome-ignore lint/correctness/useExhaustiveDependencies: fetchedAt isn't read in the body but must stay — it's the trigger that restarts the ticker on fresh data.
   useEffect(() => {
     setSecondsAgo(0);
     const id = setInterval(() => setSecondsAgo((s) => s + 1), 1000);
@@ -309,13 +335,22 @@ export function QueuesClient({
   // Collapses every state row down to one card per queue name, surfacing
   // whichever count is most actionable: failed > running > pending > healthy.
   const queueOverview = useMemo(() => {
-    const byName = new Map<string, { failed: number; active: number; pending: number }>();
+    const byName = new Map<
+      string,
+      { failed: number; active: number; pending: number }
+    >();
     for (const q of queues) {
-      if (q.name.startsWith("__")) continue; // internal pg-boss queues — noise in a compact summary
+      if (q.name.startsWith("__")) {
+        continue; // internal pg-boss queues — noise in a compact summary
+      }
       const entry = byName.get(q.name) ?? { failed: 0, active: 0, pending: 0 };
-      if (q.state === "failed") entry.failed += q.count;
-      else if (q.state === "active") entry.active += q.count;
-      else if (q.state === "created" || q.state === "retry") entry.pending += q.count;
+      if (q.state === "failed") {
+        entry.failed += q.count;
+      } else if (q.state === "active") {
+        entry.active += q.count;
+      } else if (q.state === "created" || q.state === "retry") {
+        entry.pending += q.count;
+      }
       byName.set(q.name, entry);
     }
     return Array.from(byName.entries())
@@ -409,10 +444,16 @@ export function QueuesClient({
       {/* ── Per-queue overview ──────────────────────────────────────────── */}
       {queueOverview.length > 0 && (
         <div>
-          <h3 className="mb-3 text-sm font-semibold text-base-content">Queue Overview</h3>
+          <h3 className="mb-3 text-sm font-semibold text-base-content">
+            Queue Overview
+          </h3>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {queueOverview.map((q) => (
-              <QueueOverviewCard key={q.name} {...q} name={getFriendlyName(q.name)} />
+              <QueueOverviewCard
+                key={q.name}
+                {...q}
+                name={getFriendlyName(q.name)}
+              />
             ))}
           </div>
         </div>
@@ -438,8 +479,11 @@ export function QueuesClient({
                   value={search}
                 />
               </div>
-              <Select value={stateFilter} onValueChange={setStateFilter}>
-                <SelectTrigger className="h-9 w-full text-sm sm:w-40" aria-label="State">
+              <Select onValueChange={setStateFilter} value={stateFilter}>
+                <SelectTrigger
+                  aria-label="State"
+                  className="h-9 w-full text-sm sm:w-40"
+                >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -466,95 +510,93 @@ export function QueuesClient({
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   Run{" "}
-                  <code className="font-mono text-base-content">pnpm worker</code>{" "}
+                  <code className="font-mono text-base-content">
+                    pnpm worker
+                  </code>{" "}
                   or enqueue an email to populate the pg-boss schema.
                 </p>
               </div>
             </div>
+          ) : filtered.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-2 py-16 text-center">
+              <span className="text-muted-foreground/25">
+                <MagnifyingGlass size={36} />
+              </span>
+              <p className="text-sm font-medium text-base-content">
+                No queues match
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Try a different search or filter.
+              </p>
+            </div>
           ) : (
-            <>
-              {filtered.length === 0 ? (
-                <div className="flex flex-col items-center justify-center gap-2 py-16 text-center">
-                  <span className="text-muted-foreground/25">
-                    <MagnifyingGlass size={36} />
-                  </span>
-                  <p className="text-sm font-medium text-base-content">
-                    No queues match
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Try a different search or filter.
-                  </p>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <Table className="w-full text-sm">
-                    <TableHeader>
-                      <TableRow className="border-b border-base-300 bg-base-200/40">
-                        <TableHead className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-ui text-muted-foreground">
-                          Queue
-                        </TableHead>
-                        <TableHead className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-ui text-muted-foreground">
-                          State
-                        </TableHead>
-                        <TableHead className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-ui text-muted-foreground">
-                          Jobs
-                        </TableHead>
-                        <TableHead className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-ui text-muted-foreground">
-                          Actions
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {pageRows.map((row) => (
-                        <TableRow
-                          className="cursor-pointer border-b border-base-300 transition-colors hover:bg-base-200/20 last:border-0"
-                          key={`${row.name}:${row.state}`}
-                          onClick={() =>
-                            setSelected({ name: row.name, state: row.state })
-                          }
-                        >
-                          {/* Queue name */}
-                          <TableCell className="px-6 py-3">
-                            <p className="text-sm font-medium">
-                              {getFriendlyName(row.name)}
-                            </p>
-                            <p className="mt-0.5 font-mono text-xs text-muted-foreground/60">
-                              {row.name}
-                            </p>
-                          </TableCell>
+            <div className="overflow-x-auto">
+              <Table className="w-full text-sm">
+                <TableHeader>
+                  <TableRow className="border-b border-base-300 bg-base-200/40">
+                    <TableHead className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-ui text-muted-foreground">
+                      Queue
+                    </TableHead>
+                    <TableHead className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-ui text-muted-foreground">
+                      State
+                    </TableHead>
+                    <TableHead className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-ui text-muted-foreground">
+                      Jobs
+                    </TableHead>
+                    <TableHead className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-ui text-muted-foreground">
+                      Actions
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {pageRows.map((row) => (
+                    <TableRow
+                      className="cursor-pointer border-b border-base-300 transition-colors hover:bg-base-200/20 last:border-0"
+                      key={`${row.name}:${row.state}`}
+                      onClick={() =>
+                        setSelected({ name: row.name, state: row.state })
+                      }
+                    >
+                      {/* Queue name */}
+                      <TableCell className="px-6 py-3">
+                        <p className="text-sm font-medium">
+                          {getFriendlyName(row.name)}
+                        </p>
+                        <p className="mt-0.5 font-mono text-xs text-muted-foreground/60">
+                          {row.name}
+                        </p>
+                      </TableCell>
 
-                          {/* State badge */}
-                          <TableCell className="px-4 py-3">
-                            <StateBadge state={row.state} />
-                          </TableCell>
+                      {/* State badge */}
+                      <TableCell className="px-4 py-3">
+                        <StateBadge state={row.state} />
+                      </TableCell>
 
-                          {/* Job count */}
-                          <TableCell className="px-4 py-3">
-                            <span className="text-sm font-semibold tabular-nums">
-                              {row.count.toLocaleString()}
-                            </span>
-                          </TableCell>
+                      {/* Job count */}
+                      <TableCell className="px-4 py-3">
+                        <span className="text-sm font-semibold tabular-nums">
+                          {row.count.toLocaleString()}
+                        </span>
+                      </TableCell>
 
-                          {/* Actions */}
-                          <TableCell
-                            className="px-4 py-3"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {row.state === "failed" ? (
-                              <RetryButton queueName={row.name} />
-                            ) : (
-                              <span className="text-xs text-muted-foreground">
-                                —
-                              </span>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              )}
-            </>
+                      {/* Actions */}
+                      <TableCell
+                        className="px-4 py-3"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {row.state === "failed" ? (
+                          <RetryButton queueName={row.name} />
+                        ) : (
+                          <span className="text-xs text-muted-foreground">
+                            —
+                          </span>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
 
           {/* Pagination */}
@@ -580,9 +622,9 @@ export function QueuesClient({
                       }}
                     />
                   </PaginationItem>
-                  {paginationRange(safePage, totalPages).map((p, i) =>
-                    p === "ellipsis" ? (
-                      <PaginationItem key={`e-${i}`}>
+                  {paginationRange(safePage, totalPages).map((p) =>
+                    typeof p === "string" ? (
+                      <PaginationItem key={p}>
                         <PaginationEllipsis />
                       </PaginationItem>
                     ) : (

@@ -1,8 +1,8 @@
+import { formatInTimeZone } from "date-fns-tz";
 import type { Job } from "pg-boss";
 import { enqueueEmail } from "@/lib/email";
 import { rescheduleRequestTemplate } from "@/lib/email/templates/reschedule-request";
 import { createNotification } from "@/lib/notifications/create";
-import { formatInTimeZone } from "date-fns-tz";
 import type { BookingRescheduleRequestPayload } from "@/lib/worker/job-types";
 import {
   loadBookingForLifecycle,
@@ -31,14 +31,20 @@ async function processOne(bookingId: string, previousStartUtc: string) {
     return;
   }
   if (!b.approvalToken) {
-    console.warn(`[booking-reschedule-request] booking ${bookingId} has no approvalToken`);
+    console.warn(
+      `[booking-reschedule-request] booking ${bookingId} has no approvalToken`
+    );
     return;
   }
 
   const prefs = await loadHostPrefs(b.hostUserId);
   const hostTimezone = b.hostTimezone ?? "UTC";
   const requestedStart = b.rescheduleRequestedStart;
-  const locationLabelHost = resolveLocationLabelHost(b.etLocationType, b.etLocationValue, b.inviteePhone);
+  const locationLabelHost = resolveLocationLabelHost(
+    b.etLocationType,
+    b.etLocationValue,
+    b.inviteePhone
+  );
 
   if (b.hostEmail && prefs?.bookingNotificationEmail !== false) {
     const mail = await rescheduleRequestTemplate({
@@ -62,11 +68,17 @@ async function processOne(bookingId: string, previousStartUtc: string) {
       },
       // Key on the requested time so a revised request re-sends, but a handler
       // retry for the same proposed time does not double-send.
-      { idempotencyKey: `reschedule-request:${b.id}:${requestedStart.getTime()}:host` }
+      {
+        idempotencyKey: `reschedule-request:${b.id}:${requestedStart.getTime()}:host`,
+      }
     );
   }
 
-  const whenLabel = formatInTimeZone(requestedStart, hostTimezone, "MMM d 'at' h:mm a");
+  const whenLabel = formatInTimeZone(
+    requestedStart,
+    hostTimezone,
+    "MMM d 'at' h:mm a"
+  );
   await createNotification({
     userId: b.hostUserId,
     type: "booking_reschedule_requested",

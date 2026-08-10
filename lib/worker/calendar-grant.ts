@@ -6,10 +6,17 @@ import { JOB_NAMES } from "@/lib/worker/job-types";
 
 /** True when a Google API error means the OAuth grant is revoked/expired. */
 export function isInvalidGrant(err: unknown): boolean {
-  if (!err || typeof err !== "object") return /invalid_grant/i.test(String(err));
-  const msg = "message" in err ? String((err as { message?: unknown }).message ?? "") : "";
+  if (!err || typeof err !== "object") {
+    return /invalid_grant/i.test(String(err));
+  }
+  const msg =
+    "message" in err
+      ? String((err as { message?: unknown }).message ?? "")
+      : "";
   const status = Number(
-    (err as { status?: unknown }).status ?? (err as { code?: unknown }).code ?? NaN
+    (err as { status?: unknown }).status ??
+      (err as { code?: unknown }).code ??
+      Number.NaN
   );
   return /invalid_grant/i.test(msg) || status === 401;
 }
@@ -35,7 +42,10 @@ export async function markCalendarRevoked(
     .returning({ id: connectedCalendar.id });
 
   if (flipped) {
-    await enqueueJob(JOB_NAMES.CALENDAR_DISCONNECT_ALERT, { connectedCalendarId, userId });
+    await enqueueJob(JOB_NAMES.CALENDAR_DISCONNECT_ALERT, {
+      connectedCalendarId,
+      userId,
+    });
   }
   return !!flipped;
 }

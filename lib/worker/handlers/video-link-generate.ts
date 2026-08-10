@@ -1,10 +1,18 @@
 import { and, eq } from "drizzle-orm";
 import type { Job } from "pg-boss";
-import { booking, connectedCalendar, eventType, videoConnection } from "@/db/schema";
+import {
+  booking,
+  connectedCalendar,
+  eventType,
+  videoConnection,
+} from "@/db/schema";
 import { audit } from "@/lib/audit";
 import { db } from "@/lib/db";
 import { QUEUE_OPTIONS } from "@/lib/worker/ensure-queues";
-import { JOB_NAMES, type VideoLinkGeneratePayload } from "@/lib/worker/job-types";
+import {
+  JOB_NAMES,
+  type VideoLinkGeneratePayload,
+} from "@/lib/worker/job-types";
 import { createZoomMeeting, getValidZoomAccessToken } from "@/lib/zoom/client";
 
 function jobAttempt(job: Job<unknown>): number {
@@ -90,7 +98,8 @@ async function processVideoLinkGenerate(job: Job<VideoLinkGeneratePayload>) {
       return;
     }
 
-    const retryLimit = QUEUE_OPTIONS[JOB_NAMES.VIDEO_LINK_GENERATE].retryLimit ?? 0;
+    const retryLimit =
+      QUEUE_OPTIONS[JOB_NAMES.VIDEO_LINK_GENERATE].retryLimit ?? 0;
     if (jobAttempt(job) < retryLimit) {
       throw new Error(
         `Meet link for booking ${bookingId} not written yet by calendar-write — retrying`
@@ -120,8 +129,16 @@ async function processVideoLinkGenerate(job: Job<VideoLinkGeneratePayload>) {
  * the booking row was never updated, so `locationValue` stayed null with no
  * trace of why.
  */
-async function giveUpOnZoomLink(bookingId: string, hostUserId: string, code: string, detail: unknown) {
-  console.warn(`[video-link-generate] booking ${bookingId}: giving up on Zoom link (${code})`, detail ?? "");
+async function giveUpOnZoomLink(
+  bookingId: string,
+  hostUserId: string,
+  code: string,
+  detail: unknown
+) {
+  console.warn(
+    `[video-link-generate] booking ${bookingId}: giving up on Zoom link (${code})`,
+    detail ?? ""
+  );
   await db
     .update(booking)
     .set({ videoLinkError: code, updatedAt: new Date() })
@@ -157,7 +174,8 @@ async function generateZoomLink(
     return;
   }
 
-  const retryLimit = QUEUE_OPTIONS[JOB_NAMES.VIDEO_LINK_GENERATE].retryLimit ?? 0;
+  const retryLimit =
+    QUEUE_OPTIONS[JOB_NAMES.VIDEO_LINK_GENERATE].retryLimit ?? 0;
   const isLastAttempt = attempt >= retryLimit;
 
   // Find the host's connected Zoom account
@@ -184,7 +202,12 @@ async function generateZoomLink(
     accessToken = await getValidZoomAccessToken(conn);
   } catch (err) {
     if (isLastAttempt) {
-      await giveUpOnZoomLink(b.id, b.hostUserId, "zoom_token_refresh_failed", err);
+      await giveUpOnZoomLink(
+        b.id,
+        b.hostUserId,
+        "zoom_token_refresh_failed",
+        err
+      );
       return;
     }
     console.error(
@@ -205,7 +228,12 @@ async function generateZoomLink(
     });
   } catch (err) {
     if (isLastAttempt) {
-      await giveUpOnZoomLink(b.id, b.hostUserId, "zoom_meeting_create_failed", err);
+      await giveUpOnZoomLink(
+        b.id,
+        b.hostUserId,
+        "zoom_meeting_create_failed",
+        err
+      );
       return;
     }
     // The meeting was not created — safe for pg-boss to retry.
@@ -236,7 +264,9 @@ async function generateZoomLink(
         .where(eq(booking.id, b.id));
       persisted = true;
     } catch (dbErr) {
-      if (dbAttempt === 2) throw dbErr;
+      if (dbAttempt === 2) {
+        throw dbErr;
+      }
       console.warn(
         `[video-link-generate] booking ${b.id}: persist attempt ${dbAttempt + 1} failed, retrying:`,
         dbErr

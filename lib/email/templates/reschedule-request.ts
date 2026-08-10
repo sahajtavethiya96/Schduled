@@ -1,9 +1,9 @@
-import { createElement } from "react";
 import { formatInTimeZone } from "date-fns-tz";
+import { createElement } from "react";
+import { getEmailBranding } from "@/lib/email/branding";
 import { RescheduleRequestEmail } from "@/lib/email/components/reschedule-request";
 import { renderEmailTemplate } from "@/lib/email/renderer";
 import { getAppUrl } from "@/lib/get-app-url";
-import { getEmailBranding } from "@/lib/email/branding";
 
 const DATE_FMT = "EEEE, MMMM d, yyyy 'at' h:mm a";
 
@@ -22,8 +22,16 @@ interface RescheduleRequestParams {
 export async function rescheduleRequestTemplate(p: RescheduleRequestParams) {
   const branding = await getEmailBranding();
   const base = getAppUrl();
-  const currentWhenHost = formatInTimeZone(p.currentStartUtc, p.hostTimezone, DATE_FMT);
-  const requestedWhenHost = formatInTimeZone(p.requestedStartUtc, p.hostTimezone, DATE_FMT);
+  const currentWhenHost = formatInTimeZone(
+    p.currentStartUtc,
+    p.hostTimezone,
+    DATE_FMT
+  );
+  const requestedWhenHost = formatInTimeZone(
+    p.requestedStartUtc,
+    p.hostTimezone,
+    DATE_FMT
+  );
   const reviewUrl = `${base}/booking/review/${p.approvalToken}?type=reschedule`;
   const approveUrl = `${base}/booking/review/${p.approvalToken}?type=reschedule&action=approve`;
 

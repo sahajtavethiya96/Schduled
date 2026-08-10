@@ -3,8 +3,8 @@ import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
 import { and, eq, gte, lte, ne, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { availabilitySchedule, booking, eventType } from "@/db/schema";
-import { db } from "@/lib/db";
 import { checkRateLimit, jsonError, rateLimitKey } from "@/lib/api/helpers";
+import { db } from "@/lib/db";
 import { enqueueJob } from "@/lib/worker/enqueue";
 import { JOB_NAMES } from "@/lib/worker/job-types";
 
@@ -14,14 +14,22 @@ interface ApproveBody {
 
 export async function POST(request: Request) {
   try {
-    if (!(await checkRateLimit(rateLimitKey("POST:/api/bookings/approve", request), 20, 60_000))) {
+    if (
+      !(await checkRateLimit(
+        rateLimitKey("POST:/api/bookings/approve", request),
+        20,
+        60_000
+      ))
+    ) {
       return jsonError("Too many requests. Please wait a moment.", 429);
     }
 
     const body: ApproveBody = await request.json();
     const { token } = body;
 
-    if (!token) return jsonError("Missing approval token", 400);
+    if (!token) {
+      return jsonError("Missing approval token", 400);
+    }
 
     const [b] = await db
       .select({
@@ -37,7 +45,9 @@ export async function POST(request: Request) {
       .where(eq(booking.approvalToken, token))
       .limit(1);
 
-    if (!b) return jsonError("This approval link is invalid.", 404);
+    if (!b) {
+      return jsonError("This approval link is invalid.", 404);
+    }
 
     if (b.status === "confirmed") {
       return NextResponse.json({ ok: true, alreadyApproved: true });
@@ -71,7 +81,9 @@ export async function POST(request: Request) {
 
     const start = new Date(b.startTime);
     const end = new Date(b.endTime);
-    const bufferStart = et?.bufferBefore ? addMinutes(start, -et.bufferBefore) : start;
+    const bufferStart = et?.bufferBefore
+      ? addMinutes(start, -et.bufferBefore)
+      : start;
     const bufferEnd = et?.bufferAfter ? addMinutes(end, et.bufferAfter) : end;
 
     const date = formatInTimeZone(start, hostTz, "yyyy-MM-dd");
@@ -84,7 +96,9 @@ export async function POST(request: Request) {
     const result = await db.transaction(async (tx) => {
       // Host-wide lock (see create route) so two overlapping pending bookings
       // can't both be approved concurrently.
-      await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtext(${b.hostUserId}))`);
+      await tx.execute(
+        sql`SELECT pg_advisory_xact_lock(hashtext(${b.hostUserId}))`
+      );
 
       const existing = await tx
         .select({ startTime: booking.startTime, endTime: booking.endTime })
@@ -101,9 +115,12 @@ export async function POST(request: Request) {
         );
 
       const hasConflict = existing.some(
-        (e) => bufferStart < new Date(e.endTime) && bufferEnd > new Date(e.startTime)
+        (e) =>
+          bufferStart < new Date(e.endTime) && bufferEnd > new Date(e.startTime)
       );
-      if (hasConflict) return { conflict: true } as const;
+      if (hasConflict) {
+        return { conflict: true } as const;
+      }
 
       await tx
         .update(booking)

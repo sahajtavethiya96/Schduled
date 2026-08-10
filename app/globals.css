@@ -88,7 +88,7 @@
   --color-base-300: oklch(0.922 0.005 260);
   --color-base-content: oklch(0.12 0.016 200);
 
-  --color-primary: oklch(0.60 0.104 184.735);
+  --color-primary: oklch(0.6 0.104 184.735);
   --color-primary-content: oklch(0.984 0.014 181.064);
   --color-secondary: oklch(0.928 0.028 185);
   --color-secondary-content: oklch(0.22 0.08 190);
@@ -97,7 +97,7 @@
   --color-neutral: oklch(0.928 0.028 185);
   --color-neutral-content: oklch(0.22 0.08 190);
 
-  --color-info: oklch(0.60 0.104 184.735);
+  --color-info: oklch(0.6 0.104 184.735);
   --color-info-content: oklch(0.984 0.014 181.064);
   --color-success: oklch(0.45 0.13 145);
   --color-success-content: oklch(0.25 0.09 145);
@@ -125,23 +125,23 @@
   color-scheme: dark;
 
   --color-base-100: oklch(0.145 0.022 210);
-  --color-base-200: oklch(0.210 0.028 210);
+  --color-base-200: oklch(0.21 0.028 210);
   --color-base-300: oklch(1 0 0 / 9%);
   --color-base-content: oklch(0.946 0.012 185);
 
-  --color-primary: oklch(0.700 0.120 183);
+  --color-primary: oklch(0.7 0.12 183);
   --color-primary-content: oklch(0.108 0.032 215);
-  --color-secondary: oklch(0.220 0.032 210);
-  --color-secondary-content: oklch(0.920 0.012 185);
-  --color-accent: oklch(0.240 0.048 185);
-  --color-accent-content: oklch(0.840 0.085 183);
-  --color-neutral: oklch(0.220 0.032 210);
-  --color-neutral-content: oklch(0.920 0.012 185);
+  --color-secondary: oklch(0.22 0.032 210);
+  --color-secondary-content: oklch(0.92 0.012 185);
+  --color-accent: oklch(0.24 0.048 185);
+  --color-accent-content: oklch(0.84 0.085 183);
+  --color-neutral: oklch(0.22 0.032 210);
+  --color-neutral-content: oklch(0.92 0.012 185);
 
-  --color-info: oklch(0.700 0.120 183);
+  --color-info: oklch(0.7 0.12 183);
   --color-info-content: oklch(0.108 0.032 215);
   --color-success: oklch(0.65 0.13 145);
-  --color-success-content: oklch(0.90 0.06 145);
+  --color-success-content: oklch(0.9 0.06 145);
   --color-warning: oklch(0.72 0.15 65);
   --color-warning-content: oklch(0.946 0.012 185);
   --color-error: oklch(0.65 0.22 25);
@@ -165,12 +165,8 @@
 }
 
 html {
-  background: var(--background);
-  /* Reserves the scrollbar's width permanently so opening a modal/dropdown
-     (which hides the scrollbar via a body scroll-lock) never shifts layout
-     width — without this, every dropdown/dialog open causes a horizontal
-     jerk on any page that scrolls on <body>. */
   scrollbar-gutter: stable;
+  background: var(--background);
 }
 
 body {
@@ -189,13 +185,13 @@ body:has([data-app-shell]) {
 @theme inline {
   /* Fonts — Plus Jakarta Sans for headings (distinctive), Geist for body */
   --font-heading: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
-  --font-sans:    var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono:    var(--font-geist-mono), ui-monospace, monospace;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
   /* Typography extras */
-  --text-2xs:          0.625rem;
-  --tracking-eyebrow:  0.16em;
-  --tracking-ui:       0.1em;
+  --text-2xs: 0.625rem;
+  --tracking-eyebrow: 0.16em;
+  --tracking-ui: 0.1em;
 
   /* Page background token */
   --color-page: var(--page);
@@ -203,32 +199,32 @@ body:has([data-app-shell]) {
   /* Status tokens — success/warning are native daisyUI theme colors already
      scoped per-theme by @plugin "daisyui/theme" below; only the extras that
      daisyUI doesn't define get proxied here. */
-  --color-success-subtle:     var(--success-subtle);
+  --color-success-subtle: var(--success-subtle);
 
   /* Sidebar tokens */
-  --color-sidebar-border:              var(--sidebar-border);
-  --color-sidebar-accent:              var(--sidebar-accent);
-  --color-sidebar-primary-foreground:  var(--sidebar-primary-foreground);
-  --color-sidebar-primary:             var(--sidebar-primary);
-  --color-sidebar-foreground:          var(--sidebar-foreground);
-  --color-sidebar:                     var(--sidebar);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
 
   /* Core tokens — primary/secondary/accent are native daisyUI theme colors
      already scoped per-theme by @plugin "daisyui/theme" below; only the
      extras that daisyUI doesn't define get proxied here. */
-  --color-input:                var(--input);
-  --color-border:               var(--border);
-  --color-muted-foreground:     var(--muted-foreground);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-muted-foreground: var(--muted-foreground);
   --color-secondary-foreground: var(--secondary-foreground);
-  --color-popover:              var(--popover);
-  --color-foreground:           var(--foreground);
-  --color-background:           var(--background);
+  --color-popover: var(--popover);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
 
   /* Border radius — ZERO everywhere. Sharp corners are the brand. */
-  --radius-sm:  0;
-  --radius-md:  0;
-  --radius-lg:  0;
-  --radius-xl:  0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
   --radius-2xl: 0;
   --radius-3xl: 0;
   --radius-4xl: 0;
@@ -251,77 +247,79 @@ body:has([data-app-shell]) {
   --page: oklch(0.982 0.003 248);
 
   /* Status */
-  --success:              var(--color-success);
-  --success-subtle:       oklch(0.97 0.04 145);
-  --warning:              var(--color-warning);
+  --success: var(--color-success);
+  --success-subtle: oklch(0.97 0.04 145);
+  --warning: var(--color-warning);
 
   /* Backgrounds — pure white topbar, white cards */
-  --background:         var(--color-base-100);
-  --foreground:         var(--color-base-content);
-  --popover:            var(--color-base-100);
+  --background: var(--color-base-100);
+  --foreground: var(--color-base-content);
+  --popover: var(--color-base-100);
 
   /* PRIMARY — Teal */
-  --primary:            var(--color-primary);
+  --primary: var(--color-primary);
 
   /* SECONDARY — teal-tinted light surface (not plain gray) */
-  --secondary:            var(--color-secondary);
+  --secondary: var(--color-secondary);
   --secondary-foreground: var(--color-secondary-content);
 
   /* MUTED — subtle teal wash */
-  --muted-foreground:   oklch(0.50 0.024 200);    /* cool blue-slate mid-tone, no daisyUI equivalent */
+  --muted-foreground: oklch(
+    0.5 0.024 200
+  ); /* cool blue-slate mid-tone, no daisyUI equivalent */
 
   /* ACCENT — rich teal hover state (not a washed-out gray) */
-  --accent:             var(--color-accent);
+  --accent: var(--color-accent);
 
   /* Borders — clean neutral #E5E7EB */
-  --border:             var(--color-base-300);
-  --input:              var(--color-base-300);
+  --border: var(--color-base-300);
+  --input: var(--color-base-300);
 
   /*
    * SIDEBAR — Deep ocean blue-teal (signature element)
    * Not pure black. Not dark gray. A rich blue-teal depth.
    * oklch(0.108 0.032 215) ≈ a very dark teal-navy.
    */
-  --sidebar:                    oklch(0.108 0.032 215);
-  --sidebar-foreground:         oklch(0.940 0.012 185);
-  --sidebar-primary:            oklch(0.700 0.140 182);
-  --sidebar-primary-foreground: oklch(0.980 0.005 185);
-  --sidebar-accent:             oklch(0.185 0.040 210);
-  --sidebar-border:             oklch(0.200 0.036 210);
+  --sidebar: oklch(0.108 0.032 215);
+  --sidebar-foreground: oklch(0.94 0.012 185);
+  --sidebar-primary: oklch(0.7 0.14 182);
+  --sidebar-primary-foreground: oklch(0.98 0.005 185);
+  --sidebar-accent: oklch(0.185 0.04 210);
+  --sidebar-border: oklch(0.2 0.036 210);
 }
 
 /* ── Dark mode ──────────────────────────────────────────────────── */
 .dark {
   /* Literal values live in the "dark" @plugin "daisyui/theme" block above;
      these are compatibility proxies (see :root comment). */
-  --page: oklch(0.130 0.020 210);
+  --page: oklch(0.13 0.02 210);
 
-  --success:              var(--color-success);
-  --success-subtle:       oklch(0.20 0.07 145);
-  --warning:              var(--color-warning);
+  --success: var(--color-success);
+  --success-subtle: oklch(0.2 0.07 145);
+  --warning: var(--color-warning);
 
-  --background:         var(--color-base-100);
-  --foreground:         var(--color-base-content);
-  --popover:            oklch(0.180 0.025 210);
+  --background: var(--color-base-100);
+  --foreground: var(--color-base-content);
+  --popover: oklch(0.18 0.025 210);
 
-  --primary:            var(--color-primary);
+  --primary: var(--color-primary);
 
-  --secondary:            var(--color-secondary);
+  --secondary: var(--color-secondary);
   --secondary-foreground: var(--color-secondary-content);
 
-  --muted-foreground:   oklch(0.620 0.028 200);
+  --muted-foreground: oklch(0.62 0.028 200);
 
-  --accent:             var(--color-accent);
+  --accent: var(--color-accent);
 
-  --border:             var(--color-base-300);
-  --input:              oklch(1 0 0 / 12%);
+  --border: var(--color-base-300);
+  --input: oklch(1 0 0 / 12%);
 
-  --sidebar:                    oklch(0.175 0.035 215);
-  --sidebar-foreground:         oklch(0.940 0.012 185);
-  --sidebar-primary:            oklch(0.700 0.140 182);
-  --sidebar-primary-foreground: oklch(0.980 0.005 185);
-  --sidebar-accent:             oklch(0.230 0.040 210);
-  --sidebar-border:             oklch(0.250 0.036 210);
+  --sidebar: oklch(0.175 0.035 215);
+  --sidebar-foreground: oklch(0.94 0.012 185);
+  --sidebar-primary: oklch(0.7 0.14 182);
+  --sidebar-primary-foreground: oklch(0.98 0.005 185);
+  --sidebar-accent: oklch(0.23 0.04 210);
+  --sidebar-border: oklch(0.25 0.036 210);
 }
 
 /* ── Base layer ─────────────────────────────────────────────────── */
@@ -335,7 +333,12 @@ body:has([data-app-shell]) {
   html {
     @apply font-sans;
   }
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-heading);
   }
   button,
@@ -352,8 +355,8 @@ body:has([data-app-shell]) {
 
 /* ── No scrollbar (sidebar) — scrollable but bar hidden ─────────── */
 .no-scrollbar {
-  scrollbar-width: none;
   -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 .no-scrollbar::-webkit-scrollbar {
   display: none;
@@ -361,8 +364,8 @@ body:has([data-app-shell]) {
 
 /* ── Thin scrollbar ─────────────────────────────────────────────── */
 .scrollbar-thin {
-  scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
+  scrollbar-width: thin;
 }
 .scrollbar-thin::-webkit-scrollbar {
   width: 4px;
@@ -378,81 +381,176 @@ body:has([data-app-shell]) {
 /* ── Landing page animations ────────────────────────────────────── */
 /* Use ONLY inside app/(landing)/ — never in dashboard/admin/booking. */
 @keyframes schduled-float {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 @keyframes schduled-sheen {
-  0%   { background-position: 200% center; }
-  100% { background-position: -200% center; }
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
 }
 @keyframes schduled-ping {
-  0%        { transform: scale(1); opacity: 1; }
-  75%, 100% { transform: scale(1.8); opacity: 0; }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  75%,
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
 }
 @keyframes schduled-reveal {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 @keyframes schduled-ticker {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 @keyframes schduled-text-gradient {
-  0%, 100% { background-position: 0% 50%; }
-  50%       { background-position: 100% 50%; }
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 @keyframes schduled-fade-up {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 @keyframes schduled-scale-in {
-  from { opacity: 0; transform: scale(0.92); }
-  to   { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 @keyframes schduled-glow-pulse {
-  0%, 100% { opacity: 0.6; }
-  50%       { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 @keyframes schduled-faq-open {
-  from { opacity: 0; transform: translateY(-6px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.animate-schduled-float         { animation: schduled-float 6s ease infinite; }
-.animate-schduled-sheen         { animation: schduled-sheen 5s linear infinite; }
-.animate-schduled-ping          { animation: schduled-ping 2.4s infinite; }
-.animate-schduled-reveal        { animation: schduled-reveal 0.4s ease-out both; }
-.animate-schduled-ticker        { animation: schduled-ticker 32s linear infinite; }
-.animate-schduled-text-gradient { animation: schduled-text-gradient 4s ease-in-out infinite; background-size: 200% auto; }
-.animate-schduled-fade-up       { animation: schduled-fade-up 0.5s ease-out both; }
-.animate-schduled-scale-in      { animation: schduled-scale-in 0.6s ease-out both; }
-.animate-schduled-glow-pulse    { animation: schduled-glow-pulse 2.5s ease-in-out infinite; }
+.animate-schduled-float {
+  animation: schduled-float 6s ease infinite;
+}
+.animate-schduled-sheen {
+  animation: schduled-sheen 5s linear infinite;
+}
+.animate-schduled-ping {
+  animation: schduled-ping 2.4s infinite;
+}
+.animate-schduled-reveal {
+  animation: schduled-reveal 0.4s ease-out both;
+}
+.animate-schduled-ticker {
+  animation: schduled-ticker 32s linear infinite;
+}
+.animate-schduled-text-gradient {
+  background-size: 200% auto;
+  animation: schduled-text-gradient 4s ease-in-out infinite;
+}
+.animate-schduled-fade-up {
+  animation: schduled-fade-up 0.5s ease-out both;
+}
+.animate-schduled-scale-in {
+  animation: schduled-scale-in 0.6s ease-out both;
+}
+.animate-schduled-glow-pulse {
+  animation: schduled-glow-pulse 2.5s ease-in-out infinite;
+}
 
 /* FAQ accordion open animation */
-details[open] .faq-body { animation: schduled-faq-open 0.25s ease-out both; }
+details[open] .faq-body {
+  animation: schduled-faq-open 0.25s ease-out both;
+}
 
 /* FAQ open state — teal highlight */
 .faq-item[open] {
+  padding-right: 1rem;
+  padding-left: 1rem;
   background: oklch(0.97 0.012 185 / 0.55);
   border-left: 2px solid var(--primary);
-  padding-left: 1rem;
-  padding-right: 1rem;
 }
-.faq-item[open] > summary .faq-q { color: var(--color-primary); }
+.faq-item[open] > summary .faq-q {
+  color: var(--color-primary);
+}
 
 /* Particle float — gentle drift for hero dots */
 @keyframes schduled-particle {
-  0%   { transform: translateY(0)    translateX(0);   opacity: 0.25; }
-  33%  { transform: translateY(-6px) translateX(3px); opacity: 0.45; }
-  66%  { transform: translateY(4px)  translateX(-3px);opacity: 0.20; }
-  100% { transform: translateY(0)    translateX(0);   opacity: 0.25; }
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.25;
+  }
+  33% {
+    transform: translateY(-6px) translateX(3px);
+    opacity: 0.45;
+  }
+  66% {
+    transform: translateY(4px) translateX(-3px);
+    opacity: 0.2;
+  }
+  100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.25;
+  }
 }
-.animate-schduled-particle { animation: schduled-particle 8s ease-in-out infinite; }
+.animate-schduled-particle {
+  animation: schduled-particle 8s ease-in-out infinite;
+}
 
 /* Connector line shimmer */
 @keyframes schduled-connector-shimmer {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 /* Scroll-triggered reveals on the landing page are handled by the
@@ -479,68 +577,90 @@ details[open] .faq-body { animation: schduled-faq-open 0.25s ease-out both; }
 
 /* ── Guided tour — force active sidebar style on spotlit nav link ─── */
 nav a[data-tour-active="true"] {
-  border-left-color: var(--sidebar-primary) !important;
-  background-color: var(--sidebar-primary) !important;
   color: var(--sidebar-primary-foreground) !important;
+  background-color: var(--sidebar-primary) !important;
+  border-left-color: var(--sidebar-primary) !important;
 }
 
 /* ── NProgress route-change bar ─────────────────────────────────────────────── */
-#nprogress .bar { background: var(--primary) !important; }
-#nprogress .peg { display: none !important; }
-#nprogress .spinner { display: none !important; }
+#nprogress .bar {
+  background: var(--primary) !important;
+}
+#nprogress .peg {
+  display: none !important;
+}
+#nprogress .spinner {
+  display: none !important;
+}
 
 /* ── Global Route Loader (grl-*) ─────────────────────────────────────────────
    Teal top progress bar only — no center overlay. Compositor-thread animations. */
 
 @keyframes grl-bar-progress {
-  from { transform: scaleX(0); }
-  to   { transform: scaleX(0.82); }
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(0.82);
+  }
 }
 @keyframes grl-bar-shimmer {
-  0%   { background-position: 200% center; }
-  100% { background-position: -200% center; }
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
 }
 
 .grl-bar-fill {
-  transform-origin: left center;
   background: linear-gradient(
     90deg,
     oklch(0.52 0.108 184.735),
     oklch(0.72 0.155 172),
-    oklch(0.62 0.130 179),
+    oklch(0.62 0.13 179),
     oklch(0.52 0.108 184.735)
   );
   background-size: 300% 100%;
+  transform-origin: left center;
+  transition:
+    transform 0.18s ease-in,
+    opacity 0.3s ease 0.05s;
   animation:
     grl-bar-progress 2.5s cubic-bezier(0.1, 0.3, 0.6, 1) forwards,
-    grl-bar-shimmer  2s   linear                           infinite;
-  transition: transform 0.18s ease-in, opacity 0.3s ease 0.05s;
+    grl-bar-shimmer 2s linear infinite;
 }
 .grl-bar-fill[data-done] {
-  animation: none;
-  transform: scaleX(1);
   opacity: 0;
+  transform: scaleX(1);
+  animation: none;
 }
 
 .grl-bar-glow {
+  pointer-events: none;
   background: linear-gradient(
     90deg,
     transparent 5%,
     oklch(0.72 0.155 172 / 0.85) 50%,
     transparent 95%
   );
-  filter: blur(5px);
   opacity: 0.75;
-  pointer-events: none;
+  filter: blur(5px);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .grl-bar-fill,
   .grl-bar-fill[data-done] {
-    animation-duration:        0.001ms !important;
-    animation-iteration-count: 1       !important;
-    transition-duration:       0.001ms !important;
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
   }
-  .grl-bar-fill            { transform: scaleX(0.5); opacity: 1; }
-  .grl-bar-fill[data-done] { transform: scaleX(1);   opacity: 0; }
+  .grl-bar-fill {
+    opacity: 1;
+    transform: scaleX(0.5);
+  }
+  .grl-bar-fill[data-done] {
+    opacity: 0;
+    transform: scaleX(1);
+  }
 }

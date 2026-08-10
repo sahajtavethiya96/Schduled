@@ -482,8 +482,7 @@ function JobDetailDialog({
   const payload = job ? jsonString(job.data) : null;
   const rawOutput = job ? jsonString(job.output) : null;
   const params = o?.params === undefined ? null : jsonString(o.params);
-  const canRetry =
-    job !== null && ["failed", "cancelled"].includes(job.state);
+  const canRetry = job !== null && ["failed", "cancelled"].includes(job.state);
 
   function handleRetry() {
     if (!(job && queueName)) {

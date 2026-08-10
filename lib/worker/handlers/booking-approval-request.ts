@@ -1,8 +1,8 @@
 import type { Job } from "pg-boss";
-import { createNotification } from "@/lib/notifications/create";
 import { enqueueEmail } from "@/lib/email";
 import { approvalPendingTemplate } from "@/lib/email/templates/approval-pending";
 import { approvalRequestTemplate } from "@/lib/email/templates/approval-request";
+import { createNotification } from "@/lib/notifications/create";
 import type { BookingApprovalRequestPayload } from "@/lib/worker/job-types";
 import {
   loadBookingForLifecycle,
@@ -32,14 +32,24 @@ async function processOne(bookingId: string, isReschedule: boolean) {
     return;
   }
   if (!b.approvalToken) {
-    console.warn(`[booking-approval-request] booking ${bookingId} has no approvalToken`);
+    console.warn(
+      `[booking-approval-request] booking ${bookingId} has no approvalToken`
+    );
     return;
   }
 
   const prefs = await loadHostPrefs(b.hostUserId);
   const hostTimezone = b.hostTimezone ?? "UTC";
-  const locationLabelInvitee = resolveLocationLabel(b.etLocationType, b.etLocationValue, b.inviteePhone);
-  const locationLabelHost = resolveLocationLabelHost(b.etLocationType, b.etLocationValue, b.inviteePhone);
+  const locationLabelInvitee = resolveLocationLabel(
+    b.etLocationType,
+    b.etLocationValue,
+    b.inviteePhone
+  );
+  const locationLabelHost = resolveLocationLabelHost(
+    b.etLocationType,
+    b.etLocationValue,
+    b.inviteePhone
+  );
   const startUtc = new Date(b.startTime);
 
   // Invitee: only on first submission — reschedules skip this to avoid the
@@ -57,8 +67,15 @@ async function processOne(bookingId: string, isReschedule: boolean) {
       startUtc,
     });
     await enqueueEmail(
-      { to: b.inviteeEmail, subject: mail.subject, html: mail.html, text: mail.text },
-      { idempotencyKey: `approval-request:${b.id}:${startUtc.getTime()}:invitee` }
+      {
+        to: b.inviteeEmail,
+        subject: mail.subject,
+        html: mail.html,
+        text: mail.text,
+      },
+      {
+        idempotencyKey: `approval-request:${b.id}:${startUtc.getTime()}:invitee`,
+      }
     );
   }
 

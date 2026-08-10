@@ -6,16 +6,16 @@ import { env } from "@/lib/env";
 import { escapeHtml } from "@/lib/validators";
 
 interface ContactResult {
-  ok: boolean;
   error?: string;
+  ok: boolean;
 }
 
 export async function sendContactMessageAction(
   _prev: ContactResult,
   formData: FormData
 ): Promise<ContactResult> {
-  const name    = String(formData.get("name")    ?? "").trim();
-  const email   = String(formData.get("email")   ?? "").trim();
+  const name = String(formData.get("name") ?? "").trim();
+  const email = String(formData.get("email") ?? "").trim();
   const subject = String(formData.get("subject") ?? "").trim();
   const message = String(formData.get("message") ?? "").trim();
 

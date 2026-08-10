@@ -1,12 +1,18 @@
-import type { Metadata } from "next";
-import type { ReactNode } from "react";
-import Link from "next/link";
 import { ArrowLeft } from "@phosphor-icons/react/dist/ssr";
 import { addDays } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 import { and, eq } from "drizzle-orm";
+import type { Metadata } from "next";
+import Link from "next/link";
+import type { ReactNode } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { availabilitySchedule, booking, cancellationPolicy, eventType, user } from "@/db/schema";
+import {
+  availabilitySchedule,
+  booking,
+  cancellationPolicy,
+  eventType,
+  user,
+} from "@/db/schema";
 import { db } from "@/lib/db";
 import { RescheduleClient } from "./reschedule-client";
 
@@ -15,7 +21,13 @@ export const metadata: Metadata = {
 };
 
 // Shared "can't reschedule" notice with a way back to the booking page.
-function RescheduleNotice({ children, backHref }: { children: ReactNode; backHref: string }) {
+function RescheduleNotice({
+  children,
+  backHref,
+}: {
+  children: ReactNode;
+  backHref: string;
+}) {
   return (
     <main className="mx-auto max-w-lg px-4 py-16">
       <Card>
@@ -23,8 +35,8 @@ function RescheduleNotice({ children, backHref }: { children: ReactNode; backHre
           <p className="text-sm text-muted-foreground">{children}</p>
           <div className="mt-6 flex justify-center">
             <Link
-              href={backHref}
               className="inline-flex items-center gap-2 border border-base-300 px-4 py-2 text-sm font-semibold text-base-content transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
+              href={backHref}
             >
               <ArrowLeft size={14} />
               Back to booking page
@@ -101,7 +113,8 @@ export default async function ReschedulePage({
   if (b.rescheduleTokenExpiresAt && b.rescheduleTokenExpiresAt < new Date()) {
     return (
       <RescheduleNotice backHref={`/${b.hostUsername}/${b.etSlug}`}>
-        This reschedule link has expired. Please contact the host to arrange a new time.
+        This reschedule link has expired. Please contact the host to arrange a
+        new time.
       </RescheduleNotice>
     );
   }
@@ -109,9 +122,9 @@ export default async function ReschedulePage({
   // Enforce reschedule policy before showing the UI — no late 403 surprises
   const [reschedulePolicy] = await db
     .select({
-      allowRescheduling:     cancellationPolicy.allowRescheduling,
+      allowRescheduling: cancellationPolicy.allowRescheduling,
       rescheduleCutoffHours: cancellationPolicy.rescheduleCutoffHours,
-      maxReschedules:        cancellationPolicy.maxReschedules,
+      maxReschedules: cancellationPolicy.maxReschedules,
     })
     .from(cancellationPolicy)
     .where(eq(cancellationPolicy.eventTypeId, b.eventTypeId))
@@ -120,7 +133,8 @@ export default async function ReschedulePage({
   if (reschedulePolicy && !reschedulePolicy.allowRescheduling) {
     return (
       <RescheduleNotice backHref={`/${b.hostUsername}/${b.etSlug}`}>
-        Rescheduling is not allowed for this event type. Please contact the host directly.
+        Rescheduling is not allowed for this event type. Please contact the host
+        directly.
       </RescheduleNotice>
     );
   }
@@ -132,19 +146,26 @@ export default async function ReschedulePage({
       return (
         <RescheduleNotice backHref={`/${b.hostUsername}/${b.etSlug}`}>
           Rescheduling must be done at least{" "}
-          <strong>{cutoff} hour{cutoff === 1 ? "" : "s"}</strong> before the meeting.
-          Please contact the host directly.
+          <strong>
+            {cutoff} hour{cutoff === 1 ? "" : "s"}
+          </strong>{" "}
+          before the meeting. Please contact the host directly.
         </RescheduleNotice>
       );
     }
   }
 
   const maxReschedules = reschedulePolicy?.maxReschedules;
-  if (maxReschedules !== null && maxReschedules !== undefined && b.rescheduleCount >= maxReschedules) {
+  if (
+    maxReschedules !== null &&
+    maxReschedules !== undefined &&
+    b.rescheduleCount >= maxReschedules
+  ) {
     return (
       <RescheduleNotice backHref={`/${b.hostUsername}/${b.etSlug}`}>
-        This booking has already been rescheduled {b.rescheduleCount} time{b.rescheduleCount === 1 ? "" : "s"},
-        which is the maximum allowed. Please contact the host directly.
+        This booking has already been rescheduled {b.rescheduleCount} time
+        {b.rescheduleCount === 1 ? "" : "s"}, which is the maximum allowed.
+        Please contact the host directly.
       </RescheduleNotice>
     );
   }
@@ -175,8 +196,13 @@ export default async function ReschedulePage({
   // selectable range to [rangeStart, rangeEnd] so the calendar never offers a
   // date the reschedule API would reject.
   const isFixed =
-    b.bookingWindowType === "fixed" && !!b.bookingRangeStart && !!b.bookingRangeEnd;
-  const today = isFixed && b.bookingRangeStart! > todayStr ? b.bookingRangeStart! : todayStr;
+    b.bookingWindowType === "fixed" &&
+    !!b.bookingRangeStart &&
+    !!b.bookingRangeEnd;
+  const today =
+    isFixed && b.bookingRangeStart! > todayStr
+      ? b.bookingRangeStart!
+      : todayStr;
   const maxDate = isFixed ? b.bookingRangeEnd! : rollingMax;
   const availableDaysOfWeek = Array.from(
     new Set(schedule?.windows.map((w) => w.dayOfWeek) ?? [])

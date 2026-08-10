@@ -25,13 +25,19 @@ export async function deleteUserCalendarEvents(userId: string): Promise<void> {
         )
       )
       .limit(1);
-    if (!cal) return;
+    if (!cal) {
+      return;
+    }
 
     const rows = await db
       .select({ id: booking.id, calendarEventId: booking.calendarEventId })
       .from(booking)
-      .where(and(eq(booking.hostUserId, userId), isNotNull(booking.calendarEventId)));
-    if (rows.length === 0) return;
+      .where(
+        and(eq(booking.hostUserId, userId), isNotNull(booking.calendarEventId))
+      );
+    if (rows.length === 0) {
+      return;
+    }
 
     const calApi = await getGoogleCalendarClient(cal);
     const calendarId = cal.calendarId ?? cal.accountEmail;
@@ -48,7 +54,10 @@ export async function deleteUserCalendarEvents(userId: string): Promise<void> {
         // 404/410 = already gone; anything else we log and move on so one bad
         // event doesn't abort the rest of the cleanup.
         if (code !== 404 && code !== 410) {
-          console.warn(`[cleanup-events] could not delete event for booking ${row.id}:`, code ?? err);
+          console.warn(
+            `[cleanup-events] could not delete event for booking ${row.id}:`,
+            code ?? err
+          );
         }
       }
     }

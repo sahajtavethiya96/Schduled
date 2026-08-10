@@ -14,7 +14,9 @@ import { generateSlots } from "@/lib/calendar/slots";
 import { db } from "@/lib/db";
 
 export async function GET(request: Request) {
-  if (!(await checkRateLimit(rateLimitKey("GET:/api/slots", request), 30, 60_000))) {
+  if (
+    !(await checkRateLimit(rateLimitKey("GET:/api/slots", request), 30, 60_000))
+  ) {
     return jsonError("Too many requests. Please slow down.", 429);
   }
 
@@ -96,9 +98,13 @@ export async function GET(request: Request) {
 
   // Fixed window clamps to [rangeStart, rangeEnd]; otherwise rolling from today.
   const isFixed =
-    et.bookingWindowType === "fixed" && !!et.bookingRangeStart && !!et.bookingRangeEnd;
+    et.bookingWindowType === "fixed" &&
+    !!et.bookingRangeStart &&
+    !!et.bookingRangeEnd;
   const today =
-    isFixed && et.bookingRangeStart! > todayStr ? et.bookingRangeStart! : todayStr;
+    isFixed && et.bookingRangeStart! > todayStr
+      ? et.bookingRangeStart!
+      : todayStr;
   const maxDate = isFixed ? et.bookingRangeEnd! : rollingMax;
 
   if (date < today || date > maxDate) {
@@ -161,7 +167,11 @@ export async function GET(request: Request) {
         // pending (awaiting-approval) bookings also hold the slot — otherwise a
         // second invitee sees it as open and hits a 409 at submit time.
         // reschedule_requested holds its ORIGINAL slot until the host decides.
-        inArray(booking.status, ["confirmed", "pending", "reschedule_requested"]),
+        inArray(booking.status, [
+          "confirmed",
+          "pending",
+          "reschedule_requested",
+        ]),
         lte(booking.startTime, dayEndUtc),
         gte(booking.endTime, dayStartUtc)
       )

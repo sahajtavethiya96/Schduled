@@ -13,7 +13,10 @@ export default function HostProfileLoading() {
       {/* Event type card skeletons */}
       <div className="flex flex-col gap-2">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="flex items-center gap-4 border border-base-300 bg-base-100 p-5">
+          <div
+            className="flex items-center gap-4 border border-base-300 bg-base-100 p-5"
+            key={i}
+          >
             <div className="h-12 w-1 shrink-0 bg-base-200 animate-pulse" />
             <div className="flex-1 space-y-2">
               <div className="h-4 w-40 rounded bg-base-200 animate-pulse" />
@@ -27,5 +30,5 @@ export default function HostProfileLoading() {
         ))}
       </div>
     </main>
-  )
+  );
 }

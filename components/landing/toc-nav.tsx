@@ -10,22 +10,30 @@ export function TocNav({ toc }: { toc: TocEntry[] }) {
   useEffect(() => {
     const observers: IntersectionObserver[] = [];
 
-    toc.forEach(({ id }) => {
+    for (const { id } of toc) {
       const el = document.getElementById(id);
-      if (!el) return;
+      if (!el) {
+        continue;
+      }
 
       const observer = new IntersectionObserver(
         ([entry]) => {
-          if (entry.isIntersecting) setActiveId(id);
+          if (entry.isIntersecting) {
+            setActiveId(id);
+          }
         },
         { rootMargin: "-80px 0px -60% 0px", threshold: 0 }
       );
 
       observer.observe(el);
       observers.push(observer);
-    });
+    }
 
-    return () => observers.forEach((o) => o.disconnect());
+    return () => {
+      for (const o of observers) {
+        o.disconnect();
+      }
+    };
   }, [toc]);
 
   return (
@@ -34,19 +42,21 @@ export function TocNav({ toc }: { toc: TocEntry[] }) {
         const active = activeId === entry.id;
         return (
           <a
-            key={entry.id}
-            href={`#${entry.id}`}
             className={cn(
               "group flex items-center gap-2.5 border-l-2 py-1.5 pl-4 text-sm transition-all duration-200",
               active
                 ? "border-primary text-primary font-semibold"
                 : "border-base-300 text-muted-foreground hover:border-primary/50 hover:text-base-content"
             )}
+            href={`#${entry.id}`}
+            key={entry.id}
           >
             <span
               className={cn(
                 "h-1.5 w-1.5 rounded-full shrink-0 transition-all duration-200",
-                active ? "bg-primary scale-125" : "bg-base-300 group-hover:bg-primary/50"
+                active
+                  ? "bg-primary scale-125"
+                  : "bg-base-300 group-hover:bg-primary/50"
               )}
             />
             <span className="transition-transform duration-200 group-hover:translate-x-0.5">

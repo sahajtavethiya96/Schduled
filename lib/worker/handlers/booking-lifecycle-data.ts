@@ -21,9 +21,9 @@ export interface BookingLifecycleRow {
   inviteePhone: string | null;
   inviteeTimezone: string;
   rejectionReason: string | null;
-  rescheduleToken: string;
-  rescheduleRequestedStart: Date | null;
   rescheduleRequestedEnd: Date | null;
+  rescheduleRequestedStart: Date | null;
+  rescheduleToken: string;
   startTime: Date;
   status: string;
   videoLinkHost: string | null;
@@ -97,7 +97,9 @@ export function resolveLocationLabel(
         ? `Phone — your host will call you at ${inviteePhone}`
         : "Phone (your host will call you)";
     case "phone_invitee_calls":
-      return locationValue ? `Phone — call your host at ${locationValue}` : "Phone (call your host)";
+      return locationValue
+        ? `Phone — call your host at ${locationValue}`
+        : "Phone (call your host)";
     case "in_person":
       return locationValue ?? "In person (see invite for address)";
     case "custom":
@@ -136,7 +138,10 @@ export function resolveLocationLabelHost(
 }
 
 /** Provider-specific button labels for lifecycle emails (invitee and host views). */
-export function resolveMeetLabels(locationType: string): { invitee: string; host: string } {
+export function resolveMeetLabels(locationType: string): {
+  invitee: string;
+  host: string;
+} {
   switch (locationType) {
     case "google_meet":
       return { invitee: "Join Google Meet", host: "Start Google Meet" };

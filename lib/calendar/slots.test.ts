@@ -56,7 +56,10 @@ describe("generateSlots", () => {
       windows: [{ startTime: "09:00", endTime: "11:00" }],
       increment: 30,
       existingBookings: [
-        { startTime: new Date("2026-06-15T09:30:00Z"), endTime: new Date("2026-06-15T10:00:00Z") },
+        {
+          startTime: new Date("2026-06-15T09:30:00Z"),
+          endTime: new Date("2026-06-15T10:00:00Z"),
+        },
       ],
     });
 
@@ -76,7 +79,10 @@ describe("generateSlots", () => {
       bufferBefore: 15,
       bufferAfter: 15,
       existingBookings: [
-        { startTime: new Date("2026-06-15T09:30:00Z"), endTime: new Date("2026-06-15T10:00:00Z") },
+        {
+          startTime: new Date("2026-06-15T09:30:00Z"),
+          endTime: new Date("2026-06-15T10:00:00Z"),
+        },
       ],
     });
 

@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import { ArrowsClockwise } from '@phosphor-icons/react'
-import { Button } from '@/components/ui/button'
+import { ArrowsClockwise } from "@phosphor-icons/react";
+import { Button } from "@/components/ui/button";
 
 /**
  * Clears the saved tour-completion flag and reloads on the dashboard so the
@@ -11,17 +11,17 @@ import { Button } from '@/components/ui/button'
 export function RestartTourButton({ userId }: { userId: string }) {
   function restart() {
     try {
-      localStorage.removeItem(`schduled:tour:${userId}`)
+      localStorage.removeItem(`schduled:tour:${userId}`);
     } catch {
       // ignore
     }
-    window.location.href = '/dashboard'
+    window.location.href = "/dashboard";
   }
 
   return (
-    <Button variant="outline" size="sm" className="gap-1.5" onClick={restart}>
+    <Button className="gap-1.5" onClick={restart} size="sm" variant="outline">
       <ArrowsClockwise size={14} />
       Replay product tour
     </Button>
-  )
+  );
 }

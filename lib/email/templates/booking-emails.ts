@@ -1,11 +1,11 @@
 import { formatInTimeZone } from "date-fns-tz";
 import { createElement } from "react";
+import { getEmailBranding } from "@/lib/email/branding";
 import {
   BookingEmail,
   type BookingEmailAudience,
   type BookingEmailVariant,
 } from "@/lib/email/components/booking-email";
-import { getEmailBranding } from "@/lib/email/branding";
 import { renderEmailTemplate } from "@/lib/email/renderer";
 import { getAppUrl } from "@/lib/get-app-url";
 
@@ -76,7 +76,10 @@ export async function bookingEmail(p: BookingEmailInput) {
       cancelUrl: p.variant === "cancellation" ? null : cancelUrl,
       previousWhen: p.variant === "reschedule" ? previousWhen : null,
       reason: p.variant === "cancellation" ? p.reason : null,
-      confirmationNote: p.variant === "confirmation" && p.audience === "invitee" ? (p.confirmationNote ?? null) : null,
+      confirmationNote:
+        p.variant === "confirmation" && p.audience === "invitee"
+          ? (p.confirmationNote ?? null)
+          : null,
     })
   );
 

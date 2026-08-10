@@ -1,143 +1,185 @@
-'use server'
+"use server";
 
-import { and, eq } from 'drizzle-orm'
-import { revalidatePath } from 'next/cache'
-import { createId } from '@paralleldrive/cuid2'
-import { requireSession } from '@/lib/authz'
-import { db } from '@/lib/db'
+import { createId } from "@paralleldrive/cuid2";
+import { and, eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 import {
-  user,
   availabilitySchedule,
   availabilityWindow,
   cancellationPolicy,
   eventType,
   eventTypeDuration,
-} from '@/db/schema'
-import { audit } from '@/lib/audit'
+  user,
+} from "@/db/schema";
+import { audit } from "@/lib/audit";
+import { requireSession } from "@/lib/authz";
+import { db } from "@/lib/db";
 
 type ActionResult<T = Record<never, never>> =
   | { error: string }
-  | ({ ok: true } & T)
+  | ({ ok: true } & T);
 
 type DaySchedule = {
-  enabled: boolean
-  startTime: string
-  endTime: string
-}
+  enabled: boolean;
+  startTime: string;
+  endTime: string;
+};
 
 type DayOfWeek =
-  | 'monday' | 'tuesday' | 'wednesday' | 'thursday'
-  | 'friday' | 'saturday' | 'sunday'
+  | "monday"
+  | "tuesday"
+  | "wednesday"
+  | "thursday"
+  | "friday"
+  | "saturday"
+  | "sunday";
 
 const DAYS: DayOfWeek[] = [
-  'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday',
-]
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+  "sunday",
+];
 
 const RESERVED = new Set([
-  'orbit', 'api', 'admin', 'dashboard', 'settings', 'login',
-  'signup', 'post-auth', 'onboarding', 'privacy', 'terms', 'cookies',
-  'cancel', 'reschedule', 'help', 'support', 'about', 'pricing',
-])
+  "orbit",
+  "api",
+  "admin",
+  "dashboard",
+  "settings",
+  "login",
+  "signup",
+  "post-auth",
+  "onboarding",
+  "privacy",
+  "terms",
+  "cookies",
+  "cancel",
+  "reschedule",
+  "help",
+  "support",
+  "about",
+  "pricing",
+]);
 
 function validateUsername(raw: string): string | null {
-  const u = raw.toLowerCase().trim()
-  if (u.length < 3) return 'Username must be at least 3 characters.'
-  if (u.length > 30) return 'Username must be 30 characters or less.'
-  if (!/^[a-z0-9][a-z0-9-]*[a-z0-9]$/.test(u)) {
-    return 'Only lowercase letters, numbers, and hyphens. Cannot start or end with a hyphen.'
+  const u = raw.toLowerCase().trim();
+  if (u.length < 3) {
+    return "Username must be at least 3 characters.";
   }
-  if (RESERVED.has(u)) return 'That username is reserved. Please choose another.'
-  return null
+  if (u.length > 30) {
+    return "Username must be 30 characters or less.";
+  }
+  if (!/^[a-z0-9][a-z0-9-]*[a-z0-9]$/.test(u)) {
+    return "Only lowercase letters, numbers, and hyphens. Cannot start or end with a hyphen.";
+  }
+  if (RESERVED.has(u)) {
+    return "That username is reserved. Please choose another.";
+  }
+  return null;
 }
 
 // ── Step 1: Profile — name + username ────────────────────────────────────────
 
 export async function saveProfileStep(data: {
-  name: string
-  username: string
+  name: string;
+  username: string;
 }): Promise<ActionResult<{ username: string }>> {
   try {
-    const session = await requireSession()
+    const session = await requireSession();
 
-    const name = data.name.trim()
-    const username = data.username.toLowerCase().trim()
+    const name = data.name.trim();
+    const username = data.username.toLowerCase().trim();
 
-    if (!name || name.length < 1) return { error: 'Name is required.' }
-    if (name.length > 64) return { error: 'Name is too long (max 64 characters).' }
+    if (!name || name.length < 1) {
+      return { error: "Name is required." };
+    }
+    if (name.length > 64) {
+      return { error: "Name is too long (max 64 characters)." };
+    }
 
-    const usernameError = validateUsername(username)
-    if (usernameError) return { error: usernameError }
+    const usernameError = validateUsername(username);
+    if (usernameError) {
+      return { error: usernameError };
+    }
 
     const [conflict] = await db
       .select({ id: user.id })
       .from(user)
       .where(eq(user.username, username))
-      .limit(1)
+      .limit(1);
 
     if (conflict && conflict.id !== session.user.id) {
-      return { error: 'That username is already taken. Please choose another.' }
+      return {
+        error: "That username is already taken. Please choose another.",
+      };
     }
 
     await db
       .update(user)
       .set({ name, username, onboardingStep: 1, updatedAt: new Date() })
-      .where(eq(user.id, session.user.id))
+      .where(eq(user.id, session.user.id));
 
     await audit({
-      action: 'user.profile_updated',
+      action: "user.profile_updated",
       actorId: session.user.id,
       actorEmail: session.user.email,
-      entityType: 'user',
+      entityType: "user",
       entityId: session.user.id,
-      description: 'Set name and username during onboarding',
-    })
+      description: "Set name and username during onboarding",
+    });
 
-    return { ok: true, username }
+    return { ok: true, username };
   } catch (err) {
-    console.error('[onboarding] saveNameStep', err)
-    return { error: 'Something went wrong. Please try again.' }
+    console.error("[onboarding] saveNameStep", err);
+    return { error: "Something went wrong. Please try again." };
   }
 }
 
 // ── Step 2: Timezone ──────────────────────────────────────────────────────────
 
-export async function saveTimezoneStep(timezone: string): Promise<ActionResult> {
+export async function saveTimezoneStep(
+  timezone: string
+): Promise<ActionResult> {
   try {
-    const session = await requireSession()
+    const session = await requireSession();
 
     try {
-      Intl.DateTimeFormat(undefined, { timeZone: timezone })
+      Intl.DateTimeFormat(undefined, { timeZone: timezone });
     } catch {
-      return { error: 'Invalid timezone.' }
+      return { error: "Invalid timezone." };
     }
 
     await db
       .update(user)
       .set({ timezone, onboardingStep: 2, updatedAt: new Date() })
-      .where(eq(user.id, session.user.id))
+      .where(eq(user.id, session.user.id));
 
-    return { ok: true }
+    return { ok: true };
   } catch (err) {
-    console.error('[onboarding] saveTimezoneStep', err)
-    return { error: 'Something went wrong. Please try again.' }
+    console.error("[onboarding] saveTimezoneStep", err);
+    return { error: "Something went wrong. Please try again." };
   }
 }
 
 // ── Step 3: Availability — weekly schedule ────────────────────────────────────
 
 export async function saveAvailabilityStep(
-  windows: Record<string, DaySchedule>,
+  windows: Record<string, DaySchedule>
 ): Promise<ActionResult> {
   try {
-    const session = await requireSession()
+    const session = await requireSession();
 
     const [freshUser] = await db
       .select({ timezone: user.timezone })
       .from(user)
       .where(eq(user.id, session.user.id))
-      .limit(1)
+      .limit(1);
 
-    const timezone = freshUser?.timezone ?? 'UTC'
+    const timezone = freshUser?.timezone ?? "UTC";
 
     await db.transaction(async (tx) => {
       // Delete existing default schedule (cascades to windows)
@@ -146,52 +188,52 @@ export async function saveAvailabilityStep(
         .where(
           and(
             eq(availabilitySchedule.userId, session.user.id),
-            eq(availabilitySchedule.isDefault, true),
-          ),
-        )
+            eq(availabilitySchedule.isDefault, true)
+          )
+        );
 
       const [schedule] = await tx
         .insert(availabilitySchedule)
         .values({
           userId: session.user.id,
-          name: 'Working Hours',
+          name: "Working Hours",
           isDefault: true,
           timezone,
         })
-        .returning()
+        .returning();
 
-      const enabledWindows = DAYS
-        .filter((day) => windows[day]?.enabled)
-        .map((day) => ({
+      const enabledWindows = DAYS.filter((day) => windows[day]?.enabled).map(
+        (day) => ({
           scheduleId: schedule.id,
           dayOfWeek: day,
           startTime: windows[day].startTime,
           endTime: windows[day].endTime,
-        }))
+        })
+      );
 
       if (enabledWindows.length > 0) {
-        await tx.insert(availabilityWindow).values(enabledWindows)
+        await tx.insert(availabilityWindow).values(enabledWindows);
       }
-    })
+    });
 
     await db
       .update(user)
       .set({ onboardingStep: 3, updatedAt: new Date() })
-      .where(eq(user.id, session.user.id))
+      .where(eq(user.id, session.user.id));
 
     await audit({
-      action: 'availability.schedule_updated',
+      action: "availability.schedule_updated",
       actorId: session.user.id,
       actorEmail: session.user.email,
-      entityType: 'user',
+      entityType: "user",
       entityId: session.user.id,
-      description: 'Set default availability during onboarding',
-    })
+      description: "Set default availability during onboarding",
+    });
 
-    return { ok: true }
+    return { ok: true };
   } catch (err) {
-    console.error('[onboarding] saveAvailabilityStep', err)
-    return { error: 'Something went wrong. Please try again.' }
+    console.error("[onboarding] saveAvailabilityStep", err);
+    return { error: "Something went wrong. Please try again." };
   }
 }
 
@@ -199,15 +241,15 @@ export async function saveAvailabilityStep(
 
 export async function skipCalendarStep(): Promise<ActionResult> {
   try {
-    const session = await requireSession()
+    const session = await requireSession();
     await db
       .update(user)
       .set({ onboardingStep: 4, updatedAt: new Date() })
-      .where(eq(user.id, session.user.id))
-    return { ok: true }
+      .where(eq(user.id, session.user.id));
+    return { ok: true };
   } catch (err) {
-    console.error('[onboarding] skipCalendarStep', err)
-    return { error: 'Something went wrong. Please try again.' }
+    console.error("[onboarding] skipCalendarStep", err);
+    return { error: "Something went wrong. Please try again." };
   }
 }
 
@@ -215,31 +257,28 @@ export async function skipCalendarStep(): Promise<ActionResult> {
 
 export async function completeOnboarding(): Promise<ActionResult> {
   try {
-    const session = await requireSession()
+    const session = await requireSession();
 
     // Auto-create default "30-Minute Meeting" event type (idempotent)
     const [existing] = await db
       .select({ id: eventType.id })
       .from(eventType)
       .where(
-        and(
-          eq(eventType.userId, session.user.id),
-          eq(eventType.slug, '30-min'),
-        ),
+        and(eq(eventType.userId, session.user.id), eq(eventType.slug, "30-min"))
       )
-      .limit(1)
+      .limit(1);
 
     if (!existing) {
-      const etId = createId()
+      const etId = createId();
 
       await db.transaction(async (tx) => {
         await tx.insert(eventType).values({
           id: etId,
           userId: session.user.id,
-          name: '30-Minute Meeting',
-          slug: '30-min',
-          locationType: 'google_meet',
-          color: '#0d9488',
+          name: "30-Minute Meeting",
+          slug: "30-min",
+          locationType: "google_meet",
+          color: "#0d9488",
           isActive: true,
           minimumNotice: 60,
           bookingWindow: 60,
@@ -248,44 +287,45 @@ export async function completeOnboarding(): Promise<ActionResult> {
           bufferAfter: 0,
           requiresApproval: false,
           position: 0,
-        })
+        });
 
         await tx.insert(eventTypeDuration).values({
           id: createId(),
           eventTypeId: etId,
           duration: 30,
           isDefault: true,
-        })
+        });
 
         await tx.insert(cancellationPolicy).values({
           id: createId(),
           eventTypeId: etId,
           allowCancellation: true,
           cutoffHours: 24,
-        })
-      })
+        });
+      });
 
       await audit({
-        action: 'event_type.created',
+        action: "event_type.created",
         actorId: session.user.id,
         actorEmail: session.user.email,
-        entityType: 'event_type',
+        entityType: "event_type",
         entityId: etId,
-        description: 'Auto-created "30-Minute Meeting" on onboarding completion',
-      })
+        description:
+          'Auto-created "30-Minute Meeting" on onboarding completion',
+      });
     }
 
     await db
       .update(user)
       .set({ onboardingDone: true, onboardingStep: 5, updatedAt: new Date() })
-      .where(eq(user.id, session.user.id))
+      .where(eq(user.id, session.user.id));
 
-    revalidatePath('/', 'layout')
-    revalidatePath('/event-types')
+    revalidatePath("/", "layout");
+    revalidatePath("/event-types");
 
-    return { ok: true }
+    return { ok: true };
   } catch (err) {
-    console.error('[completeOnboarding]', err)
-    return { error: 'Something went wrong. Please try again.' }
+    console.error("[completeOnboarding]", err);
+    return { error: "Something went wrong. Please try again." };
   }
 }

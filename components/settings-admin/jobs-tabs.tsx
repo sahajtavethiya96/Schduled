@@ -1,7 +1,7 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import type { ReactNode } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function JobsTabs({
@@ -16,7 +16,9 @@ export function JobsTabs({
   const router = useRouter();
 
   function handleChange(value: string) {
-    router.push(value === "email" ? "/settings/jobs?tab=email" : "/settings/jobs");
+    router.push(
+      value === "email" ? "/settings/jobs?tab=email" : "/settings/jobs"
+    );
   }
 
   return (
@@ -24,13 +26,21 @@ export function JobsTabs({
     // reason other than clicking a trigger (e.g. browser Back/Forward) —
     // Tabs is uncontrolled after mount, so `defaultValue` alone wouldn't
     // resync the visible tab to the address bar.
-    <Tabs key={defaultTab} defaultValue={defaultTab} onValueChange={handleChange}>
+    <Tabs
+      defaultValue={defaultTab}
+      key={defaultTab}
+      onValueChange={handleChange}
+    >
       <TabsList variant="line">
         <TabsTrigger value="queues">Queues</TabsTrigger>
         <TabsTrigger value="email">Email</TabsTrigger>
       </TabsList>
-      <TabsContent value="queues" className="pt-6">{queuesSlot}</TabsContent>
-      <TabsContent value="email" className="pt-6">{emailSlot}</TabsContent>
+      <TabsContent className="pt-6" value="queues">
+        {queuesSlot}
+      </TabsContent>
+      <TabsContent className="pt-6" value="email">
+        {emailSlot}
+      </TabsContent>
     </Tabs>
   );
 }

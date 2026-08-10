@@ -1,8 +1,8 @@
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { booking } from "@/db/schema";
-import { db } from "@/lib/db";
 import { checkRateLimit, jsonError, rateLimitKey } from "@/lib/api/helpers";
+import { db } from "@/lib/db";
 import { sanitizeText } from "@/lib/validators";
 import { enqueueJob } from "@/lib/worker/enqueue";
 import { JOB_NAMES } from "@/lib/worker/job-types";
@@ -14,13 +14,21 @@ interface RejectBody {
 
 export async function POST(request: Request) {
   try {
-    if (!(await checkRateLimit(rateLimitKey("POST:/api/bookings/reschedule-reject", request), 20, 60_000))) {
+    if (
+      !(await checkRateLimit(
+        rateLimitKey("POST:/api/bookings/reschedule-reject", request),
+        20,
+        60_000
+      ))
+    ) {
       return jsonError("Too many requests. Please wait a moment.", 429);
     }
 
     const body: RejectBody = await request.json();
     const { token, reason } = body;
-    if (!token) return jsonError("Missing approval token", 400);
+    if (!token) {
+      return jsonError("Missing approval token", 400);
+    }
 
     const [b] = await db
       .select({
@@ -32,7 +40,9 @@ export async function POST(request: Request) {
       .where(eq(booking.approvalToken, token))
       .limit(1);
 
-    if (!b) return jsonError("This approval link is invalid.", 404);
+    if (!b) {
+      return jsonError("This approval link is invalid.", 404);
+    }
 
     if (b.status !== "reschedule_requested") {
       return jsonError("This reschedule request is no longer valid.", 409);

@@ -1,4 +1,4 @@
-const cardRows = ['c1', 'c2', 'c3']
+const cardRows = ["c1", "c2", "c3"];
 
 export default function EventTypesLoading() {
   return (
@@ -13,8 +13,8 @@ export default function EventTypesLoading() {
       <div className="space-y-3">
         {cardRows.map((row) => (
           <div
-            key={row}
             className="flex items-stretch border border-base-300 overflow-hidden"
+            key={row}
           >
             <div className="w-1 bg-base-200 shrink-0" />
             <div className="flex flex-1 items-center gap-4 px-5 py-4">
@@ -36,5 +36,5 @@ export default function EventTypesLoading() {
         ))}
       </div>
     </div>
-  )
+  );
 }

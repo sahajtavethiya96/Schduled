@@ -15,7 +15,9 @@ export function AvatarProvider({
   initialUrl: string | null;
 }) {
   const [url, setUrl] = useState<string | null>(initialUrl);
-  return <AvatarCtx.Provider value={{ url, setUrl }}>{children}</AvatarCtx.Provider>;
+  return (
+    <AvatarCtx.Provider value={{ url, setUrl }}>{children}</AvatarCtx.Provider>
+  );
 }
 
 export function useAvatar() {

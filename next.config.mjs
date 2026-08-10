@@ -18,8 +18,12 @@ const nextConfig = {
   serverExternalPackages: ["sharp"],
   async redirects() {
     return [
-      { source: '/settings', destination: '/settings/my-link', permanent: true },
-    ]
+      {
+        source: "/settings",
+        destination: "/settings/my-link",
+        permanent: true,
+      },
+    ];
   },
   async headers() {
     // Pragmatic CSP (no nonce infrastructure): 'unsafe-inline' is needed for
@@ -29,10 +33,10 @@ const nextConfig = {
     // widget ships (see SELF-HOSTING.md Part 4 §M).
     // 'unsafe-eval' is only added in development — React and Turbopack use
     // eval() for source maps and callstack reconstruction in dev mode only.
-    const isDev = process.env.NODE_ENV === 'development'
+    const isDev = process.env.NODE_ENV === "development";
     const csp = [
       "default-src 'self'",
-      `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
+      `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https://lh3.googleusercontent.com",
       "font-src 'self' data:",
@@ -41,36 +45,42 @@ const nextConfig = {
       "object-src 'none'",
       "base-uri 'self'",
       "form-action 'self'",
-    ].join('; ')
+    ].join("; ");
 
     // Booking pages (/:username/:eventSlug) must be embeddable via iframe.
-    const embedCsp = csp.replace("frame-ancestors 'none'", "frame-ancestors *")
+    const embedCsp = csp.replace("frame-ancestors 'none'", "frame-ancestors *");
 
     return [
       // Booking pages — allow embedding in any origin
       {
-        source: '/:username/:eventSlug',
+        source: "/:username/:eventSlug",
         headers: [
-          { key: 'Content-Security-Policy', value: embedCsp },
-          { key: 'X-Content-Type-Options', value: 'nosniff' },
-          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=()' },
-          { key: 'Strict-Transport-Security', value: 'max-age=63072000' },
+          { key: "Content-Security-Policy", value: embedCsp },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), payment=()",
+          },
+          { key: "Strict-Transport-Security", value: "max-age=63072000" },
         ],
       },
       // All other pages — deny embedding
       {
-        source: '/(.*)',
+        source: "/(.*)",
         headers: [
-          { key: 'Content-Security-Policy', value: csp },
-          { key: 'X-Frame-Options', value: 'DENY' },
-          { key: 'X-Content-Type-Options', value: 'nosniff' },
-          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=()' },
-          { key: 'Strict-Transport-Security', value: 'max-age=63072000' },
+          { key: "Content-Security-Policy", value: csp },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), payment=()",
+          },
+          { key: "Strict-Transport-Security", value: "max-age=63072000" },
         ],
       },
-    ]
+    ];
   },
   turbopack: {
     root: resolve(__dirname),

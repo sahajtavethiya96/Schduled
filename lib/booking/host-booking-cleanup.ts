@@ -4,11 +4,11 @@ import { db } from "@/lib/db";
 import { enqueueEmail } from "@/lib/email";
 import { bookingEmail } from "@/lib/email/templates/booking-emails";
 import { enqueueJob } from "@/lib/worker/enqueue";
-import { JOB_NAMES } from "@/lib/worker/job-types";
 import {
   loadBookingForLifecycle,
   resolveLocationLabel,
 } from "@/lib/worker/handlers/booking-lifecycle-data";
+import { JOB_NAMES } from "@/lib/worker/job-types";
 
 const ACTIVE = sql`${booking.status} IN ('confirmed', 'pending', 'reschedule_requested')`;
 
@@ -27,8 +27,16 @@ export async function cancelUpcomingBookingsForHost(
   const rows = await db
     .select({ id: booking.id })
     .from(booking)
-    .where(and(eq(booking.hostUserId, hostUserId), gt(booking.startTime, new Date()), ACTIVE));
-  if (rows.length === 0) return 0;
+    .where(
+      and(
+        eq(booking.hostUserId, hostUserId),
+        gt(booking.startTime, new Date()),
+        ACTIVE
+      )
+    );
+  if (rows.length === 0) {
+    return 0;
+  }
 
   const ids = rows.map((r) => r.id);
   const now = new Date();
@@ -64,18 +72,28 @@ export async function cancelUpcomingBookingsForHost(
  * throws, so it can't block the account deletion. Calendar events are cleaned
  * up separately by deleteUserCalendarEvents.
  */
-export async function emailInviteesOfHostRemoval(hostUserId: string): Promise<number> {
+export async function emailInviteesOfHostRemoval(
+  hostUserId: string
+): Promise<number> {
   try {
     const rows = await db
       .select({ id: booking.id })
       .from(booking)
-      .where(and(eq(booking.hostUserId, hostUserId), gt(booking.startTime, new Date()), ACTIVE));
+      .where(
+        and(
+          eq(booking.hostUserId, hostUserId),
+          gt(booking.startTime, new Date()),
+          ACTIVE
+        )
+      );
 
     let sent = 0;
     for (const row of rows) {
       try {
         const b = await loadBookingForLifecycle(row.id);
-        if (!b) continue;
+        if (!b) {
+          continue;
+        }
         const mail = await bookingEmail({
           variant: "cancellation",
           audience: "invitee",
@@ -88,18 +106,30 @@ export async function emailInviteesOfHostRemoval(hostUserId: string): Promise<nu
           cancelToken: b.cancelToken,
           rescheduleToken: b.rescheduleToken,
           reason: "The host's account was removed.",
-          locationLabel: resolveLocationLabel(b.etLocationType, b.etLocationValue, b.inviteePhone),
+          locationLabel: resolveLocationLabel(
+            b.etLocationType,
+            b.etLocationValue,
+            b.inviteePhone
+          ),
           locationType: b.etLocationType,
           recipientName: b.inviteeName,
           otherPartyName: b.hostName ?? "your host",
         });
         await enqueueEmail(
-          { to: b.inviteeEmail, subject: mail.subject, html: mail.html, text: mail.text },
+          {
+            to: b.inviteeEmail,
+            subject: mail.subject,
+            html: mail.html,
+            text: mail.text,
+          },
           { idempotencyKey: `host-removed:${b.id}:invitee` }
         );
         sent++;
       } catch (err) {
-        console.warn(`[host-removal] failed to email invitee for booking ${row.id}:`, err);
+        console.warn(
+          `[host-removal] failed to email invitee for booking ${row.id}:`,
+          err
+        );
       }
     }
     return sent;

@@ -1,13 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
 import { LockKey } from "@phosphor-icons/react";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { setPasswordAction } from "@/app/actions/auth";
-import { MIN_PASSWORD_LENGTH } from "@/config/platform";
-import { authClient } from "@/lib/auth-client";
-import { authErrorMessage } from "@/lib/auth-errors";
-import { passwordComplexityError } from "@/lib/password";
 import { PasswordInput } from "@/components/common/password-input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -20,6 +16,10 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
+import { MIN_PASSWORD_LENGTH } from "@/config/platform";
+import { authClient } from "@/lib/auth-client";
+import { authErrorMessage } from "@/lib/auth-errors";
+import { passwordComplexityError } from "@/lib/password";
 
 interface Props {
   hasPassword: boolean;
@@ -27,7 +27,10 @@ interface Props {
   passwordAuthEnabled: boolean;
 }
 
-export function PasswordCard({ hasPassword: initialHasPassword, passwordAuthEnabled }: Props) {
+export function PasswordCard({
+  hasPassword: initialHasPassword,
+  passwordAuthEnabled,
+}: Props) {
   // Tracked locally (not just the server-supplied prop) so a successful "Set a
   // Password" flips the form into "Change password" mode immediately, instead
   // of re-submitting against the server guard that rejects a second set.
@@ -49,7 +52,9 @@ export function PasswordCard({ hasPassword: initialHasPassword, passwordAuthEnab
 
   function validate(): string | null {
     const complexityError = passwordComplexityError(newPassword);
-    if (complexityError) return complexityError;
+    if (complexityError) {
+      return complexityError;
+    }
     if (newPassword !== confirmPassword) {
       return "Passwords do not match.";
     }
@@ -66,7 +71,9 @@ export function PasswordCard({ hasPassword: initialHasPassword, passwordAuthEnab
     e.preventDefault();
     const invalid = validate();
     setError(invalid);
-    if (invalid) return;
+    if (invalid) {
+      return;
+    }
 
     if (!hasPassword) {
       startTransition(async () => {
@@ -94,7 +101,12 @@ export function PasswordCard({ hasPassword: initialHasPassword, passwordAuthEnab
     setSubmitting(false);
 
     if (err) {
-      setError(authErrorMessage(err.code, err.message ?? "Could not change your password."));
+      setError(
+        authErrorMessage(
+          err.code,
+          err.message ?? "Could not change your password."
+        )
+      );
       return;
     }
     reset();
@@ -141,16 +153,19 @@ export function PasswordCard({ hasPassword: initialHasPassword, passwordAuthEnab
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={onSubmit} className="flex w-full max-w-md flex-col gap-4">
+        <form
+          className="flex w-full max-w-md flex-col gap-4"
+          onSubmit={onSubmit}
+        >
           {hasPassword && (
             <div className="space-y-2">
               <Label htmlFor="current-password">Current password</Label>
               <PasswordInput
-                id="current-password"
                 autoComplete="current-password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
                 disabled={busy}
+                id="current-password"
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                value={currentPassword}
               />
             </div>
           )}
@@ -158,24 +173,24 @@ export function PasswordCard({ hasPassword: initialHasPassword, passwordAuthEnab
           <div className="space-y-2">
             <Label htmlFor="new-password">New password</Label>
             <PasswordInput
-              id="new-password"
               autoComplete="new-password"
+              disabled={busy}
+              id="new-password"
+              onChange={(e) => setNewPassword(e.target.value)}
               placeholder={`At least ${MIN_PASSWORD_LENGTH} characters`}
               value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              disabled={busy}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="confirm-password">Confirm new password</Label>
             <PasswordInput
-              id="confirm-password"
               autoComplete="new-password"
-              value={confirmPassword}
+              disabled={busy}
+              id="confirm-password"
               onChange={(e) => setConfirmPassword(e.target.value)}
               onPaste={(e) => e.preventDefault()}
-              disabled={busy}
+              value={confirmPassword}
             />
           </div>
 
@@ -185,7 +200,12 @@ export function PasswordCard({ hasPassword: initialHasPassword, passwordAuthEnab
             </Alert>
           )}
 
-          <Button type="submit" size="sm" className="w-fit gap-2" disabled={busy}>
+          <Button
+            className="w-fit gap-2"
+            disabled={busy}
+            size="sm"
+            type="submit"
+          >
             {busy && <Spinner size="sm" />}
             {hasPassword ? "Change password" : "Set password"}
           </Button>

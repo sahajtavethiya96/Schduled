@@ -54,7 +54,10 @@ describe("getClientIp", () => {
   });
 
   it("falls back to x-real-ip when cf-connecting-ip is absent", () => {
-    const req = makeRequest({ "x-real-ip": "5.6.7.8", "x-forwarded-for": "9.9.9.9" });
+    const req = makeRequest({
+      "x-real-ip": "5.6.7.8",
+      "x-forwarded-for": "9.9.9.9",
+    });
     expect(getClientIp(req)).toBe("5.6.7.8");
   });
 
@@ -73,6 +76,8 @@ describe("rateLimitKey", () => {
     const req = new Request("http://localhost/api/test", {
       headers: { "cf-connecting-ip": "1.2.3.4" },
     });
-    expect(rateLimitKey("POST:/api/bookings", req)).toBe("POST:/api/bookings:1.2.3.4");
+    expect(rateLimitKey("POST:/api/bookings", req)).toBe(
+      "POST:/api/bookings:1.2.3.4"
+    );
   });
 });

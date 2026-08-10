@@ -1,16 +1,20 @@
-import { eq } from "drizzle-orm";
-import type { Job } from "pg-boss";
 import { createId } from "@paralleldrive/cuid2";
 import { formatInTimeZone } from "date-fns-tz";
-import { db } from "@/lib/db";
+import { eq } from "drizzle-orm";
+import type { Job } from "pg-boss";
 import { booking, emailOutbox, eventType, user } from "@/db/schema";
+import { db } from "@/lib/db";
 import { reminderHostTemplate } from "@/lib/email/templates/reminder-host";
 import { reminderInviteeTemplate } from "@/lib/email/templates/reminder-invitee";
 import { createNotification } from "@/lib/notifications/create";
 import { enqueueJob } from "@/lib/worker/enqueue";
 import { type BookingReminderPayload, JOB_NAMES } from "@/lib/worker/job-types";
-import { loadHostPrefs, resolveLocationLabel, resolveLocationLabelHost, resolveMeetLabels } from "./booking-lifecycle-data";
-
+import {
+  loadHostPrefs,
+  resolveLocationLabel,
+  resolveLocationLabelHost,
+  resolveMeetLabels,
+} from "./booking-lifecycle-data";
 
 export async function handleBookingReminder24h(
   jobs: Job<BookingReminderPayload>[]
@@ -114,18 +118,29 @@ async function processReminder(
 
   const prefs = await loadHostPrefs(b.hostUserId);
   const hostTimezone = b.hostTimezone ?? "UTC";
-  const locationLabelInvitee = resolveLocationLabel(b.etLocationType, b.etLocationValue, b.inviteePhone);
-  const locationLabelHost = resolveLocationLabelHost(b.etLocationType, b.etLocationValue, b.inviteePhone);
-  const { invitee: inviteeLabel, host: hostLabel } = resolveMeetLabels(b.etLocationType);
+  const locationLabelInvitee = resolveLocationLabel(
+    b.etLocationType,
+    b.etLocationValue,
+    b.inviteePhone
+  );
+  const locationLabelHost = resolveLocationLabelHost(
+    b.etLocationType,
+    b.etLocationValue,
+    b.inviteePhone
+  );
+  const { invitee: inviteeLabel, host: hostLabel } = resolveMeetLabels(
+    b.etLocationType
+  );
   const tag = REMINDER_TAG[timeUntil];
 
   // "reminderEmail24h/1h" pref controls INVITEE reminders ("Send invitees a reminder").
   // The host always receives their own reminder regardless of this setting.
   // The 10m/5m last-mile fallbacks stand in for a missed 1h reminder, so they
   // honor that same toggle rather than introducing a new preference.
-  const inviteeReminderEnabled = timeUntil === "24 hours"
-    ? prefs?.reminderEmail24h !== false
-    : prefs?.reminderEmail1h !== false;
+  const inviteeReminderEnabled =
+    timeUntil === "24 hours"
+      ? prefs?.reminderEmail24h !== false
+      : prefs?.reminderEmail1h !== false;
 
   // ── Invitee reminder email ─────────────────────────────────────────────
   if (inviteeReminderEnabled) {

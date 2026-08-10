@@ -1,5 +1,5 @@
 import { Button, Hr, Link, Section, Text } from "react-email";
-import { emailBranding, type EmailBranding } from "@/lib/email/branding";
+import { type EmailBranding, emailBranding } from "@/lib/email/branding";
 import { buildEmailStyles, EmailLayout } from "./layout";
 
 interface ApprovalRequestEmailProps {
@@ -7,12 +7,12 @@ interface ApprovalRequestEmailProps {
   branding?: EmailBranding;
   eventName: string;
   hostName: string;
+  hostTimezone: string;
   inviteeEmail: string;
   inviteeName: string;
   locationLabel: string;
   reviewUrl: string;
   whenHost: string;
-  hostTimezone: string;
 }
 
 export function ApprovalRequestEmail({
@@ -31,7 +31,11 @@ export function ApprovalRequestEmail({
   const emailStyles = buildEmailStyles(branding.brandColor);
 
   return (
-    <EmailLayout preview={`New booking request: ${eventName} with ${inviteeName}`} productName={branding.appName} logoUrl={branding.logoUrl}>
+    <EmailLayout
+      logoUrl={branding.logoUrl}
+      preview={`New booking request: ${eventName} with ${inviteeName}`}
+      productName={branding.appName}
+    >
       {/* Badge */}
       <Section style={{ marginBottom: "8px" }}>
         <Text
@@ -56,7 +60,8 @@ export function ApprovalRequestEmail({
       </Text>
 
       <Text style={emailStyles.paragraph}>
-        Hi {hostName}, someone wants to book time with you. Review the details below and approve or decline.
+        Hi {hostName}, someone wants to book time with you. Review the details
+        below and approve or decline.
       </Text>
 
       <Hr style={{ borderColor: "#E5E7EB", margin: "20px 0" }} />
@@ -64,9 +69,20 @@ export function ApprovalRequestEmail({
       {/* Details */}
       <Section>
         <DetailRow label="Event" value={eventName} />
-        <DetailRow label="Requested by" value={`${inviteeName} (${inviteeEmail})`} />
-        <DetailRow label="Date & Time" value={`${whenHost} (${hostTimezone})`} />
-        <DetailRow label="Location" value={locationLabel} href={locationLabel.startsWith('http') ? locationLabel : undefined} linkColor={branding.brandColor} />
+        <DetailRow
+          label="Requested by"
+          value={`${inviteeName} (${inviteeEmail})`}
+        />
+        <DetailRow
+          label="Date & Time"
+          value={`${whenHost} (${hostTimezone})`}
+        />
+        <DetailRow
+          href={locationLabel.startsWith("http") ? locationLabel : undefined}
+          label="Location"
+          linkColor={branding.brandColor}
+          value={locationLabel}
+        />
       </Section>
 
       <Hr style={{ borderColor: "#E5E7EB", margin: "20px 0" }} />
@@ -94,7 +110,13 @@ export function ApprovalRequestEmail({
         </Button>
       </Section>
 
-      <Text style={{ ...emailStyles.muted, marginTop: "16px", textAlign: "center" as const }}>
+      <Text
+        style={{
+          ...emailStyles.muted,
+          marginTop: "16px",
+          textAlign: "center" as const,
+        }}
+      >
         You can also manage this request from your{" "}
         <a href={reviewUrl} style={emailStyles.link}>
           dashboard
@@ -105,17 +127,42 @@ export function ApprovalRequestEmail({
   );
 }
 
-function DetailRow({ label, value, href, linkColor = emailBranding.brandColor }: { label: string; value: string; href?: string; linkColor?: string }) {
+function DetailRow({
+  label,
+  value,
+  href,
+  linkColor = emailBranding.brandColor,
+}: {
+  label: string;
+  value: string;
+  href?: string;
+  linkColor?: string;
+}) {
   const emailStyles = buildEmailStyles(linkColor);
   return (
     <Section style={{ marginBottom: "8px" }}>
       <Text style={{ ...emailStyles.muted, margin: "0" }}>{label}</Text>
       {href ? (
-        <Link href={href} style={{ color: linkColor, fontSize: "14px", fontWeight: 600, display: "block", textDecoration: "underline" }}>
+        <Link
+          href={href}
+          style={{
+            color: linkColor,
+            fontSize: "14px",
+            fontWeight: 600,
+            display: "block",
+            textDecoration: "underline",
+          }}
+        >
           View Location
         </Link>
       ) : (
-        <Text style={{ ...emailStyles.paragraph, fontWeight: 600, margin: "2px 0 0" }}>
+        <Text
+          style={{
+            ...emailStyles.paragraph,
+            fontWeight: 600,
+            margin: "2px 0 0",
+          }}
+        >
           {value}
         </Text>
       )}

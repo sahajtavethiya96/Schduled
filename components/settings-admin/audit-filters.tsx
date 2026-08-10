@@ -14,7 +14,12 @@ import {
 import type { ActionCategory, DateRange } from "@/lib/audit-query";
 
 export function AuditFilters({
-  entityTypes, category, entityType, dateRange, customFrom, customTo,
+  entityTypes,
+  category,
+  entityType,
+  dateRange,
+  customFrom,
+  customTo,
 }: {
   entityTypes: string[];
   category: ActionCategory;
@@ -33,7 +38,9 @@ export function AuditFilters({
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (document.activeElement === inputRef.current) return;
+    if (document.activeElement === inputRef.current) {
+      return;
+    }
     setSearch(searchParams.get("q") ?? "");
   }, [searchParams]);
 
@@ -41,8 +48,11 @@ export function AuditFilters({
     const params = new URLSearchParams(searchParams.toString());
     params.delete("page");
     for (const [key, value] of Object.entries(next)) {
-      if (value) params.set(key, value);
-      else params.delete(key);
+      if (value) {
+        params.set(key, value);
+      } else {
+        params.delete(key);
+      }
     }
     startTransition(() => {
       router.replace(`${pathname}?${params.toString()}`, { scroll: false });
@@ -51,38 +61,65 @@ export function AuditFilters({
 
   function onSearchChange(next: string) {
     setSearch(next);
-    if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => push({ q: next.trim() || undefined }), 350);
+    if (timer.current) {
+      clearTimeout(timer.current);
+    }
+    timer.current = setTimeout(
+      () => push({ q: next.trim() || undefined }),
+      350
+    );
   }
 
-  useEffect(() => () => {
-    if (timer.current) clearTimeout(timer.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (timer.current) {
+        clearTimeout(timer.current);
+      }
+    },
+    []
+  );
 
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-2">
         <form
-          onSubmit={(e) => { e.preventDefault(); if (timer.current) clearTimeout(timer.current); push({ q: search.trim() || undefined }); }}
           className="relative w-full sm:w-auto"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (timer.current) {
+              clearTimeout(timer.current);
+            }
+            push({ q: search.trim() || undefined });
+          }}
         >
           {isPending ? (
-            <Spinner size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 animate-spin text-primary" />
+            <Spinner
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 animate-spin text-primary"
+              size={14}
+            />
           ) : (
-            <MagnifyingGlass size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <MagnifyingGlass
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+              size={14}
+            />
           )}
           <Input
-            ref={inputRef}
-            value={search}
-            onChange={(e) => onSearchChange(e.target.value)}
-            type="search"
-            placeholder="Search action, user or entity..."
             className="h-9 w-full pl-8 pr-3 text-sm sm:w-64"
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder="Search action, user or entity..."
+            ref={inputRef}
+            type="search"
+            value={search}
           />
         </form>
 
-        <Select value={category} onValueChange={(v) => push({ category: v === "all" ? undefined : v })}>
-          <SelectTrigger className="h-9 w-40 text-sm"><SelectValue /></SelectTrigger>
+        <Select
+          onValueChange={(v) => push({ category: v === "all" ? undefined : v })}
+          value={category}
+        >
+          <SelectTrigger className="h-9 w-40 text-sm">
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Actions</SelectItem>
             <SelectItem value="auth">Authentication</SelectItem>
@@ -93,8 +130,13 @@ export function AuditFilters({
           </SelectContent>
         </Select>
 
-        <Select value={entityType} onValueChange={(v) => push({ entity: v === "all" ? undefined : v })}>
-          <SelectTrigger className="h-9 w-40 text-sm"><SelectValue /></SelectTrigger>
+        <Select
+          onValueChange={(v) => push({ entity: v === "all" ? undefined : v })}
+          value={entityType}
+        >
+          <SelectTrigger className="h-9 w-40 text-sm">
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Entities</SelectItem>
             {entityTypes.map((t) => (
@@ -105,8 +147,15 @@ export function AuditFilters({
           </SelectContent>
         </Select>
 
-        <Select value={dateRange} onValueChange={(v) => push({ dateRange: v === "all" ? undefined : v })}>
-          <SelectTrigger className="h-9 w-40 text-sm"><SelectValue /></SelectTrigger>
+        <Select
+          onValueChange={(v) =>
+            push({ dateRange: v === "all" ? undefined : v })
+          }
+          value={dateRange}
+        >
+          <SelectTrigger className="h-9 w-40 text-sm">
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Time</SelectItem>
             <SelectItem value="today">Today</SelectItem>
@@ -124,18 +173,18 @@ export function AuditFilters({
             <span className="text-muted-foreground">From</span>
             <input
               className="h-8 border border-base-300 bg-base-100 px-2 text-sm focus:border-primary focus:outline-none"
+              defaultValue={customFrom}
               onChange={(e) => push({ from: e.target.value || undefined })}
               type="date"
-              defaultValue={customFrom}
             />
           </label>
           <label className="flex items-center gap-2 text-sm">
             <span className="text-muted-foreground">To</span>
             <input
               className="h-8 border border-base-300 bg-base-100 px-2 text-sm focus:border-primary focus:outline-none"
+              defaultValue={customTo}
               onChange={(e) => push({ to: e.target.value || undefined })}
               type="date"
-              defaultValue={customTo}
             />
           </label>
         </div>

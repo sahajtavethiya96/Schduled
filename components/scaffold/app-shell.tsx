@@ -1,8 +1,8 @@
-import { Suspense, type ReactNode } from "react";
+import { type ReactNode, Suspense } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { AutofillScrollFix } from "./autofill-scroll-fix";
-import { HeaderAvatar } from "./header-avatar";
 import { GlobalSearch } from "./global-search";
+import { HeaderAvatar } from "./header-avatar";
 import { ImpersonationBanner } from "./impersonation-banner";
 import { JoinSoonBar } from "./join-soon-bar";
 import { MobileNav } from "./mobile-nav";
@@ -28,21 +28,19 @@ export function AppShell({
   impersonatedUserName?: string | null;
 }) {
   return (
-    <div data-app-shell className="flex h-dvh overflow-hidden">
-
+    <div className="flex h-dvh overflow-hidden" data-app-shell>
       {/* ── Full-height sidebar — desktop only ───────────────────────── */}
       <aside className="hidden md:flex w-60 shrink-0 flex-col bg-sidebar border-r border-sidebar-border overflow-y-auto no-scrollbar">
         <SidebarNav
           email={email}
-          userName={userName}
           isAdmin={isAdmin}
           userImage={userImage}
+          userName={userName}
         />
       </aside>
 
       {/* ── Right side: top bar + content ────────────────────────────── */}
       <div className="flex flex-1 min-w-0 flex-col overflow-hidden">
-
         {/* Impersonation banner */}
         {isImpersonating && (
           <ImpersonationBanner userName={impersonatedUserName ?? email} />
@@ -50,7 +48,11 @@ export function AppShell({
 
         {/* Top bar — spans only the content area */}
         <header className="h-14 shrink-0 flex items-center justify-between gap-3 px-4 md:px-6 border-b border-base-300 bg-base-100 z-40">
-          <Suspense fallback={<div className="h-9 w-48 md:w-72 border border-base-300 bg-page" />}>
+          <Suspense
+            fallback={
+              <div className="h-9 w-48 md:w-72 border border-base-300 bg-page" />
+            }
+          >
             <GlobalSearch />
           </Suspense>
 
@@ -65,7 +67,10 @@ export function AppShell({
         <JoinSoonBar />
 
         {/* Page content */}
-        <main data-app-main className="flex-1 overflow-y-auto overflow-x-clip bg-page pb-16 md:pb-0 [scrollbar-gutter:stable]">
+        <main
+          className="flex-1 overflow-y-auto overflow-x-clip bg-page pb-16 md:pb-0 [scrollbar-gutter:stable]"
+          data-app-main
+        >
           <ScrollReset />
           <AutofillScrollFix />
           <div className="mx-auto max-w-7xl px-4 md:px-6 pt-4 pb-6 md:pt-5 md:pb-8">

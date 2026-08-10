@@ -1,4 +1,8 @@
-import ical, { ICalCalendarMethod, ICalAttendeeRole, ICalAttendeeStatus } from "ical-generator";
+import ical, {
+  ICalAttendeeRole,
+  ICalAttendeeStatus,
+  ICalCalendarMethod,
+} from "ical-generator";
 import type { EmailAttachment } from "@/db/schema";
 
 export interface GenerateICSParams {
