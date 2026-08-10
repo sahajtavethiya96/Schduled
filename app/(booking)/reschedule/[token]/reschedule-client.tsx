@@ -50,9 +50,8 @@ const DATE_FMT = "EEE, MMM d 'at' h:mm a";
 
 export function RescheduleClient(props: Props) {
   const router = useRouter();
-  // Seed from the server-known timezone so SSR and the first client render
-  // match (avoids a hydration mismatch when the server tz differs from the
-  // visitor's), then correct to the browser's timezone on mount.
+  // Seed from the server-known timezone to avoid a hydration mismatch, then
+  // correct to the browser's timezone on mount.
   const [inviteeTz, setInviteeTz] = useState(props.inviteeTimezone);
   useEffect(() => {
     const detected = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -274,7 +273,6 @@ export function RescheduleClient(props: Props) {
         </div>
 
         <div className="flex flex-col lg:flex-row">
-          {/* Calendar */}
           <div className="shrink-0 border-b border-base-300 p-6 lg:w-[340px] lg:border-b-0 lg:border-r">
             <div className="mb-4 flex items-center justify-between">
               <button
@@ -362,7 +360,6 @@ export function RescheduleClient(props: Props) {
             </div>
           </div>
 
-          {/* Slots */}
           <div className="flex flex-1 flex-col">
             {selectedDate ? (
               <div className="flex flex-1 flex-col">

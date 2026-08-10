@@ -11,8 +11,7 @@ import { userHasPassword } from "@/lib/auth-password";
 import { db } from "@/lib/db";
 import { env } from "@/lib/env";
 
-// `redirectTo` is bound per call-site so sign-out returns to the surface the
-// user signed out from, defaulting to /login.
+// `redirectTo` is bound per call-site so sign-out returns to the surface the user signed out from.
 export async function logoutAction(
   redirectTo = "/login",
   _formData?: FormData
@@ -21,8 +20,7 @@ export async function logoutAction(
   const session = await auth.api.getSession({ headers: requestHeaders });
   await auth.api.signOut({ headers: requestHeaders });
 
-  // Manually clear session cookies — server action responses don't forward
-  // Set-Cookie headers from auth.api.signOut automatically
+  // Server action responses don't forward Set-Cookie from auth.api.signOut, so clear manually.
   const cookieStore = await cookies();
   cookieStore.delete("better-auth.session_token");
   cookieStore.delete("__Secure-better-auth.session_token");
@@ -38,17 +36,15 @@ export async function logoutAction(
     });
   }
 
-  // Only allow same-origin internal paths — safeReturnTo also rejects
-  // protocol-relative ("//evil.com") and backslash targets that startsWith("/")
-  // would let through.
+  // safeReturnTo also rejects protocol-relative ("//evil.com") and backslash
+  // targets that a plain startsWith("/") check would let through.
   redirect(safeReturnTo(redirectTo, "/login"));
 }
 
 /**
- * Set a password for a user who signed up via magic link or Google and has none
- * yet. Better Auth's `setPassword` is a server-only endpoint, so it can't be
- * called from `authClient`. Changing an EXISTING password goes through
- * `authClient.changePassword`, which requires the current password.
+ * Sets a password for a user with none yet (signed up via magic link/Google).
+ * Better Auth's `setPassword` is server-only, unlike `authClient.changePassword`
+ * which requires the current password and is used to change an existing one.
  */
 export async function setPasswordAction(
   newPassword: string
@@ -59,8 +55,6 @@ export async function setPasswordAction(
     return { error: "Unauthorized" };
   }
 
-  // Guard: never let this overwrite an existing password without proving
-  // knowledge of the old one — that's what changePassword is for.
   if (await userHasPassword(session.user.id)) {
     return { error: "A password is already set. Use Change password instead." };
   }
@@ -87,11 +81,9 @@ export async function setPasswordAction(
 }
 
 /**
- * Pre-flight check for the magic-link "send" step. Left unchecked, the
- * underlying gate (databaseHooks.user.create.before in lib/auth.ts) only
- * rejects an unknown email once the recipient actually clicks the link,
- * which would otherwise mean sending a magic-link email to an address that
- * can never sign in. This lets the form reject it immediately instead.
+ * Pre-flight check for magic-link send: the real gate
+ * (databaseHooks.user.create.before in lib/auth.ts) only rejects an unknown
+ * email once the link is clicked, so this lets the form reject it upfront.
  */
 export async function canSignInByEmail(email: string): Promise<boolean> {
   if (env.ALLOW_PUBLIC_SIGNUP) {

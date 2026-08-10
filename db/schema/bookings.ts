@@ -22,10 +22,8 @@ export const booking = pgTable('booking', {
   videoLinkHost:    text('video_link_host'),
   videoLinkInvitee: text('video_link_invitee'),
   videoLinkPassword: text('video_link_password'),
-  // Set once video-link-generate gives up for good (no provider connection,
-  // or the provider API call kept failing through every retry) so the UI can
-  // tell "still generating" apart from "never going to happen" instead of
-  // just showing nothing forever. Cleared whenever a link is written.
+  // Set when video link generation gives up for good, so the UI can tell
+  // "still generating" apart from "never going to happen". Cleared on write.
   videoLinkError:   text('video_link_error'),
 
   status: bookingStatusEnum('status').notNull().default('confirmed'),
@@ -43,10 +41,8 @@ export const booking = pgTable('booking', {
   rescheduledFromId:   text('rescheduled_from_id'),
   rescheduleCount:     integer('reschedule_count').notNull().default(0),
 
-  // Guest-initiated reschedule of a confirmed booking: the proposed new time is
-  // staged here (status = 'reschedule_requested') and only written to
-  // startTime/endTime once the host approves. The original meeting stays intact
-  // until then. Cleared on approve, reject, or cancel.
+  // Proposed new time for a guest-initiated reschedule; only written to
+  // startTime/endTime once the host approves. Cleared on approve/reject/cancel.
   rescheduleRequestedStart: timestamp('reschedule_requested_start', { withTimezone: true }),
   rescheduleRequestedEnd:   timestamp('reschedule_requested_end', { withTimezone: true }),
 

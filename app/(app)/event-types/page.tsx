@@ -32,7 +32,6 @@ export default async function EventTypesPage() {
       .from(user)
       .where(eq(user.id, session.user.id))
       .limit(1),
-    // Last booking time per event type (all time)
     db
       .select({
         eventTypeId: booking.eventTypeId,
@@ -41,7 +40,6 @@ export default async function EventTypesPage() {
       .from(booking)
       .where(eq(booking.hostUserId, session.user.id))
       .groupBy(booking.eventTypeId),
-    // Booking count per event type for the current month only
     db
       .select({ eventTypeId: booking.eventTypeId, countThisMonth: count() })
       .from(booking)
@@ -52,7 +50,7 @@ export default async function EventTypesPage() {
         )
       )
       .groupBy(booking.eventTypeId),
-    // Google Meet connectivity (requires a write-target connected calendar)
+    // Google Meet requires a write-target connected calendar
     db
       .select({ id: connectedCalendar.id })
       .from(connectedCalendar)
@@ -64,7 +62,6 @@ export default async function EventTypesPage() {
         )
       )
       .limit(1),
-    // Zoom connectivity
     db
       .select({ id: videoConnection.id })
       .from(videoConnection)

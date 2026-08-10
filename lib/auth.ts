@@ -39,17 +39,12 @@ const NEW_PASSWORD_FIELDS: Record<string, "password" | "newPassword"> = {
   "/reset-password": "newPassword",
 };
 
-// Better Auth builds `socialProviders` once, synchronously, at module
-// evaluation — it isn't a per-request config, so it can't consult the DB
-// live like the rest of this app's integration settings do. This top-level
-// await resolves the DB-or-env Google credentials once, at process boot: a
-// DB-only config (no env vars at all) works after a restart, and any later
-// change made via Settings → Services needs a restart to take effect for
-// Google *sign-in* specifically (Google *Calendar*, in lib/google/client.ts,
-// reads fresh per call and needs no restart). Wrapped in try/catch because
-// `next build`'s page-data-collection phase imports this module against a
-// placeholder DATABASE_URL with no real Postgres reachable — a DB failure
-// here must degrade to "Google sign-in not configured", not crash the build.
+// socialProviders is built once at module evaluation, not per-request, so
+// this resolves DB-or-env Google credentials once at process boot: a later
+// change via Settings → Services needs a restart to take effect for Google
+// *sign-in* (Google *Calendar*, in lib/google/client.ts, reads fresh per
+// call). Wrapped in try/catch because `next build` imports this module
+// against a placeholder DATABASE_URL with no real Postgres reachable.
 let googleOAuthAtBoot: Awaited<ReturnType<typeof getGoogleOAuthSettings>> =
   null;
 try {
@@ -81,9 +76,8 @@ export const auth = betterAuth({
     getAppUrl(),
   ],
   // Throttle auth endpoints — without this, /sign-in/email is brute-forceable
-  // and /request-password-reset + /sign-in/magic-link can be used to bomb any
-  // address with unlimited outbound email. In-memory limiter (per node), which
-  // is sufficient for a single-node self-hosted deployment.
+  // and reset/magic-link endpoints can bomb any address with outbound email.
+  // In-memory limiter (per node), sufficient for a single-node deployment.
   rateLimit: {
     enabled: true,
     window: 60,
@@ -97,9 +91,8 @@ export const auth = betterAuth({
   },
   account: {
     accountLinking: {
-      // Magic link never creates a row in the account table, so Google is
-      // always the "only" account entry. Allow unlinking it — the user can
-      // still sign in via magic link at any time.
+      // Magic link never creates an account-table row, so Google is always
+      // the "only" entry — safe to allow unlinking it.
       allowUnlinkingAll: true,
     },
   },
@@ -117,8 +110,8 @@ export const auth = betterAuth({
     enabled: passwordAuthEnabled,
     minPasswordLength: MIN_PASSWORD_LENGTH,
     maxPasswordLength: MAX_PASSWORD_LENGTH,
-    // Delivered the same way as magic links: enqueued to the outbox → worker →
-    // SMTP (or logged to the server console if no SMTP is configured).
+    // Delivered like magic links: enqueued to outbox → worker → SMTP (or
+    // logged to console if no SMTP is configured).
     sendResetPassword: async ({ user, url }) => {
       const { html, text } = await resetPasswordTemplate({
         email: user.email,
@@ -143,9 +136,8 @@ export const auth = betterAuth({
       });
     },
   },
-  // Powers the "change email" flow's confirmation link (see user.changeEmail
-  // below) — Better Auth calls this with `user.email` already set to the
-  // NEW address, so it's the destination the link needs to reach.
+  // Powers the "change email" confirmation link — Better Auth calls this
+  // with `user.email` already set to the NEW address.
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
       const { html, text } = await changeEmailVerificationTemplate({
@@ -168,9 +160,8 @@ export const auth = betterAuth({
         metadata: { newEmail: user.email },
       });
     },
-    // Fires once the link above is actually clicked and the email has been
-    // applied — this app never triggers plain signup-verification, so every
-    // call here is a completed change-email confirmation.
+    // Fires once the link above is clicked. This app never triggers plain
+    // signup-verification, so every call here is a change-email confirmation.
     afterEmailVerification: async (user) => {
       await audit({
         action: "profile.email_updated",
@@ -186,16 +177,13 @@ export const auth = betterAuth({
   user: {
     // Off by default in Better Auth — without this, /change-email 400s
     // outright. Left at the default updateEmailWithoutVerification: false, so
-    // every change (regardless of the account's current emailVerified state)
-    // goes through the sendVerificationEmail confirmation link above rather
-    // than applying immediately.
+    // every change goes through the confirmation link above.
     changeEmail: {
       enabled: true,
     },
   },
-  // Server-side enforcement of the admin's "Sign-in Methods" toggles. The UI
-  // hides disabled methods, but this is what actually blocks a direct API call
-  // to a disabled method (defense in depth, not just cosmetic).
+  // Server-side enforcement of the admin's "Sign-in Methods" toggles —
+  // blocks a direct API call to a disabled method, not just the UI.
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
       const path = ctx.path;
@@ -290,12 +278,10 @@ export const auth = betterAuth({
   databaseHooks: {
     user: {
       create: {
-        // Gates ALL new-account creation (password sign-up, magic link
-        // first-use, Google first-login all funnel through this hook) —
-        // the bootstrap admin always gets through regardless of
-        // ALLOW_PUBLIC_SIGNUP, so it's safe to close signup from day one
-        // rather than "open then close later". Returning false blocks
-        // creation (surfaces as a clean BAD_REQUEST to the client).
+        // Gates all new-account creation (password, magic link, Google all
+        // funnel through this hook). The bootstrap admin always gets through
+        // regardless of ALLOW_PUBLIC_SIGNUP. Returning false blocks creation
+        // (surfaces as a clean BAD_REQUEST).
         before: async (user) => {
           if (env.ALLOW_PUBLIC_SIGNUP) {
             return;
@@ -308,27 +294,22 @@ export const auth = betterAuth({
             return { data: { emailVerified: true } };
           }
 
-          // The /setup wizard (app/actions/setup.ts createFirstAdmin) is only
-          // reachable and only ever creates a user while the instance has
-          // zero users — every unauthenticated entry point redirects there
-          // via redirectToSetupIfNeeded() until an admin exists, and the
-          // action itself atomically re-checks and deletes the loser on a
-          // concurrent double-submit. So it's safe to let this one creation
+          // The /setup wizard only creates a user while the instance has zero
+          // users (every unauthenticated route redirects there via
+          // redirectToSetupIfNeeded until an admin exists, and the action
+          // itself atomically re-checks). Safe to let this one creation
           // through regardless of ALLOW_PUBLIC_SIGNUP/INITIAL_ADMIN_EMAIL —
-          // without this, closing signup with no INITIAL_ADMIN_EMAIL set
-          // (a supported combination) would make first-run setup impossible.
+          // otherwise closing signup with no INITIAL_ADMIN_EMAIL set would
+          // make first-run setup impossible.
           //
-          // Both branches above mark emailVerified true at creation: with
-          // signup closed, this hook itself is the only door in, so — unlike
-          // the open ALLOW_PUBLIC_SIGNUP path above, where anyone can type in
-          // an email they don't own — every account reaching here is already
-          // vetted. Without this, a password sign-up (the only method with no
-          // built-in ownership proof; magic link and Google both verify the
-          // email out of band) leaves emailVerified permanently false — this
-          // app has no signup-verification email to ever flip it — which
-          // then permanently blocks that same person from later linking
-          // Google to the same address (Better Auth's account-linking
-          // requires the existing user's email to already be verified).
+          // Both branches mark emailVerified true: with signup closed, this
+          // hook is the only door in, so every account reaching here is
+          // already vetted. Without this, password sign-up (the only method
+          // with no built-in ownership proof) would leave emailVerified
+          // permanently false — this app has no verification email to flip
+          // it — which then blocks that person from ever linking Google to
+          // the same address (linking requires the existing email to already
+          // be verified).
           if (!(await hasAnyUser())) {
             return { data: { emailVerified: true } };
           }
@@ -345,10 +326,9 @@ export const auth = betterAuth({
             entityType: "user",
           });
 
-          // Self-hosted first-run bootstrap: auto-promote the operator's
-          // designated admin email the moment that account is created.
-          // Checked once at signup only — demoting later via the admin
-          // panel is not overridden by a later sign-in.
+          // Auto-promote the operator's designated admin email at signup.
+          // Checked once at signup only — a later demotion isn't overridden
+          // by a later sign-in.
           if (
             env.INITIAL_ADMIN_EMAIL &&
             user.email.toLowerCase() === env.INITIAL_ADMIN_EMAIL.toLowerCase()

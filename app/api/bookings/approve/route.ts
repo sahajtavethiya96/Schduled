@@ -90,12 +90,9 @@ export async function POST(request: Request) {
     const dayStartUtc = fromZonedTime(`${date}T00:00:00`, hostTz);
     const dayEndUtc = fromZonedTime(`${date}T23:59:59.999`, hostTz);
 
-    // ── Transaction: advisory lock → conflict re-check → confirm ─────────────
-    // Without this, two pending bookings for the same slot could both be
-    // approved, double-booking the host.
+    // Transaction: advisory lock → conflict re-check → confirm. Without the
+    // lock, two pending bookings for the same slot could both be approved.
     const result = await db.transaction(async (tx) => {
-      // Host-wide lock (see create route) so two overlapping pending bookings
-      // can't both be approved concurrently.
       await tx.execute(
         sql`SELECT pg_advisory_xact_lock(hashtext(${b.hostUserId}))`
       );

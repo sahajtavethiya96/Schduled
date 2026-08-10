@@ -4,15 +4,10 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-// The standard CSS `scrollbar-width`/`scrollbar-color` properties (widely
-// supported since ~2023) plus a `::-webkit-scrollbar` fallback for older
-// Chromium/Safari give a "thin, tinted, consistent" scrollbar look with
-// zero JS — real native scrolling (momentum, keyboard, touch, a11y) with
-// custom paint, instead of faked scrolling. `ScrollBar` is kept as a no-op
-// passthrough purely for API-surface parity (same precedent as
-// SelectScrollUpButton/SelectScrollDownButton in select.tsx) — the
-// viewport now styles its own scrollbar directly, so there's no separate
-// scrollbar element to compose.
+// CSS `scrollbar-width`/`scrollbar-color` plus a `::-webkit-scrollbar`
+// fallback give a thin, tinted scrollbar with real native scrolling and
+// zero JS. `ScrollBar` is kept as a no-op passthrough for API-surface
+// parity — the viewport styles its own scrollbar directly.
 const scrollbarClassName = cn(
   "[scrollbar-width:thin] [scrollbar-color:var(--color-base-300)_transparent]",
   "[&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar]:h-2.5",

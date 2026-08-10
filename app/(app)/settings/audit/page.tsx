@@ -33,9 +33,8 @@ export default async function SettingsAuditPage({
 
   const [totalResult, entityTypeRows, rows] = await Promise.all([
     db.select({ value: count() }).from(auditLogs).where(whereClause),
-    // Distinct entity types across ALL logs (not just the current filtered
-    // page) so the dropdown always offers every category, even ones with 0
-    // matches under the current filter.
+    // All entity types, not just the current filtered page, so the dropdown
+    // lists every category even ones with 0 matches under the filter.
     db
       .selectDistinct({ entityType: auditLogs.entityType })
       .from(auditLogs)

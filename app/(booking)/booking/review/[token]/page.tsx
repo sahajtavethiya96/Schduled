@@ -69,9 +69,8 @@ export default async function ReviewPage({
     b.etLocationValue
   );
 
-  // For a reschedule review, the request is actionable only while it's still
-  // pending. If the booking moved on (approved, declined, or cancelled while the
-  // request was pending), show the "no longer valid" state instead.
+  // A reschedule request is actionable only while still pending — if the
+  // booking moved on since, show the "no longer valid" state instead.
   const isAlreadyActioned = isReschedule
     ? b.status !== "reschedule_requested"
     : b.status !== "pending";

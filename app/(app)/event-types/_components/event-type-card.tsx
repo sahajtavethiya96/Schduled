@@ -89,8 +89,6 @@ interface EventTypeCardProps {
   zoomConnected?: boolean;
 }
 
-// ── Location meta ─────────────────────────────────────────────────────────────
-
 const LOCATION_META: Record<
   string,
   { label: string; icon: React.ReactNode; cls: string }
@@ -157,8 +155,6 @@ function relativeDate(date: Date): string {
   }
   return `${Math.floor(days / 30)}mo ago`;
 }
-
-// ── Card ──────────────────────────────────────────────────────────────────────
 
 export function EventTypeCard({
   id,
@@ -266,17 +262,11 @@ export function EventTypeCard({
     (locationType === "google_meet" && !googleMeetConnected) ||
     (locationType === "zoom" && !zoomConnected);
 
-  // ── Shared dropdown items ──────────────────────────────────────────────────
-
-  // Rendered as a sibling of DropdownMenu (not nested inside it) and opened
-  // via local state set from the Delete DropdownMenuItem's onClick. This
-  // follows the Headless UI maintainer's documented recommendation for a
-  // Dialog triggered from a Menu item: move the Dialog outside the
-  // Menu/MenuItem tree and drive its open state from there, rather than
-  // nesting it inside the menu (github.com/tailwindlabs/headlessui,
-  // discussion #1449) — nesting it would tie the dialog's mounted state to
-  // the menu's own open/closed state, which Headless UI's MenuItem doesn't
-  // support keeping independent of a menu-item click.
+  // Rendered as a sibling of DropdownMenu, not nested inside it, with open
+  // state driven from here — per Headless UI's guidance for a Dialog
+  // triggered from a Menu item (github.com/tailwindlabs/headlessui,
+  // discussion #1449): nesting it would tie the dialog's mount to the
+  // menu's own open/closed state, which MenuItem can't decouple from a click.
   const deleteConfirmDialog = (
     <AlertDialog onOpenChange={setDeleteOpen} open={deleteOpen}>
       <AlertDialogContent>
@@ -349,8 +339,6 @@ export function EventTypeCard({
     </>
   );
 
-  // ── Shared badges ─────────────────────────────────────────────────────────
-
   const badges = (
     <div className="flex flex-wrap items-center gap-1.5">
       <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-base-200 text-muted-foreground">
@@ -380,8 +368,6 @@ export function EventTypeCard({
     </div>
   );
 
-  // ── Toggle + label ─────────────────────────────────────────────────────────
-
   const toggleControl = (
     <div className="flex items-center gap-1.5">
       <Switch
@@ -401,10 +387,7 @@ export function EventTypeCard({
     </div>
   );
 
-  // ─────────────────────────────────────────────────────────────────────────
   // GRID layout
-  // ─────────────────────────────────────────────────────────────────────────
-
   if (viewMode === "grid") {
     return (
       // biome-ignore lint/a11y/noStaticElementInteractions: hover-only (drives inline style), wraps nested interactive controls so it can't itself be a button
@@ -466,10 +449,8 @@ export function EventTypeCard({
             </div>
           </div>
 
-          {/* Badges */}
           {badges}
 
-          {/* Stats */}
           {stats && (
             <div className="mt-auto flex items-center gap-1.5 text-xs text-muted-foreground">
               <CalendarCheck size={12} weight="bold" />
@@ -528,7 +509,6 @@ export function EventTypeCard({
                 <ArrowSquareOut size={13} />
               </a>
             )}
-            {/* Smaller trigger size for grid */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
@@ -580,10 +560,7 @@ export function EventTypeCard({
     );
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
   // LIST layout (default)
-  // ─────────────────────────────────────────────────────────────────────────
-
   return (
     // biome-ignore lint/a11y/noStaticElementInteractions: hover-only (drives inline style), wraps nested interactive controls so it can't itself be a button
     // biome-ignore lint/a11y/noNoninteractiveElementInteractions: hover-only (drives inline style), wraps nested interactive controls so it can't itself be a button
@@ -617,12 +594,10 @@ export function EventTypeCard({
 
       {/* Body */}
       <div className="flex flex-1 items-center gap-4 min-w-0 py-3.5 pr-4">
-        {/* Info — clicking anywhere here opens the editor */}
         <Link
           className="group/edit flex-1 min-w-0 space-y-1.5"
           href={`/event-types/${id}`}
         >
-          {/* Name + status */}
           <div className="flex items-center gap-2 flex-wrap">
             <span
               className="text-sm font-semibold underline-offset-2 transition-colors duration-150 group-hover/edit:underline"
@@ -648,10 +623,8 @@ export function EventTypeCard({
             )}
           </div>
 
-          {/* Badges */}
           {badges}
 
-          {/* Stats */}
           {stats && (
             <div className="flex items-center gap-2.5 text-xs text-muted-foreground">
               <span className="inline-flex items-center gap-1">
@@ -676,7 +649,6 @@ export function EventTypeCard({
             <DotsSixVertical size={16} />
           </span>
 
-          {/* Copy link */}
           {isActive && (
             <button
               className={cn(
@@ -699,7 +671,6 @@ export function EventTypeCard({
             </button>
           )}
 
-          {/* View bookings */}
           <Link
             aria-label={`View bookings for ${name}`}
             className="hidden h-8 w-8 items-center justify-center text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary sm:flex"
@@ -709,7 +680,6 @@ export function EventTypeCard({
             <CalendarCheck size={15} />
           </Link>
 
-          {/* Edit */}
           <Link
             aria-label={`Edit ${name}`}
             className="hidden h-8 w-8 items-center justify-center text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary sm:flex"
@@ -719,7 +689,6 @@ export function EventTypeCard({
             <PencilSimple size={15} />
           </Link>
 
-          {/* Open booking page */}
           {isActive && bookingUrl && (
             <a
               className="hidden h-8 w-8 items-center justify-center text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary sm:flex"
@@ -732,10 +701,8 @@ export function EventTypeCard({
             </a>
           )}
 
-          {/* Toggle — sits just before the ⋮ menu */}
           <div className="ml-1">{toggleControl}</div>
 
-          {/* More */}
           {moreMenu("end")}
         </div>
       </div>

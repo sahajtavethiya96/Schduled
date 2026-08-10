@@ -10,21 +10,15 @@ const envSchema = z
     DATABASE_URL: z.string().min(1),
     APP_SECRET: z.string().min(1),
 
-    // The one source of truth for server-generated absolute URLs (OAuth
-    // redirect_uris, Better Auth baseURL, email/magic links, booking links).
-    // Deliberately NOT prefixed NEXT_PUBLIC_ — Next.js inlines NEXT_PUBLIC_*
-    // vars into the compiled bundle at `next build` time (client AND server
-    // chunks), so a value baked in at image-build time would stay frozen
-    // forever regardless of what the runtime `.env`/env_file sets. APP_URL is
-    // read live from process.env at request time instead. Required in
-    // production (see superRefine below); falls back to localhost in dev.
-    // Use lib/get-app-url.ts's getAppUrl() rather than reading this directly.
+    // Source of truth for server-generated absolute URLs. Deliberately NOT
+    // NEXT_PUBLIC_-prefixed — Next.js inlines those vars into the bundle at
+    // build time, so a value baked in then would stay frozen regardless of
+    // the runtime env. Read live via lib/get-app-url.ts's getAppUrl().
     APP_URL: optionalString,
 
-    // Legacy/display-only. Client components must NOT read this directly for
-    // origin-dependent logic (use hooks/use-app-origin.ts's useAppOrigin()
-    // instead) — see APP_URL above for why. Kept optional for backward
-    // compatibility with existing .env files.
+    // Legacy/display-only. Client components must not read this directly for
+    // origin-dependent logic (use hooks/use-app-origin.ts's useAppOrigin())
+    // — see APP_URL above for why.
     NEXT_PUBLIC_APP_URL: z.preprocess(
       (value) => (value === "" ? undefined : value),
       z.string().url().optional()
@@ -55,11 +49,8 @@ const envSchema = z
     // the moment its account is created (checked once, at signup)
     INITIAL_ADMIN_EMAIL: optionalString,
 
-    // Email + password sign-in — ON by default. It's the primary login method
-    // (works on a fresh self-hosted box with no SMTP or Google configured).
-    // Magic link and Google are the optional secondary methods. Disable with any
-    // of: false / 0 / off / no / disabled (case-insensitive) for a
-    // magic-link/Google-only deployment.
+    // Primary login method — works on a fresh box with no SMTP/Google
+    // configured. Disable (false/0/off/no/disabled) for magic-link/Google-only.
     NEXT_PUBLIC_PASSWORD_AUTH_ENABLED: z.preprocess((v) => {
       const s = typeof v === "string" ? v.trim().toLowerCase() : v;
       return !(
@@ -71,20 +62,15 @@ const envSchema = z
       );
     }, z.boolean()),
 
-    // Gates new-account creation (password sign-up, magic link first-use, or
-    // Google first-login) — on by default so nothing changes unless a
-    // self-hoster opts in. Set to 'false' to close public sign-up; the
-    // INITIAL_ADMIN_EMAIL account can always sign up regardless, so it's safe
-    // to set both from day one instead of "open then close later".
+    // Gates new-account creation — on by default. Set 'false' to close
+    // public sign-up; INITIAL_ADMIN_EMAIL can always sign up regardless.
     ALLOW_PUBLIC_SIGNUP: z.preprocess(
       (v) => (v === undefined ? true : v === "true" || v === "1"),
       z.boolean()
     ),
 
-    // Marketing landing page at "/" — on by default. Set to 'false' for
-    // internal/team deployments that don't want a public marketing page;
-    // "/" then redirects to "/login" instead. Booking + legal pages are
-    // unaffected either way.
+    // Marketing landing page at "/" — on by default. Set 'false' to redirect
+    // "/" to "/login" instead for internal deployments.
     NEXT_PUBLIC_LANDING_ENABLED: z.preprocess(
       (v) => (v === undefined ? true : v === "true" || v === "1"),
       z.boolean()
@@ -146,10 +132,8 @@ const envSchema = z
     MAPBOX_TOKEN: optionalString,
 
     // File storage driver — see lib/storage.ts. "local" (default) needs no
-    // other vars: files go to ./uploads (a persistent volume in Docker).
-    // Files are always served through /api/files/[...key] regardless of
-    // driver, never a direct/signed cloud URL — see lib/storage.ts and
-    // app/api/files/[...key]/route.ts.
+    // other vars. Files are always served through /api/files/[...key]
+    // regardless of driver, never a direct/signed cloud URL.
     STORAGE_DRIVER: z.preprocess(
       (value) => (value === "" ? undefined : value),
       z.enum(["local", "s3", "r2"]).default("local")

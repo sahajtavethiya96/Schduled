@@ -70,10 +70,8 @@ export function TabGeneral({
 }: TabGeneralProps) {
   const name = form.watch("name");
 
-  // Auto-generate the slug from the name. The color is assigned server-side at
-  // creation (a distinct palette color per meeting type) and preserved on edit,
-  // so we no longer derive it from the name (which made same-named events share
-  // a color).
+  // Auto-generate the slug from the name. Color is assigned server-side (not
+  // derived from name), so same-named events don't share a color.
   // biome-ignore lint/correctness/useExhaustiveDependencies: only re-run on name change; dirtyFields.slug/setValue are read fresh from the stable form instance, not deps to re-trigger on
   useEffect(() => {
     if (!form.formState.dirtyFields.slug) {
@@ -84,7 +82,6 @@ export function TabGeneral({
 
   return (
     <div className="space-y-6">
-      {/* ── Meeting type selector ───────────────────────────────── */}
       <div>
         <p className="text-sm font-medium mb-3">Meeting Type</p>
         <div className="grid grid-cols-2 gap-2">
@@ -135,7 +132,6 @@ export function TabGeneral({
 
       <Separator />
 
-      {/* ── Event name ─────────────────────────────────────────── */}
       <FormField
         control={form.control}
         name="name"
@@ -156,7 +152,6 @@ export function TabGeneral({
         )}
       />
 
-      {/* ── Description ────────────────────────────────────────── */}
       <FormField
         control={form.control}
         name="description"
@@ -181,7 +176,6 @@ export function TabGeneral({
 
       <Separator />
 
-      {/* ── Require Approval ───────────────────────────────────── */}
       <FormField
         control={form.control}
         name="requiresApproval"

@@ -5,17 +5,14 @@ import { db } from "@/lib/db";
 import { generateSlots } from "./slots";
 
 /**
- * True if `startUtc` is a genuine bookable slot start for the host on that date:
- * inside a weekly working window (or a date-specific override), aligned to the
- * event's start-time increment, and not on a blocked (holiday / day-off) date.
+ * True if `startUtc` is a genuine bookable slot: inside a working window (or
+ * override), aligned to the increment, and not on a blocked date.
  *
- * This is the server-side backstop for the create/reschedule routes — the
- * public `/api/slots` endpoint only *displays* valid slots, but a direct API
- * call could otherwise POST any arbitrary time. It deliberately does NOT check
- * existing-booking conflicts or minimum notice (the routes enforce those
- * separately, under an advisory lock), so it can't double-reject a slot for a
- * reason already handled — it answers only "is this a real time on the
- * schedule?".
+ * Server-side backstop for create/reschedule — /api/slots only *displays*
+ * valid slots, but a direct API call could POST anything. Deliberately does
+ * NOT check booking conflicts or minimum notice (routes enforce those
+ * separately under an advisory lock) — it only answers "is this a real time
+ * on the schedule?".
  */
 export async function isSlotBookable({
   hostUserId,

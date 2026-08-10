@@ -61,7 +61,6 @@ export async function POST(request: Request) {
       return jsonError("This booking has already taken place.", 409);
     }
 
-    // Enforce cancellation policy
     const [policy] = await db
       .select({
         allowCancellation: cancellationPolicy.allowCancellation,
@@ -102,19 +101,15 @@ export async function POST(request: Request) {
         cancellationReason: reason?.trim() || null,
         cancelledBy: "invitee",
         cancelledAt: new Date(),
-        // Discard any pending reschedule request so it can't later be approved.
-        // (The approve/reject endpoints also guard on status, so a cancelled
-        // booking is unreachable either way.) The approvalToken is intentionally
-        // kept so a stale review link resolves to a friendly "no longer valid"
-        // page rather than a 404.
+        // approvalToken is kept (not nulled) so a stale review link resolves to
+        // a friendly "no longer valid" page rather than a 404.
         rescheduleRequestedStart: null,
         rescheduleRequestedEnd: null,
         updatedAt: new Date(),
       })
       .where(eq(booking.id, b.id));
 
-    // Fire async side-effects: emails + in-app notification, calendar delete,
-    // reminder cancellation. Enqueue failures must not fail the cancellation.
+    // Enqueue failures must not fail the cancellation.
     await Promise.allSettled([
       enqueueJob(JOB_NAMES.BOOKING_CANCELLATION, { bookingId: b.id }),
       enqueueJob(JOB_NAMES.CALENDAR_CANCEL, { bookingId: b.id }),

@@ -1,4 +1,3 @@
-// Better Auth + platform tables
 export * from "@/db/schema/auth";
 export * from "@/db/schema/email-outbox";
 export * from "@/db/schema/email-events";
@@ -8,7 +7,6 @@ export * from "@/db/schema/job-logs";
 // Domain enums (must come before domain tables)
 export * from "@/db/schema/enums";
 
-// Domain tables
 export * from "@/db/schema/profile";
 export * from "@/db/schema/contacts";
 export * from "@/db/schema/event-types";

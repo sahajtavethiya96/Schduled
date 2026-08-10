@@ -156,8 +156,6 @@ export async function signOutOtherSessionsAction(): Promise<void> {
   revalidatePath("/profile/security");
 }
 
-// ── Delete account: step 1 — send OTP code to email ─────────────────────────
-
 export async function sendDeleteCodeAction(): Promise<ActionState> {
   try {
     const current = await requireSession();
@@ -172,12 +170,10 @@ export async function sendDeleteCodeAction(): Promise<ActionState> {
       return { error: "Account not found." };
     }
 
-    // Generate a 6-digit numeric OTP
     const code = String(Math.floor(100_000 + Math.random() * 900_000));
     const identifier = `delete-account:${freshUser.id}`;
-    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
-    // Upsert into the verification table (replace any existing code)
     await db
       .delete(verification)
       .where(eq(verification.identifier, identifier));
@@ -194,9 +190,7 @@ export async function sendDeleteCodeAction(): Promise<ActionState> {
       email: freshUser.email,
     });
 
-    // Send directly (not via queue) — OTP codes must arrive immediately,
-    // not wait for the pg-boss worker to pick them up.
-    // When SMTP is not configured, sendEmailViaSmtp() logs to terminal instead.
+    // Sent directly, not via queue — OTP must arrive immediately, not wait on the pg-boss worker.
     await sendEmailViaSmtp({
       to: freshUser.email,
       subject: `${code} — confirm your account deletion`,
@@ -218,8 +212,6 @@ export async function sendDeleteCodeAction(): Promise<ActionState> {
     return { error: "Failed to send confirmation code. Try again." };
   }
 }
-
-// ── Delete account: step 2 — verify code + reason + delete ───────────────────
 
 export async function deleteAccountAction(
   _state: ActionState,
@@ -246,7 +238,6 @@ export async function deleteAccountAction(
     return { error: "Account not found." };
   }
 
-  // Verify the OTP code
   const identifier = `delete-account:${freshUser.id}`;
   const now = new Date();
 
@@ -269,7 +260,6 @@ export async function deleteAccountAction(
     return { error: "Incorrect code. Check your email and try again." };
   }
 
-  // Clean up verification record
   await db.delete(verification).where(eq(verification.id, verificationRow.id));
 
   await audit({
@@ -282,9 +272,7 @@ export async function deleteAccountAction(
     metadata: { reason },
   });
 
-  // Tell invitees their upcoming meetings are cancelled and remove the Google
-  // Calendar events before the account (and its bookings + calendar connection)
-  // is deleted.
+  // Notify invitees and remove calendar events before the account is deleted.
   await emailInviteesOfHostRemoval(freshUser.id);
   await deleteUserCalendarEvents(freshUser.id);
 

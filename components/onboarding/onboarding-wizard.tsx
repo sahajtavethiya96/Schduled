@@ -22,8 +22,8 @@ const STEP_META = [
 
 interface Props {
   name: string;
-  // DB onboardingStep (0–4) — how many steps are done. Wizard resumes at dbStep + 1
-  // so an OAuth round-trip in step 4 returns the user to step 5.
+  // Steps completed (0–4); wizard resumes at onboardingStep + 1 so an OAuth
+  // round-trip in step 4 returns the user to step 5.
   onboardingStep?: number;
   userImage?: string | null;
   username?: string | null;
@@ -44,7 +44,6 @@ export function OnboardingWizard({
 
   return (
     <div className="w-full max-w-lg border border-base-300 bg-base-100 ring-1 ring-foreground/10">
-      {/* Progress bar */}
       <div className="h-1 w-full bg-base-200">
         <div
           className="h-full bg-primary transition-all duration-500"
@@ -52,7 +51,6 @@ export function OnboardingWizard({
         />
       </div>
 
-      {/* Step label + heading */}
       <div className="px-6 pt-6 pb-0 sm:px-8">
         <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
           Step {step} of {TOTAL_STEPS}
@@ -61,7 +59,6 @@ export function OnboardingWizard({
         <p className="mt-0.5 text-sm text-muted-foreground">{sub}</p>
       </div>
 
-      {/* Step content */}
       <div className="px-6 pb-6 pt-5 sm:px-8">
         {step === 1 && (
           <StepProfile

@@ -27,8 +27,7 @@ export function StepCalendar({ onNext, onBack }: StepCalendarProps) {
   }
 
   async function handleConnect() {
-    // Save progress first so that when OAuth redirects back to /onboarding,
-    // onboardingStep = 4 in the DB and the wizard resumes at step 5.
+    // Save progress first so the OAuth redirect back to /onboarding resumes at step 5.
     setLoading(true);
     setError("");
     const result = await skipCalendarStep();
@@ -42,7 +41,6 @@ export function StepCalendar({ onNext, onBack }: StepCalendarProps) {
 
   return (
     <div className="space-y-6">
-      {/* Google Calendar card */}
       <button
         className="group w-full border border-base-300 bg-base-100 p-5 text-left transition hover:border-primary hover:bg-base-200/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         onClick={handleConnect}
@@ -61,7 +59,6 @@ export function StepCalendar({ onNext, onBack }: StepCalendarProps) {
         </div>
       </button>
 
-      {/* Benefits list */}
       <ul className="space-y-2 text-sm text-muted-foreground">
         {[
           "Block times when you already have meetings",

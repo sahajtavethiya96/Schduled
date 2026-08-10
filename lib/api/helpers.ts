@@ -17,8 +17,6 @@ export function safeReturnTo(
   if (!value) {
     return fallback;
   }
-  // Must be a relative path: starts with exactly one slash, no scheme, no
-  // protocol-relative "//" or "/\" host-injection.
   if (!value.startsWith("/")) {
     return fallback;
   }
@@ -44,13 +42,10 @@ export function jsonError(
   return NextResponse.json({ error: message }, { status });
 }
 
-// ── Postgres-backed rate limiter ─────────────────────────────────────────────
-// Shared across every web replica (unlike an in-process Map, which only
-// enforces limits per-instance — a real correctness gap once this app runs
-// more than one web container). One atomic upsert per check: if the bucket's
-// window has expired, it resets to count=1; otherwise it increments. Postgres
-// serializes concurrent upserts on the same primary key, so this is race-free
-// even under concurrent requests hitting the same key from different replicas.
+// ── Postgres-backed rate limiter ────────────────────────────────────────────
+// Shared across every web replica (unlike an in-process Map). One atomic
+// upsert per check — Postgres serializes concurrent upserts on the same key,
+// so this stays race-free across replicas.
 
 /**
  * Returns true if the request should be allowed, false if rate-limited.
@@ -82,8 +77,8 @@ export async function checkRateLimit(
 
   const count = Number(rows[0]?.count ?? 1);
 
-  // Opportunistic cleanup — cheap, and harmless if it runs on every replica
-  // concurrently (DELETE is idempotent). No dedicated cron needed.
+  // Opportunistic cleanup — harmless if it runs on every replica concurrently
+  // (DELETE is idempotent). No dedicated cron needed.
   if (Math.random() < 0.01) {
     void db.execute(
       sql`DELETE FROM rate_limit_bucket WHERE reset_at < now() - interval '1 day'`
@@ -109,8 +104,8 @@ export function getClientIp(request: Request): string {
     return realIp.trim();
   }
 
-  // X-Forwarded-For: leftmost value is client-controlled and spoofable.
-  // The rightmost value is appended by the server's direct upstream proxy and is trustworthy.
+  // X-Forwarded-For: leftmost value is client-controlled/spoofable; the
+  // rightmost is appended by the direct upstream proxy and is trustworthy.
   const forwarded = request.headers.get("x-forwarded-for");
   if (forwarded) {
     const parts = forwarded.split(",");

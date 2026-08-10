@@ -53,10 +53,8 @@ export default async function LoginPage() {
 
   const hasGoogle = accounts.some((a) => a.providerId === "google");
   const canDisconnectGoogle = hasGoogle;
-  // Reflects Better Auth's own boot-time-resolved config (lib/auth.ts), not
-  // a fresh DB read — the sign-in button is only real if the running Better
-  // Auth instance actually has the Google provider registered, and that's
-  // frozen at process start (see lib/auth.ts for why).
+  // Reflects Better Auth's boot-time config (lib/auth.ts), not a fresh DB
+  // read — the button only shows if Google was registered at process start.
   const isGoogleEnabled = googleAuthEnabled;
 
   return (
@@ -75,7 +73,6 @@ export default async function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="divide-y divide-base-300 p-0 px-6">
-          {/* Magic Link — always active */}
           <LoginRow
             badge={
               <Badge className="text-emerald-600" variant="secondary">
@@ -87,7 +84,6 @@ export default async function LoginPage() {
             name="Magic Link"
           />
 
-          {/* Google OAuth */}
           <LoginRow
             action={
               isGoogleEnabled ? (

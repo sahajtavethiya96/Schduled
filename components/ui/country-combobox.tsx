@@ -80,7 +80,6 @@ export function CountryCombobox({
         onOpenAutoFocus={(e) => e.preventDefault()}
         sideOffset={4}
       >
-        {/* Search input */}
         <div className="flex items-center gap-2 border-b border-base-300 px-2.5 py-1.5">
           <MagnifyingGlass className="shrink-0 text-muted-foreground" size={14} />
           <input
@@ -100,7 +99,6 @@ export function CountryCombobox({
           />
         </div>
 
-        {/* Scrollable, filtered list */}
         <div className="max-h-60 overflow-y-auto p-1">
           {filtered.length === 0 ? (
             <p className="px-2 py-4 text-center text-xs text-muted-foreground">

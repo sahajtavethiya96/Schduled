@@ -19,8 +19,6 @@ import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Reveal } from "./reveal";
 
-// ── Step definitions ──────────────────────────────────────────────────────────
-
 const STEPS = [
   {
     id: "calendar",
@@ -58,8 +56,6 @@ const STEPS = [
       "Instant confirmation emails. 24h and 1h reminders sent automatically. Reschedule links always included — no no-shows.",
   },
 ];
-
-// ── Mockup components ─────────────────────────────────────────────────────────
 
 function CalendarMockup() {
   return (
@@ -418,8 +414,6 @@ const MOCKUPS = [
   <RemindersMockup key="reminders" />,
 ];
 
-// ── Main component ────────────────────────────────────────────────────────────
-
 const AUTO_ADVANCE_MS = 4000;
 
 export function FeaturesSection() {
@@ -441,9 +435,8 @@ export function FeaturesSection() {
     switchTo((active + delta + STEPS.length) % STEPS.length);
   }
 
-  // Auto-advance, paused while a step is hovered/interacted with. `active` is
-  // listed on purpose (not read directly) — it restarts the timer on every
-  // step change, whether from a click or the previous auto-advance tick.
+  // `active` isn't read in the body but is listed on purpose — it restarts
+  // the auto-advance timer on every step change.
   // biome-ignore lint/correctness/useExhaustiveDependencies: active intentionally restarts the timer, see above
   useEffect(() => {
     if (paused) {
@@ -461,7 +454,6 @@ export function FeaturesSection() {
       className="relative overflow-clip border-t border-base-300 bg-base-200/20 py-24"
       id="features"
     >
-      {/* Subtle grid texture + teal glow */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.04]"
         style={{
@@ -480,7 +472,6 @@ export function FeaturesSection() {
       />
 
       <div className="relative mx-auto max-w-[1400px] px-5 md:px-12 xl:px-20">
-        {/* Header */}
         <Reveal className="mb-16 text-center">
           <p className="mb-3 text-xs font-black uppercase tracking-eyebrow text-primary">
             How it works
@@ -496,9 +487,8 @@ export function FeaturesSection() {
           </p>
         </Reveal>
 
-        {/* Step list + Mockup panel — 40/60 split on desktop */}
+        {/* 40/60 split on desktop */}
         <div className="grid items-start gap-10 lg:grid-cols-[2fr_3fr] lg:gap-14">
-          {/* Left: steps */}
           <Reveal
             className="space-y-0"
             onMouseLeave={() => {
@@ -576,7 +566,6 @@ export function FeaturesSection() {
                         </div>
                       </div>
                     </div>
-                    {/* Step number */}
                     <span
                       className={cn(
                         "shrink-0 text-xs font-black tabular-nums transition-colors duration-[250ms]",
@@ -591,10 +580,8 @@ export function FeaturesSection() {
             })}
           </Reveal>
 
-          {/* Right: sticky mockup panel */}
           <Reveal className="lg:sticky lg:top-28" delay={150}>
             <div className="border border-base-300 bg-base-100 p-7 shadow-none ring-1 ring-foreground/10">
-              {/* Progress bar — one segment per step */}
               <div className="mb-5 flex items-center gap-1.5">
                 {STEPS.map((s, i) => (
                   <div
@@ -618,7 +605,6 @@ export function FeaturesSection() {
                 ))}
               </div>
 
-              {/* Tab bar */}
               <div className="mb-6 flex items-center gap-2 border-b border-base-300 pb-4">
                 <div className="flex h-8 w-8 items-center justify-center bg-primary/10 text-primary">
                   {(() => {
@@ -631,7 +617,6 @@ export function FeaturesSection() {
                 </p>
               </div>
 
-              {/* Mockup — slide + fade + scale transition */}
               <div className="relative min-h-[260px] overflow-hidden">
                 <AnimatePresence custom={direction} initial={false} mode="wait">
                   <motion.div
@@ -659,7 +644,6 @@ export function FeaturesSection() {
               </div>
             </div>
 
-            {/* Mobile step navigation */}
             <div className="mt-6 flex items-center justify-between gap-4 lg:hidden">
               <button
                 aria-label="Previous step"

@@ -61,7 +61,6 @@ export default async function DashboardPage() {
   const displayName =
     freshUser?.name?.split(" ")[0] ?? freshUser?.email ?? "there";
 
-  // ── Stats (all counts + this-month counts + next meeting) ─────────
   const [
     totalResult,
     totalMonthResult,
@@ -193,7 +192,6 @@ export default async function DashboardPage() {
   const username = freshUser?.username ?? null;
   const bookingUrl = username ? `${getAppUrl()}/${username}` : null;
 
-  // ── Lists ──────────────────────────────────────────────────────────
   const [upcomingMeetings, recentBookings] = await Promise.all([
     db
       .select({
@@ -239,7 +237,6 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      {/* ── Welcome + Quick Actions ──────────────────────────────────── */}
       <PageHeader
         action={
           <div className="flex flex-wrap items-center gap-2">
@@ -277,7 +274,6 @@ export default async function DashboardPage() {
         title={`Welcome back, ${displayName}`}
       />
 
-      {/* ── Next meeting focal strip ─────────────────────────────────── */}
       {upcomingMeetings[0] && (
         <Link
           className="group flex flex-wrap items-center gap-4 border border-primary/30 bg-primary/[0.04] px-5 py-4 transition-colors hover:bg-primary/[0.07]"
@@ -324,7 +320,6 @@ export default async function DashboardPage() {
         </Link>
       )}
 
-      {/* ── Stat cards ──────────────────────────────────────────────── */}
       <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
         <StatCard
           accent={stats.activeEventTypes > 0 && stats.total === 0}
@@ -366,7 +361,6 @@ export default async function DashboardPage() {
         />
       </div>
 
-      {/* ── Upcoming meetings + Recent bookings ─────────────────────── */}
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between border-b border-base-300 py-4">
@@ -485,8 +479,6 @@ export default async function DashboardPage() {
     </div>
   );
 }
-
-// ── Sub-components ────────────────────────────────────────────────────────────
 
 function StatCard({
   label,

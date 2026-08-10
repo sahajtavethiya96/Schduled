@@ -31,9 +31,8 @@ export function PasswordCard({
   hasPassword: initialHasPassword,
   passwordAuthEnabled,
 }: Props) {
-  // Tracked locally (not just the server-supplied prop) so a successful "Set a
-  // Password" flips the form into "Change password" mode immediately, instead
-  // of re-submitting against the server guard that rejects a second set.
+  // Tracked locally so a successful "Set a Password" flips the form into
+  // "Change password" mode immediately, without re-hitting the server.
   const [hasPassword, setHasPassword] = useState(initialHasPassword);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");

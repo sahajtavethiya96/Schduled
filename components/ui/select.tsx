@@ -11,45 +11,26 @@ import {
 import { cn, hideUntilPositioned } from "@/lib/utils"
 import { CaretDownIcon, CheckIcon } from "@phosphor-icons/react"
 
-// Headless UI's Listbox natively supports controlled `value`, `disabled`,
-// and `name`/`form` (renders a hidden input kept in sync with the
-// selection, for native FormData submission — see
-// headlessui.com/react/listbox). The one real gap: Headless UI's Listbox
-// has no `required` prop, and its own hidden input is type="hidden" —
-// barred from constraint validation per the HTML spec regardless. To
-// restore native "can't submit while empty" behavior, when `required` is
-// set, <Select> renders a second, real `<select required>` mirroring the
-// same option values, hidden via the same `sr-only` clip technique used
-// elsewhere in this codebase (not `display:none`, which the HTML
-// spec/Chrome would treat as unfocusable and log a console error while
-// still blocking submission). It carries no `name`, so it never
-// participates in the actual form payload — only the genuine hidden input
-// above does that. This lives on <Select> itself (not SelectTrigger), so
-// it applies uniformly to every consumer that passes `required`, not just
-// contact-form.tsx's `<Select name="subject" required>`. It is not
-// pixel-aligned over the visible trigger — doing that generically would
-// require wrapping SelectTrigger's rendered button in an extra element,
-// which would break the `shrink-0`/fixed-width flex-item classes several
-// consumers (e.g. communication-form.tsx) apply directly to SelectTrigger,
-// since Listbox renders as a Fragment and SelectTrigger's button is today
-// a direct flex child in those layouts. The browser's native validation
-// bubble still appears (anchored to this element's own position) and
+// Headless UI's Listbox has no `required` prop, and its own hidden sync
+// input is type="hidden" — barred from constraint validation regardless. To
+// restore native "can't submit while empty" behavior, <Select> renders a
+// second, real `<select required>` mirroring the option values, hidden via
+// the `sr-only` clip technique (not `display:none`, which Chrome treats as
+// unfocusable and blocks validation). It carries no `name`, so it never
+// joins the actual form payload — only the genuine hidden input does that.
+// It isn't pixel-aligned over the trigger (would require wrapping
+// SelectTrigger's button, breaking flex-item classes some consumers apply
+// directly to it), but the native validation bubble still anchors to it and
 // submission is still blocked either way.
 //
-// <SelectValue> needs to show the *currently selected item's own rendered
-// content* automatically, without the consumer repeating it. Headless
-// UI's equivalent (`ListboxSelectedOption`) expects the full options list
-// handed to it directly as a prop, which only works if trigger and options
-// are defined together in one JSX expression — this file's API shape puts
-// SelectValue and the SelectItems in separate sibling subtrees
-// (<SelectTrigger><SelectValue/></SelectTrigger><SelectContent>
-// <SelectItem/>...</SelectContent>), so that prop can't reach across.
-// Instead, <Select> walks its own `children` on every render (cheap: no
-// consumer here has more than ~20 items) to build a value→content lookup,
-// shared via context — recomputed fresh every render, so it stays correct
-// even if the controlled `value` changes from outside without the
-// dropdown ever having been opened (unlike a mount-effect-based registry,
-// which would go stale until next open).
+// <SelectValue> needs to show the selected item's own rendered content
+// without the consumer repeating it. Headless UI's `ListboxSelectedOption`
+// needs the full options list passed as a prop, which only works if
+// trigger and options are defined together — this file's API instead
+// splits them into separate sibling subtrees, so <Select> walks its own
+// `children` on every render to build a value→content lookup shared via
+// context (recomputed fresh so it stays correct even if `value` changes
+// without the dropdown ever opening).
 type SelectContextValue = {
   itemsByValue: Map<string, React.ReactNode>
   currentValue: unknown
@@ -192,14 +173,9 @@ function SelectTrigger({
 function SelectContent({
   className,
   children,
-  // Two positioning modes were historically supported here: "popper" (a
-  // normal floating panel) and "item-aligned" (positions so the selected
-  // item lines up over the trigger, like a native OS <select>). This
-  // project's own SelectContent always used "popper", and grepping all 11
-  // consumers found zero uses of "item-aligned" — so only popper-style
-  // positioning (Headless UI's `anchor` system, same mechanism used for
-  // DropdownMenu) is implemented here. `position` is still accepted for
-  // API shape compatibility but has no effect beyond "popper" behavior.
+  // Only "popper" positioning (Headless UI's `anchor` system) is
+  // implemented; "item-aligned" (native-<select>-style) has no consumers.
+  // `position` is still accepted for API shape compatibility.
   position = "popper",
   align = "start",
   ...props
@@ -216,13 +192,11 @@ function SelectContent({
       anchor={{ to: anchorTo, gap: 4 }}
       transition
       className={cn(
-        // The exit animation is keyed off data-leave, not
-        // data-closed — Headless UI briefly sets data-closed together with
-        // data-open during the OPEN transition's own internal "prepare"
-        // step (a one-frame reset before the enter animation actually
-        // starts), which made data-closed:animate-out fight data-open:
-        // animate-in and produced a visible pop-then-re-animate glitch on
-        // every open. data-leave is only ever set while actually closing.
+        // Exit animation is keyed off data-leave, not data-closed — Headless
+        // UI briefly sets data-closed together with data-open during the
+        // open transition's "prepare" step, which made data-closed:
+        // animate-out fight data-open:animate-in (pop-then-re-animate
+        // glitch). data-leave is only ever set while actually closing.
         "z-50 max-h-(--anchor-max-height) min-w-36 w-(--button-width) overflow-x-hidden overflow-y-auto rounded-none bg-base-100 text-base-content ring-1 ring-foreground/10 transition-none duration-100 data-[anchor~=bottom]:slide-in-from-top-2 data-[anchor~=left]:slide-in-from-right-2 data-[anchor~=right]:slide-in-from-left-2 data-[anchor~=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-leave:animate-out data-leave:fade-out-0 data-leave:zoom-out-95",
         className
       )}
@@ -296,13 +270,9 @@ function SelectSeparator({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-// Headless UI's Listbox has no built-in scroll-up/down affordance (no
-// equivalent exports at all) — options overflow via plain CSS scrolling
-// instead. Zero current consumers import either of these, and
-// time-combobox.tsx exists precisely to avoid fast auto-scroll arrows, so
-// relying on native overflow scrolling here is a welcome simplification
-// rather than a loss. Kept as no-op passthroughs for API-surface
-// completeness.
+// Headless UI's Listbox has no built-in scroll-up/down affordance — options
+// overflow via plain CSS scrolling instead. Kept as no-op passthroughs for
+// API-surface completeness.
 function SelectScrollUpButton({ children }: { children?: React.ReactNode }) {
   return <>{children}</>
 }

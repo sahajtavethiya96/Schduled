@@ -22,10 +22,8 @@ export function JobsTabs({
   }
 
   return (
-    // `key` forces a remount whenever the URL-derived tab changes for a
-    // reason other than clicking a trigger (e.g. browser Back/Forward) —
-    // Tabs is uncontrolled after mount, so `defaultValue` alone wouldn't
-    // resync the visible tab to the address bar.
+    // Tabs is uncontrolled after mount, so `key` forces a remount to resync
+    // the visible tab when the URL changes via Back/Forward.
     <Tabs
       defaultValue={defaultTab}
       key={defaultTab}

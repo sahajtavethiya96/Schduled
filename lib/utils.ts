@@ -9,15 +9,9 @@ export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-// Ref callback for Headless UI's floating panels (ListboxOptions/MenuItems,
-// used by components/ui/select.tsx and components/ui/dropdown-menu.tsx).
-// Their internal floating-ui positioning (@headlessui/react's
-// internal/floating.js) renders the panel fully opaque at (0, 0) for the
-// first couple of frames after mount, before its computed top/left take
-// visual effect — a brief but fully-visible flash to the wrong corner. Since
-// that panel unmounts/remounts on every open (Headless UI's default
-// `unmount` behavior), this ref callback fires fresh each time and hides the
-// node for two animation frames before revealing it already in place.
+// Headless UI's floating panels render briefly at (0,0) before their
+// computed position applies, causing a flash. Hide for two animation
+// frames after mount (the panel remounts on every open) to avoid it.
 export function hideUntilPositioned(node: HTMLElement | null) {
   if (!node) return
   node.style.visibility = "hidden"
@@ -61,7 +55,7 @@ export function normalizeTzName(tz: string): string {
   return canonicalizeTz(tz).replace(/_/g, ' ')
 }
 
-// Timezone → international dial code map (shared between event builder + booking calendar)
+// Timezone → international dial code map
 export const TZ_DIAL: Record<string, string> = {
   'Asia/Kolkata': '+91', 'Asia/Calcutta': '+91',
   'America/New_York': '+1', 'America/Chicago': '+1', 'America/Denver': '+1',

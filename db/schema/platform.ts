@@ -11,10 +11,8 @@ export const idempotencyKey = pgTable('idempotency_key', {
   index('idempotency_key_expires_at_idx').on(t.expiresAt),
 ])
 
-// Postgres-backed rate limit buckets — shared across all web replicas (unlike
-// an in-process Map, which only enforces limits per-instance). One row per
-// "<route>:<ip>" key; the upsert in lib/api/helpers.ts resets the counter
-// atomically once resetAt has passed.
+// Shared across replicas (unlike an in-process Map). Key: "<route>:<ip>";
+// upsert resets the counter atomically once resetAt has passed.
 export const rateLimitBucket = pgTable('rate_limit_bucket', {
   key:       text('key').primaryKey(),
   count:     integer('count').notNull().default(1),
@@ -23,8 +21,7 @@ export const rateLimitBucket = pgTable('rate_limit_bucket', {
   index('rate_limit_bucket_reset_at_idx').on(t.resetAt),
 ])
 
-// Admin-editable global platform settings (single-org, one admin). Key-value so
-// new toggles don't need a migration each time; values are stored as text.
+// Key-value so new toggles don't need a migration each time.
 export const appSetting = pgTable('app_setting', {
   key:       text('key').primaryKey(),
   value:     text('value').notNull(),

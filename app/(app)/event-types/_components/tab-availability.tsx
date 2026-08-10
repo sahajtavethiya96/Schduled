@@ -72,8 +72,7 @@ export function TabAvailability({
 }: TabAvailabilityProps) {
   const [customInput, setCustomInput] = useState("");
   const [showCustom, setShowCustom] = useState(false);
-  // Booking Rules are advanced/optional (sensible defaults already apply), so
-  // the whole section is collapsed by default to keep the form uncluttered.
+  // Advanced/optional with sensible defaults, so collapsed by default.
   const [showBookingRules, setShowBookingRules] = useState(false);
   const limits = initialLimits;
 
@@ -124,7 +123,6 @@ export function TabAvailability({
     setShowCustom(false);
   }
 
-  // All chips to render (presets + any custom values not in presets)
   const customDurations = durations
     .filter((d) => !DURATION_PRESETS.includes(d))
     .sort((a, b) => a - b);
@@ -141,7 +139,6 @@ export function TabAvailability({
         </div>
 
         <div className="px-5 py-5 space-y-6">
-          {/* Duration chips */}
           <div>
             <p className="text-sm font-medium text-base-content mb-4">
               Meeting Durations
@@ -199,7 +196,6 @@ export function TabAvailability({
                 );
               })}
 
-              {/* Add custom */}
               {showCustom ? (
                 <div className="flex items-center gap-1 self-start mt-0">
                   <Input
@@ -262,7 +258,6 @@ export function TabAvailability({
             )}
           </div>
 
-          {/* Start time increment */}
           <div>
             <p className="text-sm font-medium text-base-content mb-1">
               Start Time Increment
@@ -370,7 +365,6 @@ export function TabAvailability({
               )}
             />
 
-            {/* Schedule preview */}
             {selectedSchedule && (
               <div className="flex items-center justify-between p-3 border border-base-300 bg-base-200/30">
                 <div>
@@ -428,7 +422,7 @@ export function TabAvailability({
 
         {showBookingRules && (
           <div className="px-5 py-5 space-y-5 border-t border-base-300/60">
-            {/* Booking Window — type selector + (rolling days | fixed range) on one row */}
+            {/* Type selector plus rolling-days or fixed-range inputs, one row */}
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex items-center gap-1.5 w-40 shrink-0">
                 <span className="text-sm font-medium text-base-content">
@@ -518,7 +512,6 @@ export function TabAvailability({
               )}
             </div>
 
-            {/* Booking-window validation messages (range start/end) */}
             {windowType === "fixed" && (
               <div className="pl-[172px] -mt-3">
                 <FormField
@@ -529,7 +522,6 @@ export function TabAvailability({
               </div>
             )}
 
-            {/* Minimum Notice */}
             <FormField
               control={form.control}
               name="minimumNotice"
@@ -561,7 +553,6 @@ export function TabAvailability({
               )}
             />
 
-            {/* Buffer Before */}
             <FormField
               control={form.control}
               name="bufferBefore"
@@ -593,7 +584,6 @@ export function TabAvailability({
               )}
             />
 
-            {/* Buffer After */}
             <FormField
               control={form.control}
               name="bufferAfter"
@@ -625,7 +615,6 @@ export function TabAvailability({
               )}
             />
 
-            {/* Buffer time visual timeline */}
             {(bufferBefore > 0 || bufferAfter > 0) &&
               (() => {
                 const meetingMin = defaultDuration || 30;
@@ -675,7 +664,6 @@ export function TabAvailability({
                 );
               })()}
 
-            {/* Max bookings per day */}
             <FormField
               control={form.control}
               name="maxBookingsPerDay"
@@ -709,7 +697,6 @@ export function TabAvailability({
               )}
             />
 
-            {/* Global Meeting Limits — read-only */}
             <div className="border-t border-base-300/60 pt-5">
               <div className="flex items-center gap-1.5 mb-1">
                 <p className="text-sm font-medium text-base-content">
@@ -730,7 +717,6 @@ export function TabAvailability({
                 </Link>
               </p>
 
-              {/* Explain how per-event and global limits interact */}
               {maxPerDay != null && limits.some((l) => l.period === "day") && (
                 <p className="mt-2 border-l-2 border-primary/40 bg-primary/[0.04] px-3 py-2 text-xs text-muted-foreground">
                   Both limits apply — the{" "}

@@ -43,7 +43,6 @@ export default async function SettingsJobsPage({
   const from = sp.outboxFrom ?? "";
   const to = sp.outboxTo ?? "";
 
-  // ── Build the outbox filter ──────────────────────────────────────────────
   const conds = [];
   if (status !== "all") {
     conds.push(eq(emailOutbox.status, status));

@@ -53,11 +53,9 @@ async function processOne(job: Job<BookingConfirmationPayload>) {
     return;
   }
 
-  // Video events carry a join link written by CALENDAR_WRITE (Meet) /
-  // VIDEO_LINK_GENERATE (Zoom), which may still be running. Wait via retries
-  // instead of firing on a fixed timer, so the invitee never receives a
-  // "confirmed" email with no join link. On the final attempt, send anyway —
-  // a link-less confirmation still beats no confirmation at all.
+  // The join link is written by CALENDAR_WRITE/VIDEO_LINK_GENERATE, which
+  // may still be running — retry rather than send without it, but give up
+  // and send anyway on the final attempt.
   const needsVideoLink =
     b.etLocationType === "google_meet" || b.etLocationType === "zoom";
   if (needsVideoLink && !b.videoLinkInvitee) {
@@ -142,7 +140,6 @@ async function processOne(job: Job<BookingConfirmationPayload>) {
     );
   }
 
-  // Host notification
   if (b.hostEmail && prefs?.bookingNotificationEmail !== false) {
     const mail = await bookingEmail({
       variant: "confirmation",
@@ -175,7 +172,6 @@ async function processOne(job: Job<BookingConfirmationPayload>) {
     );
   }
 
-  // In-app notification for host
   const whenLabel = formatInTimeZone(
     new Date(b.startTime),
     hostTimezone,
@@ -189,9 +185,7 @@ async function processOne(job: Job<BookingConfirmationPayload>) {
     bookingId: b.id,
   });
 
-  // Auto-save invitee as a contact for the host — honouring their contact
-  // settings (auto-create toggle + exclusion list). Unique index on
-  // (hostUserId, email) prevents duplicates silently.
+  // Unique index on (hostUserId, email) prevents duplicate contacts.
   const [profile] = await db
     .select({
       autoCreate: userProfile.autoCreateContacts,

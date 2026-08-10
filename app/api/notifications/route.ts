@@ -40,7 +40,6 @@ export async function GET() {
   });
 }
 
-// DELETE /api/notifications — clear all notifications for the current user
 export async function DELETE() {
   const requestHeaders = await headers();
   const current = await auth.api.getSession({ headers: requestHeaders });

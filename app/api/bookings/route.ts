@@ -180,9 +180,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // Enforce minimum notice (default 60 — matches the DB column default and
-    // the /api/slots display, so a direct API call can't bypass the notice the
-    // booking UI already hides).
+    // Default 60 matches the DB column default and /api/slots, so a direct
+    // API call can't bypass the notice the booking UI already enforces.
     const minimumNoticeMs = (et.minimumNotice ?? 60) * 60_000;
     if (minimumNoticeMs > 0 && startTime.getTime() - nowMs < minimumNoticeMs) {
       const mins = et.minimumNotice ?? 60;
@@ -259,15 +258,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // Phone required server-side for phone_host_calls
     if (et.locationType === "phone_host_calls" && !phone?.trim()) {
       return jsonError("Phone number is required for this meeting type.", 400);
     }
 
-    // Server-side availability check — the requested time must be a real slot on
-    // the host's schedule (working hours / override, aligned to the increment,
-    // not a blocked date). Without this a direct POST could book any arbitrary
-    // time, bypassing the /api/slots gating the UI relies on.
+    // Re-validate against the host's real schedule server-side — otherwise a
+    // direct POST could book any arbitrary time, bypassing /api/slots gating.
     const bookable = await isSlotBookable({
       hostUserId: host.id,
       scheduleId: schedule?.id,
@@ -285,7 +281,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // ── Idempotency check ────────────────────────────────────────────────────
     // Key includes duration so two requests for the same slot but different
     // durations are treated as distinct (both are valid for multi-duration events).
     const idemKey = `booking:${email.toLowerCase().trim()}:${et.id}:${startTime.toISOString()}:${duration}`;
@@ -303,16 +298,13 @@ export async function POST(request: Request) {
       return NextResponse.json(JSON.parse(existing.result));
     }
 
-    // ── Transaction: advisory lock → conflict check → INSERT ─────────────────
+    // Transaction: advisory lock → conflict check → INSERT. Host-wide lock
+    // serialises ALL bookings for this host, not just identical start times —
+    // otherwise overlapping-but-different starts miss each other's uncommitted
+    // row under READ COMMITTED and double-book. Released on COMMIT/ROLLBACK.
     const result = await db.transaction(async (tx) => {
-      // Serialise concurrent requests targeting the same host + slot.
-      // Host-wide lock: serialise ALL concurrent bookings for this host, not
-      // just identical start times — otherwise two overlapping-but-different
-      // starts each miss the other's uncommitted row under READ COMMITTED and
-      // double-book. Released automatically on COMMIT/ROLLBACK.
       await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtext(${host.id}))`);
 
-      // Re-check conflicts inside the locked transaction
       const existingBookings = await tx
         .select({ startTime: booking.startTime, endTime: booking.endTime })
         .from(booking)
@@ -350,7 +342,6 @@ export async function POST(request: Request) {
         .where(eq(meetingLimit.userId, host.id));
 
       if (globalLimits.length > 0) {
-        // Count all active bookings for this host
         const allHostBookings = await tx
           .select({ startTime: booking.startTime })
           .from(booking)
@@ -361,9 +352,8 @@ export async function POST(request: Request) {
             )
           );
 
-        // Week/month boundaries are computed in the HOST's timezone (matching
-        // the day window), not UTC — otherwise a late-evening booking can fall
-        // into the wrong week/month bucket near midnight.
+        // Boundaries are computed in the HOST's timezone, not UTC — otherwise a
+        // late-evening booking can fall into the wrong week/month bucket.
         const fmtCal = (d: Date) =>
           `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
         const [ly, lm, ld] = formatInTimeZone(startTime, hostTz, "yyyy-MM-dd")
@@ -457,10 +447,8 @@ export async function POST(request: Request) {
         );
       }
 
-      // Persist idempotency result (expires in 24h — same as min booking window)
-      // Compute the "effective" location value shown to the invitee after booking:
-      // – phone_invitee_calls → host's phone number (they need to call)
-      // – in_person / custom  → locationValue (address / custom link)
+      // Effective location shown to invitee: host's phone for phone_invitee_calls,
+      // otherwise the stored locationValue. Idempotency result below expires in 24h.
       const locationValue =
         et.locationType === "phone_invitee_calls"
           ? (et.hostPhoneNumber ?? null)
@@ -544,9 +532,8 @@ async function enqueueBookingJobs(opts: {
 
   const jobs: Promise<unknown>[] = [];
 
-  // Pending approval — only send the approval request to the host.
-  // Calendar, video, confirmation emails, and reminders are deferred
-  // until the host approves.
+  // Pending approval — only notify the host. Calendar, video, confirmation
+  // emails, and reminders are deferred until the host approves.
   if (requiresApproval) {
     jobs.push(enqueueJob(JOB_NAMES.BOOKING_APPROVAL_REQUEST, { bookingId }));
     const results = await Promise.allSettled(jobs);
@@ -564,11 +551,10 @@ async function enqueueBookingJobs(opts: {
   const needsVideoLink =
     locationType === "google_meet" || locationType === "zoom";
 
-  // Calendar event (no-op if host has no connected write-target calendar)
+  // No-op if host has no connected write-target calendar.
   jobs.push(enqueueJob(JOB_NAMES.CALENDAR_WRITE, { bookingId }));
 
-  // Confirmation emails + in-app notification
-  // For video events, delay 10 s so VIDEO_LINK_GENERATE can finish first
+  // For video events, delay 10s so VIDEO_LINK_GENERATE can finish first.
   jobs.push(
     enqueueJob(
       JOB_NAMES.BOOKING_CONFIRMATION,
@@ -581,9 +567,8 @@ async function enqueueBookingJobs(opts: {
     jobs.push(enqueueJob(JOB_NAMES.VIDEO_LINK_GENERATE, { bookingId }));
   }
 
-  // Reminder(s) — 24h + 1h with plenty of lead time; a single last-mile
-  // 10m/5m fallback when the booking is made too close to the meeting for
-  // those windows to ever fire. See lib/worker/reminder-schedule.ts.
+  // 24h + 1h reminders, plus a 10m/5m fallback when booked too close to the
+  // meeting for those windows to fire. See lib/worker/reminder-schedule.ts.
   for (const reminder of computeReminderSchedule(startTime, new Date(now))) {
     jobs.push(
       enqueueJob(
@@ -597,7 +582,6 @@ async function enqueueBookingJobs(opts: {
     );
   }
 
-  // Follow-up email — 30 min after meeting ends
   const followUpAt = addMinutes(endTime, 30);
   jobs.push(
     enqueueJob(

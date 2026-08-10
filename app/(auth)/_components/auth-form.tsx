@@ -31,14 +31,10 @@ import { passwordComplexityError } from "@/lib/password";
 
 // Better Auth's redirect-based flows (Google OAuth callback, magic-link
 // verify) surface a rejected databaseHooks.user.create.before hook as one of
-// these exact ?error= values — confirmed by reading the installed
-// better-auth source (oauth2/link-account.mjs's catch-all around
-// createOAuthUser turns a null/blocked user into "unable to create user",
-// spaces replaced with underscores in the redirect; the magic-link plugin's
-// verify handler does the equivalent "failed_to_create_user" directly). Both
-// strings can, in principle, also come from a genuine unrelated failure
-// during account creation — gated below on allowPublicSignup being false, so
-// an open instance never mislabels a real error as "access denied".
+// these exact ?error= values (confirmed from the better-auth source). They
+// could in principle also mean an unrelated failure, so this is only trusted
+// when allowPublicSignup is false — an open instance never mislabels a real
+// error as "access denied".
 const BLOCKED_SIGNUP_REDIRECT_ERRORS = new Set([
   "unable_to_create_user",
   "failed_to_create_user",
@@ -75,9 +71,8 @@ function AuthFormInner({
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session, isPending } = useSession();
-  // At least one method is always enabled (enforced admin-side). Password is
-  // the primary method; fall back to magic link, else an email form isn't shown
-  // at all (Google-only deployment).
+  // Password is the primary method, falling back to magic link; if neither is
+  // enabled, no email form is shown at all (Google-only deployment).
   const hasFormMethod = passwordEnabled || magicLinkEnabled;
   const [mode, setMode] = useState<Mode>(
     passwordEnabled ? "password-signin" : "magic-link"
@@ -95,9 +90,8 @@ function AuthFormInner({
   const [showPassword, setShowPassword] = useState(false);
 
   const rawNext = searchParams.get("next");
-  // Only same-origin paths: a single leading slash NOT followed by another
-  // slash or backslash. Rejects protocol-relative ("//evil.com") and
-  // backslash ("/\evil.com") targets that would otherwise be an open redirect.
+  // Requires a single leading slash not followed by another slash or
+  // backslash, rejecting protocol-relative/backslash open-redirect targets.
   const safeNext =
     rawNext && /^\/(?![/\\])/.test(rawNext) ? rawNext : "/post-auth";
 
@@ -232,10 +226,9 @@ function AuthFormInner({
 
     setSubmitting(false);
     if (result.error) {
-      // Better Auth returns this exact code only when databaseHooks.user.create.before
-      // rejected the account (see BLOCKED_SIGNUP_REDIRECT_ERRORS above for the
-      // equivalent OAuth/magic-link signal) — never for a genuine creation failure,
-      // which would surface as an uncaught error instead of this specific APIError.
+      // Same signal as BLOCKED_SIGNUP_REDIRECT_ERRORS above, for the
+      // password flow: this code only fires when the create.before hook
+      // rejected the account.
       if (result.error.code === "FAILED_TO_CREATE_USER") {
         setUnauthorized(true);
       } else {
@@ -363,7 +356,6 @@ function AuthFormInner({
               </div>
             </div>
           ) : mode === "forgot-password" ? (
-            /* ── Forgot password ── */
             <div className="space-y-5">
               {resetSent ? (
                 <div className="space-y-5">
@@ -441,10 +433,8 @@ function AuthFormInner({
             </div>
           ) : (
             <div className="space-y-5">
-              {/* ── PRIMARY: email + password ── */}
               {hasFormMethod ? (
                 mode === "magic-link" ? (
-                  /* ── Magic-link mode ── */
                   <form className="space-y-4" onSubmit={onMagicLinkSubmit}>
                     <label className="block" htmlFor="email">
                       <span className="mb-2 block font-semibold text-base-content text-sm">
@@ -661,7 +651,6 @@ function AuthFormInner({
                 </div>
               )}
 
-              {/* ── SECONDARY options: Google + switch method ── */}
               {hasFormMethod && hasSecondary && (
                 <>
                   <div className="relative flex items-center gap-3">
@@ -716,7 +705,6 @@ function AuthFormInner({
                 </>
               )}
 
-              {/* Security indicators */}
               <div className="flex items-center justify-center gap-4 border-t border-base-300 pt-4 text-xs text-muted-foreground">
                 <span className="inline-flex items-center gap-1.5">
                   <LockKey size={13} />{" "}

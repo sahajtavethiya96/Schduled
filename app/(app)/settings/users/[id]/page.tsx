@@ -93,7 +93,6 @@ export default async function SettingsUserDetailPage({
   const isSelf = profile.id === admin.user.id;
   const isAdmin = profile.role === ADMIN_ROLE;
 
-  // Search-filtered where clauses
   const bWhere = bq
     ? and(
         eq(booking.hostUserId, id),
@@ -189,7 +188,6 @@ export default async function SettingsUserDetailPage({
 
   return (
     <div className="space-y-6">
-      {/* Back link */}
       <Link
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-base-content"
         href="/settings/users"
@@ -392,7 +390,6 @@ export default async function SettingsUserDetailPage({
 
       {/* ── Meeting Types + Bookings side by side ── */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Meeting Types */}
         <Card className="h-full">
           <CardHeader className="border-b border-base-300 py-3">
             <div className="flex items-center justify-between gap-3">
@@ -480,7 +477,6 @@ export default async function SettingsUserDetailPage({
           </CardContent>
         </Card>
 
-        {/* Bookings */}
         <Card className="h-full">
           <CardHeader className="border-b border-base-300 py-3">
             <div className="flex items-center justify-between gap-3">
@@ -571,7 +567,6 @@ export default async function SettingsUserDetailPage({
           </CardContent>
         </Card>
       </div>
-      {/* end side-by-side grid */}
 
       {/* ── Activity Timeline ── */}
       <Card>

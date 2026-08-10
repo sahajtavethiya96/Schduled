@@ -81,8 +81,6 @@ import { Switch } from "@/components/ui/switch";
 import { TimeCombobox } from "@/components/ui/time-combobox";
 import { cn, normalizeTzName } from "@/lib/utils";
 
-// ── Time helpers ──────────────────────────────────────────────────────────────
-
 function fmt12(t: string): string {
   const [h, m] = t.split(":").map(Number);
   const ampm = h >= 12 ? "PM" : "AM";
@@ -91,8 +89,7 @@ function fmt12(t: string): string {
 }
 
 function todayISO() {
-  // Local calendar date (not UTC) — the calendar cells are rendered in the
-  // user's local time, so "today"/past must be computed locally too.
+  // Local calendar date (not UTC) — calendar cells render in local time too.
   const d = new Date();
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
@@ -123,8 +120,6 @@ const DAY_MAP: DayOfWeek[] = [
   "friday",
   "saturday",
 ];
-
-// ── Timezone helpers ──────────────────────────────────────────────────────────
 
 const COMMON_TZ = [
   "Pacific/Honolulu",
@@ -168,8 +163,6 @@ function getTzLabel(tz: string) {
   }
 }
 
-// ── Day config ────────────────────────────────────────────────────────────────
-
 const DAYS: { key: DayOfWeek; letter: string; label: string }[] = [
   { key: "sunday", letter: "S", label: "Sunday" },
   { key: "monday", letter: "M", label: "Monday" },
@@ -180,11 +173,8 @@ const DAYS: { key: DayOfWeek; letter: string; label: string }[] = [
   { key: "saturday", letter: "S", label: "Saturday" },
 ];
 
-// ── Holidays ──────────────────────────────────────────────────────────────────
-// Countries + public-holiday dates come from the server (date-holidays, ~200
-// countries, computed for the current year) — see lib/holidays.ts and
-// /api/holidays. The picker defaults to the country implied by the user's
-// timezone; changing it fetches that country's holidays.
+// Countries + holiday dates come from the server (lib/holidays.ts, /api/holidays);
+// the picker defaults to the country implied by the user's timezone.
 
 interface HolidayItem {
   date: string;
@@ -194,8 +184,6 @@ interface HolidayCountry {
   code: string;
   name: string;
 }
-
-// ── Types ─────────────────────────────────────────────────────────────────────
 
 type WeekGrid = Record<DayOfWeek, TimeSlot[]>;
 type PageTab = "schedules" | "calendar" | "advanced";
@@ -227,9 +215,7 @@ const EMPTY_GRID: WeekGrid = {
   sunday: [],
 };
 
-// ── Slot validation ───────────────────────────────────────────────────────────
 // Times are "HH:MM" strings, so lexical comparison is correct within a day.
-
 function validateSlots(slots: TimeSlot[]): string | null {
   for (const s of slots) {
     if (!s.startTime || !s.endTime) {
@@ -250,8 +236,8 @@ function validateSlots(slots: TimeSlot[]): string | null {
   return null;
 }
 
-// A newly added interval defaults to right after the day's latest interval
-// ends, so it never collides with what's already there (matches Calendly).
+// New interval starts right after the day's latest one ends, so it never
+// collides with what's already there (matches Calendly).
 function nextIntervalDefaults(existing: TimeSlot[]): TimeSlot {
   if (existing.length === 0) {
     return { startTime: "09:00", endTime: "17:00" };
@@ -265,8 +251,6 @@ function nextIntervalDefaults(existing: TimeSlot[]): TimeSlot {
   const endTime = `${String(Math.floor(endMinutes / 60)).padStart(2, "0")}:${String(endMinutes % 60).padStart(2, "0")}`;
   return { startTime: lastEnd, endTime };
 }
-
-// ── Shared time select ────────────────────────────────────────────────────────
 
 function TimeSelect({
   value,
@@ -286,8 +270,6 @@ function TimeSelect({
     />
   );
 }
-
-// ── Override dialog ───────────────────────────────────────────────────────────
 
 function OverrideDialog({
   open,
@@ -347,9 +329,7 @@ function OverrideDialog({
     }
   }
 
-  // Only re-run when the dialog opens for a (possibly different) date —
-  // loadDate itself reads the latest overrideMap/weekGrid via closure.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: loadDate is intentionally excluded, see above
+  // biome-ignore lint/correctness/useExhaustiveDependencies: loadDate reads overrideMap/weekGrid via closure; only open/defaultDate should retrigger
   useEffect(() => {
     if (open) {
       const base = defaultDate || todayISO();
@@ -410,7 +390,6 @@ function OverrideDialog({
         </div>
 
         <div className="overflow-y-auto flex-1">
-          {/* Calendar picker */}
           <div className="px-5 py-4 space-y-3">
             <div className="flex items-center justify-between">
               <button
@@ -498,7 +477,6 @@ function OverrideDialog({
 
           <div className="border-t border-base-300" />
 
-          {/* Hours */}
           <div className="px-5 py-4 space-y-3">
             <div className="flex items-center justify-between">
               <p className="text-sm font-semibold">
@@ -613,9 +591,6 @@ function OverrideDialog({
   );
 }
 
-// ── Weekday (recurring) dialog ──────────────────────────────────────────────────
-// Edits the WEEKLY recurring hours for one day-of-week — i.e. "Edit all Wednesdays".
-
 function WeekdayDialog({
   open,
   onClose,
@@ -637,7 +612,6 @@ function WeekdayDialog({
   ]);
   const [isBlocked, setIsBlocked] = useState(false);
 
-  // Sync the slot editor to the selected weekday whenever the dialog opens
   // biome-ignore lint/correctness/useExhaustiveDependencies: re-sync only on open/dow change
   useEffect(() => {
     if (!open || !dow) {
@@ -768,8 +742,6 @@ function WeekdayDialog({
     </Dialog>
   );
 }
-
-// ── Full calendar grid ────────────────────────────────────────────────────────
 
 function FullCalendarView({
   grid,
@@ -958,7 +930,6 @@ function FullCalendarView({
                 </>
               );
 
-              // Past days are read-only — no menu
               if (isPast) {
                 return (
                   <div
@@ -1034,8 +1005,6 @@ function FullCalendarView({
   );
 }
 
-// ── Main component ────────────────────────────────────────────────────────────
-
 export function AvailabilityForm({
   initialSchedules,
   initialOverrides,
@@ -1049,7 +1018,6 @@ export function AvailabilityForm({
   const [pageTab, setPageTab] = useState<PageTab>("schedules");
   const [viewMode, setViewMode] = useState<ViewMode>("list");
 
-  // ── Multi-schedule state ────────────────────────────────────────────────────
   const firstSchedule =
     initialSchedules.find((s) => s.isDefault) ?? initialSchedules[0] ?? null;
   const [schedules, setSchedules] = useState<ScheduleMeta[]>(
@@ -1080,7 +1048,6 @@ export function AvailabilityForm({
   const activeIsDefault =
     schedules.find((s) => s.id === scheduleId)?.isDefault ?? false;
 
-  // Schedule name dialog (create / rename) + delete confirmation
   const [nameDialog, setNameDialog] = useState<{
     mode: "new" | "rename";
   } | null>(null);
@@ -1106,14 +1073,12 @@ export function AvailabilityForm({
   const [tzSearch, setTzSearch] = useState("");
   const [currentTz, setCurrentTz] = useState(userTimezone);
 
-  // Advanced tab
   const [, setAdvName] = useState(firstSchedule?.name ?? "Working Hours");
   const [holidayCountry, setHolidayCountry] = useState(defaultHolidayCountry);
   const [holidays, setHolidays] = useState<HolidayItem[]>(initialHolidays);
   const [holidaysLoading, setHolidaysLoading] = useState(false);
 
-  // Fetch the selected country's public holidays from the server. The default
-  // country is primed from props (SSR), so only re-fetch when the user changes it.
+  // Default country is primed from props (SSR); only re-fetch when the user changes it.
   useEffect(() => {
     if (holidayCountry === defaultHolidayCountry) {
       return;
@@ -1147,10 +1112,8 @@ export function AvailabilityForm({
   const [limitCount, setLimitCount] = useState("4");
   const [limitPending, startLimitTransition] = useTransition();
 
-  // ── Grid mutations ──────────────────────────────────────────────────────────
-
-  // Mark the active schedule dirty. dirtyIds lets us restore the correct
-  // "unsaved" state when switching back to a schedule with cached edits.
+  // dirtyIds lets us restore the "unsaved" state when switching back to a
+  // schedule with cached edits.
   function markActiveDirty() {
     setScheduleEdited(true);
     if (scheduleId) {
@@ -1158,8 +1121,8 @@ export function AvailabilityForm({
     }
   }
 
-  // Immediately persists a weekly grid to the server (used for the +/X interval
-  // controls, which save on click instead of waiting for the Schedule Save button).
+  // Persists immediately — the +/X interval controls save on click instead of
+  // waiting for the Schedule Save button.
   async function autosaveGrid(nextGrid: WeekGrid, successMessage: string) {
     for (const [day, daySlots] of Object.entries(nextGrid)) {
       const err = validateSlots(daySlots);
@@ -1252,8 +1215,6 @@ export function AvailabilityForm({
     startTransition(() => autosaveGrid(nextGrid, "Time updated"));
   }
 
-  // ── Multi-schedule handlers ───────────────────────────────────────────────────
-
   function switchSchedule(id: string) {
     if (id === scheduleId) {
       return;
@@ -1262,7 +1223,6 @@ export function AvailabilityForm({
     if (!target) {
       return;
     }
-    // Preserve any in-progress edits for the current schedule in the cache.
     if (scheduleId) {
       setGridsById((prev) => ({ ...prev, [scheduleId]: grid }));
     }
@@ -1270,7 +1230,6 @@ export function AvailabilityForm({
     setScheduleName(target.name);
     setAdvName(target.name);
     setGrid(gridsById[id] ?? EMPTY_GRID);
-    // Restore the unsaved state for the target so its Save button stays usable.
     setScheduleEdited(dirtyIds.has(id));
   }
 
@@ -1337,8 +1296,7 @@ export function AvailabilityForm({
     if (!scheduleId) {
       return;
     }
-    // Duplicate copies the SAVED hours on the server, so block while there are
-    // unsaved edits to avoid the copy diverging from what's shown.
+    // Duplicate copies SAVED server hours, so block while there are unsaved edits.
     if (scheduleEdited) {
       toast.error("Save your changes before duplicating.");
       return;
@@ -1409,9 +1367,9 @@ export function AvailabilityForm({
         remaining.length > 0 &&
         !remaining.some((s) => s.isDefault)
       ) {
-        // Promote the alphabetically-first remaining schedule — must match the
-        // server's deterministic choice in deleteSchedule so the default star
-        // doesn't jump after a refresh.
+        // Promote the alphabetically-first remaining schedule — must match
+        // deleteSchedule's deterministic choice so the default star doesn't
+        // jump after a refresh.
         const promoted = [...remaining].sort((a, b) =>
           a.name.localeCompare(b.name)
         )[0];
@@ -1435,8 +1393,6 @@ export function AvailabilityForm({
       toast.success("Schedule deleted");
     });
   }
-
-  // ── Override apply ──────────────────────────────────────────────────────────
 
   function handleApplyOverride(
     date: string,
@@ -1524,7 +1480,6 @@ export function AvailabilityForm({
     setDialogOpen(true);
   }
 
-  // ── Weekday (recurring) editing from the calendar ────────────────────────────
   function openWeekdayDialog(dow: DayOfWeek) {
     setWeekdayDow(dow);
     setWeekdayDialogOpen(true);
@@ -1536,7 +1491,6 @@ export function AvailabilityForm({
       toast.error(err);
       return;
     }
-    // Update the weekly grid for this day-of-week, then persist the schedule.
     const nextGrid: WeekGrid = { ...grid, [dow]: slots };
     setGrid(nextGrid);
     setWeekdayDialogOpen(false);
@@ -1585,7 +1539,7 @@ export function AvailabilityForm({
           slots: [],
         });
         if ("error" in res) {
-          setOverrides((prev) => prev.filter((o) => o.date !== date)); // revert
+          setOverrides((prev) => prev.filter((o) => o.date !== date));
           toast.error(res.error);
           return;
         }
@@ -1594,7 +1548,6 @@ export function AvailabilityForm({
         const res = await deleteAvailabilityOverride(date);
         if ("error" in res) {
           setOverrides((prev) => {
-            // revert
             const without = prev.filter((o) => o.date !== date);
             return [
               ...without,
@@ -1610,11 +1563,9 @@ export function AvailabilityForm({
   }
 
   function handleAllHolidaysToggle(enable: boolean) {
-    // Uses the `holidays` state (fetched for the selected country).
-    // Snapshot the current state so we can roll back if any write fails.
+    // Snapshot so we can roll back if any write fails.
     const prevOverrides = overrides;
 
-    // Optimistic update first
     setOverrides((prev) => {
       const dates = new Set(holidays.map((h) => h.date));
       if (enable) {
@@ -1633,9 +1584,8 @@ export function AvailabilityForm({
     });
 
     startTransition(async () => {
-      // addAvailabilityOverride/deleteAvailabilityOverride are idempotent
-      // (they clear the date first / no-op when absent), so we can apply every
-      // holiday unconditionally instead of reading a stale overrideMap.
+      // addAvailabilityOverride/deleteAvailabilityOverride are idempotent, so we
+      // can apply every holiday unconditionally instead of reading a stale overrideMap.
       for (const h of holidays) {
         const res = enable
           ? await addAvailabilityOverride({
@@ -1645,7 +1595,7 @@ export function AvailabilityForm({
             })
           : await deleteAvailabilityOverride(h.date);
         if ("error" in res) {
-          setOverrides(prevOverrides); // roll back the optimistic update
+          setOverrides(prevOverrides);
           toast.error(res.error);
           return;
         }
@@ -1655,8 +1605,6 @@ export function AvailabilityForm({
       );
     });
   }
-
-  // ── Timezone ────────────────────────────────────────────────────────────────
 
   const filteredTz = useMemo(() => {
     const q = tzSearch.toLowerCase().trim();
@@ -1690,11 +1638,8 @@ export function AvailabilityForm({
     });
   }
 
-  // ── Render ───────────────────────────────────────────────────────────────────
-
   return (
     <div>
-      {/* Page tab bar */}
       <div className="border-b border-base-300 mb-6">
         <div className="flex overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {[
@@ -1719,7 +1664,6 @@ export function AvailabilityForm({
         </div>
       </div>
 
-      {/* ── CALENDAR SETTINGS TAB ── */}
       {pageTab === "calendar" && (
         <div className="space-y-6 max-w-2xl">
           <div>
@@ -1731,7 +1675,6 @@ export function AvailabilityForm({
           </div>
 
           <div className="space-y-3">
-            {/* Google Calendar card */}
             <div className="flex items-center justify-between border border-base-300 p-4">
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center bg-base-200">
@@ -1756,7 +1699,6 @@ export function AvailabilityForm({
               </a>
             </div>
 
-            {/* Outlook card */}
             <div className="flex items-center justify-between border border-base-300 p-4 opacity-60">
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center bg-base-200">
@@ -1788,10 +1730,8 @@ export function AvailabilityForm({
         </div>
       )}
 
-      {/* ── ADVANCED SETTINGS TAB ── */}
       {pageTab === "advanced" && (
         <div className="space-y-0 max-w-2xl divide-y divide-base-300">
-          {/* Timezone */}
           <div className="pb-8">
             <h2 className="font-semibold mb-0.5">Timezone</h2>
             <p className="text-sm text-muted-foreground mb-4">
@@ -1810,14 +1750,12 @@ export function AvailabilityForm({
             </button>
           </div>
 
-          {/* Meeting Limits */}
           <div className="py-8">
             <h2 className="font-semibold mb-0.5">Meeting limits</h2>
             <p className="text-sm text-muted-foreground mb-4">
               Set a maximum number of total meetings across all event types.
             </p>
 
-            {/* Existing limits */}
             {meetingLimits.length > 0 && (
               <div className="border border-base-300 divide-y divide-base-300 mb-3">
                 {meetingLimits.map((lim) => (
@@ -1881,7 +1819,6 @@ export function AvailabilityForm({
               </div>
             )}
 
-            {/* Add new limit */}
             {(["day", "week", "month"] as MeetingLimitPeriod[]).some(
               (p) => !meetingLimits.find((l) => l.period === p)
             ) && (
@@ -1965,7 +1902,6 @@ export function AvailabilityForm({
             )}
           </div>
 
-          {/* Holidays */}
           <div className="py-8">
             <h2 className="font-semibold mb-0.5">Holidays</h2>
             <p className="text-sm text-muted-foreground mb-4">
@@ -2037,10 +1973,8 @@ export function AvailabilityForm({
         </div>
       )}
 
-      {/* ── SCHEDULES TAB ── */}
       {pageTab === "schedules" && (
         <div className="space-y-5">
-          {/* Schedule header bar */}
           <div className="flex items-center justify-between gap-4 pb-4 border-b border-base-300 flex-wrap">
             <div className="flex items-center gap-2 flex-wrap">
               {scheduleId && schedules.length > 0 ? (
@@ -2150,7 +2084,6 @@ export function AvailabilityForm({
             </div>
           </div>
 
-          {/* CALENDAR VIEW */}
           {viewMode === "calendar" && (
             <FullCalendarView
               currentTz={currentTz}
@@ -2162,10 +2095,8 @@ export function AvailabilityForm({
             />
           )}
 
-          {/* LIST VIEW */}
           {viewMode === "list" && (
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-0 xl:items-start xl:divide-x xl:divide-base-300">
-              {/* Left: Weekly hours */}
               <div className="space-y-4 xl:pr-10">
                 <div className="flex items-center gap-2">
                   <Clock className="text-primary shrink-0" size={15} />
@@ -2190,7 +2121,6 @@ export function AvailabilityForm({
                         )}
                         key={key}
                       >
-                        {/* Day letter badge — click to toggle */}
                         <button
                           className={cn(
                             "flex size-7 shrink-0 items-center justify-center text-xs font-bold select-none transition-colors",
@@ -2251,7 +2181,6 @@ export function AvailabilityForm({
                                 >
                                   <X size={13} />
                                 </button>
-                                {/* Add slot — only on the last row */}
                                 {i === slots.length - 1 && (
                                   <button
                                     className="p-1 text-muted-foreground hover:text-primary transition-colors shrink-0"
@@ -2286,7 +2215,6 @@ export function AvailabilityForm({
                 </div>
               </div>
 
-              {/* Right: Date-specific hours */}
               <div className="space-y-4 xl:pl-10 pt-6 xl:pt-0">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2">
@@ -2392,7 +2320,6 @@ export function AvailabilityForm({
         </div>
       )}
 
-      {/* Override dialog — date-specific hours ("Edit date") */}
       <OverrideDialog
         defaultDate={dialogDate}
         isPending={isPending}
@@ -2403,7 +2330,6 @@ export function AvailabilityForm({
         weekGrid={grid}
       />
 
-      {/* Weekday dialog — recurring weekly hours ("Edit all Wednesdays") */}
       <WeekdayDialog
         dow={weekdayDow}
         isPending={isPending}
@@ -2413,7 +2339,6 @@ export function AvailabilityForm({
         weekGrid={grid}
       />
 
-      {/* Timezone dialog */}
       <Dialog
         onOpenChange={(open) => {
           setTzDialogOpen(open);
@@ -2468,7 +2393,6 @@ export function AvailabilityForm({
         </DialogContent>
       </Dialog>
 
-      {/* Schedule name dialog — create / rename */}
       <Dialog
         onOpenChange={(open) => {
           if (!open) {
@@ -2524,7 +2448,6 @@ export function AvailabilityForm({
         </DialogContent>
       </Dialog>
 
-      {/* Delete schedule confirmation */}
       <AlertDialog onOpenChange={setDeleteOpen} open={deleteOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>

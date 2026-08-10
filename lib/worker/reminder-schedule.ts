@@ -12,17 +12,9 @@ export interface ReminderScheduleEntry {
 }
 
 /**
- * Decides which reminder job(s) to schedule for a meeting starting at
- * `startTime`, given the current time. The normal 24h + 1h reminders are
- * unchanged (each still schedules independently, exactly as before) — the
- * only new behavior is a last-mile fallback for bookings made too close to
- * the meeting for the 1h reminder to ever fire: 10 minutes before if there's
- * enough runway, 5 minutes before if not, or nothing once even that would
- * land too late (<5 min out) to be useful.
- *
- * Shared by every place that (re)schedules reminders — new bookings,
- * approval-gated bookings, and reschedules — so the decision logic lives in
- * exactly one place.
+ * Decides which reminder job(s) to schedule for a meeting. 24h/1h reminders
+ * fire when there's time; otherwise a last-mile fallback fires at 10 or 5
+ * minutes out, or not at all once even that would land too late (<5 min).
  */
 export function computeReminderSchedule(
   startTime: Date,

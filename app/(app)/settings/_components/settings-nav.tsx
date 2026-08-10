@@ -26,10 +26,8 @@ const PLATFORM_LINKS = [
   { href: "/settings/platform", label: "System Status" },
 ];
 
-// "Members" (/settings/users) is intentionally hidden from nav for now — no
-// invite/teams flow exists yet, so admin-visible user management isn't useful
-// until that ships. The route and its code are untouched; re-add the link
-// here when teams/invites land.
+// Hidden until teams/invites ship — the route still works, just re-add the
+// link here when that lands.
 const ADMIN_LINKS = [
   { href: "/settings/audit", label: "Audit Logs" },
   { href: "/settings/jobs", label: "Background Jobs" },

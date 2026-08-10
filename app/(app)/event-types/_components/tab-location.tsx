@@ -30,9 +30,8 @@ import type { MeetingIntegrations } from "@/lib/integrations/status";
 import { cn, dialCodeFromTz, extractDialCode } from "@/lib/utils";
 import type { BuilderFormValues } from "./builder";
 
-// Search Google Maps for whatever's already typed (so the host can fine-tune
-// the pin, then copy the resulting Maps link back into the field) — falls
-// back to opening Maps blank when the field is still empty.
+// Searches Maps for the typed value so the host can fine-tune the pin and
+// copy the resulting link back; opens Maps blank if the field is empty.
 function openGoogleMaps(currentValue: string) {
   const trimmed = currentValue.trim();
   const url = trimmed
@@ -111,8 +110,6 @@ function getAddressPlaceholderForTz(tz: string): string {
   return "e.g. 123 Main St";
 }
 
-// ── Location options ──────────────────────────────────────────────────────────
-
 interface LocationOption {
   comingSoon?: boolean;
   icon: React.ReactNode;
@@ -181,12 +178,9 @@ const LOCATION_OPTIONS: LocationOption[] = [
 
 const LS_KEY = "schduled:lastPhoneNumber";
 
-// E.164 caps the whole number (dial code + local number) at 15 digits, so a
-// bare paste of garbage digits can't produce an unusably long value.
+// E.164 caps the whole number (dial code + local number) at 15 digits.
 const MAX_LOCAL_DIGITS = 15;
 
-// Truncate `raw` so it contains at most `maxDigits` digit characters,
-// preserving any formatting characters (space, -, (, )) up to that point.
 function capDigits(raw: string, maxDigits: number): string {
   let digitCount = 0;
   for (let i = 0; i < raw.length; i++) {
@@ -200,11 +194,8 @@ function capDigits(raw: string, maxDigits: number): string {
   return raw;
 }
 
-// ── Smart phone input ─────────────────────────────────────────────────────────
-
-// Strip a leading dial code (plus any separator after it) from a stored value,
-// leaving only the local number — so the number field never re-displays the
-// code that's already shown in the dial code field.
+// Strips a leading dial code (and separator) so the number field never
+// re-displays the code that's already shown in the dial code field.
 function stripDialCode(value: string, dialCode: string): string {
   let v = value ?? "";
   if (dialCode && v.startsWith(dialCode)) {
@@ -224,9 +215,8 @@ function PhoneInput({
 }) {
   const initialized = useRef(false);
 
-  // Dial code: the code the host typed (matched against known country codes,
-  // so "+918790056786" → "+91"); when none is typed, fall back to the code
-  // derived from their timezone — so it always shows a sensible code (e.g. +91).
+  // Matched against known country codes (e.g. "+918790056786" → "+91"); falls
+  // back to the timezone-derived code when none is typed.
   const dialCode = extractDialCode(value ?? "") || detectDialCode() || "+1";
   const localNumber = stripDialCode(value ?? "", dialCode);
 
@@ -252,9 +242,8 @@ function PhoneInput({
     } catch {
       /* ignore */
     }
-    // Priority 3 (no saved number): leave the number blank — the dial code
-    // field already shows the timezone-detected code, so there's nothing
-    // to pre-fill into the stored value.
+    // Priority 3: leave blank — the dial code field already shows the
+    // timezone-detected code.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -277,7 +266,6 @@ function PhoneInput({
 
   function handleBlur() {
     const trimmed = (value ?? "").trim();
-    // Persist valid-looking numbers to localStorage
     if (trimmed.length > 5) {
       try {
         localStorage.setItem(LS_KEY, trimmed);
@@ -312,8 +300,6 @@ function PhoneInput({
     </div>
   );
 }
-
-// ── Tab component ─────────────────────────────────────────────────────────────
 
 interface TabLocationProps {
   form: UseFormReturn<BuilderFormValues>;
@@ -378,8 +364,7 @@ export function TabLocation({
                         }
                         field.onChange(opt.value);
                         // Clear per-type fields the new type doesn't use, so a
-                        // stale value (e.g. the dial-code PhoneInput auto-fills)
-                        // can't fail the Location step's validation.
+                        // stale value can't fail the Location step's validation.
                         if (!opt.requiresPhone) {
                           form.setValue("hostPhoneNumber", "", {
                             shouldValidate: true,
@@ -461,7 +446,6 @@ export function TabLocation({
         )}
       />
 
-      {/* Custom location / in-person address */}
       {selected?.requiresValue && (
         <FormField
           control={form.control}
@@ -516,7 +500,6 @@ export function TabLocation({
         />
       )}
 
-      {/* Phone number — with dial code prefix and validation */}
       {selected?.requiresPhone && (
         <FormField
           control={form.control}

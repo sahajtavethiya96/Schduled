@@ -70,8 +70,6 @@ const dateFmt = new Intl.DateTimeFormat("en-US", {
   day: "numeric",
 });
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-
 export type OutboxRow = {
   id: string;
   status: string;
@@ -94,8 +92,6 @@ export type EmailStats = {
   failed: number;
   pending: number;
 };
-
-// ── Friendly subject names ────────────────────────────────────────────────────
 
 function getFriendlySubject(subject: string): string {
   const s = subject.toLowerCase();
@@ -129,8 +125,6 @@ function getFriendlySubject(subject: string): string {
   }
   return subject;
 }
-
-// ── Outbox status badge ───────────────────────────────────────────────────────
 
 const STATUS_CONFIG: Record<
   string,
@@ -173,8 +167,6 @@ function StatusBadge({ status }: { status: string }) {
     </span>
   );
 }
-
-// ── Event type badge ──────────────────────────────────────────────────────────
 
 const EVENT_CONFIG: Record<
   string,
@@ -234,8 +226,6 @@ function EventTypeBadge({ type }: { type: string }) {
   );
 }
 
-// ── Stat card ─────────────────────────────────────────────────────────────────
-
 function StatCard({
   label,
   value,
@@ -286,8 +276,6 @@ function StatCard({
   );
 }
 
-// ── Timer ─────────────────────────────────────────────────────────────────────
-
 function formatSecondsAgo(s: number): string {
   if (s < 60) {
     return `${s}s ago`;
@@ -311,8 +299,6 @@ function formatDate(iso: string): { date: string; time: string } {
   });
   return { date, time };
 }
-
-// ── Main component ────────────────────────────────────────────────────────────
 
 export type EmailFilter = {
   status: string;
@@ -374,8 +360,7 @@ export function EmailClient({
     // Any filter change resets to page 1; only explicit paging keeps a page.
     const page = next.page ?? 1;
     const params = new URLSearchParams();
-    // Keep the Email tab active across filter/pagination navigations —
-    // otherwise the merged /settings/jobs page would snap back to Queues.
+    // Keep the Email tab active — otherwise the merged /settings/jobs page snaps back to Queues.
     params.set("tab", "email");
     if (status && status !== "all") {
       params.set("outboxStatus", status);
@@ -422,7 +407,6 @@ export function EmailClient({
 
   return (
     <div className="space-y-8">
-      {/* ── Header ──────────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="text-lg font-bold text-base-content">Email</h2>
@@ -450,7 +434,6 @@ export function EmailClient({
         </div>
       </div>
 
-      {/* ── Summary stat cards ───────────────────────────────────────────── */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           icon={<Envelope size={20} weight="duotone" />}
@@ -476,9 +459,7 @@ export function EmailClient({
         />
       </div>
 
-      {/* ── Outbox + Events ──────────────────────────────────────────────── */}
       <div className="grid gap-6 xl:grid-cols-3">
-        {/* Outbox — 2/3 width */}
         <Card className="xl:col-span-2">
           <CardHeader className="flex flex-col gap-3 border-b border-base-300 py-4 lg:flex-row lg:items-center lg:justify-between">
             <CardTitle className="text-base font-semibold">
@@ -653,7 +634,6 @@ export function EmailClient({
                           className="border-b border-base-300 transition-colors hover:bg-base-200/20 last:border-0"
                           key={email.id}
                         >
-                          {/* Recipient */}
                           <TableCell className="px-5 py-3">
                             <Tooltip>
                               <TooltipTrigger asChild>
@@ -667,7 +647,6 @@ export function EmailClient({
                             </Tooltip>
                           </TableCell>
 
-                          {/* Subject */}
                           <TableCell className="px-4 py-3">
                             <Tooltip>
                               <TooltipTrigger asChild>
@@ -686,19 +665,16 @@ export function EmailClient({
                             )}
                           </TableCell>
 
-                          {/* Status */}
                           <TableCell className="px-4 py-3">
                             <StatusBadge status={email.status} />
                           </TableCell>
 
-                          {/* Attempts */}
                           <TableCell className="px-4 py-3">
                             <span className="text-sm tabular-nums text-muted-foreground">
                               {email.attemptCount}
                             </span>
                           </TableCell>
 
-                          {/* Sent At */}
                           <TableCell className="px-4 py-3 text-xs text-muted-foreground">
                             {sentAt ? (
                               <>
@@ -721,7 +697,6 @@ export function EmailClient({
               </TooltipProvider>
             )}
 
-            {/* Pagination */}
             {outboxTotalPages > 1 && (
               <div className="flex items-center justify-between border-t border-base-300 px-5 py-3">
                 <p className="text-xs text-muted-foreground">
@@ -794,7 +769,6 @@ export function EmailClient({
           </CardContent>
         </Card>
 
-        {/* Events — 1/3 width */}
         <Card>
           <CardHeader className="py-4">
             <CardTitle className="text-base font-semibold">Events</CardTitle>

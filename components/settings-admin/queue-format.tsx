@@ -1,5 +1,3 @@
-// Shared formatting helpers for the Background Jobs queue views (summary table + job drill-down sheet).
-
 const QUEUE_LABELS: Record<string, string> = {
   "email.send": "Email Send",
   "email.outbox-reap": "Email Cleanup",

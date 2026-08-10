@@ -26,10 +26,8 @@ export async function handleEmailOutboxReap(
     );
 
   for (const row of stuck) {
-    // Requeue while attempts remain so a crash mid-send doesn't silently lose
-    // the email (the previous behaviour just marked it failed). Only give up
-    // once the row is out of attempts. The status guard avoids racing with a
-    // late-arriving send that flips the row to sent/failed first.
+    // Requeue while attempts remain; the status guard avoids racing with a
+    // late-arriving send that already flipped the row to sent/failed.
     if (row.attemptCount < row.maxAttempts) {
       const [requeued] = await db
         .update(emailOutbox)

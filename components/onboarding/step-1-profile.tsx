@@ -9,9 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAppOrigin } from "@/hooks/use-app-origin";
 
-// Avatar upload uses STORAGE_DRIVER from .env:
-//   local (default) → saved to public/uploads/avatars/{userId}.webp, served at /uploads/...
-//   s3              → uploaded to Cloudflare R2 / AWS S3 (activate in lib/storage/index.ts)
+// Avatar upload target (local disk vs S3/R2) is controlled by STORAGE_DRIVER in .env.
 
 interface StepProfileProps {
   defaultImage?: string | null;
@@ -52,10 +50,9 @@ export function StepProfile({
   const [error, setError] = useState("");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  // Auto-suggest username from name only when the user hasn't manually set one
+  // Tracks whether the user has manually edited the username, to stop auto-deriving it from name
   const autoSuggest = useRef(!defaultUsername);
 
-  // Derive username from name while auto-suggest is active
   useEffect(() => {
     if (!autoSuggest.current) {
       return;
@@ -64,7 +61,6 @@ export function StepProfile({
     setUsername(derived);
   }, [name]);
 
-  // Live username check with 400 ms debounce
   useEffect(() => {
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
@@ -141,7 +137,6 @@ export function StepProfile({
 
     setSaving(true);
 
-    // Upload avatar if a file was selected (works with any STORAGE_DRIVER)
     if (avatarFile) {
       const form = new FormData();
       form.append("file", avatarFile);
@@ -181,7 +176,6 @@ export function StepProfile({
 
   return (
     <form className="space-y-6" onSubmit={handleSubmit}>
-      {/* Avatar */}
       <div className="flex flex-col items-center gap-3">
         <button
           aria-label="Upload profile photo"
@@ -219,7 +213,6 @@ export function StepProfile({
         </p>
       </div>
 
-      {/* Name */}
       <div className="space-y-1.5">
         <Label htmlFor="ob-name">Full name</Label>
         <Input
@@ -233,7 +226,6 @@ export function StepProfile({
         />
       </div>
 
-      {/* Username */}
       <div className="space-y-1.5">
         <Label htmlFor="ob-username">Username</Label>
         <div
@@ -258,7 +250,6 @@ export function StepProfile({
             spellCheck={false}
             value={username}
           />
-          {/* Status indicator */}
           {usernameState === "checking" && (
             <span className="absolute inset-y-0 right-3 flex items-center">
               <span className="size-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />

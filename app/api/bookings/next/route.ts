@@ -5,8 +5,7 @@ import { getCurrentSession } from "@/lib/authz";
 import { db } from "@/lib/db";
 
 // Returns the host's soonest confirmed meeting that hasn't ended yet, with a
-// join link if one exists. The client's "Join soon" bar decides when to show it
-// (i.e. once it's within the lead window). Returns { meeting: null } otherwise.
+// join link if one exists, or { meeting: null } otherwise.
 export async function GET() {
   const session = await getCurrentSession();
   if (!session) {

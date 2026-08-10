@@ -20,7 +20,6 @@ export const notificationPreference = pgTable('notification_preference', {
   updatedAt:                timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
-// In-app notifications shown in the navbar bell dropdown
 export const notification = pgTable('notification', {
   id:        text('id').primaryKey().$defaultFn(createId),
   userId:    text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),

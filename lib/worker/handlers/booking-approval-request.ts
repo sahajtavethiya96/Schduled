@@ -52,9 +52,8 @@ async function processOne(bookingId: string, isReschedule: boolean) {
   );
   const startUtc = new Date(b.startTime);
 
-  // Invitee: only on first submission — reschedules skip this to avoid the
-  // confusing "Booking request received" email when the host/invitee just
-  // changed the time on an already-pending booking.
+  // Only on first submission — reschedules would otherwise resend a
+  // confusing "Booking request received" email for an already-pending booking.
   if (!isReschedule) {
     const mail = await approvalPendingTemplate({
       cancelToken: b.cancelToken,
@@ -99,8 +98,7 @@ async function processOne(bookingId: string, isReschedule: boolean) {
         html: mail.html,
         text: mail.text,
       },
-      // Key on the current start time so a re-request after a reschedule still
-      // sends, but a handler retry for the same time does not double-send.
+      // Keyed on start time so a reschedule re-request still sends but a retry doesn't double-send.
       { idempotencyKey: `approval-request:${b.id}:${startUtc.getTime()}:host` }
     );
   }

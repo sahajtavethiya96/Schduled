@@ -63,10 +63,8 @@ function getTzLabel(tz: string) {
   }
 }
 
-// This is your own account timezone — it's what your dashboard, bookings
-// list, and availability hours are shown in. It's separate from the
-// timezone an invitee sees on your public booking page, which is detected
-// from their browser (with a manual override) — see the Availability page.
+// Account timezone only — separate from the invitee-facing timezone on the
+// public booking page, which is detected from their browser.
 export function TimezoneCard({ timezone }: { timezone: string }) {
   const [currentTz, setCurrentTz] = useState(timezone);
   const [dialogOpen, setDialogOpen] = useState(false);

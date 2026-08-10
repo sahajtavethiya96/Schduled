@@ -31,7 +31,7 @@ function slugify(name: string): string {
   );
 }
 
-// Generates a 5-char alphanumeric suffix for unique slugs (like Calendly).
+// Generates a 5-char alphanumeric suffix for unique slugs.
 function randomSuffix(): string {
   return Math.random().toString(36).slice(2, 7);
 }
@@ -59,9 +59,8 @@ async function uniqueSlug(
   }
 }
 
-// Server-side mirror of the client's cross-field location refinement — the
-// form UI marks these fields as required (labels, styling), but nothing
-// stopped a direct action call from saving an empty value underneath it.
+// Server-side mirror of the client's cross-field location validation, since
+// a direct action call could otherwise bypass the form's required-field UI.
 function validateLocation(
   data: Pick<
     EventTypeFormData,
@@ -83,8 +82,6 @@ function validateLocation(
   return null;
 }
 
-// ── List ──────────────────────────────────────────────────────────────────────
-
 export async function listEventTypes() {
   const session = await requireSession();
   const types = await db.query.eventType.findMany({
@@ -94,8 +91,6 @@ export async function listEventTypes() {
   });
   return types;
 }
-
-// ── Get single ────────────────────────────────────────────────────────────────
 
 export async function getEventType(id: string) {
   const session = await requireSession();
@@ -109,8 +104,6 @@ export async function getEventType(id: string) {
   });
   return et ?? null;
 }
-
-// ── Create ────────────────────────────────────────────────────────────────────
 
 export interface EventTypeFormData {
   allowCancellation: boolean;
@@ -175,9 +168,8 @@ export async function createEventType(
       return { error: locationError };
     }
 
-    // Slug = slugified name + random 5-char suffix, guaranteed unique per user.
-    // The suffix means two events with the same name always get different URLs
-    // (like Calendly), and the while-loop fallback is a pure safety net.
+    // Slug = slugified name + random suffix, so same-named events still get
+    // distinct URLs; uniqueSlug's loop is just a collision safety net.
     const slugBase = `${slugify(name)}-${randomSuffix()}`;
     const id = createId();
 
@@ -186,8 +178,7 @@ export async function createEventType(
         sql`SELECT pg_advisory_xact_lock(hashtext(${`et-slug:${session.user.id}`}))`
       );
 
-      // Load existing types (under the per-user lock) to enforce a unique name
-      // and assign a color the host isn't already using.
+      // Loaded under the per-user lock to enforce a unique name and pick an unused color.
       const existingRows = await tx
         .select({ name: eventType.name, color: eventType.color })
         .from(eventType)
@@ -203,9 +194,7 @@ export async function createEventType(
 
       const resolvedSlug = await uniqueSlug(session.user.id, slugBase);
 
-      // Assign a palette color the host isn't already using (computed under the
-      // lock from the CURRENT set of events), so every new meeting type gets a
-      // distinct color — even across concurrent "new" tabs.
+      // Computed under the lock so concurrent creates still get distinct colors.
       const color = pickDistinctEventColor(
         existingRows.map((r) => r.color).filter((c): c is string => !!c),
         existingRows.length
@@ -248,7 +237,6 @@ export async function createEventType(
       return resolvedSlug;
     });
 
-    // Insert durations
     await db.insert(eventTypeDuration).values(
       data.durations.map((d) => ({
         eventTypeId: id,
@@ -257,7 +245,6 @@ export async function createEventType(
       }))
     );
 
-    // Insert cancellation policy
     await db.insert(cancellationPolicy).values({
       eventTypeId: id,
       allowCancellation: data.allowCancellation,
@@ -269,7 +256,6 @@ export async function createEventType(
       policyText: data.policyText?.trim() || null,
     });
 
-    // Insert initial questions (added before first save in create mode)
     if (initialQuestions && initialQuestions.length > 0) {
       await db.insert(eventTypeQuestion).values(
         initialQuestions.map((q, i) => ({
@@ -310,8 +296,6 @@ export async function createEventType(
   }
 }
 
-// ── Update ────────────────────────────────────────────────────────────────────
-
 export async function updateEventType(
   id: string,
   data: EventTypeFormData
@@ -331,8 +315,7 @@ export async function updateEventType(
       return { error: locationError };
     }
 
-    // Verify ownership and fetch the existing slug — we never change it on update
-    // so that booking URLs are permanent (renaming an event doesn't break links).
+    // Slug never changes on update, so booking URLs stay permanent across renames.
     const [existing] = await db
       .select({ id: eventType.id, slug: eventType.slug })
       .from(eventType)
@@ -342,7 +325,6 @@ export async function updateEventType(
       return { error: "Event type not found" };
     }
 
-    // Block renaming onto a name another of the host's meeting types already uses.
     const [dup] = await db
       .select({ id: eventType.id })
       .from(eventType)
@@ -398,7 +380,6 @@ export async function updateEventType(
       })
       .where(eq(eventType.id, id));
 
-    // Replace durations
     await db
       .delete(eventTypeDuration)
       .where(eq(eventTypeDuration.eventTypeId, id));
@@ -410,7 +391,6 @@ export async function updateEventType(
       }))
     );
 
-    // Upsert cancellation policy
     const [existingPolicy] = await db
       .select({ id: cancellationPolicy.id })
       .from(cancellationPolicy)
@@ -456,8 +436,6 @@ export async function updateEventType(
   }
 }
 
-// ── Toggle active ─────────────────────────────────────────────────────────────
-
 export async function toggleEventTypeActive(
   id: string,
   isActive: boolean
@@ -495,8 +473,6 @@ export async function toggleEventTypeActive(
   }
 }
 
-// ── Delete ────────────────────────────────────────────────────────────────────
-
 export async function deleteEventType(id: string): Promise<ActionResult> {
   try {
     const session = await requireSession();
@@ -509,10 +485,8 @@ export async function deleteEventType(id: string): Promise<ActionResult> {
       return { error: "Event type not found" };
     }
 
-    // Never silently wipe upcoming meetings: deleting the event type would
-    // cascade-delete its bookings, so an invitee with a confirmed future slot
-    // would be left with a meeting that no longer exists. Block the delete
-    // while upcoming bookings remain — the host can hide the meeting type instead.
+    // Deleting would cascade-delete bookings, stranding invitees with confirmed
+    // future slots — block while upcoming bookings remain; hide instead.
     const upcoming = await db
       .select({ id: booking.id })
       .from(booking)
@@ -551,8 +525,6 @@ export async function deleteEventType(id: string): Promise<ActionResult> {
   }
 }
 
-// ── Bulk delete ───────────────────────────────────────────────────────────────
-
 export async function bulkDeleteEventTypes(
   ids: string[]
 ): Promise<ActionResult> {
@@ -562,8 +534,7 @@ export async function bulkDeleteEventTypes(
   try {
     const session = await requireSession();
 
-    // Block the batch if any selected meeting type still has upcoming bookings
-    // (see deleteEventType — a cascade delete would strand confirmed invitees).
+    // Same cascade-delete concern as deleteEventType, applied across the batch.
     const upcoming = await db
       .select({ id: booking.id })
       .from(booking)
@@ -600,8 +571,6 @@ export async function bulkDeleteEventTypes(
   }
 }
 
-// ── Bulk toggle ───────────────────────────────────────────────────────────────
-
 export async function bulkToggleEventTypes(
   ids: string[],
   isActive: boolean
@@ -624,8 +593,6 @@ export async function bulkToggleEventTypes(
     return { error: "Something went wrong. Please try again." };
   }
 }
-
-// ── Duplicate ─────────────────────────────────────────────────────────────────
 
 export async function duplicateEventType(
   id: string
@@ -697,7 +664,6 @@ export async function duplicateEventType(
         .values({ eventTypeId: newId, ...policyRest });
     }
 
-    // Copy custom booking-form questions (previously silently dropped).
     if (questions.length > 0) {
       await db.insert(eventTypeQuestion).values(
         questions.map((q) => ({
@@ -720,8 +686,6 @@ export async function duplicateEventType(
     return { error: "Something went wrong. Please try again." };
   }
 }
-
-// ── Questions ─────────────────────────────────────────────────────────────────
 
 export interface QuestionData {
   isRequired: boolean;
@@ -898,8 +862,6 @@ export async function reorderQuestions(
     return { error: "Something went wrong. Please try again." };
   }
 }
-
-// ── Availability schedules (for tab select) ───────────────────────────────────
 
 const DAY_ORDER = [
   "monday",

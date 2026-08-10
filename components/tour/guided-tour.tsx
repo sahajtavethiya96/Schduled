@@ -87,11 +87,10 @@ const STEPS: Step[] = [
   },
 ];
 
-const PAD = 6; // spotlight padding around the target
-const GAP = 14; // gap between target and tooltip
+const PAD = 6;
+const GAP = 14;
 const TOOLTIP_W = 320;
 
-// ── Track the target element's position (auto-scroll + re-measure) ──────────────
 function useSpotlight(step: Step, active: boolean): DOMRect | null {
   const [rect, setRect] = useState<DOMRect | null>(null);
 
@@ -109,7 +108,7 @@ function useSpotlight(step: Step, active: boolean): DOMRect | null {
     let raf = 0;
     const measure = () => {
       const r = el.getBoundingClientRect();
-      // Hidden target (e.g. sidebar on mobile) → fall back to a centered card
+      // Hidden target (e.g. sidebar on mobile) falls back to a centered card
       setRect(r.width === 0 || r.height === 0 ? null : r);
     };
 
@@ -133,7 +132,6 @@ function useSpotlight(step: Step, active: boolean): DOMRect | null {
   return rect;
 }
 
-// ── Compute the anchored tooltip position (viewport-clamped) ────────────────────
 function tooltipPosition(rect: DOMRect, placement: Placement) {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
@@ -182,9 +180,7 @@ export function GuidedTour({ userId }: { userId: string }) {
   const finish = useCallback(() => {
     try {
       localStorage.setItem(storageKey, "1");
-    } catch {
-      // ignore
-    }
+    } catch {}
     setShow(false);
   }, [storageKey]);
 
@@ -192,7 +188,6 @@ export function GuidedTour({ userId }: { userId: string }) {
   const cur = STEPS[step];
   const rect = useSpotlight(cur, show);
 
-  // Keyboard: Esc closes, arrows navigate
   useEffect(() => {
     if (!show) {
       return;
@@ -246,10 +241,8 @@ export function GuidedTour({ userId }: { userId: string }) {
   const Icon = cur.icon;
   const isFirst = step === 0;
   const isLast = step === total - 1;
-  // Spotlight only when we actually found the target; otherwise center the card
   const anchored = cur.kind === "spotlight" && rect !== null;
 
-  // ── Shared card body ──────────────────────────────────────────────────────────
   const card = (
     <div className="relative w-full max-w-sm bg-popover ring-2 ring-foreground/15">
       {!isLast && (
@@ -298,7 +291,6 @@ export function GuidedTour({ userId }: { userId: string }) {
           {cur.description}
         </p>
 
-        {/* Progress dots */}
         <div
           className={cn(
             "mt-5 flex items-center gap-1.5",
@@ -321,7 +313,6 @@ export function GuidedTour({ userId }: { userId: string }) {
           ))}
         </div>
 
-        {/* Actions */}
         <div className="mt-5 flex items-center justify-between gap-3">
           {isLast ? (
             <>
@@ -381,7 +372,6 @@ export function GuidedTour({ userId }: { userId: string }) {
     </div>
   );
 
-  // ── Anchored (spotlight) layout ────────────────────────────────────────────────
   if (anchored && rect) {
     const pos = tooltipPosition(rect, cur.placement ?? "right");
     const holeX = rect.left - PAD;
@@ -391,7 +381,7 @@ export function GuidedTour({ userId }: { userId: string }) {
 
     return (
       <div className="fixed inset-0 z-[200]">
-        {/* Dim everything except a hole over the target (SVG mask — no box-shadow) */}
+        {/* SVG mask dims everything but the target — avoids box-shadow (banned in this project) */}
         <svg
           aria-hidden="true"
           className="pointer-events-auto absolute inset-0 h-full w-full"
@@ -419,14 +409,12 @@ export function GuidedTour({ userId }: { userId: string }) {
           />
         </svg>
 
-        {/* Highlight ring around the target */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute border-2 border-primary transition-all duration-200"
           style={{ left: holeX, top: holeY, width: holeW, height: holeH }}
         />
 
-        {/* Anchored tooltip */}
         <div
           aria-label={cur.title}
           className="pointer-events-auto absolute transition-all duration-200"
@@ -439,7 +427,6 @@ export function GuidedTour({ userId }: { userId: string }) {
     );
   }
 
-  // ── Centered (welcome / completion / mobile fallback) ───────────────────────────
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/45 p-4">
       <div

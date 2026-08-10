@@ -5,9 +5,8 @@ import { checkRateLimit, rateLimitKey } from "@/lib/api/helpers";
 import { db } from "@/lib/db";
 
 export async function GET(request: Request) {
-  // This endpoint is unauthenticated (the public booking form prefills a
-  // returning invitee's name as they type their email). Rate-limit it hard so
-  // it can't be used to enumerate which emails have booked a given host.
+  // Unauthenticated endpoint — rate-limit hard so it can't be used to
+  // enumerate which emails have booked a given host.
   if (
     !(await checkRateLimit(
       rateLimitKey("GET:/api/contact-lookup", request),
@@ -26,11 +25,9 @@ export async function GET(request: Request) {
     return NextResponse.json({ found: false });
   }
 
-  // Stored invitee emails / contacts are lowercased — normalize before matching
-  // so a capitalized email (e.g. John@Example.com) still finds the prefill.
+  // Stored invitee emails / contacts are lowercased — normalize before matching.
   const email = rawEmail.toLowerCase().trim();
 
-  // Resolve host userId from username
   const [host] = await db
     .select({ id: user.id })
     .from(user)
@@ -41,16 +38,14 @@ export async function GET(request: Request) {
     return NextResponse.json({ found: false });
   }
 
-  // Check contact record for name
   const [contactRow] = await db
     .select({ name: contact.name })
     .from(contact)
     .where(and(eq(contact.hostUserId, host.id), eq(contact.email, email)))
     .limit(1);
 
-  // Most recent booking is only used as a fallback for the name. We
-  // deliberately do NOT return the stored phone number — handing a stranger's
-  // phone number to anyone who guesses their email is a PII leak.
+  // Fallback for the name only — never return the stored phone number, or
+  // anyone who guesses an email could harvest a stranger's phone number.
   const [lastBooking] = await db
     .select({ name: booking.inviteeName })
     .from(booking)

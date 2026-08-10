@@ -22,16 +22,13 @@ const KEYS = {
 const ALL_KEYS = [KEYS.password, KEYS.magicLink, KEYS.google];
 
 // Availability ("ceiling"): a method the deployment can't physically offer
-// can never be turned on, regardless of the admin's stored preference.
-//  - password: hard-disabled only if the operator sets the env flag off
-//  - google: needs OAuth credentials (DB-configured or env, see
-//    lib/integration-settings.ts)
-//  - magic link: needs SMTP to actually deliver, so it's only offered in
-//    production when SMTP is configured. In development the console fallback
-//    makes it usable, so it stays available for local testing.
-// Functions, not module-scope consts: SMTP/Google can now be configured via
-// the DB (Settings → Services), which a frozen-at-import const would never
-// see without a restart.
+// can never be turned on, regardless of admin preference.
+//  - password: disabled only via the env flag
+//  - google: needs OAuth credentials (DB-configured or env)
+//  - magic link: needs SMTP in production; dev's console fallback keeps it
+//    available for local testing
+// Functions, not module-scope consts, since SMTP/Google can be configured
+// live via the DB.
 export const passwordAvailable = env.NEXT_PUBLIC_PASSWORD_AUTH_ENABLED;
 
 export async function getSignInMethodAvailability(): Promise<SignInMethods> {
@@ -83,10 +80,8 @@ export async function getStoredSignInMethods(): Promise<SignInMethods> {
 
 /**
  * What's actually offered = admin intent ∧ availability, with a hard floor:
- * if a stored preference leaves no *available* method on (e.g. the admin chose
- * Google-only and the operator later removed the OAuth creds), fall back to
- * every available method so a login page can never end up with zero options.
- * Availability's `magicLink` is true in dev, so the floor always yields ≥ 1.
+ * if the stored preference leaves no *available* method on, fall back to
+ * every available method so a login page never ends up with zero options.
  */
 export async function getEffectiveSignInMethods(): Promise<SignInMethods> {
   const [stored, availability] = await Promise.all([

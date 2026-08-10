@@ -33,7 +33,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(failUrl);
   }
 
-  // Verify the current session matches the state userId
   const session = await getCurrentSession();
   if (!session || session.user.id !== state.userId) {
     return NextResponse.redirect(new URL("/login", getAppUrl()));
@@ -62,7 +61,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(failUrl);
   }
 
-  // Fetch the primary calendar details
   oauth2Client.setCredentials(tokens);
   const cal = google.calendar({ version: "v3", auth: oauth2Client });
 
@@ -84,7 +82,6 @@ export async function GET(req: NextRequest) {
     // Non-fatal — use email fallback
   }
 
-  // Encrypt tokens before storing (access_token null-check already done above)
   const encryptedAccess = await encrypt(tokens.access_token!);
   const encryptedRefresh = tokens.refresh_token
     ? await encrypt(tokens.refresh_token)
@@ -116,9 +113,8 @@ export async function GET(req: NextRequest) {
         tokenExpiresAt,
         status: "connected",
         disconnectedAt: null,
-        // Restore write + conflict-check on reconnect. Disconnect clears
-        // isWriteTarget, and without this the calendar would look "Connected"
-        // but silently stop receiving events / Meet links.
+        // Disconnect clears isWriteTarget — without restoring it here the
+        // calendar would look "Connected" but silently stop receiving events.
         isWriteTarget: true,
         isConflictCheck: true,
       })
@@ -140,7 +136,7 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  // Advance onboarding step to 4 (calendar is step 4 in the current onboarding order)
+  // Calendar is step 4 in the onboarding order.
   await db
     .update(user)
     .set({ onboardingStep: 4, updatedAt: new Date() })

@@ -133,10 +133,9 @@ async function processReminder(
   );
   const tag = REMINDER_TAG[timeUntil];
 
-  // "reminderEmail24h/1h" pref controls INVITEE reminders ("Send invitees a reminder").
-  // The host always receives their own reminder regardless of this setting.
-  // The 10m/5m last-mile fallbacks stand in for a missed 1h reminder, so they
-  // honor that same toggle rather than introducing a new preference.
+  // reminderEmail24h/1h controls invitee reminders only; the host always gets
+  // theirs. 10m/5m fallbacks stand in for a missed 1h reminder, so they reuse
+  // that same toggle.
   const inviteeReminderEnabled =
     timeUntil === "24 hours"
       ? prefs?.reminderEmail24h !== false

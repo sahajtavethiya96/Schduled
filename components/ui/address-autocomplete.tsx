@@ -114,7 +114,6 @@ export function AddressAutocomplete({
     }
   }
 
-  // Close on outside click.
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -144,7 +143,6 @@ export function AddressAutocomplete({
     return () => { cancelled = true }
   }, [])
 
-  // Cleanup timers/requests on unmount.
   useEffect(() => () => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
     abortRef.current?.abort()

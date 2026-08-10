@@ -29,7 +29,6 @@ async function processOne(bookingId: string) {
 
   const startUtc = new Date(b.startTime);
 
-  // In-app notification to host
   await createNotification({
     userId: b.hostUserId,
     type: "booking_created",
@@ -58,16 +57,15 @@ async function processOne(bookingId: string) {
   // Calendar write (no-op if no connected calendar)
   reminders.push(enqueueJob(JOB_NAMES.CALENDAR_WRITE, { bookingId: b.id }));
 
-  // Generate meeting link for approval-gated bookings (was skipped at booking-time)
+  // Meeting link generation is skipped while a booking is pending approval.
   if (b.etLocationType === "zoom" || b.etLocationType === "google_meet") {
     reminders.push(
       enqueueJob(JOB_NAMES.VIDEO_LINK_GENERATE, { bookingId: b.id })
     );
   }
 
-  // Send the invitee "approved" email via a delayed job so CALENDAR_WRITE and
-  // VIDEO_LINK_GENERATE have time to populate the meet link before the template
-  // is rendered (the email is built at job-fire time, not here).
+  // Delay so CALENDAR_WRITE/VIDEO_LINK_GENERATE can populate the meet link
+  // before the email template renders.
   reminders.push(
     enqueueJob(
       JOB_NAMES.BOOKING_APPROVED_NOTIFY,

@@ -4,13 +4,10 @@ import { db } from "@/lib/db";
 import { getGoogleCalendarClient } from "@/lib/worker/google-calendar-client";
 
 /**
- * Best-effort removal of the Google Calendar events created for a user's
- * bookings. Deleting an account cascade-deletes the bookings AND the calendar
- * connection, so this must run BEFORE that — otherwise the events are orphaned
- * on the user's Google Calendar with no way for the app to reach them again
- * (normal cancellation removes them, account deletion previously did not).
- *
- * Never throws — a failure here must not block the account/meeting-type delete.
+ * Best-effort removal of Google Calendar events for a user's bookings. Must
+ * run BEFORE account deletion cascades away the bookings/calendar connection
+ * — otherwise the events are orphaned with no way to reach them again.
+ * Never throws.
  */
 export async function deleteUserCalendarEvents(userId: string): Promise<void> {
   try {

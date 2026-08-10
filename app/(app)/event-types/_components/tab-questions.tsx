@@ -106,8 +106,8 @@ export function TabQuestions({
   pendingQuestions = [],
   onPendingChange,
 }: TabQuestionsProps) {
-  // When the invitee provides their number (host-calls-invitee), a Phone field
-  // is auto-collected on the booking form — surface it here as a built-in.
+  // Host-calls-invitee collects the invitee's Phone on the booking form —
+  // surface it here as a built-in.
   const builtinQuestions =
     locationType === "phone_host_calls"
       ? [
@@ -333,7 +333,6 @@ export function TabQuestions({
 
       <Separator />
 
-      {/* Built-in questions (always present) */}
       <div className="space-y-2">
         <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
           Always included
@@ -355,7 +354,6 @@ export function TabQuestions({
         ))}
       </div>
 
-      {/* Custom questions */}
       {displayQuestions.length === 0 && (
         <p className="text-sm text-muted-foreground">
           No custom questions added. Invitees will only be asked for their name
@@ -441,7 +439,6 @@ export function TabQuestions({
         <Plus size={14} /> Add question
       </Button>
 
-      {/* Add / Edit dialog */}
       <Dialog onOpenChange={setDialogOpen} open={dialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogTitle>
@@ -543,7 +540,6 @@ export function TabQuestions({
         </DialogContent>
       </Dialog>
 
-      {/* Delete question confirmation */}
       <AlertDialog
         onOpenChange={(open) => {
           if (!open) {

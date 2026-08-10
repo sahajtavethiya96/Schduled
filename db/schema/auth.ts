@@ -10,7 +10,6 @@ export const user = pgTable("user", {
   banned: boolean("banned").notNull().default(false),
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires", { withTimezone: true }),
-  // Schduled-specific fields
   username: text("username").unique(),
   timezone: text("timezone").default("UTC"),
   onboardingStep: integer("onboarding_step").default(0),

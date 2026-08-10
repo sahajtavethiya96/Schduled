@@ -158,9 +158,8 @@ export default async function BookingDetailPage({
     (isRescheduleReq && b.approvalToken) ||
     isPastConfirmed;
 
-  // Which /bookings tab this booking lives under — mirrors the tab resolution
-  // in app/(app)/bookings/page.tsx so the breadcrumb and back link return to
-  // the tab that actually shows this booking, not always "Upcoming".
+  // Mirrors the tab resolution in bookings/page.tsx so the back link
+  // returns to the tab that actually shows this booking.
   const bookingsTab =
     isPending || isRescheduleReq
       ? "pending"
@@ -177,7 +176,6 @@ export default async function BookingDetailPage({
   };
   const bookingsHref = `/bookings?tab=${bookingsTab}`;
 
-  // ── Add-to-calendar links ──
   const gd = (d: Date) => formatInTimeZone(d, "UTC", "yyyyMMdd'T'HHmmss'Z'");
   const calTitle = `${b.eventName} with ${b.inviteeName}`;
   const calDetails = joinUrl ? `Join: ${joinUrl}` : locationLabel;
@@ -203,7 +201,6 @@ export default async function BookingDetailPage({
   ].join("\r\n");
   const icsHref = `data:text/calendar;charset=utf-8,${encodeURIComponent(ics)}`;
 
-  // ── Activity timeline (derived from available data) ──
   const timeline: { label: string; time: string | null; done: boolean }[] = [
     {
       label: "Booking created",
@@ -235,7 +232,6 @@ export default async function BookingDetailPage({
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
-      {/* Breadcrumb + back */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <nav className="flex items-center gap-2 text-xs font-medium">
           <Link
@@ -264,7 +260,6 @@ export default async function BookingDetailPage({
         </Link>
       </div>
 
-      {/* ── Hero ── */}
       <div
         className="flex flex-wrap items-center justify-between gap-4 border border-base-300 border-l-[5px] bg-base-100 p-6"
         style={{ borderLeftColor: color }}
@@ -304,8 +299,7 @@ export default async function BookingDetailPage({
         {isUpcoming && <Countdown startUtc={b.startTime.toISOString()} />}
       </div>
 
-      {/* ── Info cards ── (gap-6 matches the body grid below so the Location
-           card lines up with the Quick Actions column) */}
+      {/* gap-6 matches the body grid below so Location aligns with Quick Actions */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
         <InfoCard icon={<CalendarBlank size={18} />} label="Date">
           <p className="font-semibold text-base-content">
@@ -345,9 +339,7 @@ export default async function BookingDetailPage({
         </InfoCard>
       </div>
 
-      {/* ── Two-column body ── */}
       <div className="grid gap-6 lg:grid-cols-3">
-        {/* Main */}
         <div className="space-y-6 lg:col-span-2">
           {joinUrl && (
             <Card icon={<VideoCamera size={14} />} title="Meeting link">
@@ -355,7 +347,6 @@ export default async function BookingDetailPage({
             </Card>
           )}
 
-          {/* Invitee profile */}
           <Card icon={<EnvelopeSimple size={14} />} title="Invitee">
             <div className="flex items-center gap-3 pb-3">
               <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-base-200 text-sm font-bold text-muted-foreground">
@@ -448,7 +439,6 @@ export default async function BookingDetailPage({
             </Card>
           )}
 
-          {/* Notes */}
           <Card icon={<NotePencil size={14} />} title="Notes">
             {b.hostNotes ? (
               <p className="whitespace-pre-wrap text-sm text-base-content">
@@ -461,7 +451,6 @@ export default async function BookingDetailPage({
             )}
           </Card>
 
-          {/* Booking details */}
           <Card icon={<Hash size={14} />} title="Booking details">
             <div className="grid grid-cols-1 divide-y divide-base-300 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
               <div className="space-y-2.5 pb-3 sm:pb-0 sm:pr-6">
@@ -490,7 +479,6 @@ export default async function BookingDetailPage({
           </Card>
         </div>
 
-        {/* Sidebar */}
         <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
           {hasActions && (
             <Card icon={<VideoCamera size={14} />} title="Quick actions">
@@ -584,7 +572,6 @@ export default async function BookingDetailPage({
             </Card>
           )}
 
-          {/* Activity timeline */}
           <Card icon={<ClockCounterClockwise size={14} />} title="Activity">
             <ol className="space-y-0">
               {timeline.map((t, i) => (
@@ -592,16 +579,10 @@ export default async function BookingDetailPage({
                   className="relative flex gap-3 pb-4 last:pb-0"
                   key={t.label}
                 >
-                  {/* `left-2` (half of the icon's fixed w-4/16px column) plus
-                      `-translate-x-1/2` (half of the line's own 1px width)
-                      centers the line under the icon by exact arithmetic
-                      instead of a hardcoded left-[Npx] guess that drifts if
-                      the icon size ever changes. Positioned relative to the
-                      `<li>` (not a nested wrapper) so `h-full` correctly
-                      extends through the li's own `pb-4` padding — that
-                      padding is where the line needs to reach to visually
-                      connect to the next row, and a flex-stretched inner
-                      wrapper's content box doesn't include it. */}
+                  {/* left-2/-translate-x-1/2 centers the line under the icon by
+                      exact arithmetic; positioned on the <li> itself (not a
+                      flex-stretched wrapper) so h-full reaches through pb-4
+                      to connect visually to the next row. */}
                   {i < timeline.length - 1 && (
                     <span
                       aria-hidden
@@ -637,7 +618,6 @@ export default async function BookingDetailPage({
             </ol>
           </Card>
 
-          {/* Calendar integration */}
           {!isCancelled && (
             <Card icon={<CalendarBlank size={14} />} title="Add to calendar">
               <AddToCalendar

@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { getClientIp, rateLimitKey, safeReturnTo } from "./helpers";
 
-// safeReturnTo guards every post-login/logout redirect against open-redirect
-// attacks (a malicious "?next=" or "?returnTo=" param). This is the one place
-// in the codebase where getting the regex wrong has a real security cost.
+// safeReturnTo guards post-login/logout redirects against open-redirect
+// attacks — the one place where getting this regex wrong has a real
+// security cost.
 describe("safeReturnTo", () => {
   it("allows a plain relative path", () => {
     expect(safeReturnTo("/dashboard")).toBe("/dashboard");

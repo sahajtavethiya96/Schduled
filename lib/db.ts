@@ -11,11 +11,9 @@ export const dbClient = postgres(env.DATABASE_URL, {
 
 export const db = drizzle(dbClient, { schema });
 
-// Retries an initial connectivity check with backoff — smooths over Docker
-// Compose startup ordering (Postgres container not accepting connections yet
-// when the web container starts), matching the worker's startBossWithRetry
-// pattern. Bounded, non-fatal: a query-time error still surfaces normally if
-// the database is genuinely unreachable after this.
+// Retries with backoff to smooth over Docker Compose startup ordering
+// (Postgres not yet accepting connections when web starts). Bounded and
+// non-fatal — a genuine outage still surfaces via normal query-time errors.
 export async function waitForDatabase(maxRetries = 10) {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {

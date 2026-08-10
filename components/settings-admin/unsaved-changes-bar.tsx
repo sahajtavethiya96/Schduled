@@ -3,15 +3,9 @@
 import { CircleNotch, Warning } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 
-/**
- * Floating "unsaved changes" prompt, shared by every settings page that has
- * inline-editable fields. Must stay visible regardless of scroll position,
- * so it's `fixed` to the viewport (not `sticky` to a container, which
- * vanishes once scrolled past it). Anchored to the bottom-right corner
- * rather than spanning full width, sidestepping the need to track sidebar
- * widths — while clearing the mobile bottom nav
- * (`components/scaffold/mobile-nav.tsx`, h-16) via `bottom-20`.
- */
+// `fixed` (not `sticky`) so it stays visible regardless of scroll position;
+// anchored bottom-right to avoid tracking sidebar width; `bottom-20` clears
+// the mobile bottom nav.
 export function UnsavedChangesBar({
   visible,
   label,

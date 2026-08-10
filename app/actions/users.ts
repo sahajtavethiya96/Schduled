@@ -23,10 +23,9 @@ import { enqueueJob } from "@/lib/worker/enqueue";
 import { JOB_NAMES } from "@/lib/worker/job-types";
 
 /**
- * Records an admin starting an impersonation session. The impersonation itself
- * runs client-side via authClient.admin.impersonateUser, which wrote nothing to
- * the audit trail — a silent privilege-escalation action. Call this first so
- * every impersonation is attributable.
+ * Records an admin starting an impersonation session. Impersonation itself runs
+ * client-side via authClient.admin.impersonateUser and writes nothing to the
+ * audit trail on its own, so this call is what makes it attributable.
  */
 export async function recordImpersonationAction(
   targetUserId: string
@@ -78,7 +77,6 @@ export async function toggleUserBanAction(formData: FormData): Promise<void> {
     return;
   }
 
-  // Admins cannot suspend other admins.
   if (banned) {
     const [target] = await db
       .select({ role: user.role })
@@ -99,13 +97,11 @@ export async function toggleUserBanAction(formData: FormData): Promise<void> {
     })
     .where(eq(user.id, userId));
 
-  // Kill all active sessions so the suspension takes effect immediately
-  // instead of waiting for the existing session to expire.
+  // Kill active sessions so the suspension takes effect immediately, not on session expiry.
   if (banned) {
     await db.delete(sessionTable).where(eq(sessionTable.userId, userId));
-    // A suspended host can't take meetings, so cancel their upcoming bookings
-    // and notify the invitees + host + remove the calendar events. Reactivating
-    // does NOT restore them.
+    // A suspended host can't take meetings; cancel upcoming bookings and notify
+    // invitees + remove calendar events. Reactivating does NOT restore them.
     await cancelUpcomingBookingsForHost(
       userId,
       "The host's account was suspended."
@@ -128,7 +124,6 @@ export async function deleteUserAction(formData: FormData): Promise<void> {
   const admin = await requireAdmin();
   const userId = String(formData.get("userId") ?? "");
 
-  // An admin cannot delete their own account from here
   if (!userId || userId === admin.user.id) {
     return;
   }
@@ -143,12 +138,11 @@ export async function deleteUserAction(formData: FormData): Promise<void> {
     redirect("/settings/users");
   }
 
-  // Admins cannot delete other admins.
   if (target.role === ADMIN_ROLE) {
     redirect("/settings/users");
   }
 
-  // Audit BEFORE deletion (audit_logs.actor_id has no FK, so it survives)
+  // Audit before deletion — audit_logs.actor_id has no FK, so the record survives.
   await audit({
     action: "orbit.user_deleted",
     actorEmail: admin.user.email,
@@ -159,16 +153,13 @@ export async function deleteUserAction(formData: FormData): Promise<void> {
     metadata: { email: target.email },
   });
 
-  // Tell invitees their upcoming meetings are cancelled, then remove the Google
-  // Calendar events — BOTH must run before the account (and its bookings +
-  // calendar connection) are deleted, or the invitees are never told and the
-  // events are orphaned.
+  // Both must run before the account is deleted, or invitees are never told
+  // and the calendar events are orphaned.
   await emailInviteesOfHostRemoval(userId);
   await deleteUserCalendarEvents(userId);
 
-  // Same safe ordering as the user self-delete in profile.ts:
   // booking has NO ACTION on the user FK, so it must be removed before the
-  // user row. Everything else cascades from user/booking.
+  // user row; everything else cascades from user/booking.
   await db.transaction(async (tx) => {
     await tx.delete(sessionTable).where(eq(sessionTable.userId, userId));
     await tx.delete(account).where(eq(account.userId, userId));
@@ -179,8 +170,6 @@ export async function deleteUserAction(formData: FormData): Promise<void> {
   revalidatePath("/settings/users");
   redirect("/settings/users");
 }
-
-// ── Cancel a single booking (admin) ─────────────────────────────────────────
 
 export async function cancelBookingAction(formData: FormData): Promise<void> {
   const admin = await requireAdmin();
@@ -225,8 +214,7 @@ export async function cancelBookingAction(formData: FormData): Promise<void> {
   });
 
   // Same side-effects as an invitee cancellation: notify the invitee, remove
-  // the Google Calendar event (otherwise it's orphaned), and cancel pending
-  // reminders. Admin cancel previously did none of these.
+  // the calendar event (otherwise it's orphaned), and cancel pending reminders.
   await Promise.allSettled([
     enqueueJob(JOB_NAMES.BOOKING_CANCELLATION, { bookingId }),
     enqueueJob(JOB_NAMES.CALENDAR_CANCEL, { bookingId }),
@@ -235,8 +223,6 @@ export async function cancelBookingAction(formData: FormData): Promise<void> {
 
   revalidatePath(`/settings/users/${hostUserId}`);
 }
-
-// ── Delete a single event type (admin) ──────────────────────────────────────
 
 export async function deleteEventTypeAction(formData: FormData): Promise<void> {
   const admin = await requireAdmin();
@@ -270,8 +256,6 @@ export async function deleteEventTypeAction(formData: FormData): Promise<void> {
 
   revalidatePath(`/settings/users/${hostUserId}`);
 }
-
-// ── Bulk suspend users ───────────────────────────────────────────────────────
 
 export async function bulkBanUsersAction(formData: FormData): Promise<void> {
   const admin = await requireAdmin();
@@ -308,8 +292,6 @@ export async function bulkBanUsersAction(formData: FormData): Promise<void> {
   revalidatePath("/settings/users");
 }
 
-// ── Bulk delete users ────────────────────────────────────────────────────────
-
 export async function bulkDeleteUsersAction(formData: FormData): Promise<void> {
   const admin = await requireAdmin();
   const requested = formData
@@ -338,8 +320,7 @@ export async function bulkDeleteUsersAction(formData: FormData): Promise<void> {
     });
   }
 
-  // Notify invitees + clean up each user's calendar events before the cascade
-  // removes their bookings & calendar connections (see deleteUserAction).
+  // Notify invitees + clean up calendar events before the cascade below removes bookings.
   for (const id of ids) {
     await emailInviteesOfHostRemoval(id);
     await deleteUserCalendarEvents(id);

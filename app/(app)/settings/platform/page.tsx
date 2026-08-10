@@ -119,7 +119,6 @@ export default async function SettingsPlatformPage() {
         </p>
       </div>
 
-      {/* ── Platform Health ── */}
       <Section
         action={
           <HealthSummaryChip
@@ -149,7 +148,6 @@ export default async function SettingsPlatformPage() {
 
       <SectionDivider />
 
-      {/* ── General ── */}
       <Section
         description="Core platform configuration and runtime environment."
         icon={<GearSix size={15} weight="bold" />}
@@ -176,7 +174,6 @@ export default async function SettingsPlatformPage() {
 
       <SectionDivider />
 
-      {/* ── Integrations ── */}
       <Section
         description="Third-party service connection status based on environment variables."
         icon={<Stack size={15} weight="bold" />}
@@ -216,7 +213,6 @@ export default async function SettingsPlatformPage() {
 
       <SectionDivider />
 
-      {/* ── Security ── */}
       <Section
         description="Authentication secrets and encryption keys."
         icon={<ShieldCheck size={15} weight="bold" />}

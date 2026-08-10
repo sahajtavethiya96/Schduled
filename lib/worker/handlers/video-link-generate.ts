@@ -75,10 +75,8 @@ async function processVideoLinkGenerate(job: Job<VideoLinkGeneratePayload>) {
       return;
     }
 
-    // No link yet. If the host has a connected write-target calendar, the
-    // CALENDAR_WRITE job just hasn't finished — retry so we don't permanently
-    // lose the link. If there's no write-target calendar, a Meet link can
-    // never be created, so give up gracefully instead of spinning.
+    // No link yet: retry (CALENDAR_WRITE may still be running) if a write-target
+    // calendar exists, otherwise a Meet link can never be created — give up.
     const [writeCal] = await db
       .select({ id: connectedCalendar.id })
       .from(connectedCalendar)
@@ -123,11 +121,8 @@ async function processVideoLinkGenerate(job: Job<VideoLinkGeneratePayload>) {
 }
 
 /**
- * Records why a Zoom link will never be generated for this booking so the UI
- * can tell the host instead of silently showing no Join button forever (see
- * booking.videoLinkError). Previously these were `console.warn`/`return` —
- * the booking row was never updated, so `locationValue` stayed null with no
- * trace of why.
+ * Records why a Zoom link will never be generated so the UI can tell the
+ * host instead of silently showing no Join button forever.
  */
 async function giveUpOnZoomLink(
   bookingId: string,
@@ -178,7 +173,6 @@ async function generateZoomLink(
     QUEUE_OPTIONS[JOB_NAMES.VIDEO_LINK_GENERATE].retryLimit ?? 0;
   const isLastAttempt = attempt >= retryLimit;
 
-  // Find the host's connected Zoom account
   const [conn] = await db
     .select()
     .from(videoConnection)
@@ -191,8 +185,7 @@ async function generateZoomLink(
     .limit(1);
 
   if (!conn) {
-    // Deterministic — retrying won't make a connection appear — so give up
-    // immediately instead of burning the retry budget.
+    // Deterministic failure — retrying won't make a connection appear.
     await giveUpOnZoomLink(b.id, b.hostUserId, "zoom_not_connected", null);
     return;
   }
@@ -244,18 +237,16 @@ async function generateZoomLink(
     throw err;
   }
 
-  // Persist the link inline-retrying the DB write. Zoom's create has no
-  // idempotency key, so if this write threw and the whole handler re-ran, a
-  // SECOND Zoom meeting would be created. Retrying just the write keeps a
-  // transient DB blip from duplicating the meeting.
+  // Retry only the DB write on failure — Zoom's create has no idempotency
+  // key, so re-running the whole handler would create a second meeting.
   let persisted = false;
   for (let dbAttempt = 0; dbAttempt < 3 && !persisted; dbAttempt++) {
     try {
       await db
         .update(booking)
         .set({
-          videoLinkHost: meeting.startUrl, // host start link
-          videoLinkInvitee: meeting.joinUrl, // invitee join link
+          videoLinkHost: meeting.startUrl,
+          videoLinkInvitee: meeting.joinUrl,
           videoLinkPassword: meeting.password,
           locationValue: meeting.joinUrl,
           videoLinkError: null,

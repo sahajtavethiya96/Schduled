@@ -194,9 +194,7 @@ export async function startWorker() {
   await boss.schedule(JOB_NAMES.HEALTHCHECK, "*/10 * * * *", {});
   await boss.schedule(JOB_NAMES.IDEMPOTENCY_KEYS_PRUNE, "5 4 * * *", {});
   await boss.schedule(JOB_NAMES.CALENDAR_SYNC_ALL, "*/20 * * * *", {});
-  // Proactively refresh OAuth tokens (and flip status → disconnected + alert
-  // when a grant is revoked). The handler was registered but never scheduled,
-  // so proactive refresh + disconnect alerts never ran.
+  // Proactively refreshes OAuth tokens and flips status → disconnected + alerts on revoked grants.
   await boss.schedule(JOB_NAMES.CALENDAR_TOKEN_REFRESH, "*/30 * * * *", {});
 
   log.info("handlers registered");

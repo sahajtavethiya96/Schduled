@@ -16,7 +16,6 @@ const TIMES = Array.from({ length: 48 }, (_, i) => {
   return `${h}:${m}`
 })
 
-// Default display: "5:00 PM"
 function defaultFormat(t: string): string {
   const [h, m] = t.split(':').map(Number)
   const ampm = h >= 12 ? 'PM' : 'AM'
@@ -49,13 +48,11 @@ export function TimeCombobox({
   const inputRef = useRef<HTMLInputElement>(null)
   const selectedRef = useRef<HTMLButtonElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
-  // When this combobox lives inside a modal Dialog, the dialog's scroll-lock
-  // blocks wheel scrolling on a body-portaled popover. Portaling the dropdown
-  // INTO the dialog keeps it within the allowed scroll region so it scrolls.
-  // Must default/fall back to `undefined`, not `null` — FloatingPortal's
-  // `root` prop treats a literal `null` as "wait for it to resolve" and
-  // never creates the portal node, which permanently stalls the popover for
-  // every trigger outside a Dialog (i.e. almost everywhere this is used).
+  // Inside a modal Dialog, the dialog's scroll-lock blocks wheel scrolling on
+  // a body-portaled popover, so the dropdown is portaled into the dialog
+  // instead. Must default to `undefined`, not `null` — FloatingPortal's
+  // `root` treats `null` as "wait for it to resolve" and never creates the
+  // portal node, stalling the popover everywhere outside a Dialog.
   const [container, setContainer] = useState<Element | undefined>(undefined)
 
   const filtered = useMemo(() => {
@@ -106,7 +103,6 @@ export function TimeCombobox({
         onOpenAutoFocus={(e) => e.preventDefault()}
         sideOffset={4}
       >
-        {/* Type-to-filter input */}
         <div className="border-b border-base-300 p-1.5">
           <input
             className="h-8 w-full border border-input bg-base-100 px-2 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
@@ -125,7 +121,6 @@ export function TimeCombobox({
           />
         </div>
 
-        {/* Filtered list — plain scroll, no auto-scroll arrows */}
         <div className="max-h-52 overflow-y-auto p-1">
           {filtered.length === 0 ? (
             <p className="px-2 py-4 text-center text-xs text-muted-foreground">

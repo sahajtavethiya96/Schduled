@@ -34,8 +34,6 @@ import type { AuditFilters } from "@/lib/audit-query";
 import { cn, paginationRange } from "@/lib/utils";
 import { AuditFilters as AuditFiltersBar } from "./audit-filters";
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-
 export type AuditRow = {
   id: string;
   action: string;
@@ -47,8 +45,6 @@ export type AuditRow = {
   metadata: Record<string, unknown> | null;
   createdAt: string; // ISO string — serialized from server
 };
-
-// ── Action labels ─────────────────────────────────────────────────────────────
 
 const ACTION_LABELS: Record<string, string> = {
   "auth.magic_link_sent": "Magic Link Sent",
@@ -97,10 +93,8 @@ function EntityBadge({ type }: { type: string }) {
   );
 }
 
-// Semantic icon + colour per action — positive (green), negative/neutral
-// (muted), destructive (red). Order matters: check "deactivat"/"suspend"
-// before "activat"/"creat" (substring overlap), mirroring the same
-// categorization already used on the member-detail activity timeline.
+// Order matters: "deactivat"/"suspend" must be checked before "activat"/"creat"
+// since those are substrings of each other.
 function getAuditMeta(action: string): { icon: Icon; colorClass: string } {
   const a = action.toLowerCase();
   if (a.includes("user") && a.includes("creat")) {
@@ -164,8 +158,6 @@ function groupByDay(logs: AuditRow[]): { label: string; rows: AuditRow[] }[] {
   return groups;
 }
 
-// ── Export ────────────────────────────────────────────────────────────────────
-
 function buildCSV(rows: ExportAuditRow[]): string {
   const headers = [
     "Action",
@@ -201,8 +193,6 @@ function downloadBlob(content: string, filename: string, mime: string) {
   a.click();
   URL.revokeObjectURL(url);
 }
-
-// ── Main component ────────────────────────────────────────────────────────────
 
 export function AuditTable({
   logs,
@@ -285,7 +275,6 @@ export function AuditTable({
 
   return (
     <div>
-      {/* ── Toolbar ───────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-3 border-b border-base-300 p-4 lg:flex-row lg:items-start lg:justify-between">
         <AuditFiltersBar
           category={filters.category}
@@ -320,7 +309,6 @@ export function AuditTable({
         </div>
       </div>
 
-      {/* ── Timeline ──────────────────────────────────────────────────── */}
       {logs.length === 0 ? (
         <div className="px-6 py-16 text-center">
           <p className="text-sm text-muted-foreground">
@@ -386,7 +374,6 @@ export function AuditTable({
         </div>
       )}
 
-      {/* Row count + pagination */}
       <div className="flex items-center justify-between gap-3 border-t border-base-300 px-6 py-3">
         <p className="text-xs text-muted-foreground">
           Page {page} of {totalPages} · {total} log{total === 1 ? "" : "s"}

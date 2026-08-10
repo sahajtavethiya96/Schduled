@@ -5,18 +5,11 @@ import { RadioGroup as HeadlessRadioGroup, Radio } from "@headlessui/react"
 
 import { cn } from "@/lib/utils"
 
-// Headless UI's RadioGroup natively supports controlled
-// `value`/`defaultValue`, plus `name`/`form`/`disabled`, with one naming
-// mismatch against this file's public API: its change callback is
-// `onChange`, not `onValueChange` — renamed at the boundary here so the
-// public API is untouched.
-// `Radio`'s render-prop slot has a real `checked` boolean, which Headless
-// UI auto-stamps as a literal `data-checked=""` DOM attribute — and unlike
-// Tab's `active` slot (see tabs.tsx), there's no meaning collision here:
-// "checked" *is* the state this file's existing `data-checked:border-primary`
-// styling (via the `data-checked` custom variant defined in
-// app/globals.css) already wants, so the current className strings carry
-// over completely unchanged.
+// Headless UI's change callback is `onChange`, renamed to `onValueChange`
+// here to match this file's public API. `Radio`'s auto-stamped
+// `data-checked=""` attribute (unlike Tab's `active` slot in tabs.tsx) has
+// no meaning collision, so the existing `data-checked:border-primary`
+// styling works unchanged.
 function RadioGroup({
   className,
   onValueChange,

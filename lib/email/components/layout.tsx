@@ -13,10 +13,8 @@ import { type EmailBranding, emailBranding } from "@/lib/email/branding";
 
 /**
  * Styles that depend on the brand color. Build fresh per email render from
- * the resolved `EmailBranding` (which may include an admin-set DB override —
- * see lib/email/branding.ts) rather than reading a module-level constant, so
- * a running worker process picks up an admin's change on the next email
- * instead of being stuck with whatever was true when the process started.
+ * the resolved `EmailBranding` rather than a module-level constant, so a
+ * running worker process picks up an admin's change on the next email.
  */
 export function buildEmailStyles(brandColor: string) {
   return {

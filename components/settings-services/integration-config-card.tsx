@@ -46,11 +46,8 @@ interface Props {
   title: string;
 }
 
-/** Compact summary card for a service integration, with a dialog that
- * lazily mounts the matching *SettingsForm — used by the setup wizard's
- * "Configure services" step, which needs a glanceable list rather than four
- * long inline forms competing for space in a single wizard card. The full
- * admin page (/settings/services) renders the same forms inline instead. */
+// Compact summary card with a dialog that lazily mounts the settings form,
+// for contexts needing a glanceable list rather than long inline forms.
 export function IntegrationConfigCard({
   icon,
   title,

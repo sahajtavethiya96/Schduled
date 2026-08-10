@@ -8,16 +8,12 @@ const DEFAULT_LOGO_PATH = "/email-logo.png";
 const DEFAULT_LOGO_PATH_WHITE = "/email-logo-white.png";
 
 /**
- * Every email template's branding — name, logo, accent color, support
- * address. Resolution order per field: admin-set value (Settings →
- * Platform → Branding, stored in `app_setting`) → env var override → the
- * built-in Schduled default.
+ * Resolution order per field: admin-set value (Settings → Platform →
+ * Branding) → env var override → built-in Schduled default.
  *
- * The logo specifically only falls back to Schduled's own bundled image when
- * NEXT_PUBLIC_PRODUCT_NAME is still at its default ("Schduled") and no admin
- * override is stored — a self-hoster who renames the product but never sets
- * a logo gets a text-only header instead of Schduled's logo, so a rebranded
- * instance never accidentally displays someone else's brand mark.
+ * The logo only falls back to Schduled's bundled image when the product
+ * name is still "Schduled" and no admin override is set — a renamed,
+ * unbranded instance gets a text-only header instead of Schduled's mark.
  */
 export interface EmailBranding {
   appName: string;
@@ -65,11 +61,9 @@ function build(stored: {
 }
 
 /**
- * The live branding for composing an email — checks the admin-editable DB
- * setting (short TTL cache, see lib/settings/branding.ts) first. Call this
- * once per email template function and pass the result down as a prop;
- * don't read it at module scope, since the worker process can run for days
- * between deploys and a module-level const would never see an admin's change.
+ * Checks the admin-editable DB setting first (short TTL cache). Call once
+ * per email template and pass the result down — don't read at module scope,
+ * since the long-running worker process would never see a later admin change.
  */
 export async function getEmailBranding(): Promise<EmailBranding> {
   const stored = await getStoredBranding();
@@ -77,10 +71,9 @@ export async function getEmailBranding(): Promise<EmailBranding> {
 }
 
 /**
- * Env/default-only branding, synchronous — used solely as a prop *default*
- * for components so they still render sensibly if a caller forgets to pass
- * `branding` explicitly. Every actual email-sending code path should use
- * `getEmailBranding()` above instead, so admin-set overrides apply.
+ * Env/default-only branding, synchronous — a prop *default* so components
+ * still render if `branding` isn't passed. Actual sends should use
+ * `getEmailBranding()` above instead, so admin overrides apply.
  */
 export const emailBranding: EmailBranding = build({
   appName: null,

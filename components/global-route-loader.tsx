@@ -35,15 +35,13 @@ function RouteLoader() {
     setPhase("loading");
   }, [clearTimers]);
 
-  // End the loader when pathname/searchParams actually change (navigation complete)
   // biome-ignore lint/correctness/useExhaustiveDependencies: pathname/searchParams aren't read in the body — they're the re-run trigger for "route changed"
   useEffect(() => {
     endNav();
   }, [pathname, searchParams, endNav]);
 
-  // Patch history.pushState + history.replaceState to catch ALL navigations:
-  // <Link> clicks, router.push(), router.replace(), and any other programmatic navigation.
-  // Keep a popstate listener for browser back/forward (those don't go through pushState).
+  // Patch pushState/replaceState to catch all navigations (Link clicks, router.push/replace);
+  // popstate is handled separately since back/forward don't go through pushState.
   useEffect(() => {
     const origPush = window.history.pushState.bind(window.history);
     const origReplace = window.history.replaceState.bind(window.history);
@@ -71,8 +69,8 @@ function RouteLoader() {
 
     window.history.pushState = (state, unused, url) => {
       origPush(state, unused, url);
-      // Defer setState — pushState is called inside React's useInsertionEffect
-      // during App Router commits; calling setState synchronously there throws.
+      // Deferred: pushState runs inside React's useInsertionEffect during App Router
+      // commits, and setState synchronously there throws.
       setTimeout(() => maybeStart(url), 0);
     };
 

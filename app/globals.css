@@ -200,6 +200,9 @@ body:has([data-app-shell]) {
      scoped per-theme by @plugin "daisyui/theme" below; only the extras that
      daisyUI doesn't define get proxied here. */
   --color-success-subtle: var(--success-subtle);
+  --color-error-subtle: var(--error-subtle);
+  --color-warning-subtle: var(--warning-subtle);
+  --color-info-subtle: var(--info-subtle);
 
   /* Sidebar tokens */
   --color-sidebar-border: var(--sidebar-border);
@@ -250,6 +253,9 @@ body:has([data-app-shell]) {
   --success: var(--color-success);
   --success-subtle: oklch(0.97 0.04 145);
   --warning: var(--color-warning);
+  --error-subtle: oklch(0.97 0.04 27.325);
+  --warning-subtle: oklch(0.97 0.04 65);
+  --info-subtle: oklch(0.97 0.04 184.735);
 
   /* Backgrounds — pure white topbar, white cards */
   --background: var(--color-base-100);
@@ -297,6 +303,9 @@ body:has([data-app-shell]) {
   --success: var(--color-success);
   --success-subtle: oklch(0.2 0.07 145);
   --warning: var(--color-warning);
+  --error-subtle: oklch(0.2 0.07 25);
+  --warning-subtle: oklch(0.2 0.07 65);
+  --info-subtle: oklch(0.2 0.07 183);
 
   --background: var(--color-base-100);
   --foreground: var(--color-base-content);

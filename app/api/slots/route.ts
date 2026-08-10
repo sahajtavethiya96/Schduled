@@ -59,7 +59,6 @@ export async function GET(request: Request) {
     et.durations[0]?.duration ??
     30;
 
-  // Use duration from query param if valid and belongs to this event type
   const requestedDuration = durationParam
     ? Number.parseInt(durationParam, 10)
     : null;
@@ -111,7 +110,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ slots: [] });
   }
 
-  // Check overrides for this exact date
   const overrideRows = await db
     .select()
     .from(availabilityOverride)
@@ -129,12 +127,10 @@ export async function GET(request: Request) {
   let windows: { startTime: string; endTime: string }[];
 
   if (overrideRows.length > 0) {
-    // Use override windows if present
     windows = overrideRows
       .filter((o) => !o.isBlocked && o.startTime && o.endTime)
       .map((o) => ({ startTime: o.startTime!, endTime: o.endTime! }));
   } else {
-    // Get day of week for this date in the host's timezone
     const dayName = formatInTimeZone(
       new Date(`${date}T12:00:00Z`),
       hostTz,
@@ -154,7 +150,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ slots: [] });
   }
 
-  // Load existing bookings that overlap this calendar day in host TZ
   const dayStartUtc = fromZonedTime(`${date}T00:00:00`, hostTz);
   const dayEndUtc = fromZonedTime(`${date}T23:59:59.999`, hostTz);
 
@@ -164,9 +159,8 @@ export async function GET(request: Request) {
     .where(
       and(
         eq(booking.hostUserId, host.id),
-        // pending (awaiting-approval) bookings also hold the slot — otherwise a
-        // second invitee sees it as open and hits a 409 at submit time.
-        // reschedule_requested holds its ORIGINAL slot until the host decides.
+        // pending bookings also hold the slot (else a second invitee could hit a
+        // 409 at submit); reschedule_requested holds its ORIGINAL slot.
         inArray(booking.status, [
           "confirmed",
           "pending",

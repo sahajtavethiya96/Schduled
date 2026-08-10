@@ -154,8 +154,8 @@ export function BrandingEditor({
           <div className="flex flex-col gap-3 border border-base-300 p-5">
             <div className="flex h-20 items-center justify-center border border-dashed border-base-300 bg-base-200/20">
               {form.logoUrl ? (
-                // Arbitrary admin-supplied/self-hosted URL — next/image would
-                // need it added to next.config's remotePatterns allowlist.
+                // Arbitrary admin-supplied URL — next/image would need it in
+                // next.config's remotePatterns allowlist.
                 // biome-ignore lint/performance/noImgElement: preview thumbnail, not a public page
                 <img
                   alt="Current logo"
