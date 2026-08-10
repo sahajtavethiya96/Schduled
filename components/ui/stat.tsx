@@ -1,41 +1,30 @@
 import * as React from 'react'
-import { cva, type VariantProps } from 'class-variance-authority'
 import { ArrowUp, ArrowDown } from '@phosphor-icons/react/dist/ssr'
 import { cn } from '@/lib/utils'
 
-const statValueVariants = cva('text-2xl font-bold tabular-nums', {
-  variants: {
-    tone: {
-      default:  'text-primary',
-      positive: 'text-success-content',
-      negative: 'text-error',
-      neutral:  'text-base-content',
-    },
-  },
-  defaultVariants: { tone: 'default' },
-})
+const statValueToneClasses = {
+  default:  'text-primary',
+  positive: 'text-success-content',
+  negative: 'text-error',
+  neutral:  'text-base-content',
+} as const
 
-const statIconWrapVariants = cva(
-  'flex size-10 shrink-0 items-center justify-center [&_svg]:size-5',
-  {
-    variants: {
-      tone: {
-        default:  'bg-primary/10 text-primary',
-        positive: 'bg-[var(--success-subtle)] text-success-content',
-        negative: 'bg-error/10 text-error',
-        neutral:  'bg-base-200 text-muted-foreground',
-      },
-    },
-    defaultVariants: { tone: 'default' },
-  },
-)
+const statIconWrapToneClasses = {
+  default:  'bg-primary/10 text-primary',
+  positive: 'bg-[var(--success-subtle)] text-success-content',
+  negative: 'bg-error/10 text-error',
+  neutral:  'bg-base-200 text-muted-foreground',
+} as const
+
+type StatTone = keyof typeof statValueToneClasses
 
 interface StatTrend {
   value: number
   label?: string
 }
 
-interface StatProps extends VariantProps<typeof statValueVariants> {
+interface StatProps {
+  tone?: StatTone
   label: string
   value: React.ReactNode
   sublabel?: string
@@ -57,12 +46,12 @@ function Stat({ label, value, sublabel, icon, trend, tone = 'default', className
         <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
           {label}
         </p>
-        {icon && <span className={statIconWrapVariants({ tone })}>{icon}</span>}
+        {icon && <span className={statIconWrapToneClasses[tone]}>{icon}</span>}
       </div>
 
       {/* Value + sublabel */}
       <div>
-        <p className={statValueVariants({ tone })}>{value}</p>
+        <p className={statValueToneClasses[tone]}>{value}</p>
         {sublabel && (
           <p className="mt-0.5 text-xs text-muted-foreground">{sublabel}</p>
         )}

@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from "@headlessui/react"
 
 import { cn } from "@/lib/utils"
@@ -152,27 +151,27 @@ function Tabs({
   )
 }
 
-const tabsListVariants = cva(
-  "tabs group/tabs-list inline-flex w-fit items-center justify-center p-1 text-muted-foreground group-data-horizontal/tabs:h-10 group-data-vertical/tabs:h-fit group-data-vertical/tabs:flex-col",
-  {
-    variants: {
-      variant: {
-        default: "bg-base-200",
-        line: "gap-1 bg-transparent",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
-  }
-)
+const tabsListBase =
+  "tabs group/tabs-list inline-flex w-fit items-center justify-center p-1 text-muted-foreground group-data-horizontal/tabs:h-10 group-data-vertical/tabs:h-fit group-data-vertical/tabs:flex-col"
+
+const tabsListVariantClasses = {
+  default: "bg-base-200",
+  line: "gap-1 bg-transparent",
+} as const
+
+type TabsListVariant = keyof typeof tabsListVariantClasses
+
+function tabsListVariants({
+  variant = "default",
+}: { variant?: TabsListVariant } = {}) {
+  return cn(tabsListBase, tabsListVariantClasses[variant])
+}
 
 function TabsList({
   className,
   variant = "default",
   ...props
-}: React.ComponentProps<typeof TabList> &
-  VariantProps<typeof tabsListVariants>) {
+}: React.ComponentProps<typeof TabList> & { variant?: TabsListVariant }) {
   return (
     <TabsListContext.Provider value={{ variant: variant ?? "default" }}>
       <TabList
