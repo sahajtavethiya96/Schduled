@@ -20,8 +20,12 @@ Schduled's visual design follows four principles:
 | Tool | Version | Purpose |
 |------|---------|---------|
 | **Tailwind CSS** | 4.x | Utility-first styling — all layouts, spacing, colors via class names |
-| **UI Kit** (`components/ui/`) | — | Hand-authored accessible component kit, built on Headless UI / @floating-ui/react primitives |
-| **Headless UI / @floating-ui/react** | `^2.2.10` / `0.26.28` | Headless accessible primitives (popover, dialog, dropdown, tabs, etc.) |
+| **daisyUI** | 5.x | Styling foundation — component classes (`btn`, `select`, `table`, ...) and semantic theme tokens (`--color-primary`, `--color-base-100`, ...) defined in `app/globals.css` |
+| **UI Kit** (`components/ui/`) | — | Hand-authored accessible component kit, built on daisyUI classes + Headless UI / Floating UI behavior + native HTML where no extra behavior is needed |
+| **Headless UI** | `^2.2.10` | Interactive behavior where daisyUI's CSS alone isn't enough (dialog, menu, tabs, switch, checkbox, radio group, etc.) |
+| **@floating-ui/react** | `0.26.28` | Positioning for `Popover` / `Tooltip` (anchor + collision-aware placement) |
+
+Radix UI and shadcn/ui are **not** dependencies — the UI Kit was migrated off both. Simple elements with no interactive behavior of their own (e.g. plain dividers, static text) use native HTML directly rather than a headless wrapper.
 | **next-themes** | 0.4.x | Dark/light mode toggle — class-based, persisted to localStorage |
 | **Phosphor Icons** | 2.1.x | Icon library — used for all navigation icons, action buttons, status indicators |
 | **Geist Sans** | Variable | Primary UI font — all headings, labels, body text |

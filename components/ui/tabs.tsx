@@ -35,17 +35,15 @@ import { cn } from "@/lib/utils"
 // now", a transient :active-like state), which Headless UI auto-stamps as
 // a real `data-active=""` DOM attribute — and that auto-stamp always wins
 // over any `data-active` this file tries to pass in manually (confirmed
-// against Headless UI's own render merge order). This file's *existing*
-// className strings use `data-active:` to mean "this is the selected tab"
-// (via the `data-active` custom variant defined in app/globals.css) — a
-// completely different,
-// unrelated meaning that would silently collide with Headless UI's own
-// attribute. Rather than rename the DOM contract app-wide or fight
-// Headless UI for the attribute, TabsTrigger computes its selected-state
-// classes directly in JS (Headless UI's `className` prop accepts a
-// `(bag) => string` function, the one prop this library explicitly
-// special-cases for render-prop access) instead of relying on a `data-*`
-// attribute selector — same visual output, no attribute-name collision.
+// against Headless UI's own render merge order). A `data-active:` custom
+// variant selector would therefore key off Headless UI's transient press
+// state instead of "this is the selected tab" — a collision, since this
+// file needs the latter. Rather than fight Headless UI for the attribute,
+// TabsTrigger computes its selected-state classes directly in JS (Headless
+// UI's `className` prop accepts a `(bag) => string` function, the one prop
+// this library explicitly special-cases for render-prop access) instead of
+// relying on a `data-*` attribute selector — same visual output, no
+// attribute-name collision.
 // `variant` (default/line) is threaded from TabsList to TabsTrigger via
 // its own small context, replacing what used to be a
 // `group-data-[variant=line]/tabs-list:` ancestor CSS selector.

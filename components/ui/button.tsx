@@ -13,7 +13,7 @@ const buttonVariants = cva(
         outline:
           "btn-outline border-base-300 aria-expanded:bg-base-200 aria-expanded:text-base-content",
         secondary:
-          "btn-secondary aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+          "btn-secondary aria-expanded:bg-secondary aria-expanded:text-secondary-content",
         ghost: "btn-ghost aria-expanded:bg-base-200 aria-expanded:text-base-content",
         destructive:
           "btn-error focus-visible:border-error/60 focus-visible:ring-error/30",

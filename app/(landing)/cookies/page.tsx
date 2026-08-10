@@ -111,9 +111,9 @@ export default function CookiesPage() {
               "Until cleared",
             ],
             [
-              "schduled_theme",
+              "theme",
               "localStorage",
-              "Stores your colour scheme preference (light/dark) if theme switching is enabled",
+              "Stores your colour scheme preference (light/dark), managed by the next-themes library",
               "Until cleared",
             ],
           ]}
