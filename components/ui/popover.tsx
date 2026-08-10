@@ -85,7 +85,7 @@ function PopoverTrigger({
     <Comp
       ref={ref}
       data-slot="popover-trigger"
-      data-state={open ? "open" : "closed"} // time-combobox.tsx and country-combobox.tsx style off data-[state=open] on the trigger
+      data-state={open ? "open" : "closed"}
       aria-haspopup="dialog"
       aria-expanded={open}
       onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
@@ -97,9 +97,8 @@ function PopoverTrigger({
   )
 }
 
-// Not used by any current consumer. If a future consumer renders both a
-// separate PopoverAnchor and PopoverTrigger at once, whichever mounts last
-// wins the shared reference.
+// If both PopoverAnchor and PopoverTrigger are rendered at once, whichever
+// mounts last wins the shared reference.
 function PopoverAnchor({
   asChild = false,
   ...props
@@ -135,16 +134,10 @@ function PopoverContent({
   sideOffset?: number
   collisionPadding?: number
   container?: Element | null
-  // Preventable event handler so the 5 existing
-  // `onOpenAutoFocus={(e) => e.preventDefault()}` call sites (the
-  // search/combobox-style consumers that want focus to stay in their own
-  // <input>) keep working unchanged. Internally this maps to Floating UI's
-  // documented `initialFocus={-1}` escape hatch on FloatingFocusManager —
-  // see floating-ui.com/docs/floatingfocusmanager and the Hook's own
-  // combobox guidance ("set initialFocus to -1 so focus doesn't move at
-  // all"). No current consumer needs an onCloseAutoFocus equivalent, and
-  // FloatingFocusManager's own default `returnFocus` behavior (focus the
-  // reference element on close) already covers the common case.
+  // Preventable so combobox-style consumers can keep focus in their own
+  // <input> via `onOpenAutoFocus={(e) => e.preventDefault()}`. Maps
+  // internally to Floating UI's `initialFocus={-1}` escape hatch on
+  // FloatingFocusManager (its documented way to skip auto-focus).
   onOpenAutoFocus?: (event: { preventDefault: () => void }) => void
 }) {
   const { open, setOpen, referenceElement } = usePopoverContext("PopoverContent")
@@ -194,30 +187,20 @@ function PopoverContent({
           ref={refs.setFloating}
           data-slot="popover-content"
           data-side={resolvedSide}
-          // "initial" (the one-rAF-frame gap between mount and "open" — see
-          // useTransitionStatus) counts as open too: without it, neither
-          // data-open nor data-closed matches during that gap, the panel
-          // renders at its plain full-opacity/full-scale state, and then
-          // the animate-in animation kicks in a frame later and snaps it
-          // back to its opacity-0/scale-95 starting keyframe before playing
-          // forward — a visible "pops in, then re-animates" double-open.
+          // "initial" (the one-rAF-frame gap between mount and "open") counts
+          // as open too, otherwise the panel renders at full opacity/scale
+          // then snaps back to its animate-in starting keyframe a frame
+          // later — a visible pop-then-re-animate.
           data-open={status === "initial" || status === "open" || undefined}
           data-closed={status === "close" || undefined}
-          // Position via top/left, not floating-ui's default transform-based
-          // floatingStyles — the data-open/data-closed enter/exit animation
-          // classes below also animate `transform` (zoom/slide), and a CSS
-          // animation overrides an element's inline transform for its
-          // duration, masking the real position and making the popover
-          // flash at (0, 0) before snapping into place.
-          //
-          // `isPositioned` stays hidden-until-true on top of that: x/y start
-          // at (0, 0) and only update once floating-ui's async
-          // computePosition() resolves, so a Popover's very first-ever open
-          // (before any position has been computed) would otherwise paint
-          // one frame at (0, 0) regardless of the fix above. Later opens
-          // don't flash because x/y keep their last-known-good value across
-          // closes (only `isPositioned` itself resets) — only the first open
-          // of a given instance starts from nothing.
+          // Position via top/left, not floating-ui's transform-based
+          // floatingStyles — the animate-in/out classes below also animate
+          // `transform`, which would override the inline transform and
+          // flash the popover at (0, 0) before it snaps into place.
+          // `isPositioned` stays hidden-until-true because x/y start at
+          // (0, 0) until computePosition() resolves, so a Popover's first
+          // ever open would otherwise paint one frame at (0, 0); later opens
+          // don't flash since x/y keep their last-known value across closes.
           style={{
             position: strategy,
             top: y ?? 0,

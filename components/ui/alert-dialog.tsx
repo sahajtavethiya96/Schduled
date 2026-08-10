@@ -126,21 +126,11 @@ function AlertDialogContent({
     >
       {/*
         Outside clicks must never dismiss an alert dialog, only Escape.
-        Headless UI has no dedicated prop for this (tracked upstream, still
-        open as of writing: github.com/tailwindlabs/headlessui/discussions/1860,
-        github.com/tailwindlabs/headlessui/issues/621) and collapses Escape
-        and outside-click into a single onClose with no way to tell them
-        apart.
-        <DialogPanel> is what Headless UI's outside-click detection treats
-        as "inside" — per its own docs, "clicking outside of this component
-        will trigger the onClose of the Dialog component." Making it span
-        the full viewport and nesting both the backdrop and the visible
-        content box inside it means nothing is ever "outside" while the
-        dialog is open, so that path never fires — while Escape stays on
-        its own separate, unconditional keydown handler. This is the
-        community-established pattern for this exact gap (see e.g.
-        github.com/tailwindlabs/headlessui/issues/621#issuecomment-2333291297
-        and #issuecomment-2280014201).
+        Headless UI collapses both into a single onClose with no way to
+        tell them apart (no dedicated prop exists). Fix: make <DialogPanel>
+        span the full viewport and nest both the backdrop and the visible
+        content inside it, so nothing is ever "outside" while open and that
+        path never fires — Escape still works via its own keydown handler.
       */}
       <DialogPanel data-slot="alert-dialog-panel" className="fixed inset-0 z-50">
         <AlertDialogOverlay />

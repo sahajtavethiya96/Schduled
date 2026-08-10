@@ -51,18 +51,15 @@ export async function updateSignInMethodsAction(
     getSignInMethodAvailability(),
   ]);
 
-  // The toggles only govern methods the deployment can actually offer. For an
-  // unavailable method, preserve the stored intent instead of forcing it off —
-  // so enabling it later (e.g. adding Google OAuth creds) restores the
-  // admin's earlier choice rather than silently leaving it disabled.
+  // For an unavailable method, preserve the stored intent instead of forcing it
+  // off, so enabling it later (e.g. adding Google OAuth creds) restores it.
   const nextStored: SignInMethods = {
     password: availability.password ? next.password : previous.password,
     magicLink: availability.magicLink ? next.magicLink : previous.magicLink,
     google: availability.google ? next.google : previous.google,
   };
 
-  // At least one *effective* method (available AND enabled) must remain, or the
-  // deployment would have no working way to sign in.
+  // At least one effective (available AND enabled) method must remain.
   const anyEffective =
     (availability.password && nextStored.password) ||
     (availability.magicLink && nextStored.magicLink) ||
@@ -213,11 +210,8 @@ export interface SmtpTestInput {
   user?: string;
 }
 
-/** Verifies SMTP credentials without saving them or sending an email —
- * nodemailer's `verify()` opens the connection and authenticates, nothing
- * more. Fields left blank in the form fall back to the currently resolved
- * (DB-or-env) settings, so testing works whether or not the admin retyped
- * an already-saved value. */
+/** Verifies SMTP credentials via nodemailer's `verify()` without sending an
+ * email. Blank fields fall back to the currently resolved (DB-or-env) settings. */
 export async function testSmtpConnectionAction(
   input: SmtpTestInput
 ): Promise<ActionResult> {
@@ -433,10 +427,9 @@ export interface StorageTestInput {
   secretAccessKey?: string;
 }
 
-/** Round-trips a small marker object (upload + delete) through the
- * submitted credentials — a real connectivity + permissions check, not just
- * a client construction. Uses the resolved (DB-or-env) secret when the form
- * field is left blank, same as testSmtpConnectionAction. */
+/** Round-trips a marker object (upload + delete) to verify real connectivity
+ * and permissions. Uses the resolved (DB-or-env) secret when blank, same as
+ * testSmtpConnectionAction. */
 export async function testStorageConnectionAction(
   input: StorageTestInput
 ): Promise<ActionResult> {

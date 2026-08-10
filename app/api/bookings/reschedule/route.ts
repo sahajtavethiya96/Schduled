@@ -71,10 +71,9 @@ export async function POST(request: Request) {
       return jsonError("This reschedule link is invalid.", 404);
     }
 
-    // A logged-in host rescheduling their OWN booking applies immediately (no
-    // self-approval). A guest using the public link who wants to move an already
-    // CONFIRMED booking instead files a reschedule request for the host to
-    // approve — the confirmed meeting stays put until then.
+    // A host rescheduling their own booking applies immediately. A guest
+    // moving an already-confirmed booking instead files a reschedule request
+    // for the host to approve — the confirmed meeting stays put until then.
     const session = await getCurrentSession();
     const isHostActor = !!session && session.user.id === b.hostUserId;
     const isGuestRescheduleOfConfirmed =
@@ -99,7 +98,6 @@ export async function POST(request: Request) {
     const previousStartUtc = new Date(b.startTime).toISOString();
     const newEnd = addMinutes(newStart, b.duration);
 
-    // Load event type for buffers + host timezone + booking rules
     const et = await db.query.eventType.findFirst({
       where: eq(eventType.id, b.eventTypeId),
     });
@@ -215,9 +213,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // The new time must be a real slot on the host's schedule — a direct API
-    // call could otherwise POST any arbitrary time, bypassing working hours and
-    // blocked dates (conflicts + notice are enforced separately, below).
+    // Re-validate against the host's real schedule — a direct API call could
+    // otherwise POST any arbitrary time (conflicts + notice checked separately).
     const bookable = await isSlotBookable({
       hostUserId: b.hostUserId,
       scheduleId: schedule?.id,
@@ -235,11 +232,10 @@ export async function POST(request: Request) {
       );
     }
 
-    // ── Transaction: advisory lock → conflict re-check → UPDATE ──────────────
+    // Transaction: advisory lock → conflict re-check → UPDATE. Host-wide lock
+    // so overlapping-but-different-start moves can't both pass the conflict
+    // re-check under READ COMMITTED.
     const result = await db.transaction(async (tx) => {
-      // Serialise concurrent writes targeting the same host + slot.
-      // Host-wide lock (see create route) so overlapping-but-different-start
-      // moves can't both pass the conflict re-check under READ COMMITTED.
       await tx.execute(
         sql`SELECT pg_advisory_xact_lock(hashtext(${b.hostUserId}))`
       );
@@ -250,8 +246,8 @@ export async function POST(request: Request) {
         .where(
           and(
             eq(booking.hostUserId, b.hostUserId),
-            // include pending + reschedule_requested so a reschedule can't collide
-            // with an awaiting-approval slot or another booking's held original slot
+            // pending + reschedule_requested included so this can't collide with
+            // an awaiting-approval slot or another booking's held original slot
             sql`${booking.status} IN ('confirmed', 'pending', 'reschedule_requested')`,
             ne(booking.id, b.id),
             lte(booking.startTime, dayEndUtc),
@@ -267,10 +263,9 @@ export async function POST(request: Request) {
         return { conflict: true } as const;
       }
 
-      // Moving to a new day must still respect the per-day cap and the host's
-      // global weekly/monthly limits — the create path enforces these, the
-      // reschedule path previously did not (the booking being moved is excluded
-      // so it never counts against itself).
+      // Moving to a new day still respects the per-day cap and the host's
+      // weekly/monthly limits; the booking being moved is excluded so it
+      // never counts against itself.
       const limit = await checkBookingLimits(tx, {
         hostUserId: b.hostUserId,
         hostTz,
@@ -285,10 +280,9 @@ export async function POST(request: Request) {
       }
 
       if (isGuestRescheduleOfConfirmed) {
-        // Guest moving a confirmed booking: do NOT touch startTime/endTime. Stage
-        // the proposed time and flip to reschedule_requested so the host can
-        // approve/reject. The original meeting stays booked until then. Reuse the
-        // approvalToken column for the host's review link (null on confirmed).
+        // Stage the proposed time and flip to reschedule_requested instead of
+        // touching startTime/endTime — the original meeting stays booked until
+        // the host approves. Reuse approvalToken for the host's review link.
         const approvalToken = b.approvalToken ?? createId();
         await tx
           .update(booking)
@@ -309,11 +303,9 @@ export async function POST(request: Request) {
         .set({
           startTime: newStart,
           endTime: newEnd,
-          // A host reschedule never changes approval state: a confirmed booking
-          // stays confirmed (the host picked the new time, so no re-approval
-          // is needed) and a still-pending booking stays pending.
+          // A host reschedule never changes approval state — confirmed stays
+          // confirmed, pending stays pending.
           rescheduleCount: b.rescheduleCount + 1,
-          // Keep the reschedule/cancel links usable for the new time.
           rescheduleTokenExpiresAt: addHours(newEnd, 24),
           cancelTokenExpiresAt: addHours(newEnd, 24),
           updatedAt: new Date(),
@@ -339,10 +331,9 @@ export async function POST(request: Request) {
     }
 
     if ("requested" in result && result.requested) {
-      // Guest reschedule request on a confirmed booking — notify the host to
-      // approve/reject. No calendar/reminder/notify changes: the original meeting
-      // is untouched until the host approves. The guest gets no email now; their
-      // UI shows the "Awaiting host approval" screen via requiresApproval below.
+      // Notify the host to approve/reject; no calendar/reminder changes since
+      // the original meeting is untouched until approved. The guest gets no
+      // email now — their UI shows "Awaiting host approval" via requiresApproval.
       await Promise.allSettled([
         enqueueJob(JOB_NAMES.BOOKING_RESCHEDULE_REQUEST, {
           bookingId: b.id,
@@ -359,11 +350,9 @@ export async function POST(request: Request) {
     }
 
     if (b.status === "pending") {
-      // Pending booking rescheduled — notify the host of the new time to review.
-      // isReschedule=true prevents the invitee from getting a redundant "pending" email
-      // (they already received one when they first submitted the booking request).
-      // Guarded like the confirmed branch below: the reschedule already committed,
-      // so a pg-boss enqueue failure must not surface as a 500 to the invitee.
+      // isReschedule=true suppresses a redundant "pending" email to the invitee
+      // (they already got one on the original submission). allSettled so an
+      // enqueue failure doesn't surface as a 500 after the reschedule committed.
       await Promise.allSettled([
         enqueueJob(JOB_NAMES.BOOKING_APPROVAL_REQUEST, {
           bookingId: b.id,

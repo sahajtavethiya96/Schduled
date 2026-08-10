@@ -15,15 +15,12 @@ import { Slot } from "@/components/ui/slot"
 import { cn, hideUntilPositioned } from "@/lib/utils"
 import { CheckIcon, CaretRightIcon } from "@phosphor-icons/react"
 
-// MenuItem hardcodes `role="menuitem"` itself — `role` is
-// listed in Headless UI's own ItemPropsWeControl and always wins the
-// internal prop merge, so passing role="menuitemcheckbox"/"menuitemradio"
-// directly to <MenuItem> is silently overwritten (and rejected by its
-// types). Rendering through a tiny custom tag component via `as` — which
-// receives Headless UI's fully-merged props (including its own
-// role="menuitem") and substitutes the real role before rendering the DOM
-// node — is the only way to get accurate ARIA roles on the checkbox/radio
-// item variants. Used only by DropdownMenuCheckboxItem/RadioItem below.
+// MenuItem hardcodes `role="menuitem"` itself and always wins the internal
+// prop merge, so passing role="menuitemcheckbox"/"menuitemradio" directly is
+// silently overwritten. Rendering through a tiny custom tag component via
+// `as` — which receives the fully-merged props and substitutes the real
+// role before rendering — is the only way to get accurate ARIA roles on the
+// checkbox/radio item variants.
 function createMenuItemRoleTag(role: string) {
   return React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(
     function MenuItemRoleTag({ role: _incomingRole, ...props }, ref) {
@@ -292,35 +289,20 @@ function DropdownMenuShortcut({
   )
 }
 
-// Headless UI's Menu has no submenu primitive at all — confirmed against
-// the official docs (only Menu/MenuButton/MenuItems/MenuItem are documented)
-// and against the maintainers directly: a real nested <Menu> inside a
-// MenuItem was tried and rejected as a foundation here, because Headless
-// UI's own maintainer has stated nested Menus are "not currently
-// supported" due to a shared internal stack-machine that isn't designed
-// for menu-in-menu coordination (github.com/tailwindlabs/headlessui,
-// discussion #2418) — it can cause a submenu's own interactions to
-// spuriously close the parent menu.
+// Headless UI's Menu has no submenu primitive — nested <Menu> instances are
+// "not currently supported" per the maintainers (shared internal
+// stack-machine not designed for menu-in-menu coordination, can cause a
+// submenu to spuriously close its parent). So DropdownMenuSub/SubTrigger/
+// SubContent are hand-built without a second <Menu>: local open state,
+// hover-intent timers, and manual ArrowRight/ArrowLeft handling (Headless
+// UI's own keydown handler has no case for either key). SubContent's own
+// children stay ordinary DropdownMenuItem instances registered with the
+// single parent <Menu>, so they keep native keyboard nav and typeahead.
+// One simplification: Home/End and top-level Arrow-Up/Down treat the whole
+// tree as one flat list rather than scoping per submenu level.
 //
-// DropdownMenuSub/SubTrigger/SubContent below are therefore hand-built
-// without a second <Menu> instance: local open state (plain React
-// useState, not Headless UI's menu machine), hover-intent open/close
-// timers, and manual ArrowRight/ArrowLeft handling (Headless UI's own
-// MenuItems keydown handler has no case for either key, so this doesn't
-// conflict with it). DropdownMenuSubContent's own children are still
-// ordinary DropdownMenuItem/MenuItem instances registered with the single
-// parent <Menu> — that part *is* natively supported, since it's just more
-// items in one menu, not a second menu root — so they keep full Headless
-// UI keyboard nav, typeahead, and close-on-select behavior. One
-// simplification: Home/End and top-level Arrow-Up/Down cycling treat the
-// whole tree as one flat list rather than scoping strictly per submenu
-// level.
-//
-// There is no real consumer of this today (grep the repo — nothing uses
-// DropdownMenuSub), so this has been verified by typecheck/build and
-// careful reading of Headless UI's source only, not by live interaction
-// testing. Verify it against real usage before shipping the first
-// consumer that relies on it.
+// Not yet exercised by a real consumer — verify against live usage before
+// the first caller relies on it.
 type DropdownMenuSubContextValue = {
   open: boolean
   setOpen: (open: boolean) => void
@@ -406,12 +388,9 @@ function DropdownMenuSubTrigger({
       data-open={open || undefined}
       onClick={(event: React.MouseEvent<HTMLDivElement>) => {
         onClick?.(event)
-        // preventDefault here stops Headless UI's own internal MenuItem
-        // onClick handler (which unconditionally closes the menu) from
-        // running — its own prop-merge engine checks event.defaultPrevented
-        // between the consumer's handler and its own before calling the
-        // latter, so this reliably keeps the parent menu open when opening
-        // a submenu.
+        // Stops Headless UI's own internal MenuItem onClick (which
+        // unconditionally closes the menu) from running, keeping the
+        // parent menu open when opening a submenu.
         event.preventDefault()
         setOpen(!open)
       }}
@@ -468,9 +447,8 @@ function DropdownMenuSubContent({
         onKeyDown?.(event)
         if (event.key === "ArrowLeft" || event.key === "Escape") {
           event.preventDefault()
-          // Stop this from also reaching Headless UI's own MenuItems
-          // keydown handler, which does handle Escape (it would close the
-          // whole parent menu, not just this submenu).
+          // Stop this from reaching Headless UI's own MenuItems keydown
+          // handler, which would close the whole parent menu on Escape.
           event.stopPropagation()
           setOpen(false)
           triggerRef.current?.focus()

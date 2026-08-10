@@ -13,12 +13,9 @@ import { JOB_NAMES } from "@/lib/worker/job-types";
 const ACTIVE = sql`${booking.status} IN ('confirmed', 'pending', 'reschedule_requested')`;
 
 /**
- * Cancel a host's upcoming meetings and notify everyone. Used when an admin
- * SUSPENDS a host — a suspended host can't take meetings, so leaving them live
- * would strand the invitees. The booking rows still exist afterwards, so the
- * async BOOKING_CANCELLATION job can email both the invitee and the host, and
- * CALENDAR_CANCEL removes the Google Calendar event. Returns the number
- * cancelled.
+ * Cancel a host's upcoming meetings and notify everyone — used when an admin
+ * suspends a host, since a suspended host can't take meetings. Booking rows
+ * still exist afterward so the async cancellation/calendar jobs can run.
  */
 export async function cancelUpcomingBookingsForHost(
   hostUserId: string,
@@ -65,12 +62,10 @@ export async function cancelUpcomingBookingsForHost(
 }
 
 /**
- * Email invitees that their upcoming meetings are cancelled because the host's
- * account is being deleted. The email is built INLINE (its content is captured
- * in the outbox now) because the booking rows are about to be deleted — an
- * async BOOKING_CANCELLATION job would find them gone. Best-effort; never
- * throws, so it can't block the account deletion. Calendar events are cleaned
- * up separately by deleteUserCalendarEvents.
+ * Email invitees that their meetings are cancelled because the host's account
+ * is being deleted. Built INLINE, not via the async cancellation job — the
+ * booking rows are about to be deleted, so that job would find them gone.
+ * Best-effort; never throws.
  */
 export async function emailInviteesOfHostRemoval(
   hostUserId: string

@@ -115,7 +115,6 @@ export function StepTimezone({ onNext, onBack }: StepTimezoneProps) {
     setTimezone(match ? detected : "UTC");
   }, []);
 
-  // Focus search when dropdown opens; scroll selected into view
   useEffect(() => {
     if (open) {
       setTimeout(() => {
@@ -130,7 +129,6 @@ export function StepTimezone({ onNext, onBack }: StepTimezoneProps) {
     }
   }, [open]);
 
-  // Close on click outside
   useEffect(() => {
     function handleOutside(e: MouseEvent | TouchEvent) {
       if (
@@ -190,9 +188,8 @@ export function StepTimezone({ onNext, onBack }: StepTimezoneProps) {
       <div className="space-y-1.5">
         <Label>Timezone</Label>
 
-        {/* Inline dropdown — no portal/absolute so a focus trap never blocks it */}
+        {/* Inline dropdown (no portal) so a focus trap never blocks it */}
         <div ref={containerRef}>
-          {/* Trigger */}
           <button
             className="flex h-10 w-full items-center gap-2 border border-input bg-base-100 px-3 py-2 text-sm text-base-content focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             onClick={() => setOpen((v) => !v)}
@@ -209,10 +206,8 @@ export function StepTimezone({ onNext, onBack }: StepTimezoneProps) {
             <CaretUpDown className="shrink-0 text-muted-foreground" size={14} />
           </button>
 
-          {/* Dropdown panel — inline, expands in flow; parent scroll area handles overflow */}
           {open && (
             <div className="mt-1 border border-base-300 bg-base-100 ring-1 ring-foreground/10">
-              {/* Search */}
               <div className="flex items-center gap-2 border-b border-base-300 px-3 py-2">
                 <MagnifyingGlass
                   className="shrink-0 text-muted-foreground"
@@ -228,7 +223,6 @@ export function StepTimezone({ onNext, onBack }: StepTimezoneProps) {
                 />
               </div>
 
-              {/* Scrollable list */}
               <div
                 className="max-h-52 overflow-y-auto overscroll-contain"
                 onTouchMove={(e) => e.stopPropagation()}

@@ -6,9 +6,7 @@ import { type AuditFilters, buildAuditWhereClause } from "@/lib/audit-query";
 import { requireAdmin } from "@/lib/authz";
 import { db } from "@/lib/db";
 
-// Export is capped — a single CSV/JSON download of the entire audit history
-// isn't a realistic use case, and an unbounded export would risk a very large
-// in-memory result set. Narrow the filters (date range) for a bigger slice.
+// Capped to avoid an unbounded in-memory result set; narrow filters for a bigger slice.
 const EXPORT_LIMIT = 5000;
 
 export interface ExportAuditRow {

@@ -1,27 +1,18 @@
 import * as React from "react"
 
 // Provides `asChild` support (rendering a component's own props/behavior
-// onto a single child element instead of wrapping it in an extra DOM node)
-// for button.tsx, badge.tsx, breadcrumb.tsx, form.tsx, popover.tsx,
-// tooltip.tsx, dialog.tsx, sheet.tsx, alert-dialog.tsx, and
-// dropdown-menu.tsx. Behavior contract for every asChild call site:
+// onto a single child element instead of wrapping it in an extra DOM node).
+// Behavior contract for every asChild call site:
 //  - event handlers compose (child's handler fires first, then the slot's
-//    own — e.g. DialogTrigger's onClick still fires after a consumer's own
-//    onClick on the slotted child, and still respects that handler calling
-//    preventDefault())
+//    own, and still respects that handler calling preventDefault())
 //  - `className` concatenates (slot's classes first, then the child's)
 //  - `style` shallow-merges (child's keys win on conflict)
 //  - every other prop: the child's own explicit value wins over the slot's
 //  - `ref` composes the slot's forwarded ref with the child's own ref, so
-//    both still get the DOM node (needed by e.g. Popover's
-//    `useMergeRefs`/`setReferenceElement` wiring on asChild triggers)
+//    both still get the DOM node
 //
-// Not supported: lazy-child resolution for injecting extra markup around a
-// render-prop child. Grepped for zero usage anywhere in this codebase
-// (`grep -rn Slottable`), so it's intentionally left out rather than
-// carried as unexercised dead weight — flagged here rather than silently
-// absorbed. If a future asChild call site ever needs that capability, it
-// would need to be added.
+// Not supported: lazy-child resolution (Slottable) for injecting extra
+// markup around a render-prop child — add if a future need arises.
 function setRef<T>(ref: React.Ref<T> | undefined, value: T) {
   if (typeof ref === "function") {
     return ref(value)
@@ -38,15 +29,11 @@ function composeRefs<T>(
   }
 }
 
-// Memoized via `useCallback` (deps: the individual refs), not a
-// freshly-allocated closure every render. This is load-bearing, not just an
-// optimization: an unmemoized composed ref changes identity every render,
-// so React detaches (calls it with `null`) and reattaches (calls it with
-// the node) on every single render. Anything downstream that calls setState
-// from that ref — e.g. Popover's `setReferenceElement` — sees a genuine
-// null→node→null→node value flip every render and re-renders forever
-// (confirmed by hitting exactly this "Maximum update depth exceeded" loop
-// against Popover's asChild trigger before switching to useCallback here).
+// Memoized via `useCallback`, not a fresh closure every render — this is
+// load-bearing. An unmemoized composed ref changes identity every render,
+// so React detaches/reattaches it each time; anything that calls setState
+// from that ref (e.g. Popover's `setReferenceElement`) sees a null→node
+// flip every render and re-renders forever.
 function useComposedRefs<T>(
   ...refs: Array<React.Ref<T> | undefined>
 ): React.RefCallback<T> {
@@ -55,10 +42,8 @@ function useComposedRefs<T>(
 }
 
 // React 19 moved `ref` into `props.ref` and installs a dev-mode warning
-// getter on the legacy top-level `element.ref` access path to catch code
-// still reading it the old way — this checks which location is safe to
-// read without tripping that warning, rather than assuming one React
-// version's ref convention.
+// getter on the legacy `element.ref` path — this checks which location is
+// safe to read without tripping that warning.
 function getElementRef(
   element: React.ReactElement
 ): React.Ref<unknown> | undefined {
@@ -132,9 +117,8 @@ const Slot = React.forwardRef<HTMLElement, SlotProps>(
   ({ children, ...slotProps }, forwardedRef) => {
     const isValidSingleChild =
       React.Children.count(children) === 1 && React.isValidElement(children)
-    // `childRef`/`composedRef` are computed unconditionally, before the
-    // early-return below — useComposedRefs (a hook) can't be called
-    // conditionally.
+    // Computed unconditionally, before the early-return below — hooks can't
+    // be called conditionally.
     const childRef = isValidSingleChild ? getElementRef(children) : undefined
     const composedRef = useComposedRefs(forwardedRef, childRef)
 

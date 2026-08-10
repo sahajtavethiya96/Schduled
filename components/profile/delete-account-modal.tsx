@@ -45,7 +45,7 @@ interface Props {
   email: string;
 }
 
-const RESEND_COOLDOWN = 60; // seconds before resend is allowed
+const RESEND_COOLDOWN = 60;
 
 export function DeleteAccountModal({ email }: Props) {
   const [open, setOpen] = useState(false);
@@ -63,7 +63,6 @@ export function DeleteAccountModal({ email }: Props) {
     {} as ActionState
   );
 
-  // Start the resend countdown
   function startCountdown() {
     setCountdown(RESEND_COOLDOWN);
     if (timerRef.current) {
@@ -80,7 +79,6 @@ export function DeleteAccountModal({ email }: Props) {
     }, 1000);
   }
 
-  // Clear timer when modal closes
   useEffect(() => {
     if (!open && timerRef.current) {
       clearInterval(timerRef.current);
@@ -157,7 +155,6 @@ export function DeleteAccountModal({ email }: Props) {
             Permanently delete your Schduled account.
           </DialogDescription>
 
-          {/* Progress bar */}
           <div className="h-1 w-full bg-base-200">
             <div
               className="h-full bg-error transition-all duration-500"
@@ -172,7 +169,6 @@ export function DeleteAccountModal({ email }: Props) {
           </div>
 
           <div className="px-6 pb-6 pt-3">
-            {/* ── Step 1: Reason ────────────────────────────────────────── */}
             {step === 1 && (
               <div className="space-y-5">
                 <div>
@@ -230,7 +226,6 @@ export function DeleteAccountModal({ email }: Props) {
               </div>
             )}
 
-            {/* ── Step 2: Email code verification ──────────────────────── */}
             {step === 2 && (
               <div className="space-y-5">
                 <div>
@@ -338,7 +333,6 @@ export function DeleteAccountModal({ email }: Props) {
               </div>
             )}
 
-            {/* ── Step 3: Final deletion confirm ────────────────────────── */}
             {step === 3 && (
               <div className="space-y-5">
                 <div>
@@ -384,7 +378,6 @@ export function DeleteAccountModal({ email }: Props) {
                 </ul>
 
                 <form action={deleteAction} className="space-y-4">
-                  {/* Hidden fields carrying reason and a code field */}
                   <input name="reason" type="hidden" value={effectiveReason} />
 
                   <div className="space-y-1.5">

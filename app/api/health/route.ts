@@ -4,9 +4,8 @@ import { createLogger } from "@/lib/logger";
 
 const log = createLogger("health");
 
-// Used by Docker Compose / Kubernetes healthchecks. Checks real DB
-// connectivity (not just "the process is alive") since a Next.js process
-// can be up while unable to reach Postgres.
+// Checks real DB connectivity, not just "the process is alive" — a Next.js
+// process can be up while unable to reach Postgres.
 export async function GET() {
   try {
     await dbClient`select 1`;

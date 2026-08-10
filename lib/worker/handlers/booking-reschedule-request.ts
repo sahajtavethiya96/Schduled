@@ -66,8 +66,7 @@ async function processOne(bookingId: string, previousStartUtc: string) {
         html: mail.html,
         text: mail.text,
       },
-      // Key on the requested time so a revised request re-sends, but a handler
-      // retry for the same proposed time does not double-send.
+      // Keyed on requested time so a revised request re-sends but a retry doesn't double-send.
       {
         idempotencyKey: `reschedule-request:${b.id}:${requestedStart.getTime()}:host`,
       }

@@ -37,9 +37,7 @@ export function StepShareLink({ username, onBack }: StepShareLinkProps) {
         if (!cancelled) {
           setQrSrc(dataUrl);
         }
-      } catch {
-        // non-fatal
-      }
+      } catch {}
     }
 
     buildQr();
@@ -53,9 +51,7 @@ export function StepShareLink({ username, onBack }: StepShareLinkProps) {
       await navigator.clipboard.writeText(bookingUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch {
-      /* clipboard unavailable */
-    }
+    } catch {}
   }
 
   async function handleFinish() {
@@ -67,14 +63,12 @@ export function StepShareLink({ username, onBack }: StepShareLinkProps) {
       setError(result.error);
       return;
     }
-    // Hard navigate so the layout fully re-renders (reads onboardingDone=true, modal unmounts)
-    // and the user lands directly on their new event type.
+    // Hard navigate so the layout re-reads onboardingDone and unmounts the wizard.
     window.location.href = "/event-types";
   }
 
   return (
     <div className="space-y-6">
-      {/* Booking link */}
       <div className="space-y-2">
         <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
           Your booking link
@@ -102,7 +96,6 @@ export function StepShareLink({ username, onBack }: StepShareLinkProps) {
         </div>
       </div>
 
-      {/* QR Code */}
       {username && (
         <div className="flex flex-col items-center gap-3 border border-base-300 bg-base-100 p-5">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest">
@@ -124,7 +117,6 @@ export function StepShareLink({ username, onBack }: StepShareLinkProps) {
         </div>
       )}
 
-      {/* What's ready */}
       <ul className="space-y-2 text-sm text-muted-foreground">
         {[
           "Your profile and timezone are saved",

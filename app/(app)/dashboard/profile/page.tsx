@@ -1,8 +1,6 @@
 import { redirect } from "next/navigation";
 
-// This route was an early duplicate of /profile/profile and rendered a second
-// AppShell inside the layout's shell. Redirect any stale links to the canonical
-// profile page instead.
+// Old duplicate that double-rendered AppShell; kept as a redirect for stale links.
 export default function DashboardProfileRedirect() {
   redirect("/profile/profile");
 }

@@ -29,9 +29,8 @@ const DARK_BG: React.CSSProperties = {
   `,
 };
 
-// Same fallback chain as the contact form's actual destination
-// (app/actions/contact.ts) — keeps the displayed address in sync with
-// where messages sent through this page's form actually go.
+// Same fallback chain as app/actions/contact.ts, so the displayed address
+// stays in sync with where messages sent through this form actually go.
 const GENERAL_ENQUIRIES_EMAIL =
   env.CONTACT_EMAIL ?? env.SMTP_USER ?? "hello@schduled.com";
 
@@ -68,12 +67,10 @@ export default function ContactPage() {
       <LandingHeader />
 
       <main>
-        {/* ── Hero ───────────────────────────────────────────────────────── */}
         <section
           className="relative overflow-hidden py-20 sm:py-28"
           style={DARK_BG}
         >
-          {/* Glow */}
           <div
             className="pointer-events-none absolute right-0 top-0 h-[500px] w-[500px]"
             style={{
@@ -82,7 +79,6 @@ export default function ContactPage() {
               filter: "blur(50px)",
             }}
           />
-          {/* Grid */}
           <div
             className="pointer-events-none absolute inset-0 opacity-[0.03]"
             style={{
@@ -109,7 +105,6 @@ export default function ContactPage() {
           </Reveal>
         </section>
 
-        {/* ── Contact channels ───────────────────────────────────────────── */}
         <section className="py-16 border-b border-base-300">
           <div className="mx-auto max-w-6xl px-5 sm:px-8">
             <div className="grid gap-4 sm:grid-cols-3">
@@ -118,7 +113,6 @@ export default function ContactPage() {
                 return (
                   <Reveal delay={i * 80} key={c.title}>
                     <div className="group relative overflow-hidden border border-base-300 bg-base-100 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 h-full">
-                      {/* Accent line */}
                       <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-primary to-teal-400 scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
 
                       <div className="mb-4 flex h-10 w-10 items-center justify-center bg-primary/10 text-primary">
@@ -145,11 +139,9 @@ export default function ContactPage() {
           </div>
         </section>
 
-        {/* ── Contact form + info ─────────────────────────────────────────── */}
         <section className="py-20">
           <div className="mx-auto max-w-6xl px-5 sm:px-8">
             <div className="grid gap-16 lg:grid-cols-[1fr_400px] lg:items-start">
-              {/* Form */}
               <Reveal>
                 <div>
                   <p className="mb-2 text-xs font-black uppercase tracking-eyebrow text-primary">
@@ -162,9 +154,7 @@ export default function ContactPage() {
                 </div>
               </Reveal>
 
-              {/* Side info */}
               <Reveal className="space-y-6" delay={160}>
-                {/* Response time */}
                 <div className="border border-base-300 bg-base-100 p-6">
                   <div className="mb-3 flex items-center gap-3">
                     <div className="flex h-9 w-9 items-center justify-center bg-primary/10 text-primary">
@@ -181,7 +171,6 @@ export default function ContactPage() {
                   </p>
                 </div>
 
-                {/* FAQ link */}
                 <div className="border border-base-300 bg-base-100 p-6">
                   <div className="mb-3 flex items-center gap-3">
                     <div className="flex h-9 w-9 items-center justify-center bg-primary/10 text-primary">
@@ -202,7 +191,6 @@ export default function ContactPage() {
                   </Link>
                 </div>
 
-                {/* Teal callout */}
                 <div className="relative overflow-hidden p-6 bg-gradient-to-br from-primary to-primary/80">
                   <div
                     className="pointer-events-none absolute right-0 top-0 h-24 w-24 opacity-20"

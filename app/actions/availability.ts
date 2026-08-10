@@ -78,8 +78,6 @@ export interface OverrideData {
   slots: TimeSlot[];
 }
 
-// ── Load ──────────────────────────────────────────────────────────────────────
-
 export async function getAvailabilityData(): Promise<{
   schedules: ScheduleData[];
   overrides: OverrideData[];
@@ -95,7 +93,6 @@ export async function getAvailabilityData(): Promise<{
 
   const userTimezone = freshUser?.timezone ?? "UTC";
 
-  // All schedules for this user, default first then by creation order.
   const scheduleRows = await db.query.availabilitySchedule.findMany({
     where: eq(availabilitySchedule.userId, session.user.id),
     with: { windows: true },
@@ -131,7 +128,6 @@ export async function getAvailabilityData(): Promise<{
     )
     .orderBy(availabilityOverride.date);
 
-  // Group override rows by date — multiple rows per date = multiple slots
   const overrideMap = new Map<string, OverrideData>();
   for (const o of overrideRows) {
     if (o.isBlocked) {
@@ -163,8 +159,6 @@ export async function getAvailabilityData(): Promise<{
     userTimezone,
   };
 }
-
-// ── Update schedule windows ───────────────────────────────────────────────────
 
 export async function updateAvailabilitySchedule(
   scheduleId: string,
@@ -231,8 +225,6 @@ export async function updateAvailabilitySchedule(
   }
 }
 
-// ── Create default schedule (if none exists) ──────────────────────────────────
-
 export async function createDefaultSchedule(): Promise<
   ActionResult<{ id: string }>
 > {
@@ -274,8 +266,6 @@ export async function createDefaultSchedule(): Promise<
     return { error: "Something went wrong. Please try again." };
   }
 }
-
-// ── Create a NEW (non-default) schedule ───────────────────────────────────────
 
 export async function createSchedule(
   name: string
@@ -348,8 +338,6 @@ export async function createSchedule(
   }
 }
 
-// ── Duplicate a schedule (with its weekly windows) ────────────────────────────
-
 export async function duplicateSchedule(
   scheduleId: string
 ): Promise<ActionResult<{ id: string }>> {
@@ -395,8 +383,6 @@ export async function duplicateSchedule(
   }
 }
 
-// ── Rename a schedule ─────────────────────────────────────────────────────────
-
 export async function renameSchedule(
   scheduleId: string,
   name: string
@@ -429,8 +415,6 @@ export async function renameSchedule(
     return { error: "Something went wrong. Please try again." };
   }
 }
-
-// ── Set a schedule as the default ─────────────────────────────────────────────
 
 export async function setDefaultSchedule(
   scheduleId: string
@@ -475,8 +459,6 @@ export async function setDefaultSchedule(
   }
 }
 
-// ── Delete a schedule ─────────────────────────────────────────────────────────
-
 export async function deleteSchedule(
   scheduleId: string
 ): Promise<ActionResult> {
@@ -501,7 +483,7 @@ export async function deleteSchedule(
     }
 
     await db.transaction(async (tx) => {
-      // Event types pinned to this schedule fall back to the default (null).
+      // Event types pinned to this schedule fall back to the default.
       await tx
         .update(eventType)
         .set({ availabilityScheduleId: null })
@@ -516,9 +498,8 @@ export async function deleteSchedule(
         .delete(availabilitySchedule)
         .where(eq(availabilitySchedule.id, scheduleId));
 
-      // If we removed the default, promote another schedule. Pick the
-      // alphabetically-first remaining one so the server's choice matches the
-      // client's optimistic promotion (which sorts by name).
+      // Promote the alphabetically-first remaining schedule so this matches
+      // the client's optimistic promotion (which also sorts by name).
       if (target.isDefault) {
         const next = all
           .filter((s) => s.id !== scheduleId)
@@ -548,8 +529,6 @@ export async function deleteSchedule(
   }
 }
 
-// ── Date overrides ────────────────────────────────────────────────────────────
-
 export async function addAvailabilityOverride(data: {
   date: string;
   isBlocked: boolean;
@@ -563,7 +542,6 @@ export async function addAvailabilityOverride(data: {
       return { error: "Invalid date format" };
     }
 
-    // Delete all existing rows for this date
     await db
       .delete(availabilityOverride)
       .where(
@@ -578,7 +556,6 @@ export async function addAvailabilityOverride(data: {
       : (data.slots ?? [{ startTime: "09:00", endTime: "17:00" }]);
 
     if (data.isBlocked) {
-      // Insert a single blocked row
       await db.insert(availabilityOverride).values({
         userId: session.user.id,
         date: data.date,
@@ -588,7 +565,6 @@ export async function addAvailabilityOverride(data: {
         reason: data.reason?.trim() || null,
       });
     } else {
-      // Insert one row per slot
       await db.insert(availabilityOverride).values(
         slots.map((s) => ({
           userId: session.user.id,
@@ -622,7 +598,6 @@ export async function updateUserTimezone(
 ): Promise<ActionResult> {
   try {
     const session = await requireSession();
-    // Validate timezone string
     try {
       Intl.DateTimeFormat(undefined, { timeZone: timezone });
     } catch {
@@ -695,8 +670,6 @@ export async function deleteAvailabilityOverride(
     return { error: "Something went wrong. Please try again." };
   }
 }
-
-// ── Meeting Limits ────────────────────────────────────────────────────────────
 
 export type MeetingLimitPeriod = "day" | "week" | "month";
 

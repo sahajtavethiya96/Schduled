@@ -166,7 +166,6 @@ export default async function BookingsPage({
       ? (rawTab as Tab)
       : (resolvedTab ?? "upcoming");
 
-  // ── Tab counts ───────────────────────────────────────────────────────────────
   const [upcomingCount, pastCount, cancelledCount, pendingCount] =
     await Promise.all([
       db
@@ -222,7 +221,6 @@ export default async function BookingsPage({
     pending: pendingCount[0]?.value ?? 0,
   };
 
-  // ── Fetch bookings ───────────────────────────────────────────────────────────
   const baseWhere =
     tab === "upcoming"
       ? and(
@@ -371,9 +369,7 @@ export default async function BookingsPage({
         title="Bookings"
       />
 
-      {/* ── Toolbar: pill tabs + search ──────────────────────────────────────── */}
       <div className="flex flex-wrap items-center gap-2 mb-6">
-        {/* Pill tabs */}
         <div className="flex flex-wrap items-center gap-1.5">
           {TABS.map(({ key, label }) => (
             <Link
@@ -407,25 +403,22 @@ export default async function BookingsPage({
           ))}
         </div>
 
-        {/* Date range filter */}
         <Suspense>
           <BookingsDateFilter dateFrom={dateFrom} dateTo={dateTo} tab={tab} />
         </Suspense>
 
-        {/* Search — debounced, updates URL as you type */}
+        {/* Debounced search — updates URL as you type */}
         <Suspense>
           <BookingsSearch tab={tab} />
         </Suspense>
       </div>
 
-      {/* ── List ─────────────────────────────────────────────────────────────── */}
       {pageBookings.length === 0 ? (
         <EmptyState hasSearch={!!(search || dateFrom || dateTo)} tab={tab} />
       ) : (
         <div className="space-y-6">
           {dayGroups.map((g) => (
             <div key={g.key}>
-              {/* Day header */}
               <div className="mb-2 flex items-center gap-2">
                 <h3 className="text-sm font-semibold text-base-content">
                   {g.label}
@@ -437,16 +430,13 @@ export default async function BookingsPage({
                 )}
               </div>
 
-              {/* Rows for the day */}
               <div className="divide-y divide-base-300 border border-base-300 bg-base-100">
                 {g.items.map((b) => {
                   const isUpcoming = tab === "upcoming";
                   const isPending = tab === "pending";
                   const isRescheduleReq = b.status === "reschedule_requested";
-                  // A pending request whose slot has passed can no longer be
-                  // approved — show it as expired and drop the action buttons.
-                  // For a reschedule request, the slot that matters is the
-                  // REQUESTED time, not the still-confirmed original.
+                  // Expired = pending request whose slot has passed (checks the
+                  // requested time for reschedules, not the still-confirmed original).
                   const isExpired =
                     isPending &&
                     (isRescheduleReq
@@ -486,13 +476,11 @@ export default async function BookingsPage({
                       id={`booking-${b.id}`}
                       key={b.id}
                     >
-                      {/* Time range */}
                       <div className="w-[140px] shrink-0 text-sm font-medium text-muted-foreground tabular-nums">
                         {formatInTimeZone(b.startTime, hostTz, "h:mm a")} –{" "}
                         {formatInTimeZone(b.endTime, hostTz, "h:mm a")}
                       </div>
 
-                      {/* Color dot + name + event + meta */}
                       <div className="flex min-w-0 flex-1 items-start gap-2.5">
                         <span
                           className="mt-1.5 size-2.5 shrink-0 rounded-full"
@@ -551,7 +539,6 @@ export default async function BookingsPage({
                         </div>
                       </div>
 
-                      {/* Platform + status + actions */}
                       <div className="flex shrink-0 flex-wrap items-center gap-1.5 pl-[18px] sm:pl-0">
                         <span
                           className={cn(
@@ -577,7 +564,6 @@ export default async function BookingsPage({
                           {statusMeta.label}
                         </span>
 
-                        {/* View details — available on every booking, all tabs */}
                         <Button
                           asChild
                           className="h-7 gap-1 px-2 text-xs text-muted-foreground hover:text-primary"
@@ -692,7 +678,6 @@ export default async function BookingsPage({
         </div>
       )}
 
-      {/* ── Pagination ── */}
       {total > 0 && (
         <div className="mt-4 flex items-center justify-between gap-3 border-t border-base-300 pt-4">
           <p className="text-xs text-muted-foreground">
@@ -784,7 +769,6 @@ function EmptyState({ tab, hasSearch }: { tab: Tab; hasSearch: boolean }) {
     return (
       <div className="flex justify-center py-10">
         <div className="w-full max-w-lg border border-base-300 bg-base-100 overflow-hidden">
-          {/* Header */}
           <div className="flex items-center gap-3 border-b border-base-300 bg-amber-500/[0.06] px-6 py-5">
             <span className="flex size-10 shrink-0 items-center justify-center bg-amber-500/10 text-amber-600">
               <Hourglass size={20} weight="fill" />
@@ -799,7 +783,6 @@ function EmptyState({ tab, hasSearch }: { tab: Tab; hasSearch: boolean }) {
             </div>
           </div>
 
-          {/* How it works */}
           <div className="px-6 py-5">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
               How approval works
@@ -851,7 +834,6 @@ function EmptyState({ tab, hasSearch }: { tab: Tab; hasSearch: boolean }) {
             </div>
           </div>
 
-          {/* Actions */}
           <div className="flex items-center gap-3 border-t border-base-300 bg-base-200/30 px-6 py-4">
             <Button asChild className="gap-1.5" size="sm">
               <Link href="/event-types">
@@ -875,7 +857,6 @@ function EmptyState({ tab, hasSearch }: { tab: Tab; hasSearch: boolean }) {
     return (
       <div className="flex justify-center py-6">
         <div className="w-full max-w-lg border border-base-300 bg-base-100 overflow-hidden">
-          {/* Header */}
           <div className="flex items-center gap-3 border-b border-base-300 bg-primary/[0.04] px-6 py-5">
             <span className="flex size-10 shrink-0 items-center justify-center bg-primary/10 text-primary">
               <CalendarBlank size={20} weight="duotone" />
@@ -891,7 +872,6 @@ function EmptyState({ tab, hasSearch }: { tab: Tab; hasSearch: boolean }) {
             </div>
           </div>
 
-          {/* Steps */}
           <div className="px-6 py-5">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
               Get your first booking
@@ -945,7 +925,6 @@ function EmptyState({ tab, hasSearch }: { tab: Tab; hasSearch: boolean }) {
             </div>
           </div>
 
-          {/* Footer CTA */}
           <div className="flex items-center gap-3 border-t border-base-300 bg-base-200/30 px-6 py-4">
             <Button asChild className="gap-1.5" size="sm">
               <Link href="/event-types">

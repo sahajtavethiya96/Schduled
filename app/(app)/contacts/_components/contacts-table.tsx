@@ -160,7 +160,6 @@ export function ContactsTable({
         return;
       }
       toast.success(`${name} restored to contacts.`);
-      // Navigate back to All contacts tab
       router.push("/contacts");
     });
   }
@@ -195,7 +194,6 @@ export function ContactsTable({
 
   return (
     <div className="space-y-4">
-      {/* Toolbar: search */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex items-center max-w-xs w-full">
           {isPending ? (
@@ -226,7 +224,6 @@ export function ContactsTable({
           />
         </div>
       </div>
-      {/* Filter chips */}
       <div className="flex flex-wrap items-center gap-1.5">
         {(
           [
@@ -282,7 +279,6 @@ export function ContactsTable({
           </p>
         </div>
       ) : (
-        /* Table */
         <div className="overflow-x-auto border border-base-300">
           <Table className="w-full min-w-[640px] table-fixed">
             <TableHeader>
@@ -455,8 +451,6 @@ export function ContactsTable({
           </Table>
         </div>
       )}{" "}
-      {/* end table vs empty-state */}
-      {/* Pagination — always show count; page numbers when more than one page */}
       {total > 0 && (
         <div className="flex items-center justify-between gap-3 border-t border-base-300 px-6 py-3">
           <p className="text-xs text-muted-foreground">
@@ -538,7 +532,6 @@ export function ContactsTable({
           )}
         </div>
       )}
-      {/* Notes dialog */}
       <Dialog
         onOpenChange={(open) => {
           if (!open) {

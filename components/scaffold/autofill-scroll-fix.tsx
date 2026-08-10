@@ -2,12 +2,9 @@
 
 import { useEffect } from "react";
 
-// Chrome positions native popups (autofill/password suggestions, <select>
-// dropdowns) against the focused field and only tracks/closes them on window
-// scroll — not on scroll of an inner container. Since the app scrolls inside
-// [data-app-main] rather than the window, those popups stay pinned at their
-// original screen position while the field moves underneath, making them
-// appear to drift. Blurring the field on scroll closes the popup cleanly.
+// Chrome tracks native popups (autofill, <select>) against window scroll only,
+// but this app scrolls inside [data-app-main] — so popups drift from their
+// field instead of following it. Blurring on scroll closes them cleanly.
 export function AutofillScrollFix() {
   useEffect(() => {
     const main = document.querySelector<HTMLElement>("[data-app-main]");

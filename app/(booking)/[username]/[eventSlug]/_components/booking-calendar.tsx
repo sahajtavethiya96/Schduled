@@ -67,8 +67,6 @@ import {
 import { PRODUCT_NAME } from "@/config/platform";
 import { cn, dialCodeFromTz, normalizeTzName } from "@/lib/utils";
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-
 interface HostInfo {
   company?: string | null;
   id: string;
@@ -125,8 +123,7 @@ interface Props {
   today: string; // server-rendered initial value; corrected client-side on mount
 }
 
-// ── Outer helpers (stable identity — no remount on every render) ──────────────
-
+// Defined outside the component so they keep a stable identity across renders.
 const inputCls =
   "w-full border border-input bg-base-100 px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all placeholder:text-muted-foreground/60";
 
@@ -250,8 +247,6 @@ function QuestionInput({
   );
 }
 
-// ── Constants ─────────────────────────────────────────────────────────────────
-
 const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const ALL_DAYS = [
   "sunday",
@@ -310,7 +305,6 @@ function buildTzList(): TzEntry[] {
   }
 
   const offsetMinutes = (tz: string): number => {
-    // Compute numeric UTC offset for sort
     try {
       const parts = new Intl.DateTimeFormat("en", {
         timeZone: tz,
@@ -353,8 +347,6 @@ function buildTzList(): TzEntry[] {
 const ALL_TIMEZONES: TzEntry[] =
   typeof window === "undefined" ? [] : buildTzList();
 
-// ── Timezone Search Component ─────────────────────────────────────────────────
-
 function TimezoneSearch({
   value,
   onChange,
@@ -395,7 +387,6 @@ function TimezoneSearch({
 
   useEffect(() => {
     if (open) {
-      // Focus input and scroll selected item into view after paint
       requestAnimationFrame(() => {
         inputRef.current?.focus();
         selectedRef.current?.scrollIntoView({ block: "nearest" });
@@ -423,7 +414,6 @@ function TimezoneSearch({
         onOpenAutoFocus={(e) => e.preventDefault()}
         side="top"
       >
-        {/* Search input */}
         <div className="flex items-center gap-2 border-b border-base-300 px-3 py-2">
           <MagnifyingGlass
             className="shrink-0 text-muted-foreground"
@@ -447,7 +437,6 @@ function TimezoneSearch({
           )}
         </div>
 
-        {/* Timezone list */}
         <div className="max-h-60 overflow-y-auto">
           {list.length === 0 ? (
             <p className="py-6 text-center text-sm text-muted-foreground">
@@ -539,8 +528,6 @@ function PolicyBox({ text }: { text: string }) {
     </div>
   );
 }
-
-// ── Main Component ────────────────────────────────────────────────────────────
 
 export function BookingCalendar({
   isOwner,
@@ -708,9 +695,7 @@ export function BookingCalendar({
     });
   }
 
-  // ── URL sync ────────────────────────────────────────────────────────────────
-
-  function syncUrl(date: string | null, slot: SlotInfo | null, mth: Date) {
+    function syncUrl(date: string | null, slot: SlotInfo | null, mth: Date) {
     if (typeof window === "undefined") {
       return;
     }
@@ -729,7 +714,8 @@ export function BookingCalendar({
     );
   }
 
-  // Restore state from URL params on first mount (inline fetch avoids forward-ref to fetchSlots)
+  // Restores state from URL params on first mount; fetches slots inline since
+  // fetchSlots is declared later as a useCallback and can't be forward-referenced.
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally mount-only; hasRestoredFromUrl guards re-runs, and this must use the URL's initial values, not refetch on later prop changes
   useEffect(() => {
     if (hasRestoredFromUrl.current) {
@@ -748,7 +734,6 @@ export function BookingCalendar({
     }
     if (dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
       setSelectedDate(dateParam);
-      // Inline slot fetch (can't reference fetchSlots useCallback — declared later)
       setLoadingSlots(true);
       fetch(
         `/api/slots?username=${host.username}&slug=${eventType.slug}&date=${dateParam}&duration=${selectedDuration}`
@@ -787,9 +772,7 @@ export function BookingCalendar({
     setPendingTimeRestore(null);
   }, [slots, pendingTimeRestore]);
 
-  // ── Month navigation (with URL sync) ───────────────────────────────────────
-
-  function handlePrevMonth() {
+    function handlePrevMonth() {
     setMonth((m) => {
       const next = subMonths(m, 1);
       syncUrl(selectedDate, selectedSlot, next);
@@ -816,7 +799,6 @@ export function BookingCalendar({
     setSlots([]);
     setSelectedSlot(null);
     setStep("calendar");
-    // Reset URL to base path (no date/time selection)
     if (typeof window !== "undefined") {
       window.history.replaceState(null, "", window.location.pathname);
     }
@@ -964,7 +946,6 @@ export function BookingCalendar({
 
     const answersPayload = eventType.questions
       .map((q) => {
-        // Phone-type questions are answered via the dedicated phone field.
         if (q.type === "phone") {
           return {
             questionId: q.id,
@@ -1029,9 +1010,7 @@ export function BookingCalendar({
     }
   }
 
-  // ── Calendar grid data ─────────────────────────────────────────────────────
-
-  if (availableDaysOfWeek.length === 0 && specialDates.length === 0) {
+    if (availableDaysOfWeek.length === 0 && specialDates.length === 0) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-base-100 p-6">
         <div className="w-full max-w-sm border border-base-300 bg-base-100 p-8 text-center">
@@ -1060,22 +1039,15 @@ export function BookingCalendar({
   const hostCompany = [host.jobTitle, host.company].filter(Boolean).join(" @ ");
   const needsPhone = eventType.locationType === "phone_host_calls";
 
-  // ── Render ─────────────────────────────────────────────────────────────────
-
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-base-100 p-4 md:p-6 lg:flex lg:h-screen lg:items-center lg:overflow-hidden lg:p-8">
-      {/* Decorative blur circles */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="absolute right-[8%] top-[6%] h-80 w-80 bg-teal-400/[0.09] blur-[90px]" />
         <div className="absolute left-[4%] bottom-[15%] h-60 w-60 bg-teal-300/[0.07] blur-[70px]" />
       </div>
 
-      {/* Card */}
       <div className="relative z-10 mx-auto w-full max-w-[900px] overflow-hidden bg-base-100 border border-base-300 lg:flex lg:h-full lg:max-h-[680px] lg:flex-col">
-        {/* ── Progress bar ── */}
         <div className="flex items-center gap-2 border-b border-base-300 bg-base-100 px-3 py-3">
-          {/* Back — shown only to the host previewing their own page; returns
-              them to the event-type list / dashboard they came from. */}
           <div className="flex w-24 shrink-0 justify-start">
             {isOwner && (
               <button
@@ -1090,7 +1062,6 @@ export function BookingCalendar({
             )}
           </div>
 
-          {/* Steps — centered */}
           <div className="flex flex-1 items-center justify-center gap-0">
             {STEPS.map((label, i) => {
               const n = i + 1;
@@ -1136,7 +1107,7 @@ export function BookingCalendar({
             })}
           </div>
 
-          {/* Right — owner toolbar (Menu + Copy link) or empty spacer to balance left */}
+          {/* Empty spacer to balance the left side when not the owner */}
           <div className="flex shrink-0 items-center justify-end gap-1.5 min-w-24">
             {isOwner && (
               <>
@@ -1196,10 +1167,8 @@ export function BookingCalendar({
         </div>
 
         <div className="flex flex-1 flex-col overflow-hidden lg:flex-row">
-          {/* ── Left info panel ── */}
           <div className="flex shrink-0 flex-col gap-0 overflow-x-hidden border-b border-base-300 bg-base-100 lg:w-[230px] lg:border-b-0 lg:border-r lg:overflow-y-auto">
             <div className="flex min-w-0 flex-col gap-5 p-6">
-              {/* Avatar */}
               {host.image ? (
                 <Image
                   alt={host.name}
@@ -1214,7 +1183,6 @@ export function BookingCalendar({
                 </div>
               )}
 
-              {/* Host identity */}
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">
                   Meeting with
@@ -1232,7 +1200,6 @@ export function BookingCalendar({
 
               <div className="-mx-6 border-t border-base-300" />
 
-              {/* Event info */}
               <div>
                 <h1 className="text-[15px] font-bold leading-snug text-base-content">
                   {eventType.name}
@@ -1247,7 +1214,6 @@ export function BookingCalendar({
                 )}
               </div>
 
-              {/* Duration picker — show chips only if multiple durations */}
               {eventType.durations.length > 1 ? (
                 <div>
                   <p className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">
@@ -1274,7 +1240,6 @@ export function BookingCalendar({
                 </div>
               ) : null}
 
-              {/* Meta */}
               <div className="flex flex-col gap-2">
                 <span className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Clock className="shrink-0 text-primary/70" size={13} />
@@ -1284,10 +1249,9 @@ export function BookingCalendar({
                   <span className="shrink-0 text-primary/70">{loc.icon}</span>
                   {loc.label}
                 </span>
-                {/* Gated on locationType, not just locationValue — the field
-                    isn't cleared client-side when a host switches away from
-                    in-person/custom, so a stale address/link can still be
-                    sitting in the column for a Zoom/phone event type. */}
+                {/* Gated on locationType, not locationValue — the value isn't
+                    cleared client-side when the host switches away from
+                    in-person/custom, so a stale address could otherwise show. */}
                 {(eventType.locationType === "in_person" ||
                   eventType.locationType === "custom") &&
                   eventType.locationValue && (
@@ -1340,7 +1304,6 @@ export function BookingCalendar({
 
               <div className="-mx-6 border-t border-base-300" />
 
-              {/* Available days chips */}
               <div>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">
                   Available
@@ -1364,14 +1327,12 @@ export function BookingCalendar({
             </div>
           </div>
 
-          {/* ── Calendar panel (hidden in form step) ── */}
           {step !== "form" && (
             <div className="shrink-0 border-b border-base-300 p-6 lg:w-[320px] lg:border-b-0 lg:border-r lg:overflow-y-auto">
               <h2 className="mb-5 text-sm font-semibold text-base-content">
                 Select a Date &amp; Time
               </h2>
 
-              {/* Month nav */}
               <div className="mb-4 flex items-center justify-between">
                 <button
                   className="flex h-11 w-11 items-center justify-center text-muted-foreground transition-colors hover:text-base-content disabled:cursor-not-allowed disabled:opacity-30"
@@ -1396,7 +1357,6 @@ export function BookingCalendar({
                 </button>
               </div>
 
-              {/* Day headers */}
               <div className="mb-2 grid grid-cols-7">
                 {DAY_LABELS.map((d) => (
                   <span
@@ -1408,7 +1368,6 @@ export function BookingCalendar({
                 ))}
               </div>
 
-              {/* Day grid */}
               <div
                 className={cn(
                   "grid grid-cols-7 gap-y-0.5 transition-opacity duration-200",
@@ -1467,21 +1426,18 @@ export function BookingCalendar({
                 })}
               </div>
 
-              {/* Timezone picker */}
               <div className="mt-5 border-t border-base-300 pt-4">
                 <TimezoneSearch onChange={setInviteeTz} value={inviteeTz} />
               </div>
             </div>
           )}
 
-          {/* ── Slots panel ── */}
           {step === "calendar" && (
             <div
               className="flex flex-1 flex-col overflow-hidden"
               ref={slotsPanelRef}
             >
               {selectedDate ? (
-                /* Slot list */
                 <div className="flex flex-1 flex-col overflow-hidden">
                   <div className="shrink-0 border-b border-base-300 px-6 py-4">
                     <p className="text-xs font-medium text-muted-foreground">
@@ -1576,7 +1532,6 @@ export function BookingCalendar({
                     )}
                   </div>
 
-                  {/* Continue CTA */}
                   {selectedSlot && (
                     <div className="shrink-0 border-t border-base-300 bg-base-100 p-4">
                       <button
@@ -1591,7 +1546,6 @@ export function BookingCalendar({
                   )}
                 </div>
               ) : (
-                /* Quick pick — no date selected */
                 <div className="flex flex-1 flex-col justify-center gap-6 p-6">
                   <div className="flex items-center gap-2">
                     <Lightning
@@ -1641,7 +1595,6 @@ export function BookingCalendar({
             </div>
           )}
 
-          {/* ── Form panel ── */}
           {step === "form" && (
             <div className="flex flex-1 flex-col overflow-hidden">
               <div className="flex-1 overflow-y-auto p-6 [scrollbar-width:thin]">
@@ -1885,7 +1838,6 @@ export function BookingCalendar({
           )}
         </div>
 
-        {/* ── "Powered by <product>" footer ── */}
         {showPoweredBy && (
           <a
             aria-label={`Powered by ${PRODUCT_NAME}`}

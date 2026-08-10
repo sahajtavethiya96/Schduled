@@ -90,9 +90,7 @@ async function processEmailSendJob(job: Job<EmailSendPayload>) {
       })
       .where(eq(emailOutbox.id, outboxId));
 
-    // Re-throw so pg-boss records this job as failed. Otherwise the handler
-    // returns normally, the job lands in `completed`, and the "Failed
-    // Jobs" count stays at 0 even though the email never sent.
+    // Re-throw so pg-boss marks the job failed instead of completed.
     throw error;
   }
 }

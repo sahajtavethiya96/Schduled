@@ -99,8 +99,7 @@ const schema = z
           if (!v || v.trim() === "") {
             return true;
           }
-          // Digits after the dial code's leading "+" — bounds the local
-          // number to a plausible length (4–15 digits, per E.164).
+          // Bounds the local number to a plausible length (4–15 digits, per E.164).
           const digits = v.trim().replace(/\D/g, "");
           return digits.length >= 5 && digits.length <= 18;
         },
@@ -208,11 +207,9 @@ const TABS = [
   { id: "cancellation", label: "Cancellation" },
 ];
 
-// Scoped to sessionStorage (this browser tab only, cleared when it closes)
-// rather than localStorage — this is a scratch draft for an interrupted
-// editing session (e.g. clicking "Edit Schedule" and coming back via the
-// browser Back button), not something that should resurrect across
-// unrelated future visits.
+// sessionStorage (not localStorage) — a scratch draft for an interrupted
+// editing session (e.g. clicking "Edit Schedule" and returning via Back),
+// not something that should resurrect on unrelated future visits.
 function draftKeyFor(mode: "create" | "edit", eventTypeId?: string) {
   return mode === "create"
     ? "schduled:event-type-draft:new"
@@ -286,16 +283,14 @@ export function EventTypeBuilder({
     defaultValues,
   });
 
-  // Track the last-saved values so "Discard" reverts to the most recent save
-  // in edit mode, not the values the page was originally rendered with.
+  // Last-saved values, so "Discard" reverts to the most recent save in edit
+  // mode rather than the page's original server-rendered values.
   const savedValuesRef = useRef(defaultValues);
 
   const draftKey = draftKeyFor(mode, eventTypeId);
-  // Gates the persist-effect below until the restore-effect has had its
-  // chance to run first. Both effects fire in the same commit on mount;
-  // without this gate, the persist-effect's first run would capture
-  // `watchedValues` from BEFORE the restore's form.reset() takes effect and
-  // overwrite the just-read draft with the pre-restore (blank) values.
+  // Gates the persist-effect below until the restore-effect (mount) has run,
+  // since both fire in the same commit — otherwise persist's first run would
+  // capture pre-restore (blank) values and overwrite the just-read draft.
   const [hydrated, setHydrated] = useState(false);
 
   function clearDraft() {
@@ -306,22 +301,18 @@ export function EventTypeBuilder({
     }
   }
 
-  // Restore an interrupted draft on mount — e.g. the user clicked "Edit
-  // Schedule" (which navigates away to /availability) and came back via the
-  // browser Back button. keepDefaultValues so formState.isDirty still
+  // Restore an interrupted draft on mount (e.g. user left via "Edit
+  // Schedule" and returned via Back). keepDefaultValues so isDirty still
   // compares against the ORIGINAL server values, not the restored draft —
-  // otherwise the Save/Discard buttons in edit mode wouldn't realize there's
-  // anything to save.
+  // otherwise Save/Discard wouldn't realize there's anything to save.
   // biome-ignore lint/correctness/useExhaustiveDependencies: mount-only restore, re-running on draftKey/form.reset would re-trigger the draft restore
   useEffect(() => {
     try {
       const raw = sessionStorage.getItem(draftKey);
       const parsed = raw ? JSON.parse(raw) : null;
-      // Deliberately NOT validated against the full schema here — a draft is
-      // often mid-edit and legitimately incomplete (e.g. required-field or
-      // cross-field rules not satisfied yet). form.reset() doesn't require
-      // validity; the existing per-tab/submit validation UX handles
-      // incompleteness normally once the user acts on it.
+      // Deliberately not validated against the schema — a draft is often
+      // mid-edit and legitimately incomplete; normal per-tab/submit
+      // validation handles that once the user acts on it.
       if (
         parsed?.values &&
         typeof parsed.values === "object" &&
@@ -345,29 +336,31 @@ export function EventTypeBuilder({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const watchedValues = form.watch();
-
-  // Persist the in-progress draft on every change so it survives the
-  // navigate-away-and-come-back flow above. Gated on `hydrated` — see above.
+  // Persist the in-progress draft, but only on genuine field edits — a
+  // subscription (rather than `form.watch()` + effect-on-value) so unrelated
+  // re-renders (e.g. the post-submit success dialog) can't refire this and
+  // resurrect a draft that `clearDraft()` just removed.
   useEffect(() => {
     if (!hydrated) {
       return;
     }
-    try {
-      sessionStorage.setItem(
-        draftKey,
-        JSON.stringify({ values: watchedValues, activeTab, pendingQuestions })
-      );
-    } catch {
-      // Same as above — losing the draft-persistence nicety isn't worth
-      // crashing the form over.
-    }
-  }, [hydrated, watchedValues, activeTab, pendingQuestions, draftKey]);
+    const subscription = form.watch((values) => {
+      try {
+        sessionStorage.setItem(
+          draftKey,
+          JSON.stringify({ values, activeTab, pendingQuestions })
+        );
+      } catch {
+        // Same as above — losing the draft-persistence nicety isn't worth
+        // crashing the form over.
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [hydrated, form, activeTab, pendingQuestions, draftKey]);
 
   const isDirty = form.formState.isDirty;
   const tabIndex = TABS.findIndex((t) => t.id === activeTab);
 
-  // Warn before closing/refreshing when there are unsaved changes
   useEffect(() => {
     if (!isDirty) {
       return;
@@ -452,10 +445,8 @@ export function EventTypeBuilder({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit, onInvalid)}>
-        {/* Header + tab bar stick together as one unit while the form scrolls */}
         <div className="sticky top-0 z-20 bg-page">
           <div className="border border-base-300 bg-base-100">
-            {/* Breadcrumb row */}
             <Breadcrumb className="border-b border-base-300/60 px-4 py-1.5 text-xs">
               <BreadcrumbList className="gap-1.5 font-sans text-xs font-normal normal-case tracking-normal sm:gap-1.5">
                 <BreadcrumbItem>
@@ -480,9 +471,7 @@ export function EventTypeBuilder({
               </BreadcrumbList>
             </Breadcrumb>
 
-            {/* Title row */}
             <div className="flex flex-wrap items-center gap-3 px-4 py-3">
-              {/* Initials avatar */}
               <span
                 aria-hidden
                 className="h-9 w-9 shrink-0 flex items-center justify-center text-white font-bold text-base ring-2 ring-inset ring-black/10"
@@ -498,14 +487,12 @@ export function EventTypeBuilder({
                       (mode === "create" ? "New Meeting Type" : "Untitled")}
                   </h1>
                 </div>
-                {/* Event type badge */}
                 <span className="mt-1 inline-block text-xs font-medium text-muted-foreground">
                   {MEETING_TYPES.find((m) => m.id === form.watch("meetingType"))
                     ?.label ?? "One-on-One"}
                 </span>
               </div>
 
-              {/* Save / Discard always visible in header */}
               <div className="flex shrink-0 items-center gap-2">
                 {mode === "edit" && (
                   <Button
@@ -542,8 +529,8 @@ export function EventTypeBuilder({
             </div>
           </div>
 
-          {/* Tab bar — custom, avoids scroll arrows. Aligns to the
-              header card above (no edge-to-edge bleed) so the borders line up. */}
+          {/* Custom tab bar (avoids native scroll arrows); no edge-to-edge
+              bleed so its border lines up with the header card above. */}
           <div className="border-b border-base-300 bg-page">
             <div className="flex overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {TABS.map((tab) => (
@@ -565,9 +552,7 @@ export function EventTypeBuilder({
           </div>
         </div>
 
-        {/* Tab content — two-column layout on all tabs */}
         <div className="mt-6 flex gap-10 items-start">
-          {/* Left: form content */}
           <div className="flex-1 min-w-0 max-w-3xl">
             {activeTab === "general" && (
               <TabGeneral
@@ -605,8 +590,8 @@ export function EventTypeBuilder({
             {activeTab === "notifications" && <TabNotifications form={form} />}
             {activeTab === "cancellation" && <TabCancellation form={form} />}
 
-            {/* Prev / Next — sticky three-column nav. Aligns to the form column
-                (no edge-to-edge bleed) so its border lines up with the fields. */}
+            {/* Sticky three-column nav; no edge-to-edge bleed so its border
+                lines up with the form fields above. */}
             <div className="mt-8 sticky bottom-0 py-3 border-t border-base-300 bg-page flex items-center justify-between">
               <Button
                 className="gap-1.5"
@@ -664,7 +649,6 @@ export function EventTypeBuilder({
             </div>
           </div>
 
-          {/* Right: live preview — always visible on large screens */}
           <div className="w-80 shrink-0 hidden lg:block lg:sticky lg:top-44">
             <LivePreview
               form={form}
@@ -711,7 +695,6 @@ export function EventTypeBuilder({
           </div>
 
           <div className="flex flex-col gap-2 pt-1">
-            {/* Preview booking page */}
             {username && (
               <a
                 className="inline-flex items-center justify-center gap-2 h-9 px-4 text-sm font-medium bg-primary text-primary-content hover:bg-primary/90 transition-colors"
@@ -724,7 +707,6 @@ export function EventTypeBuilder({
               </a>
             )}
 
-            {/* Go to event list */}
             <Link
               className="inline-flex items-center justify-center gap-2 h-9 px-4 text-sm font-medium border border-base-300 hover:bg-base-200 transition-colors"
               href="/event-types"
@@ -733,7 +715,6 @@ export function EventTypeBuilder({
               Go to event list
             </Link>
 
-            {/* Continue editing (create mode only) */}
             {successInfo?.isCreate && (
               <button
                 className="inline-flex items-center justify-center h-9 px-4 text-sm text-muted-foreground hover:text-base-content transition-colors"

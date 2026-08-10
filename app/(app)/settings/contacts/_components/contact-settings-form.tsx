@@ -87,7 +87,6 @@ export function ContactSettingsForm({
         </div>
 
         <div className="space-y-5 px-5 py-5">
-          {/* Auto-create toggle */}
           <label
             className="flex cursor-pointer items-start justify-between gap-4"
             htmlFor="auto-create-toggle"
@@ -108,7 +107,6 @@ export function ContactSettingsForm({
             />
           </label>
 
-          {/* Exclusion list — tag chip input */}
           <div className="border-t border-base-300 pt-5">
             <p className="text-sm font-semibold text-base-content">
               Exclude domains or email addresses
@@ -120,7 +118,6 @@ export function ContactSettingsForm({
               contacts.
             </p>
 
-            {/* Tag input box */}
             <label
               className={[
                 "flex min-h-[42px] flex-wrap items-center gap-1.5 border border-input bg-base-100 px-3 py-2 text-sm transition-colors",

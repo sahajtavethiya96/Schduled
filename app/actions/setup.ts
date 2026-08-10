@@ -18,14 +18,12 @@ export async function createFirstAdmin(data: {
   password: string;
 }): Promise<ActionResult> {
   try {
-    // Check if any user exists
     const [existing] = await db.select({ id: user.id }).from(user).limit(1);
 
     if (existing) {
       return { error: "An admin account already exists." };
     }
 
-    // Validate inputs
     const name = data.name.trim();
     const email = data.email.trim().toLowerCase();
     const password = data.password.trim();
@@ -47,7 +45,6 @@ export async function createFirstAdmin(data: {
       return { error: complexityError };
     }
 
-    // Create admin user using Better Auth's sign-up
     const result = await auth.api.signUpEmail({
       body: {
         email,
@@ -62,13 +59,10 @@ export async function createFirstAdmin(data: {
 
     const adminId = result.user.id;
 
-    // Re-check + promote atomically: if a concurrent submission (double
-    // form-submit, two tabs) already created a different user first, this
-    // account isn't the legitimate first admin — delete it rather than
-    // leaving two admins. Wrapping in a transaction also means a failure
-    // partway through can't strand a non-admin user behind a gated /setup:
-    // the catch block below deletes the just-created account so setup stays
-    // retryable.
+    // Re-check + promote atomically: if a concurrent submission (two tabs)
+    // already created a different user first, delete this one rather than
+    // leaving two admins. The catch block below rolls back on any failure so
+    // setup stays retryable instead of stranding a non-admin behind /setup.
     let promoted: boolean;
     try {
       promoted = await db.transaction(async (tx) => {

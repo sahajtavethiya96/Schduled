@@ -20,7 +20,6 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-// Shared "can't reschedule" notice with a way back to the booking page.
 function RescheduleNotice({
   children,
   backHref,
@@ -192,8 +191,7 @@ export default async function ReschedulePage({
     "yyyy-MM-dd"
   );
 
-  // Mirror /api/slots and /api/available-days: a fixed window clamps the
-  // selectable range to [rangeStart, rangeEnd] so the calendar never offers a
+  // Mirrors /api/slots and /api/available-days so the calendar never offers a
   // date the reschedule API would reject.
   const isFixed =
     b.bookingWindowType === "fixed" &&

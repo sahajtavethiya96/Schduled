@@ -3,7 +3,6 @@ export default function RescheduleLoading() {
     <div className="relative min-h-screen bg-base-200/30 p-4 md:p-6 lg:flex lg:h-screen lg:items-center lg:p-8 animate-pulse">
       <div className="mx-auto w-full max-w-[900px] bg-base-100 border border-base-300 lg:flex lg:max-h-[640px]">
         <div className="flex flex-col lg:flex-row flex-1">
-          {/* Left info panel */}
           <div className="lg:w-[230px] border-b lg:border-b-0 lg:border-r border-base-300 p-6 space-y-4">
             <div className="h-10 w-10 bg-base-200" />
             <div className="space-y-1.5">
@@ -18,7 +17,6 @@ export default function RescheduleLoading() {
             </div>
           </div>
 
-          {/* Calendar panel */}
           <div className="lg:w-[320px] border-b lg:border-b-0 lg:border-r border-base-300 p-6 space-y-4">
             <div className="flex items-center justify-between">
               <div className="h-9 w-9 bg-base-200" />
@@ -33,7 +31,6 @@ export default function RescheduleLoading() {
             </div>
           </div>
 
-          {/* Slots panel */}
           <div className="flex-1 p-6 space-y-3">
             <div className="h-4 w-24 bg-base-200" />
             <div className="h-5 w-36 bg-base-200" />

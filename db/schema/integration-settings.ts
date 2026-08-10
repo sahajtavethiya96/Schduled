@@ -1,14 +1,9 @@
 import { boolean, integer, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 
-// Admin-configurable alternative to the optional env vars in lib/env.ts
-// (SMTP, Google OAuth, Zoom OAuth, S3/R2 storage) — set from the setup
-// wizard or Settings → Services instead of editing .env. Single row (id
-// "default"). Every field here is a fallback source: lib/integration-settings.ts
-// prefers a non-null DB value and falls back to the matching env var per
-// field, so existing .env-only deployments are unaffected. `*Encrypted`
-// columns are AES-GCM ciphertext (lib/encrypt.ts, key derived from
-// ENCRYPT_KEY) — never sent to the browser in plaintext (see
-// app/actions/platform-settings.ts).
+// Admin-configurable alternative to the optional env vars in lib/env.ts.
+// Single row (id "default"); a non-null DB value wins over the matching env
+// var per field. `*Encrypted` columns are AES-GCM ciphertext, never sent to
+// the browser in plaintext.
 export const integrationSetting = pgTable('integration_setting', {
   id: text('id').primaryKey().default('default'),
 
@@ -22,8 +17,7 @@ export const integrationSetting = pgTable('integration_setting', {
   emailWebhookSecretEncrypted: text('email_webhook_secret_encrypted'),
 
   // Google OAuth — shared by Sign-In and Calendar. Sign-In is read once at
-  // process boot (lib/auth.ts, top-level await); changes need a restart.
-  // Calendar reads fresh per call. See docs/self-hosting/integrations.md.
+  // process boot, so changes need a restart; Calendar reads fresh per call.
   googleClientId: text('google_client_id'),
   googleClientSecretEncrypted: text('google_client_secret_encrypted'),
 
@@ -31,8 +25,7 @@ export const integrationSetting = pgTable('integration_setting', {
   zoomClientId: text('zoom_client_id'),
   zoomClientSecretEncrypted: text('zoom_client_secret_encrypted'),
 
-  // File storage — driver switch plus separate S3 and R2 credential sets
-  // (lib/env.ts treats them as distinct, not a shared shape).
+  // File storage — driver switch plus separate S3 and R2 credential sets.
   storageDriver: text('storage_driver'), // "local" | "s3" | "r2"
   s3Endpoint: text('s3_endpoint'),
   s3Region: text('s3_region'),

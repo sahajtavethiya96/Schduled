@@ -6,8 +6,7 @@ export function PageHeader({
   action,
 }: {
   description?: string;
-  // Accepted for backwards-compat with existing call sites, but no longer
-  // rendered — page eyebrows were removed across the app.
+  // Accepted for backwards-compat but no longer rendered (eyebrows were removed).
   eyebrow?: string;
   title: string;
   action?: ReactNode;

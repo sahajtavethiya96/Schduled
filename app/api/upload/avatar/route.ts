@@ -36,7 +36,7 @@ export async function POST(req: Request): Promise<Response> {
 
     const raw = Buffer.from(await file.arrayBuffer());
 
-    // Resize to 256×256 WebP — keeps file size tiny regardless of source dimensions
+    // Keeps file size tiny regardless of source dimensions.
     const processed = await sharp(raw)
       .resize(OUTPUT_SIZE, OUTPUT_SIZE, { fit: "cover", position: "centre" })
       .webp({ quality: 85 })
@@ -46,7 +46,6 @@ export async function POST(req: Request): Promise<Response> {
     await storage.upload(key, processed, "image/webp");
     const url = storage.url(key);
 
-    // Persist URL to user record
     await db
       .update(user)
       .set({ image: url, updatedAt: new Date() })

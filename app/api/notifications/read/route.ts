@@ -5,8 +5,6 @@ import { notification } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 
-// POST /api/notifications/read
-// Body: { ids?: string[] }  — mark specific ids read, or all unread if omitted.
 export async function POST(request: Request) {
   const requestHeaders = await headers();
   const current = await auth.api.getSession({ headers: requestHeaders });

@@ -1,0 +1,7 @@
+# Bug: Error/warning/info toasts render with a see-through background, looking like a broken/overlapping popup over the header
+
+**Where:** Global `<Toaster>` (`components/ui/sonner.tsx`), used app-wide via `app/layout.tsx`. Reported against the "New Meeting Type" page (`app/(app)/event-types/new`) when submitting a duplicate name — `createEventType`'s duplicate-name error (`app/actions/event-types.ts`) is surfaced via `toast.error(res.error)` in `app/(app)/event-types/_components/builder.tsx`. Sonner's own stylesheet renders the toaster at `position: fixed; top: 24px; z-index: 999999999`, which sits inside/over the app header (`components/scaffold/app-shell.tsx`, `h-14` = 56px tall, `z-40`).
+
+**How it was found:** User screenshot showed the "You already have a meeting type with this name..." error card visually overlapping the top search bar, looking like a stacking/z-index glitch.
+
+**Root cause:** Not actually a z-index problem — the toast already renders far above the header in stacking order. The `error`/`warning`/`info` toast variants used translucent Tailwind opacity backgrounds (`!bg-error/10`, `!bg-warning/15`, `!bg-primary/10`) instead of a solid color, so the header/search bar behind the fixed-position toast visibly bled through, making the popup look broken. `success` toasts didn't have this problem because they already used a dedicated solid `--success-subtle` token instead of an opacity utility — `error`/`warning`/`info` never got the equivalent tokens.

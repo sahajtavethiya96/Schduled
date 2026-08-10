@@ -85,20 +85,17 @@ export function NotificationBell() {
       setItems(data.notifications ?? []);
       setUnread(data.unreadCount ?? 0);
     } catch {
-      /* ignore */
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Initial load + poll every 10s
   useEffect(() => {
     load();
     const id = setInterval(load, 10_000);
     return () => clearInterval(id);
   }, [load]);
 
-  // Re-fetch immediately when the user switches back to this tab
   useEffect(() => {
     function onVisible() {
       if (document.visibilityState === "visible") {
@@ -123,9 +120,7 @@ export function NotificationBell() {
         body: "{}",
       });
       toast.success(notificationCountMessage(count, "marked as read"));
-    } catch {
-      /* ignore */
-    }
+    } catch {}
   }
 
   async function markRead(id: string) {
@@ -148,9 +143,7 @@ export function NotificationBell() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ids: [id] }),
         });
-      } catch {
-        /* ignore */
-      }
+      } catch {}
     }
   }
 
@@ -163,9 +156,7 @@ export function NotificationBell() {
     }
     try {
       await fetch(`/api/notifications/${id}`, { method: "DELETE" });
-    } catch {
-      /* ignore */
-    }
+    } catch {}
   }
 
   async function clearAll() {
@@ -178,9 +169,7 @@ export function NotificationBell() {
     try {
       await fetch("/api/notifications", { method: "DELETE" });
       toast.success(notificationCountMessage(count, "cleared"));
-    } catch {
-      /* ignore */
-    }
+    } catch {}
   }
 
   function handleOpenChange(next: boolean) {
@@ -297,7 +286,6 @@ export function NotificationBell() {
                 ) : (
                   content
                 )}
-                {/* Per-notification dismiss button */}
                 <button
                   aria-label="Dismiss notification"
                   className="absolute right-2 top-2 hidden items-center justify-center h-5 w-5 bg-base-100 text-muted-foreground hover:bg-base-200 hover:text-base-content group-hover/item:flex [@media(hover:none)]:flex transition-colors border border-base-300/60"

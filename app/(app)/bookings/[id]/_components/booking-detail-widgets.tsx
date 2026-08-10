@@ -26,7 +26,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 
-// ── Live "meeting starts in" countdown ────────────────────────────────────────
 export function Countdown({ startUtc }: { startUtc: string }) {
   const [label, setLabel] = useState<string | null>(null);
 
@@ -79,7 +78,6 @@ export function Countdown({ startUtc }: { startUtc: string }) {
   );
 }
 
-// ── Meeting link with copy + open ─────────────────────────────────────────────
 export function MeetingLink({ url }: { url: string }) {
   const [copied, setCopied] = useState(false);
 
@@ -123,7 +121,6 @@ export function MeetingLink({ url }: { url: string }) {
   );
 }
 
-// ── No-show button ────────────────────────────────────────────────────────────
 export function NoShowButton({ bookingId }: { bookingId: string }) {
   const [isPending, startTransition] = useTransition();
 
@@ -166,7 +163,6 @@ export function NoShowButton({ bookingId }: { bookingId: string }) {
   );
 }
 
-// ── Add to calendar (Google + .ics download) ──────────────────────────────────
 export function AddToCalendar({
   googleUrl,
   icsHref,

@@ -27,8 +27,7 @@ const EMPTY: StoredBranding = {
 
 // Short-lived process cache — emails render in the worker process, which can
 // run for days between deploys, so branding reads can't be a one-time module
-// const (an admin's change would never take effect). Mirrors
-// lib/settings/sign-in-methods.ts's TTL cache.
+// const (an admin's change would never take effect).
 let cache: { value: StoredBranding; at: number } | null = null;
 const TTL_MS = 15_000;
 

@@ -96,8 +96,8 @@ export async function POST(request: Request) {
     const dayStartUtc = fromZonedTime(`${date}T00:00:00`, hostTz);
     const dayEndUtc = fromZonedTime(`${date}T23:59:59.999`, hostTz);
 
-    // ── Transaction: advisory lock → conflict re-check (against the proposed
-    // time) → apply the staged time and confirm ──────────────────────────────
+    // Transaction: advisory lock → conflict re-check (against the proposed
+    // time) → apply the staged time and confirm.
     const result = await db.transaction(async (tx) => {
       await tx.execute(
         sql`SELECT pg_advisory_xact_lock(hashtext(${b.hostUserId}))`

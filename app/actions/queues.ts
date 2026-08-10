@@ -73,11 +73,10 @@ export async function retryJobAction({
 export async function retryFailedJobsAction(queueName: string): Promise<void> {
   await requireAdmin();
 
-  // The email queue is special: a permanently-failed email leaves its pg-boss
-  // job in the `completed` state (the handler returns normally after recording
-  // the failure) and records the failure on the `email_outbox` row instead.
-  // Resetting pg-boss `failed` jobs would therefore retry nothing — we have to
-  // re-queue the outbox rows and enqueue fresh send jobs for them.
+  // A permanently-failed email leaves its pg-boss job `completed` (the handler
+  // returns normally) and records the failure on the email_outbox row instead,
+  // so resetting pg-boss `failed` jobs would retry nothing — requeue the
+  // outbox rows and enqueue fresh send jobs instead.
   if (queueName === JOB_NAMES.EMAIL_SEND) {
     const failed = await db
       .update(emailOutbox)

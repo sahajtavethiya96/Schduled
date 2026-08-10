@@ -7,11 +7,9 @@ import { env } from "@/lib/env";
 type IntegrationSettingRow = typeof integrationSetting.$inferSelect;
 
 // Short-lived process cache, not a per-request one (React's cache() would be
-// a no-op or worse outside a request context) — these getters are read from
-// the pg-boss worker process too (SMTP send, Zoom meeting creation), which is
-// long-running and has no per-request boundary. Mirrors
-// lib/settings/branding.ts / lib/settings/sign-in-methods.ts's identical
-// pattern. Writes call invalidateIntegrationSettingsCache().
+// a no-op or worse outside a request context) — these getters are also read
+// from the long-running pg-boss worker process, which has no per-request
+// boundary. Writes call invalidateIntegrationSettingsCache().
 let rowCache: { value: IntegrationSettingRow | undefined; at: number } | null =
   null;
 const TTL_MS = 15_000;
@@ -229,12 +227,10 @@ export interface IntegrationSettingsSummary {
 }
 
 /**
- * DB-only (no env fallback) — used to prefill the admin settings forms and
- * the setup wizard. Secrets are represented only as `has<Field>` booleans,
- * never returned in plaintext to the client. An env-only-configured field
- * intentionally shows blank here rather than being echoed back — otherwise
- * re-saving the form would write the env value into the DB as if the admin
- * had explicitly chosen it.
+ * DB-only (no env fallback). Secrets are represented only as `has<Field>`
+ * booleans, never returned in plaintext. An env-only-configured field shows
+ * blank rather than being echoed back — otherwise re-saving the form would
+ * write the env value into the DB as if explicitly chosen.
  */
 export async function getIntegrationSettingsSummary(): Promise<IntegrationSettingsSummary> {
   const row = await getRow();

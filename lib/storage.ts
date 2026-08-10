@@ -14,9 +14,8 @@ async function ensureDir(dir: string) {
   await fs.mkdir(dir, { recursive: true });
 }
 
-// ── Local filesystem driver — the default, and the only one with no setup.
 // Writes to ./uploads (not public/) since every driver is served through the
-// /api/files/[...key] proxy below, never directly. MUST be a persistent
+// /api/files/[...key] proxy below, never directly. Must be a persistent
 // volume in Docker or a redeploy wipes uploads.
 const fsDriver = {
   async upload(key: string, buffer: Buffer): Promise<void> {
@@ -34,13 +33,10 @@ const fsDriver = {
   },
 };
 
-// ── Cloud drivers (s3 / r2), via files-sdk (https://files-sdk.dev).
-// Lazily constructed via dynamic import so the local-disk (default) path
-// never pulls in files-sdk or the AWS SDK — no added cold-start cost for
-// deployments that don't use them. Cached, but keyed on the resolved
-// settings (not just "have I built one yet") — settings can now change live
-// via Settings → Services, so a stale client built from the previous
-// driver/credentials must not survive a settings change.
+// Cloud drivers (s3 / r2), via files-sdk. Lazily dynamic-imported so the
+// local-disk default never pulls in files-sdk/AWS SDK. Cache is keyed on the
+// resolved settings, not just "built one yet" — settings can change live via
+// Settings → Services, so a stale client must not survive a settings change.
 let cloudFilesCache: { key: string; promise: Promise<Files> } | null = null;
 
 function buildCloudFiles(settings: CloudStorageSettings): Promise<Files> {
@@ -70,8 +66,7 @@ function buildCloudFiles(settings: CloudStorageSettings): Promise<Files> {
       });
     })();
   }
-  // settings.driver === "r2" (the only remaining branch; "local" never
-  // reaches this function — see the driver switch below).
+  // settings.driver === "r2" ("local" never reaches this function).
   return (async () => {
     const [{ Files: FilesCtor }, { r2 }] = await Promise.all([
       import("files-sdk"),
@@ -81,8 +76,7 @@ function buildCloudFiles(settings: CloudStorageSettings): Promise<Files> {
       adapter: r2({
         bucket: settings.bucket,
         accountId: settings.accountId,
-        // Explicit here (unlike the old env-only version) since a
-        // DB-configured key/secret isn't necessarily mirrored into
+        // A DB-configured key/secret isn't necessarily mirrored into
         // R2_ACCESS_KEY_ID/R2_SECRET_ACCESS_KEY — the adapter falls back to
         // those env vars only when these are omitted.
         accessKeyId: settings.accessKeyId,
@@ -102,7 +96,6 @@ function getCloudFiles(settings: CloudStorageSettings): Promise<Files> {
 }
 
 export const storage = {
-  /** Store a file. */
   async upload(key: string, buffer: Buffer, mimeType: string): Promise<void> {
     const settings = await getStorageSettings();
     if (settings.driver === "local") {
@@ -113,7 +106,6 @@ export const storage = {
     await files.upload(key, buffer, { contentType: mimeType });
   },
 
-  /** Read a file as a Buffer. */
   async download(key: string): Promise<Buffer> {
     const settings = await getStorageSettings();
     if (settings.driver === "local") {
@@ -124,7 +116,7 @@ export const storage = {
     return Buffer.from(await file.arrayBuffer());
   },
 
-  /** Delete a file. Does not throw if the file does not exist. */
+  /** Does not throw if the file does not exist. */
   async delete(key: string): Promise<void> {
     const settings = await getStorageSettings();
     if (settings.driver === "local") {
@@ -136,24 +128,17 @@ export const storage = {
   },
 
   /**
-   * Return the URL to serve the file from. Always our own proxy route,
-   * regardless of driver — deliberately NOT a direct/signed cloud URL:
-   *   - keeps this synchronous, since callers build it inline;
-   *   - means no cloud bucket ever needs public read access — avatars stay
-   *     servable even on a private R2/S3 bucket;
-   *   - keeps access control in our own route rather than handing out cloud
-   *     URLs (signed or public) directly.
-   * `/api/files/[...key]` calls `storage.download()` under the hood, which
-   * already supports every driver.
+   * Always our own proxy route, never a direct/signed cloud URL — keeps this
+   * synchronous, keeps access control local, and means no bucket needs
+   * public read access.
    */
   url(key: string): string {
     return `/api/files/${key}`;
   },
 };
 
-// Always .webp — the avatar upload route (app/api/upload/avatar/route.ts)
-// converts every upload to webp before storing, and the /api/files proxy
-// route derives Content-Type from this extension.
+// Always .webp — uploads are converted to webp before storing, and the
+// /api/files proxy derives Content-Type from this extension.
 export function avatarKey(userId: string): string {
   return `avatars/${userId}.webp`;
 }

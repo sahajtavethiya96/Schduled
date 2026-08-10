@@ -14,13 +14,11 @@ interface NextMeeting {
   startUtc: string;
 }
 
-// Lead time (minutes before start) is user-configurable in Settings →
-// Communication; the API returns it. 15 is the fallback.
 const POLL_MS = 60_000;
 const DISMISS_KEY = "join-soon-dismissed";
 
-/** Plays a short, soft two-note chime via Web Audio. Silently no-ops if the
- *  browser blocks it (no prior user gesture) — purely a nice-to-have. */
+// Lead time (minutes before start) is user-configurable in Settings; 15 is the fallback
+// until the API responds. Silently no-ops if autoplay is blocked (no prior user gesture).
 function playChime() {
   try {
     const Ctx =
@@ -46,9 +44,7 @@ function playChime() {
       osc.stop(t + 0.34);
     });
     setTimeout(() => ctx.close().catch(() => {}), 1200);
-  } catch {
-    /* autoplay blocked or unsupported — ignore */
-  }
+  } catch {}
 }
 
 export function JoinSoonBar() {
@@ -62,9 +58,7 @@ export function JoinSoonBar() {
   useEffect(() => {
     try {
       setDismissedId(sessionStorage.getItem(DISMISS_KEY));
-    } catch {
-      /* ignore */
-    }
+    } catch {}
   }, []);
 
   const load = useCallback(async () => {
@@ -84,7 +78,6 @@ export function JoinSoonBar() {
     }
   }, []);
 
-  // Poll the next meeting + tick the clock every second for a live countdown.
   useEffect(() => {
     load();
     const poll = setInterval(load, POLL_MS);
@@ -95,8 +88,7 @@ export function JoinSoonBar() {
     };
   }, [load]);
 
-  // Chime once when a meeting's bar first becomes visible. Kept in an effect
-  // (not render) so it can't double-fire under StrictMode's double render.
+  // Chime once per meeting; kept in an effect (not render) to avoid double-firing under StrictMode.
   useEffect(() => {
     if (!meeting) {
       return;
@@ -144,9 +136,7 @@ export function JoinSoonBar() {
     }
     try {
       sessionStorage.setItem(DISMISS_KEY, meeting.id);
-    } catch {
-      /* ignore */
-    }
+    } catch {}
     setDismissedId(meeting.id);
   }
 

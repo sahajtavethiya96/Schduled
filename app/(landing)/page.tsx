@@ -8,9 +8,8 @@ import { Reveal } from "@/components/landing/reveal";
 import { env } from "@/lib/env";
 import { getAppUrl } from "@/lib/get-app-url";
 
-// Illustrative example domain shown in "how it works" copy — derives from
-// the real configured deployment so self-hosters see their own domain
-// instead of the hosted product's.
+// Illustrative example domain for the "how it works" copy, derived from the
+// real deployment so self-hosters see their own domain, not the hosted one.
 const APP_HOST = getAppUrl().replace(/^https?:\/\//, "");
 
 import {
@@ -43,11 +42,8 @@ export const metadata = {
 };
 
 // Never statically prerender: redirectToSetupIfNeeded() hits the database on
-// every visit (first-run setup gate) — that must run per-request, not once
-// at build time.
+// every visit and must run per-request, not once at build time.
 export const dynamic = "force-dynamic";
-
-// ── Static data ───────────────────────────────────────────────────────────────
 
 /* The real, open-source stack this project actually runs on (see README.md) */
 const TECH_STACK = [
@@ -218,8 +214,6 @@ const PARTICLES = [
   { top: "48%", left: "92%", size: 3, delay: "2.7s", dur: "6s" },
 ];
 
-// ── Page ──────────────────────────────────────────────────────────────────────
-
 export default async function LandingPage() {
   await redirectToSetupIfNeeded();
   const session = await getCurrentSession();
@@ -260,16 +254,13 @@ export default async function LandingPage() {
 
   return (
     <div className="min-h-screen overflow-x-clip bg-base-100 text-base-content antialiased">
-      {/* ─── NAVBAR ──────────────────────────────────────────────────────────── */}
       <LandingHeader />
 
       <main>
-        {/* ─── HERO ────────────────────────────────────────────────────────────── */}
         <section
           className="relative overflow-hidden pb-0 pt-20 sm:pt-28"
           style={DARK_BG}
         >
-          {/* Animated gradient orbs */}
           <div
             className="pointer-events-none absolute right-0 top-0 h-[700px] w-[700px] animate-schduled-glow-pulse"
             style={{
@@ -296,7 +287,6 @@ export default async function LandingPage() {
             }}
           />
 
-          {/* Grid overlay — 10% opacity */}
           <div
             className="pointer-events-none absolute inset-0 opacity-[0.10]"
             style={{
@@ -306,7 +296,6 @@ export default async function LandingPage() {
             }}
           />
 
-          {/* Floating particles */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
             {PARTICLES.map((p) => (
               <div
@@ -326,9 +315,7 @@ export default async function LandingPage() {
 
           <div className="relative mx-auto max-w-[1400px] px-5 md:px-12 xl:px-20">
             <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-              {/* ── LEFT: copy ── */}
               <div className="animate-schduled-reveal">
-                {/* 3 premium micro-badges */}
                 <div className="mb-8 flex flex-wrap items-center gap-2">
                   <span className="inline-flex items-center gap-1.5 border border-teal-600/30 bg-teal-950/70 px-3 py-1 text-xs font-semibold text-teal-300 backdrop-blur-sm">
                     <Lightning size={10} weight="fill" /> No credit card
@@ -414,12 +401,10 @@ export default async function LandingPage() {
                 </p>
               </div>
 
-              {/* ── RIGHT: booking widget ── */}
               <div
                 className="relative flex items-start justify-center gap-4 animate-schduled-reveal"
                 style={{ animationDelay: "200ms" }}
               >
-                {/* Calendar picker */}
                 <div
                   className="hidden w-[240px] shrink-0 border border-white/12 lg:block"
                   style={{
@@ -481,7 +466,6 @@ export default async function LandingPage() {
                   </div>
                 </div>
 
-                {/* Main booking card — 4s float */}
                 <div className="relative w-full max-w-[370px] shrink-0">
                   <div
                     className="border border-white/12"
@@ -565,7 +549,6 @@ export default async function LandingPage() {
                     </div>
                   </div>
 
-                  {/* Toast */}
                   <div
                     className="mt-3 border border-teal-700/35 bg-teal-950/80 px-4 py-3 backdrop-blur-sm animate-schduled-reveal"
                     style={{ animationDelay: "900ms" }}
@@ -588,7 +571,6 @@ export default async function LandingPage() {
                   </div>
                 </div>
 
-                {/* Reminder badge */}
                 <div
                   className="hidden lg:block absolute -top-4 -right-4 border border-white/8 bg-white/5 px-4 py-3 backdrop-blur-sm animate-schduled-reveal"
                   style={{ animationDelay: "1050ms" }}
@@ -610,7 +592,6 @@ export default async function LandingPage() {
           </div>
         </section>
 
-        {/* ─── TECH STACK ──────────────────────────────────────────────────────── */}
         <section className="border-y border-base-300 bg-base-100 py-7">
           <Reveal className="mb-6 text-center" direction="fade">
             <p className="text-xs font-black uppercase tracking-[0.22em] text-base-content/50">
@@ -642,9 +623,7 @@ export default async function LandingPage() {
           </div>
         </section>
 
-        {/* ─── STATS ───────────────────────────────────────────────────────────── */}
         <section className="relative overflow-hidden border-y border-base-300 bg-base-200/20">
-          {/* Soft centered glow */}
           <div
             className="pointer-events-none absolute left-1/2 top-1/2 h-[380px] w-[760px] -translate-x-1/2 -translate-y-1/2"
             style={{
@@ -653,7 +632,6 @@ export default async function LandingPage() {
               filter: "blur(28px)",
             }}
           />
-          {/* Faint dot grid */}
           <div
             className="pointer-events-none absolute inset-0 opacity-[0.22]"
             style={{
@@ -664,7 +642,6 @@ export default async function LandingPage() {
           />
 
           <div className="relative mx-auto max-w-[1400px] px-5 md:px-12 xl:px-20">
-            {/* Heading block */}
             <Reveal className="pt-14 pb-10 text-center" direction="up">
               <p className="mb-4 text-xs font-black uppercase tracking-eyebrow text-primary">
                 Why people choose Schduled
@@ -692,7 +669,6 @@ export default async function LandingPage() {
               </p>
             </Reveal>
 
-            {/* Stats row — each card slides in from its own direction */}
             <div className="flex flex-col divide-y divide-base-300 sm:flex-row sm:divide-x sm:divide-y-0">
               {STATS.map((s, idx) => {
                 const Icon = s.icon;
@@ -704,12 +680,10 @@ export default async function LandingPage() {
                     direction={dirs[idx]}
                     key={s.value}
                   >
-                    {/* Small icon badge */}
                     <div className="mb-4 flex h-8 w-8 items-center justify-center bg-primary/10 text-primary transition-colors duration-300 group-hover:bg-primary/18">
                       <Icon size={15} weight="duotone" />
                     </div>
 
-                    {/* Large metric number */}
                     <div
                       className="mb-2 font-black leading-none tracking-tight animate-schduled-text-gradient"
                       style={{
@@ -726,12 +700,10 @@ export default async function LandingPage() {
                       {s.value}
                     </div>
 
-                    {/* Uppercase label */}
                     <p className="mb-2.5 text-[11px] font-black uppercase tracking-[0.18em] text-base-content/60">
                       {s.title}
                     </p>
 
-                    {/* Supporting sentence */}
                     <p className="max-w-[200px] text-sm leading-relaxed text-muted-foreground">
                       {s.sub}
                     </p>
@@ -742,12 +714,9 @@ export default async function LandingPage() {
           </div>
         </section>
 
-        {/* ─── FEATURES ────────────────────────────────────────────────────── */}
         <FeaturesSection />
 
-        {/* ─── PRODUCT PREVIEW ─────────────────────────────────────────────────── */}
         <section className="relative overflow-clip py-32" style={DARK_BG}>
-          {/* Animated radial glow behind dashboard */}
           <div
             className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-[500px] w-[800px] animate-schduled-glow-pulse"
             style={{
@@ -781,9 +750,7 @@ export default async function LandingPage() {
               </p>
             </Reveal>
 
-            {/* Dashboard frame with floating labels */}
             <Reveal className="relative" delay={150} direction="scale">
-              {/* Floating label — Upcoming */}
               <div
                 className="absolute -left-4 top-20 z-10 hidden border border-teal-600/35 bg-teal-950/90 px-3 py-2 backdrop-blur-sm animate-schduled-reveal xl:block"
                 style={{
@@ -803,7 +770,6 @@ export default async function LandingPage() {
                 <p className="text-2xs text-white/40">meetings this week</p>
               </div>
 
-              {/* Floating label — Team */}
               <div
                 className="absolute -right-4 top-32 z-10 hidden border border-teal-600/35 bg-teal-950/90 px-3 py-2 backdrop-blur-sm xl:block"
                 style={{
@@ -822,7 +788,6 @@ export default async function LandingPage() {
                 <p className="text-2xs text-white/40">active members</p>
               </div>
 
-              {/* Floating label — Analytics */}
               <div
                 className="absolute -right-4 bottom-32 z-10 hidden border border-teal-600/35 bg-teal-950/90 px-3 py-2 backdrop-blur-sm xl:block"
                 style={{
@@ -841,7 +806,6 @@ export default async function LandingPage() {
                 <p className="text-2xs text-white/40">bookings this month</p>
               </div>
 
-              {/* Browser frame */}
               <div
                 className="overflow-hidden border border-white/12"
                 style={{}}
@@ -864,12 +828,10 @@ export default async function LandingPage() {
                   className="flex h-[520px] sm:h-[640px]"
                   style={{ background: "#0f1f1a" }}
                 >
-                  {/* Sidebar */}
                   <div
                     className="hidden w-48 shrink-0 flex-col border-r border-white/8 sm:flex"
                     style={{ background: "oklch(0.108 0.032 215)" }}
                   >
-                    {/* Logo */}
                     <div className="flex items-center gap-2 border-b border-white/8 px-4 py-3.5">
                       <div className="flex h-5 w-5 items-center justify-center bg-primary text-[9px] font-black text-white">
                         S
@@ -911,12 +873,10 @@ export default async function LandingPage() {
                     </div>
                   </div>
 
-                  {/* Main content */}
                   <div
                     className="flex-1 overflow-hidden"
                     style={{ background: "oklch(0.97 0.004 85)" }}
                   >
-                    {/* Top bar */}
                     <div className="flex items-center gap-3 border-b border-base-300/60 bg-base-100/80 px-5 py-2.5">
                       <div className="flex flex-1 items-center gap-2 border border-base-300 bg-base-100 px-3 py-1.5">
                         <div className="h-2.5 w-2.5 bg-muted-foreground/30" />
@@ -930,7 +890,6 @@ export default async function LandingPage() {
                     </div>
 
                     <div className="space-y-3 overflow-hidden p-5">
-                      {/* Welcome + actions */}
                       <div className="flex items-start justify-between gap-3">
                         <div>
                           <div className="h-5 w-48 bg-base-content/15" />
@@ -943,7 +902,6 @@ export default async function LandingPage() {
                         </div>
                       </div>
 
-                      {/* Next meeting strip */}
                       <div className="flex items-center gap-3 border border-primary/30 bg-primary/[0.04] px-3 py-2.5">
                         <div className="flex h-8 w-8 shrink-0 items-center justify-center bg-primary/20">
                           <Clock
@@ -973,7 +931,6 @@ export default async function LandingPage() {
                         </div>
                       </div>
 
-                      {/* 5 stat cards */}
                       <div className="grid grid-cols-5 gap-2">
                         {[
                           {
@@ -1030,9 +987,7 @@ export default async function LandingPage() {
                         ))}
                       </div>
 
-                      {/* Two-column lists */}
                       <div className="grid gap-2.5 sm:grid-cols-2">
-                        {/* Upcoming meetings */}
                         <div className="border border-base-300 bg-base-100">
                           <div className="flex items-center justify-between border-b border-base-300 px-3 py-2">
                             <div className="flex items-center gap-1.5">
@@ -1092,7 +1047,6 @@ export default async function LandingPage() {
                           ))}
                         </div>
 
-                        {/* Recent bookings */}
                         <div className="border border-base-300 bg-base-100">
                           <div className="flex items-center justify-between border-b border-base-300 px-3 py-2">
                             <div className="flex items-center gap-1.5">
@@ -1164,12 +1118,10 @@ export default async function LandingPage() {
           </div>
         </section>
 
-        {/* ─── HOW IT WORKS ────────────────────────────────────────────────────── */}
         <section
           className="relative overflow-hidden bg-gradient-to-b from-base-100 to-base-200/20 py-32 lg:py-44"
           id="how-it-works"
         >
-          {/* Floating gradient blobs */}
           <div
             className="pointer-events-none absolute left-[4%] top-[8%] h-[560px] w-[560px]"
             style={{
@@ -1195,7 +1147,6 @@ export default async function LandingPage() {
             }}
           />
 
-          {/* Subtle dot grid */}
           <div
             className="pointer-events-none absolute inset-0 opacity-[0.28]"
             style={{
@@ -1221,7 +1172,6 @@ export default async function LandingPage() {
               </p>
             </Reveal>
 
-            {/* ── Desktop: 3 cards side-by-side with arrow connectors ── */}
             <div className="hidden md:grid md:grid-cols-[1fr_52px_1fr_52px_1fr] items-stretch">
               {STEPS.flatMap((step, i) => {
                 const Icon = step.icon;
@@ -1233,15 +1183,12 @@ export default async function LandingPage() {
                     direction={stepDirs[i]}
                     key={step.num}
                   >
-                    {/* Top accent bar */}
                     <div className="absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 bg-gradient-to-r from-primary to-teal-400 transition-transform duration-300 group-hover:scale-x-100" />
 
-                    {/* Step badge */}
                     <span className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center bg-primary text-[10px] font-black text-primary-content">
                       {step.num}
                     </span>
 
-                    {/* Icon container */}
                     <div className="mb-8 flex h-[72px] w-[72px] items-center justify-center border border-primary/20 bg-gradient-to-br from-primary/15 to-primary/5 text-primary transition-all duration-300 group-hover:border-primary/35 group-hover:from-primary/20 group-hover:to-primary/10">
                       <Icon size={32} weight="duotone" />
                     </div>
@@ -1251,7 +1198,6 @@ export default async function LandingPage() {
                       {step.description}
                     </p>
 
-                    {/* Live example badge */}
                     <div className="mt-8 inline-flex items-center gap-1.5 border border-primary/20 bg-primary/5 px-3 py-1.5 text-xs font-medium text-primary transition-all duration-300 group-hover:border-primary/40 group-hover:bg-primary/10">
                       <CheckCircle size={11} weight="fill" />
                       {step.detail}
@@ -1281,7 +1227,6 @@ export default async function LandingPage() {
               })}
             </div>
 
-            {/* ── Mobile: stacked with vertical arrows ── */}
             <div className="flex flex-col md:hidden">
               {STEPS.map((step, i) => {
                 const Icon = step.icon;
@@ -1293,15 +1238,12 @@ export default async function LandingPage() {
                       delay={i * 130}
                       direction={mobileDirs[i]}
                     >
-                      {/* Top accent bar */}
                       <div className="absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 bg-gradient-to-r from-primary to-teal-400 transition-transform duration-300 group-hover:scale-x-100" />
 
-                      {/* Step badge */}
                       <span className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center bg-primary text-[10px] font-black text-primary-content">
                         {step.num}
                       </span>
 
-                      {/* Icon */}
                       <div className="mb-5 flex h-14 w-14 items-center justify-center border border-primary/20 bg-gradient-to-br from-primary/15 to-primary/5 text-primary">
                         <Icon size={26} weight="duotone" />
                       </div>
@@ -1329,11 +1271,9 @@ export default async function LandingPage() {
           </div>
         </section>
 
-        {/* ─── FULL FEATURE LIST ────────────────────────────────────────────────── */}
         <section className="border-t border-base-300 bg-base-200/20 py-24">
           <div className="mx-auto max-w-[1400px] px-5 md:px-12 xl:px-20">
             <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
-              {/* Left: title + CTA */}
               <Reveal direction="left">
                 <p className="mb-3 text-xs font-black uppercase tracking-eyebrow text-primary">
                   Everything included
@@ -1356,7 +1296,6 @@ export default async function LandingPage() {
                 </Link>
               </Reveal>
 
-              {/* Right: grouped feature columns */}
               <div className="grid gap-6 sm:grid-cols-3">
                 {FEATURE_GROUPS.map((group, i) => {
                   const Icon = group.icon;
@@ -1396,19 +1335,15 @@ export default async function LandingPage() {
           </div>
         </section>
 
-        {/* ─── FAQ ─────────────────────────────────────────────────────────────── */}
         <section
           className="relative overflow-hidden border-t border-base-300 bg-base-100 py-24 lg:py-32"
           id="faq"
         >
           <div className="relative mx-auto max-w-[1400px] px-5 md:px-12 xl:px-20">
             <div className="grid grid-cols-1 items-start gap-14 lg:grid-cols-2 lg:gap-20">
-              {/* ── Left: product UI preview — dark card on white bg ── */}
               <Reveal className="lg:sticky lg:top-28" direction="left">
                 <div className="relative">
-                  {/* Soft teal glow — reduced opacity for light background */}
                   <div className="pointer-events-none absolute -inset-6 bg-primary/[0.06] blur-3xl" />
-                  {/* Explicit dark bg so it reads as real product UI */}
                   <div
                     className="relative border p-6"
                     style={{
@@ -1416,7 +1351,6 @@ export default async function LandingPage() {
                       borderColor: "rgba(255,255,255,0.09)",
                     }}
                   >
-                    {/* Host row */}
                     <div className="mb-5 flex items-center gap-3 border-b border-white/[0.08] pb-5">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center bg-primary text-sm font-bold text-white">
                         J
@@ -1431,7 +1365,6 @@ export default async function LandingPage() {
                       </div>
                     </div>
 
-                    {/* Mini calendar */}
                     <div className="mb-5">
                       <div className="mb-3 flex items-center justify-between">
                         <p className="text-[11px] font-semibold uppercase tracking-widest text-white/35">
@@ -1508,7 +1441,6 @@ export default async function LandingPage() {
                       </div>
                     </div>
 
-                    {/* Time slots */}
                     <div>
                       <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-white/35">
                         Available Times
@@ -1535,7 +1467,6 @@ export default async function LandingPage() {
                       </div>
                     </div>
 
-                    {/* Powered by badge */}
                     <div className="mt-5 border-t border-white/[0.06] pt-4 text-center">
                       <span className="text-[10px] text-white/25">
                         Scheduling powered by{" "}
@@ -1548,7 +1479,6 @@ export default async function LandingPage() {
                 </div>
               </Reveal>
 
-              {/* ── Right: FAQ accordion on white background ── */}
               <Reveal delay={100} direction="right">
                 <p className="mb-3 text-[11px] font-black uppercase tracking-eyebrow text-primary">
                   FAQ
@@ -1572,7 +1502,6 @@ export default async function LandingPage() {
           </div>
         </section>
 
-        {/* ─── CTA ─────────────────────────────────────────────────────────────── */}
         <section className="relative overflow-clip py-36" style={DARK_BG}>
           <div
             className="pointer-events-none absolute inset-0 opacity-[0.038]"
@@ -1582,7 +1511,6 @@ export default async function LandingPage() {
               backgroundSize: "56px 56px",
             }}
           />
-          {/* Large glow behind title */}
           <div
             className="pointer-events-none absolute left-1/2 top-1/4 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[700px] animate-schduled-glow-pulse"
             style={{
@@ -1648,7 +1576,6 @@ export default async function LandingPage() {
                   </a>
                 </div>
 
-                {/* Checkmarks */}
                 <div className="flex flex-wrap items-center justify-center gap-4 mt-2">
                   {[
                     "Free forever",
@@ -1669,7 +1596,6 @@ export default async function LandingPage() {
                   ))}
                 </div>
 
-                {/* Animated down arrow */}
                 <div className="mt-4 animate-bounce text-white/20">
                   <ArrowDown size={22} />
                 </div>
@@ -1679,7 +1605,6 @@ export default async function LandingPage() {
         </section>
       </main>
 
-      {/* ─── FOOTER ──────────────────────────────────────────────────────────── */}
       <LandingFooter />
     </div>
   );

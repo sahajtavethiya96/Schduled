@@ -49,8 +49,6 @@ import {
 } from "@/components/ui/table";
 import type { QueueSummaryRow } from "@/lib/worker/queue-inspection";
 
-// ── Retry button ──────────────────────────────────────────────────────────────
-
 function RetryButton({ queueName }: { queueName: string }) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -75,8 +73,6 @@ function RetryButton({ queueName }: { queueName: string }) {
     </Button>
   );
 }
-
-// ── Stat cards ────────────────────────────────────────────────────────────────
 
 function StatCard({
   label,
@@ -229,8 +225,6 @@ function QueueOverviewCard({
   );
 }
 
-// ── Timer helpers ─────────────────────────────────────────────────────────────
-
 function formatSecondsAgo(s: number): string {
   if (s < 60) {
     return `${s}s ago`;
@@ -240,8 +234,6 @@ function formatSecondsAgo(s: number): string {
   }
   return `${Math.floor(s / 3600)}h ago`;
 }
-
-// ── Filter chip + state labels ──────────────────────────────────────────────────
 
 const STATE_LABELS: Record<string, string> = {
   created: "Queued",
@@ -255,8 +247,6 @@ const STATE_LABELS: Record<string, string> = {
 function stateLabel(state: string): string {
   return STATE_LABELS[state] ?? state.charAt(0).toUpperCase() + state.slice(1);
 }
-
-// ── Main component ────────────────────────────────────────────────────────────
 
 export function QueuesClient({
   queues,
@@ -276,7 +266,6 @@ export function QueuesClient({
   } | null>(null);
   const router = useRouter();
 
-  // Reset and tick timer whenever fresh data arrives
   // biome-ignore lint/correctness/useExhaustiveDependencies: fetchedAt isn't read in the body but must stay — it's the trigger that restarts the ticker on fresh data.
   useEffect(() => {
     setSecondsAgo(0);
@@ -288,7 +277,6 @@ export function QueuesClient({
     startTransition(() => router.refresh());
   }
 
-  // ── Computed stats ──────────────────────────────────────────────────────
   const { totalQueues, completed, failed, workerStatus } = useMemo(() => {
     const total = new Set(queues.map((q) => q.name)).size;
     const comp = queues
@@ -311,7 +299,7 @@ export function QueuesClient({
     };
   }, [queues]);
 
-  // ── Sort: app queues first, internal at bottom ──────────────────────────
+  // App queues first, internal (__-prefixed) at the bottom.
   const sorted = useMemo(
     () =>
       [...queues].sort((a, b) => {
@@ -331,9 +319,8 @@ export function QueuesClient({
     [queues]
   );
 
-  // ── Per-queue overview (compact cards) ───────────────────────────────────
-  // Collapses every state row down to one card per queue name, surfacing
-  // whichever count is most actionable: failed > running > pending > healthy.
+  // Collapses every state row into one card per queue, surfacing whichever
+  // count is most actionable: failed > running > pending > healthy.
   const queueOverview = useMemo(() => {
     const byName = new Map<
       string,
@@ -358,7 +345,6 @@ export function QueuesClient({
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [queues]);
 
-  // ── Apply search (queue name) + state filter ────────────────────────────
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return sorted.filter((row) => {
@@ -376,7 +362,6 @@ export function QueuesClient({
     });
   }, [sorted, search, stateFilter]);
 
-  // Reset to page 1 whenever the filter narrows/changes.
   // biome-ignore lint/correctness/useExhaustiveDependencies: reset page on filter change
   useEffect(() => {
     setPage(1);
@@ -391,7 +376,6 @@ export function QueuesClient({
 
   return (
     <div className="space-y-8">
-      {/* ── Header ──────────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="text-lg font-bold text-base-content">Job Queues</h2>
@@ -419,7 +403,6 @@ export function QueuesClient({
         </div>
       </div>
 
-      {/* ── Summary cards ───────────────────────────────────────────────── */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           icon={<Stack size={20} weight="duotone" />}
@@ -441,7 +424,6 @@ export function QueuesClient({
         <WorkerStatusCard status={workerStatus} />
       </div>
 
-      {/* ── Per-queue overview ──────────────────────────────────────────── */}
       {queueOverview.length > 0 && (
         <div>
           <h3 className="mb-3 text-sm font-semibold text-base-content">
@@ -459,7 +441,6 @@ export function QueuesClient({
         </div>
       )}
 
-      {/* ── Queue details table ──────────────────────────────────────────── */}
       <Card>
         <CardHeader className="flex flex-col gap-3 border-b border-base-300 py-4 sm:flex-row sm:items-center sm:justify-between">
           <CardTitle className="text-base font-semibold">
@@ -557,7 +538,6 @@ export function QueuesClient({
                         setSelected({ name: row.name, state: row.state })
                       }
                     >
-                      {/* Queue name */}
                       <TableCell className="px-6 py-3">
                         <p className="text-sm font-medium">
                           {getFriendlyName(row.name)}
@@ -567,19 +547,16 @@ export function QueuesClient({
                         </p>
                       </TableCell>
 
-                      {/* State badge */}
                       <TableCell className="px-4 py-3">
                         <StateBadge state={row.state} />
                       </TableCell>
 
-                      {/* Job count */}
                       <TableCell className="px-4 py-3">
                         <span className="text-sm font-semibold tabular-nums">
                           {row.count.toLocaleString()}
                         </span>
                       </TableCell>
 
-                      {/* Actions */}
                       <TableCell
                         className="px-4 py-3"
                         onClick={(e) => e.stopPropagation()}
@@ -599,7 +576,6 @@ export function QueuesClient({
             </div>
           )}
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between gap-3 border-t border-base-300 px-5 py-3">
               <p className="text-xs text-muted-foreground">

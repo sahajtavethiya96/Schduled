@@ -21,8 +21,7 @@ export async function handleBookingApprovedNotify(
 }
 
 async function processOne(bookingId: string) {
-  // Re-read booking AFTER CALENDAR_WRITE and VIDEO_LINK_GENERATE have run so
-  // that videoLinkInvitee is populated for Google Meet / Zoom bookings.
+  // Re-read after CALENDAR_WRITE/VIDEO_LINK_GENERATE so videoLinkInvitee is populated.
   const b = await loadBookingForLifecycle(bookingId);
   if (!b) {
     console.warn(`[booking-approved-notify] booking ${bookingId} not found`);

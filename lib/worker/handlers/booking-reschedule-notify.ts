@@ -60,7 +60,6 @@ async function processOne(bookingId: string, previousStartUtc: string) {
     reason: null,
   };
 
-  // Invitee
   {
     const startUtc = new Date(b.startTime);
     const mail = await bookingEmail({
@@ -97,13 +96,11 @@ async function processOne(bookingId: string, previousStartUtc: string) {
         text: mail.text,
         attachments: [icsAttachment],
       },
-      // Key on the reschedule event (previous start) so each reschedule sends
-      // but a handler retry for the same event doesn't double-send.
+      // Keyed on previous start so each reschedule sends but a retry doesn't double-send.
       { idempotencyKey: `reschedule:${b.id}:${previousStartUtc}:invitee` }
     );
   }
 
-  // Host
   if (b.hostEmail && prefs?.rescheduleEmail !== false) {
     const mail = await bookingEmail({
       ...baseShared,

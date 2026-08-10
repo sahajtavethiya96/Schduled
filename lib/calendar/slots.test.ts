@@ -1,10 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { generateSlots } from "./slots";
 
-// This is the core slot-computation logic every booking creation, approval,
-// and reschedule re-runs under a Postgres advisory lock (see app/api/bookings/
-// route.ts) — a silent regression here means double-bookings or invitees
-// never seeing slots that should be open.
+// Core slot-computation logic that every booking creation/approval/reschedule
+// re-runs under an advisory lock — a silent regression here means
+// double-bookings or invitees never seeing slots that should be open.
 
 describe("generateSlots", () => {
   const baseArgs = {

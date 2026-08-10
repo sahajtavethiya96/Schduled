@@ -20,9 +20,8 @@ export async function GET(req: NextRequest) {
   const stateParam = url.searchParams.get("state");
   const error = url.searchParams.get("error");
 
-  // Build redirects from the configured app URL, not req.url — behind a tunnel
-  // (ngrok/cloudflared) req.url resolves to the internal localhost host and the
-  // protocol can flip to https, producing a broken redirect.
+  // Use the configured app URL, not req.url — behind a tunnel (ngrok/cloudflared)
+  // req.url resolves to the internal localhost host, producing a broken redirect.
   const base = getAppUrl();
   const failUrl = new URL("/settings/integrations?zoom_error=1", base);
 
@@ -37,7 +36,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(failUrl);
   }
 
-  // Verify the current session matches the state userId
   const session = await getCurrentSession();
   if (!session || session.user.id !== state.userId) {
     return NextResponse.redirect(new URL("/login", base));

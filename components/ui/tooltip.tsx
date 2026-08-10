@@ -241,11 +241,9 @@ function TooltipContent({
     <FloatingPortal>
       <div
         ref={refs.setFloating}
-        // See components/ui/popover.tsx's PopoverContent for why this is
-        // top/left (not floating-ui's transform-based floatingStyles) plus
-        // an isPositioned visibility gate — same conflict with the
-        // data-open/data-closed animate-in/out classes below, same async
-        // first-open flash otherwise.
+        // top/left positioning + isPositioned visibility gate: see
+        // popover.tsx's PopoverContent for why (transform-based
+        // floatingStyles conflicts with the animate-in/out classes below).
         style={{
           position: strategy,
           top: y ?? 0,
@@ -254,8 +252,8 @@ function TooltipContent({
         }}
         data-slot="tooltip-content"
         data-side={resolvedSide}
-        // See components/ui/popover.tsx's PopoverContent for why "initial"
-        // counts as open too (avoids a pop-then-re-animate double-open).
+        // "initial" counts as open too — see popover.tsx's PopoverContent
+        // (avoids a pop-then-re-animate double-open).
         data-open={status === "initial" || status === "open" || undefined}
         data-closed={status === "close" || undefined}
         className={cn(

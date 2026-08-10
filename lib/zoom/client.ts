@@ -13,9 +13,8 @@ type VideoConnectionRow = typeof videoConnection.$inferSelect;
 const ZOOM_OAUTH_BASE = "https://zoom.us/oauth";
 const ZOOM_API_BASE = "https://api.zoom.us/v2";
 
-// Scope required to create scheduled meetings on the host's behalf.
-// Zoom's "General App" type uses granular scopes — `meeting:write:meeting`
-// is the granular replacement for the classic `meeting:write`.
+// `meeting:write:meeting` is Zoom's granular replacement for the classic
+// `meeting:write` scope needed to create meetings on the host's behalf.
 const ZOOM_SCOPES = ["meeting:write:meeting"];
 
 export { isZoomOAuthConfigured as zoomConfigured };
@@ -109,7 +108,7 @@ async function refreshZoomToken(
   return (await res.json()) as ZoomTokenResponse;
 }
 
-/** Fetch the connected Zoom user's id + email (used at connect time). */
+/** Fetch the connected Zoom user's id + email. */
 export async function getZoomUser(
   accessToken: string
 ): Promise<{ id: string; email: string }> {

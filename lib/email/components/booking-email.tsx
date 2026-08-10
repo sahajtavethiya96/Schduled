@@ -312,9 +312,7 @@ export function BookingEmail(props: BookingEmailProps) {
               </Section>
             )}
 
-            {/* Video link couldn't be generated — explain instead of silently
-                omitting it. Invitee gets a reassuring note; host gets a fix-it
-                warning. */}
+            {/* Invitee gets a reassuring note; host gets a fix-it warning */}
             {linkMissing && (
               <Section
                 style={{

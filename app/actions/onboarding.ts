@@ -82,8 +82,6 @@ function validateUsername(raw: string): string | null {
   return null;
 }
 
-// ── Step 1: Profile — name + username ────────────────────────────────────────
-
 export async function saveProfileStep(data: {
   name: string;
   username: string;
@@ -139,8 +137,6 @@ export async function saveProfileStep(data: {
   }
 }
 
-// ── Step 2: Timezone ──────────────────────────────────────────────────────────
-
 export async function saveTimezoneStep(
   timezone: string
 ): Promise<ActionResult> {
@@ -164,8 +160,6 @@ export async function saveTimezoneStep(
     return { error: "Something went wrong. Please try again." };
   }
 }
-
-// ── Step 3: Availability — weekly schedule ────────────────────────────────────
 
 export async function saveAvailabilityStep(
   windows: Record<string, DaySchedule>
@@ -237,8 +231,6 @@ export async function saveAvailabilityStep(
   }
 }
 
-// ── Step 4: Calendar — skip (connection via Settings > Integrations) ──────────
-
 export async function skipCalendarStep(): Promise<ActionResult> {
   try {
     const session = await requireSession();
@@ -253,13 +245,10 @@ export async function skipCalendarStep(): Promise<ActionResult> {
   }
 }
 
-// ── Step 5: Complete — auto-create default event type + mark done ─────────────
-
 export async function completeOnboarding(): Promise<ActionResult> {
   try {
     const session = await requireSession();
 
-    // Auto-create default "30-Minute Meeting" event type (idempotent)
     const [existing] = await db
       .select({ id: eventType.id })
       .from(eventType)

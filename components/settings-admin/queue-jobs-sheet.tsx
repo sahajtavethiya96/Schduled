@@ -146,7 +146,6 @@ export function QueueJobsSheet({
 
   const queueName = queue?.name ?? null;
 
-  // Re-initialise whenever a different queue is opened.
   useEffect(() => {
     if (!queue) {
       return;
@@ -160,7 +159,6 @@ export function QueueJobsSheet({
     setPage(1);
   }, [queue]);
 
-  // Debounce the search box.
   useEffect(() => {
     const id = setTimeout(() => {
       setSearchTerm(searchInput);
@@ -190,7 +188,6 @@ export function QueueJobsSheet({
     });
   }
 
-  // Fetch on every queue / filter / search / page change.
   // biome-ignore lint/correctness/useExhaustiveDependencies: reload reads latest state via closure each render
   useEffect(() => {
     reload();
@@ -211,7 +208,6 @@ export function QueueJobsSheet({
     <>
       <Sheet onOpenChange={onOpenChange} open={queue !== null}>
         <SheetContent className="w-full gap-0 p-0 data-[side=right]:sm:max-w-[30.6rem]">
-          {/* ── Header ───────────────────────────────────────────────── */}
           <SheetHeader className="gap-1 border-b border-base-300 p-6 pr-14">
             <SheetTitle>
               {queue ? getFriendlyName(queue.name) : "Queue"}
@@ -243,7 +239,6 @@ export function QueueJobsSheet({
             </div>
           </SheetHeader>
 
-          {/* ── Search + filter tabs ─────────────────────────────────── */}
           <div className="space-y-3 border-b border-base-300 px-6 py-3">
             <div className="relative">
               <MagnifyingGlass
@@ -273,7 +268,6 @@ export function QueueJobsSheet({
             </div>
           </div>
 
-          {/* ── Job cards ────────────────────────────────────────────── */}
           <div className="flex-1 space-y-2.5 overflow-y-auto p-4">
             {isPending && rows.length === 0 ? (
               <div className="flex items-center justify-center gap-2 py-16 text-sm text-muted-foreground">
@@ -305,7 +299,6 @@ export function QueueJobsSheet({
             )}
           </div>
 
-          {/* ── Pagination ───────────────────────────────────────────── */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between gap-3 border-t border-base-300 px-6 py-3">
               <p className="text-xs text-muted-foreground">
@@ -506,7 +499,6 @@ function JobDetailDialog({
 
         {job && (
           <div className="space-y-4">
-            {/* Meta grid */}
             <div className="grid grid-cols-2 gap-px border border-base-300 bg-base-300 sm:grid-cols-3">
               <MetaCell label="Status">
                 <StateBadge state={job.state} />

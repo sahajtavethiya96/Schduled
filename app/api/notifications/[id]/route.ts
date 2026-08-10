@@ -5,7 +5,6 @@ import { notification } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 
-// DELETE /api/notifications/[id] — dismiss a single notification
 export async function DELETE(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }

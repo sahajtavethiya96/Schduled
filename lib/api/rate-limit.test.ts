@@ -3,11 +3,8 @@ import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { db, dbClient } from "@/lib/db";
 import { checkRateLimit } from "./helpers";
 
-// checkRateLimit is Postgres-backed (see lib/api/helpers.ts) specifically so
-// limits are shared across every web replica, not just the process that
-// happened to handle a given request. These are integration tests against
-// the real dev database — the whole point is to prove the atomic upsert
-// behaves correctly, which an in-memory mock could never actually verify.
+// Integration tests against the real dev database — the point is to prove
+// the atomic upsert behaves correctly, which an in-memory mock couldn't verify.
 
 const TEST_KEY_PREFIX = "vitest:rate-limit:";
 

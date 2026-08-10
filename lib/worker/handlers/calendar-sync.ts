@@ -74,9 +74,8 @@ async function processCalendarSync(job: Job<CalendarSyncPayload>) {
       // busy = not free/transparent
       const isBusy = ev.transparency !== "transparent";
 
-      // Atomic upsert on the (connectedCalendarId, externalEventId) unique
-      // index — avoids a check-then-insert race that could double-insert and
-      // inflate busy time.
+      // Upsert on the (connectedCalendarId, externalEventId) unique index to
+      // avoid a check-then-insert race that could double-insert.
       await db
         .insert(calendarEventCache)
         .values({
@@ -96,7 +95,6 @@ async function processCalendarSync(job: Job<CalendarSyncPayload>) {
         });
     }
 
-    // Prune stale entries (events that ended more than 7 days ago)
     await db
       .delete(calendarEventCache)
       .where(

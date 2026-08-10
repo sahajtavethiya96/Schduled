@@ -36,8 +36,6 @@ import {
 import { PRODUCT_NAME } from "@/config/platform";
 import { cn } from "@/lib/utils";
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
 function useCountdown(startMs: number) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -96,8 +94,6 @@ function locationInfo(type: string): {
   }
 }
 
-// ── Props ─────────────────────────────────────────────────────────────────────
-
 interface Props {
   cancelToken: string | null;
   endUtc: string | null;
@@ -115,8 +111,6 @@ interface Props {
   startUtc: string;
   timezone: string;
 }
-
-// ── Component ─────────────────────────────────────────────────────────────────
 
 export function ConfirmationClient({
   eventName,
@@ -182,18 +176,15 @@ export function ConfirmationClient({
 
   return (
     <div className="relative min-h-screen bg-base-200/30 p-4 md:flex md:items-center md:justify-center md:p-8">
-      {/* Blur decorations */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="absolute right-[10%] top-[8%] h-72 w-72 bg-primary/[0.08] blur-[80px]" />
         <div className="absolute left-[5%] bottom-[10%] h-56 w-56 bg-primary/[0.06] blur-[70px]" />
       </div>
 
-      {/* Toolbar */}
       <div className="fixed top-0 left-0 right-0 z-50 h-[56px] border-b border-base-300 bg-base-100/96 backdrop-blur-md">
         <div className="mx-auto flex h-full w-full max-w-[580px] items-center justify-between px-0">
           <Logo href="/" size="md" />
           <div className="flex items-center gap-2">
-            {/* Copy link — primary filled */}
             <button
               className="inline-flex h-8 items-center gap-1.5 bg-primary px-3.5 text-xs font-semibold text-primary-content transition-opacity hover:opacity-90"
               onClick={copyPageLink}
@@ -206,8 +197,8 @@ export function ConfirmationClient({
               )}
               <span>{copyLinkDone ? "Copied!" : "Copy link"}</span>
             </button>
-            {/* Menu — outlined; non-modal so it doesn't scroll-lock the body and
-              jerk the page when scrollbar-gutter compensation double-applies */}
+            {/* non-modal so it doesn't scroll-lock the body and jerk the page
+              when scrollbar-gutter compensation double-applies */}
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <button
@@ -256,7 +247,6 @@ export function ConfirmationClient({
         style={{ paddingTop: "3.5rem" }}
       >
         <div className="flex flex-col items-center gap-5 bg-base-100 px-5 py-8 sm:px-8 border-[3px] border-primary">
-          {/* Back button */}
           <div className="w-full">
             <Link
               className="inline-flex items-center gap-2 border border-base-300 px-3.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
@@ -267,7 +257,6 @@ export function ConfirmationClient({
             </Link>
           </div>
 
-          {/* ── Icon ── */}
           <div
             className={cn(
               "relative transition-all duration-700 ease-out",
@@ -295,7 +284,6 @@ export function ConfirmationClient({
             )}
           </div>
 
-          {/* ── Message ── */}
           <div className="text-center">
             {isPending ? (
               <>
@@ -335,7 +323,6 @@ export function ConfirmationClient({
             )}
           </div>
 
-          {/* ── Meeting details card ── */}
           <div className="w-full border border-base-300 bg-base-200/30">
             <div className="border-b border-base-300 px-5 py-2.5">
               <p className="text-sm font-bold text-base-content">{eventName}</p>
@@ -414,7 +401,6 @@ export function ConfirmationClient({
             </div>
           </div>
 
-          {/* ── Countdown ── */}
           {!isPending && !countdown.started && (
             <div className="flex w-full items-center justify-between bg-primary/[0.06] px-5 py-3">
               <div className="flex items-center gap-2 text-primary">
@@ -427,7 +413,6 @@ export function ConfirmationClient({
             </div>
           )}
 
-          {/* ── Reschedule / Cancel — hidden for pending bookings ── */}
           {!isPending && (rescheduleToken || cancelToken) && (
             <div className="flex w-full flex-col sm:flex-row gap-3">
               {rescheduleToken && (
@@ -451,7 +436,6 @@ export function ConfirmationClient({
             </div>
           )}
 
-          {/* ── What's Next ── */}
           <div className="w-full border border-base-300 px-5 py-3.5">
             <p className="mb-2.5 text-xs font-bold uppercase tracking-wider text-muted-foreground">
               What&apos;s Next?
@@ -506,7 +490,6 @@ export function ConfirmationClient({
             )}
           </div>
 
-          {/* ── Schedule another meeting ── */}
           {hostUsername && (
             <Link
               className="flex w-full h-10 items-center justify-center gap-1.5 border border-base-300 text-sm font-medium text-muted-foreground transition-colors hover:border-primary hover:text-primary"
@@ -518,7 +501,6 @@ export function ConfirmationClient({
           )}
         </div>
 
-        {/* ── Powered by ── */}
         {showPoweredBy && (
           <div className="mt-4 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
             <span>Scheduling powered by</span>

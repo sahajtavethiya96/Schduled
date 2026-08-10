@@ -80,7 +80,6 @@ async function processOne(bookingId: string) {
     );
   }
 
-  // Host
   if (b.hostEmail && prefs?.cancellationEmail !== false) {
     const mail = await bookingEmail({
       ...baseShared,

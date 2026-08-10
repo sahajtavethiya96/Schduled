@@ -120,7 +120,6 @@ export async function GET(request: Request) {
     daysInMonth.push(`${year}-${monthPad}-${String(d).padStart(2, "0")}`);
   }
 
-  // Pre-fetch overrides for the whole month
   const monthFirstDate = daysInMonth[0];
   const monthLastDate = daysInMonth[daysInMonth.length - 1];
 
@@ -150,7 +149,6 @@ export async function GET(request: Request) {
     }
   }
 
-  // Pre-fetch bookings for the whole month range
   const monthStartUtc = fromZonedTime(`${monthFirstDate}T00:00:00`, hostTz);
   const monthEndUtc = fromZonedTime(`${monthLastDate}T23:59:59.999`, hostTz);
 
@@ -182,7 +180,6 @@ export async function GET(request: Request) {
       continue;
     }
 
-    // Determine availability windows for this day
     let windows: { startTime: string; endTime: string }[];
 
     if (overridesByDate.has(dateStr)) {
@@ -202,7 +199,6 @@ export async function GET(request: Request) {
       continue;
     }
 
-    // Filter existing bookings to this day
     const dayStartUtc = fromZonedTime(`${dateStr}T00:00:00`, hostTz);
     const dayEndUtc = fromZonedTime(`${dateStr}T23:59:59.999`, hostTz);
 
@@ -218,7 +214,6 @@ export async function GET(request: Request) {
       return s >= dayStartUtc && s <= dayEndUtc;
     }).length;
 
-    // Check maxBookingsPerDay
     if (
       et.maxBookingsPerDay !== null &&
       et.maxBookingsPerDay !== undefined &&
@@ -227,7 +222,6 @@ export async function GET(request: Request) {
       continue;
     }
 
-    // Check if at least one slot exists
     const slots = generateSlots({
       date: dateStr,
       timezone: hostTz,

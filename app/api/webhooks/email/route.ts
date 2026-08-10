@@ -26,9 +26,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Missing event id" }, { status: 400 });
   }
 
-  // Atomic dedupe: rely on the unique constraint on provider_event_id instead
-  // of a check-then-insert, so concurrent duplicate deliveries can't both pass
-  // a read and then throw on the second insert.
+  // Rely on the unique constraint on provider_event_id rather than a
+  // check-then-insert, so concurrent duplicate deliveries can't both pass a
+  // read and then throw on the second insert.
   const inserted = await db
     .insert(emailEvents)
     .values({

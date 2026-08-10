@@ -268,12 +268,8 @@ export function AccountIdentityForms({
             The name shown in navigation, audit logs, and admin views.
           </CardDescription>
         </CardHeader>
-        {/* flex-1 + the form filling it lets the button anchor to `mt-auto`
-            regardless of how tall the header above happens to be — without
-            this, a longer sibling-card description (wrapping to more lines)
-            stretches this card via the grid's default row-stretch, and the
-            leftover height collects as unbalanced empty space below the
-            button instead of both cards' buttons lining up. */}
+        {/* flex-1 lets the button anchor to mt-auto, so both cards' buttons
+            line up even when the grid stretches this card to match a taller sibling. */}
         <CardContent className="flex flex-1 flex-col">
           <form action={nameAction} className="flex flex-1 flex-col space-y-4">
             <label className="block" htmlFor="name">

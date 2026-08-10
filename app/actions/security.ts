@@ -8,8 +8,6 @@ import { db } from "@/lib/db";
 
 type ActionResult = { error: string } | { ok: true };
 
-// ── Booking Verification ───────────────────────────────────────────────────────
-
 export async function toggleEmailVerification(
   id: string,
   value: boolean
@@ -37,8 +35,6 @@ export async function toggleEmailVerification(
     return { error: "Something went wrong. Please try again." };
   }
 }
-
-// ── Blocked Sources ────────────────────────────────────────────────────────────
 
 export async function addBlocklistEntry(
   pattern: string,

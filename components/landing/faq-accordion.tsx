@@ -10,8 +10,7 @@ interface FaqItem {
   q: string;
 }
 
-// ── Responsive hook — disables translateX on mobile to prevent overflow ───────
-
+// Disables translateX on mobile to prevent overflow.
 function useIsDesktop() {
   const [isDesktop, setIsDesktop] = useState(false);
   useEffect(() => {
@@ -23,8 +22,6 @@ function useIsDesktop() {
   }, []);
   return isDesktop;
 }
-
-// ── Shared premium accordion item ─────────────────────────────────────────────
 
 interface PremiumFaqProps {
   items: FaqItem[];
@@ -46,7 +43,7 @@ function PremiumFaqAccordion({ items, theme }: PremiumFaqProps) {
         const isOpen = open === i;
         return (
           <div className="relative" key={item.q}>
-            {/* Glow behind active card — blurred div, not box-shadow */}
+            {/* Glow div, not box-shadow (banned in this project) */}
             <div
               aria-hidden
               className={cn(
@@ -79,7 +76,6 @@ function PremiumFaqAccordion({ items, theme }: PremiumFaqProps) {
               }}
               type="button"
             >
-              {/* Question row — always visible */}
               <div
                 className={cn(
                   "flex items-center justify-between gap-4",
@@ -120,7 +116,6 @@ function PremiumFaqAccordion({ items, theme }: PremiumFaqProps) {
                 />
               </div>
 
-              {/* Answer — smooth CSS-grid height reveal */}
               <div
                 style={{
                   display: "grid",
@@ -156,8 +151,6 @@ function PremiumFaqAccordion({ items, theme }: PremiumFaqProps) {
     </div>
   );
 }
-
-// ── Export ────────────────────────────────────────────────────────────────────
 
 export function FaqAccordion({
   items,

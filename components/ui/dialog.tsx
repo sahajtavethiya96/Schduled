@@ -131,9 +131,7 @@ function DialogContent({
   showCloseButton?: boolean
   /**
    * Headless UI unifies Escape and outside-click dismissal into a single
-   * onClose callback, so both fire together here. The only current
-   * consumer (delete-account-modal.tsx) treats them identically, so
-   * behavior is unaffected in practice.
+   * onClose callback, so both fire together here.
    */
   onInteractOutside?: (event: { preventDefault: () => void }) => void
   onEscapeKeyDown?: (event: { preventDefault: () => void }) => void

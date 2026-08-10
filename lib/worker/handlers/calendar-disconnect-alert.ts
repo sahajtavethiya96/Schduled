@@ -7,7 +7,7 @@ import type { CalendarDisconnectAlertPayload } from "@/lib/worker/job-types";
 /**
  * Fired when a Google Calendar OAuth token cannot be refreshed, meaning the
  * user revoked access. Logs the event and marks the calendar disconnected.
- * TODO (Step 21): send an email to the host notifying them to reconnect.
+ * TODO: send an email to the host notifying them to reconnect.
  */
 export async function handleCalendarDisconnectAlert(
   jobs: Job<CalendarDisconnectAlertPayload>[]

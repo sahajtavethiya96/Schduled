@@ -157,8 +157,6 @@ function relativeDate(date: Date | string): string {
   return `${Math.floor(days / 30)}mo ago`;
 }
 
-// ── Sortable drag item ─────────────────────────────────────────────────────────
-
 function SortableItem({
   et,
   username,
@@ -213,8 +211,6 @@ function SortableItem({
   );
 }
 
-// ── Main component ─────────────────────────────────────────────────────────────
-
 export function EventTypeList({
   eventTypes: initialEventTypes,
   username,
@@ -225,18 +221,15 @@ export function EventTypeList({
   const router = useRouter();
   const searchRef = useRef<HTMLInputElement>(null);
 
-  // ── Core state ──────────────────────────────────────────────────────────────
   const [orderedTypes, setOrderedTypes] = useState(initialEventTypes);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [activeId, setActiveId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  // ── Filter state ────────────────────────────────────────────────────────────
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [locationFilter, setLocationFilter] = useState<LocationFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // ── Sort / View state ───────────────────────────────────────────────────────
   const [sortBy, setSortBy] = useState<SortOption>("custom");
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
 
@@ -244,7 +237,6 @@ export function EventTypeList({
     setOrderedTypes(initialEventTypes);
   }, [initialEventTypes]);
 
-  // Restore saved view preference
   useEffect(() => {
     const saved = localStorage.getItem("schduled:event-types:view");
     if (saved === "grid" || saved === "list") {
@@ -512,7 +504,6 @@ export function EventTypeList({
 
       {/* ── Filter chips + controls ────────────────────────────────────────── */}
       <div className="mb-4 flex flex-wrap items-center gap-2">
-        {/* Status chips */}
         {STATUS_FILTERS.map((f) => {
           const active = statusFilter === f.value;
           return (
@@ -542,7 +533,6 @@ export function EventTypeList({
 
         <div className="mx-0.5 h-4 w-px bg-base-300" />
 
-        {/* Location chips */}
         {LOCATION_FILTERS.map((f) => {
           const Icon = f.icon;
           const active = locationFilter === f.value;
@@ -576,7 +566,6 @@ export function EventTypeList({
         {/* Right-aligned controls */}
         <div className="flex-1" />
 
-        {/* Sort dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
@@ -607,7 +596,6 @@ export function EventTypeList({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* View toggle */}
         <div className="flex">
           <button
             className={cn(
@@ -637,7 +625,6 @@ export function EventTypeList({
           </button>
         </div>
 
-        {/* Clear filters */}
         {isFiltered && (
           <button
             className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground transition-colors hover:text-base-content"
@@ -649,7 +636,6 @@ export function EventTypeList({
         )}
       </div>
 
-      {/* Results count */}
       {isFiltered && (
         <p className="mb-3 text-xs text-muted-foreground">
           Showing{" "}

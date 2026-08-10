@@ -56,8 +56,6 @@ function validateUsername(raw: string): string | null {
   return null;
 }
 
-// ── My Link ───────────────────────────────────────────────────────────────────
-
 export async function changeUsername(data: {
   username: string;
 }): Promise<ActionResult<{ username: string }>> {
@@ -70,7 +68,6 @@ export async function changeUsername(data: {
       return { error: usernameError };
     }
 
-    // Check availability
     const [existing] = await db
       .select({ id: user.id })
       .from(user)
@@ -83,7 +80,6 @@ export async function changeUsername(data: {
       };
     }
 
-    // Get current username for redirect record
     const [currentUser] = await db
       .select({ username: user.username })
       .from(user)
@@ -97,7 +93,6 @@ export async function changeUsername(data: {
       .set({ username, updatedAt: new Date() })
       .where(eq(user.id, session.user.id));
 
-    // Record redirect for old username (30-day TTL)
     if (oldUsername && oldUsername !== username) {
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + 30);
@@ -125,8 +120,6 @@ export async function changeUsername(data: {
     return { error: "Something went wrong. Please try again." };
   }
 }
-
-// ── Communication Preferences ─────────────────────────────────────────────────
 
 export interface CommPrefs {
   bookingConfirmationEmail: boolean;
@@ -161,7 +154,6 @@ export async function updateCommunicationPrefs(
       .where(eq(notificationPreference.userId, session.user.id))
       .limit(1);
 
-    // Only accept one of the allowed lead-time choices; default to 15.
     const joinSoonLeadMinutes = JOIN_SOON_LEAD_OPTIONS.includes(
       data.joinSoonLeadMinutes
     )
@@ -200,8 +192,6 @@ export async function updateCommunicationPrefs(
   }
 }
 
-// ── Calendars ─────────────────────────────────────────────────────────────────
-
 export async function disconnectCalendar(
   calendarId: string
 ): Promise<ActionResult> {
@@ -228,8 +218,7 @@ export async function disconnectCalendar(
     }
 
     await db.transaction(async (tx) => {
-      // Disconnect: clear stored OAuth tokens and relinquish the write-target
-      // flag so future bookings don't try to write to a dead calendar.
+      // Clear tokens and the write-target flag so bookings stop targeting a dead calendar.
       await tx
         .update(connectedCalendar)
         .set({
@@ -242,8 +231,7 @@ export async function disconnectCalendar(
         })
         .where(eq(connectedCalendar.id, calendarId));
 
-      // If this was the write target, promote another still-connected calendar
-      // so confirmed bookings keep landing on a real calendar.
+      // If this was the write target, promote another connected calendar.
       if (cal.isWriteTarget) {
         const [next] = await tx
           .select({ id: connectedCalendar.id })
@@ -294,8 +282,6 @@ export async function reconnectCalendar(): Promise<
   }
 }
 
-// ── Video conferencing (Zoom) ──────────────────────────────────────────────────
-
 export async function disconnectZoom(): Promise<ActionResult> {
   try {
     const session = await requireSession();
@@ -336,8 +322,6 @@ export async function disconnectZoom(): Promise<ActionResult> {
     return { error: "Something went wrong. Please try again." };
   }
 }
-
-// ── Contacts ──────────────────────────────────────────────────────────────────
 
 export async function upsertContactNote(
   email: string,
@@ -438,8 +422,6 @@ export async function deleteContact(email: string): Promise<ActionResult> {
   }
 }
 
-// ── Contacts: paginated query helper (called from page) ───────────────────────
-
 export type ContactFilter = "all" | "new" | "upcoming";
 
 export async function getContacts({
@@ -459,7 +441,6 @@ export async function getContacts({
   const userId = session.user.id;
   const offset = (page - 1) * pageSize;
 
-  // Fetch the exclusion list so we can hide matching contacts
   const [profileRow] = await db
     .select({ excludedContactDomains: userProfile.excludedContactDomains })
     .from(userProfile)
@@ -469,7 +450,6 @@ export async function getContacts({
     .split(/[\s,]+/)
     .map((s) => s.trim().toLowerCase())
     .filter(Boolean);
-  // Split into exact emails vs domain patterns
   const excludedEmails = new Set(
     excludedEntries.filter((e) => e.includes("@"))
   );
@@ -479,10 +459,8 @@ export async function getContacts({
     ? sql`AND (b.invitee_email ILIKE ${"%" + search + "%"} OR b.invitee_name ILIKE ${"%" + search + "%"})`
     : sql``;
 
-  // Per-contact (grouped) filters: "upcoming" = has a future booking,
-  // "new" = first booking CREATED within the last 30 days (uses created_at,
-  //         not start_time, so a returning contact who rescheduled recently
-  //         doesn't appear as "new").
+  // "new" uses created_at (not start_time) so a returning contact who
+  // rescheduled recently doesn't appear as "new".
   const havingClause =
     filter === "upcoming"
       ? sql`HAVING bool_or(b.start_time >= now())`
@@ -490,8 +468,7 @@ export async function getContacts({
         ? sql`HAVING min(b.created_at) >= now() - interval '30 days'`
         : sql``;
 
-  // Fetch all matching rows (no SQL pagination) so that the exclusion filter
-  // applied in JS produces a count and page slice that are always consistent.
+  // No SQL pagination — the exclusion filter runs in JS, so paging there keeps count and slice consistent.
   const rows = await db.execute(sql`
     SELECT
       b.invitee_email   AS email,
@@ -548,8 +525,6 @@ export async function getContacts({
   };
 }
 
-// ── Contact settings: auto-create on booking + exclusion list ─────────────────
-
 export async function getContactSettings(): Promise<{
   autoCreateContacts: boolean;
   excludedContactDomains: string;
@@ -577,8 +552,6 @@ export async function updateContactSettings(data: {
   try {
     const session = await requireSession();
 
-    // Normalise the exclusion list: split on commas/whitespace, lowercase,
-    // de-dupe, drop empties, then store as a comma-separated string.
     const excluded = Array.from(
       new Set(
         (data.excludedContactDomains ?? "")

@@ -5,47 +5,29 @@ import { TabGroup, TabList, Tab, TabPanels, TabPanel } from "@headlessui/react"
 
 import { cn } from "@/lib/utils"
 
-// Headless UI's TabGroup is *index*-based (`selectedIndex`/`onChange(index)`,
-// matched purely by DOM position), while this file's consumer-facing API is
-// *value*-based (`value`/`onValueChange(value)`, matched by a string each
-// TabsTrigger/TabsContent carries independently). To bridge that without
-// touching jobs-tabs.tsx (the one consumer, using
-// `defaultValue`/`onValueChange`/`value="queues"` etc.), <Tabs> walks its
-// own `children` on every render — same technique as <Select>'s
-// value→content lookup in select.tsx and <Tooltip>'s config lookup in
-// tooltip.tsx — to build a value→index map from the TabsTrigger values
-// inside TabsList, and translates in both directions at the boundary.
+// Headless UI's TabGroup is index-based (`selectedIndex`/`onChange(index)`),
+// while this file's API is value-based (`value`/`onValueChange(value)`). To
+// bridge that, <Tabs> walks its own `children` on every render to build a
+// value→index map from the TabsTrigger values, translating in both
+// directions at the boundary.
 //
-// A TabPanel only gets a stable index if it's a *direct descendant of one
-// <TabPanels>*, matched by registration order — but this file's consumer
-// API renders TabsList and each TabsContent as flat siblings of <Tabs>,
-// with no such wrapper. <Tabs> now partitions its children and wraps every
-// TabsContent in an implicit <TabPanels className="contents">; `contents`
-// (display: contents) makes that wrapper invisible to layout, so
-// TabsContent's own `flex-1` still lands on a real flex child of <Tabs>'s
-// flex row/column exactly as before, instead of on a non-growing wrapper.
-// Rather than requiring consumers to list TabsContent in the same order as
-// their matching TabsTrigger, the partitioned content list is re-sorted by
-// each content's own `value` against the trigger-derived value→index map —
-// so this is order-independent.
+// A TabPanel only gets a stable index as a direct child of one <TabPanels>,
+// matched by registration order — but this file's API renders TabsList and
+// each TabsContent as flat siblings of <Tabs>. So <Tabs> partitions its
+// children and wraps every TabsContent in an implicit
+// <TabPanels className="contents">, keeping it invisible to layout (so
+// TabsContent's `flex-1` still lands on a real flex child). Content is
+// re-sorted by its own `value` against the trigger-derived map, so
+// consumers don't have to list TabsContent in trigger order.
 //
-// One more Headless-UI-specific trap: Tab's own render-prop slot already
-// has an `active` boolean (`useActivePress` — "is this being pressed right
-// now", a transient :active-like state), which Headless UI auto-stamps as
-// a real `data-active=""` DOM attribute — and that auto-stamp always wins
-// over any `data-active` this file tries to pass in manually (confirmed
-// against Headless UI's own render merge order). A `data-active:` custom
-// variant selector would therefore key off Headless UI's transient press
-// state instead of "this is the selected tab" — a collision, since this
-// file needs the latter. Rather than fight Headless UI for the attribute,
-// TabsTrigger computes its selected-state classes directly in JS (Headless
-// UI's `className` prop accepts a `(bag) => string` function, the one prop
-// this library explicitly special-cases for render-prop access) instead of
-// relying on a `data-*` attribute selector — same visual output, no
-// attribute-name collision.
-// `variant` (default/line) is threaded from TabsList to TabsTrigger via
-// its own small context, replacing what used to be a
-// `group-data-[variant=line]/tabs-list:` ancestor CSS selector.
+// Tab's render-prop slot has an `active` boolean (transient :active-like
+// press state) that Headless UI auto-stamps as `data-active=""`, which
+// would collide with a "this is the selected tab" meaning. So TabsTrigger
+// computes its selected-state classes directly in JS via the `className`
+// prop's `(bag) => string` form instead of a `data-*` selector.
+//
+// `variant` (default/line) is threaded from TabsList to TabsTrigger via its
+// own small context.
 type TabsListContextValue = { variant: "default" | "line" }
 
 const TabsListContext = React.createContext<TabsListContextValue>({

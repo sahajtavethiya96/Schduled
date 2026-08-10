@@ -22,7 +22,6 @@ export default async function OnboardingPage() {
     .where(eq(user.id, session.user.id))
     .limit(1);
 
-  // Already finished — nothing to do here.
   if (freshUser?.onboardingDone) {
     redirect("/dashboard");
   }

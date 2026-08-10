@@ -16,7 +16,7 @@ export interface MeetingIntegrations {
 /**
  * Whether the host has connected the integrations required to auto-generate
  * meeting links. Google Meet needs a connected Google Calendar; Zoom needs a
- * connected Zoom account. Used to warn in the event-type Location tab.
+ * connected Zoom account.
  */
 export async function getMeetingIntegrations(
   userId: string
@@ -61,9 +61,7 @@ export interface EnvIntegrationStatus {
 
 /**
  * Whether each integration is set up (DB-configured, falling back to env —
- * see lib/integration-settings.ts). Shared by /settings/platform (system
- * status) and the setup wizard's "Configure services" step so both read the
- * same boolean logic. `googleConfigured` here reflects the live (DB-or-env)
+ * see lib/integration-settings.ts). `googleConfigured` reflects the live
  * Calendar config, not Better Auth's boot-time Sign-In state — see
  * lib/auth.ts's `googleAuthEnabled` for that.
  */

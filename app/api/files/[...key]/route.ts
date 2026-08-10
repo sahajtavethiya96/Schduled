@@ -11,7 +11,6 @@ export async function GET(
   try {
     const buffer = await storage.download(storageKey);
 
-    // Derive content-type from extension
     const ext = storageKey.split(".").pop()?.toLowerCase() ?? "";
     const contentTypeMap: Record<string, string> = {
       jpg: "image/jpeg",

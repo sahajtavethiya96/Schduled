@@ -39,12 +39,10 @@ export function LegalShell({
     <div className="min-h-screen overflow-x-clip bg-base-100 text-base-content antialiased">
       <LandingHeader />
 
-      {/* ── Hero ──────────────────────────────────────────────────────────── */}
       <section
         className="relative overflow-hidden py-20 sm:py-28"
         style={DARK_BG}
       >
-        {/* Glow orb */}
         <div
           className="pointer-events-none absolute right-0 top-0 h-[500px] w-[500px]"
           style={{
@@ -53,7 +51,6 @@ export function LegalShell({
             filter: "blur(40px)",
           }}
         />
-        {/* Grid overlay */}
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.03]"
           style={{
@@ -82,10 +79,8 @@ export function LegalShell({
         </Reveal>
       </section>
 
-      {/* ── Body: sidebar TOC + content ───────────────────────────────────── */}
       <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 lg:py-20">
         <div className="lg:grid lg:grid-cols-[240px_1fr] lg:gap-16">
-          {/* Sidebar TOC */}
           <aside className="mb-10 lg:mb-0">
             <div className="lg:sticky lg:top-24">
               <p className="mb-4 text-2xs font-black uppercase tracking-eyebrow text-muted-foreground/60">
@@ -93,7 +88,6 @@ export function LegalShell({
               </p>
               <TocNav toc={toc} />
 
-              {/* Back to home */}
               <div className="mt-8 border-t border-base-300 pt-6">
                 <Link
                   className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary transition-opacity hover:opacity-75"
@@ -105,14 +99,12 @@ export function LegalShell({
             </div>
           </aside>
 
-          {/* Content */}
           <Reveal>
             <article className="prose-legal">{children}</article>
           </Reveal>
         </div>
       </div>
 
-      {/* ── CTA band ──────────────────────────────────────────────────────── */}
       <section className="border-t border-base-300 bg-base-200/20 py-16">
         <Reveal>
           <div className="mx-auto max-w-4xl px-5 text-center sm:px-8">
@@ -141,8 +133,6 @@ export function LegalShell({
     </div>
   );
 }
-
-// ── Shared prose components ─────────────────────────────────────────────────
 
 export function LegalSection({
   id,

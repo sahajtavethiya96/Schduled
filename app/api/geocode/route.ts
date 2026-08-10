@@ -2,11 +2,9 @@ import { NextResponse } from "next/server";
 import { checkRateLimit, rateLimitKey } from "@/lib/api/helpers";
 import { env } from "@/lib/env";
 
-// Pluggable address autocomplete. Default provider is Photon (OpenStreetMap,
-// keyless). If GOOGLE_MAPS_API_KEY or MAPBOX_TOKEN is set the route upgrades to
-// that provider automatically (village/street/building coverage); pin a choice
-// with GEOCODER_PROVIDER. Autocomplete is best-effort: any failure returns an
-// empty list so the address field still works as plain text.
+// Pluggable provider: Photon (keyless) by default, auto-upgrades to Google or
+// Mapbox if a key/token is set (or pin via GEOCODER_PROVIDER). Best-effort —
+// failures return an empty list so the address field still works as plain text.
 
 type Provider = "photon" | "google" | "mapbox";
 
@@ -86,8 +84,7 @@ async function photon(
   signal: AbortSignal
 ): Promise<string[]> {
   let url = `https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=6&lang=en`;
-  // lat/lon bias surfaces nearby places (e.g. a local village) above far-away
-  // big cities with the same name.
+  // lat/lon bias surfaces nearby places above far-away big cities of the same name.
   if (coords) {
     url += `&lat=${coords.lat}&lon=${coords.lon}&location_bias_scale=0.6`;
   }
@@ -191,7 +188,6 @@ export async function GET(request: Request) {
       provider === "google" ? google : provider === "mapbox" ? mapbox : photon;
     const labels = await lookup(q, coords, controller.signal);
 
-    // De-dupe + cap.
     const seen = new Set<string>();
     const suggestions = labels
       .filter((l) => {

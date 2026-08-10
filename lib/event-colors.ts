@@ -1,5 +1,3 @@
-// Shared event-type color palette + distinct-color picker.
-// Used by the create action (authoritative assignment) and the builder UI.
 export const EVENT_COLORS = [
   "#0d9488", // teal
   "#6366f1", // indigo
@@ -13,8 +11,7 @@ export const EVENT_COLORS = [
   "#64748b", // slate
 ];
 
-// Picks a palette color the host isn't already using so each meeting type gets
-// a visually distinct color. Falls back to round-robin once all are in use.
+// Picks an unused palette color; falls back to round-robin once all are in use.
 export function pickDistinctEventColor(
   usedColors: Iterable<string>,
   count: number

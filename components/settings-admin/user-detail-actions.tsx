@@ -38,8 +38,7 @@ export function UserDetailActions({
     setImpersonating(true);
     setImpersonateError(null);
     try {
-      // Record the impersonation server-side (requireAdmin + audit) before
-      // starting the session, so it can't happen without a trail.
+      // Record server-side (requireAdmin + audit) before starting the session, so it can't happen without a trail.
       const recorded = await recordImpersonationAction(userId);
       if ("error" in recorded) {
         setImpersonateError(recorded.error);
@@ -58,7 +57,6 @@ export function UserDetailActions({
 
   return (
     <div className="space-y-2">
-      {/* Ban / Unban */}
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button
@@ -98,7 +96,6 @@ export function UserDetailActions({
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Impersonate */}
       <Button
         className="w-full justify-start text-xs"
         disabled={impersonating || banned}
@@ -120,7 +117,6 @@ export function UserDetailActions({
         </p>
       )}
 
-      {/* Danger zone — permanent delete */}
       <div className="mt-3 border-t border-error/20 pt-3">
         {confirmDelete ? (
           <div className="space-y-2">

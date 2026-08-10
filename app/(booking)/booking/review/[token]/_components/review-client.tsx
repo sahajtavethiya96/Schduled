@@ -212,9 +212,8 @@ export function ReviewClient(props: Props) {
     }
   }
 
-  // Show spinner only while the auto-approve request is in flight. Once it
-  // resolves, a failure falls through to the review screen (which shows the
-  // error + Approve/Decline) instead of spinning forever.
+  // Only shows while the auto-approve request is in flight; a failure falls
+  // through to the review screen instead of spinning forever.
   if (autoApproving && view === "main" && submitting) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-base-200/30 p-4">

@@ -85,10 +85,8 @@ async function processCalendarWrite(job: Job<CalendarWritePayload>) {
   try {
     calApi = await getGoogleCalendarClient(cal);
   } catch (err) {
-    // A revoked / expired grant (invalid_grant) never recovers on retry. Flip
-    // the calendar to disconnected and alert the host once — previously this
-    // was swallowed, leaving status='connected' forever with no calendar
-    // writes and no signal to the user.
+    // A revoked/expired grant (invalid_grant) never recovers on retry — flip
+    // the calendar to disconnected and alert the host once.
     const msg = getGoogleErrorMessage(err);
     if (/invalid_grant/i.test(msg) || getGoogleErrorStatus(err) === 401) {
       const [flipped] = await db
@@ -121,12 +119,9 @@ async function processCalendarWrite(job: Job<CalendarWritePayload>) {
 
   const isGoogleMeet = b.etLocationType === "google_meet";
 
-  // Native Calendar `location` field — same resolver already used by every
-  // email/lifecycle handler for the host's view, so the address/link shown
-  // here matches what the host sees in their confirmation email exactly.
-  // Google Calendar renders this in its own Location UI (map preview,
-  // "get directions") rather than leaving it as plain text inside the
-  // description.
+  // Same resolver used by every host-facing email, so this matches what the
+  // host sees in their confirmation email; Google renders it in its own
+  // Location UI rather than as plain text in the description.
   const location = resolveLocationLabelHost(
     b.etLocationType,
     b.etLocationValue,
@@ -185,11 +180,9 @@ async function processCalendarWrite(job: Job<CalendarWritePayload>) {
       meetUrl = entry?.uri ?? null;
     }
 
-    // Persist the event id inline-retrying the DB write. The Google event has
-    // no idempotency key (requestId only dedupes the Meet conference), so if
-    // this write threw and pg-boss re-ran the whole handler, events.insert
-    // would create a SECOND calendar event. Retrying just the write keeps a
-    // transient DB blip from turning into a duplicate event.
+    // Retry only the DB write on failure — the Google event has no idempotency
+    // key (requestId only dedupes the Meet conference), so re-running the
+    // whole handler would create a second calendar event.
     let persisted = false;
     for (let attempt = 0; attempt < 3 && !persisted; attempt++) {
       try {
@@ -221,10 +214,8 @@ async function processCalendarWrite(job: Job<CalendarWritePayload>) {
       `[calendar-write] created event ${googleEventId} for booking ${bookingId}${meetUrl ? " + Meet link" : ""}`
     );
   } catch (err) {
-    // Permanent failures (API disabled, bad/expired credentials, missing
-    // calendar) won't fix themselves on retry — log a one-line reason and
-    // stop so pg-boss doesn't burn 3 retries spamming a full stack trace.
-    // Transient failures (rate limit, 5xx) still re-throw to retry.
+    // Permanent failures won't fix themselves on retry — log and stop instead
+    // of burning retries. Transient failures still re-throw to retry.
     const status = getGoogleErrorStatus(err);
     if (status && PERMANENT_CALENDAR_ERRORS.has(status)) {
       console.warn(
