@@ -1,36 +1,36 @@
 import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
 import { Slot } from "@/components/ui/slot"
 
 import { cn } from "@/lib/utils"
 
-const badgeVariants = cva(
-  "h-auto group/badge shrink-0 gap-1.5 overflow-hidden rounded-none border-0 bg-transparent px-0 py-0 text-xs font-semibold tracking-ui whitespace-nowrap uppercase transition-colors focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/50 has-data-[icon=inline-end]:pr-0 has-data-[icon=inline-start]:pl-0 aria-invalid:border-error aria-invalid:ring-error/20 dark:aria-invalid:ring-error/40 [&>svg]:pointer-events-none [&>svg]:size-3!",
-  {
-    variants: {
-      variant: {
-        default: "text-base-content [a]:hover:text-base-content/70",
-        secondary: "text-muted-foreground [a]:hover:text-base-content",
-        destructive:
-          "text-error focus-visible:ring-error/20 dark:focus-visible:ring-error/40 [a]:hover:text-error/70",
-        outline: "text-base-content [a]:hover:text-base-content/70",
-        ghost: "text-muted-foreground hover:text-base-content",
-        link: "text-base-content underline-offset-4 hover:underline",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
-  }
-)
+const badgeBase =
+  "h-auto group/badge shrink-0 gap-1.5 overflow-hidden rounded-none border-0 bg-transparent px-0 py-0 text-xs font-semibold tracking-ui whitespace-nowrap uppercase transition-colors focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/50 has-data-[icon=inline-end]:pr-0 has-data-[icon=inline-start]:pl-0 aria-invalid:border-error aria-invalid:ring-error/20 dark:aria-invalid:ring-error/40 [&>svg]:pointer-events-none [&>svg]:size-3!"
+
+const badgeVariantClasses = {
+  default: "text-base-content [a]:hover:text-base-content/70",
+  secondary: "text-muted-foreground [a]:hover:text-base-content",
+  destructive:
+    "text-error focus-visible:ring-error/20 dark:focus-visible:ring-error/40 [a]:hover:text-error/70",
+  outline: "text-base-content [a]:hover:text-base-content/70",
+  ghost: "text-muted-foreground hover:text-base-content",
+  link: "text-base-content underline-offset-4 hover:underline",
+} as const
+
+type BadgeVariant = keyof typeof badgeVariantClasses
+
+function badgeVariants({ variant = "default" }: { variant?: BadgeVariant } = {}) {
+  return cn(badgeBase, badgeVariantClasses[variant])
+}
 
 function Badge({
   className,
   variant = "default",
   asChild = false,
   ...props
-}: React.ComponentProps<"span"> &
-  VariantProps<typeof badgeVariants> & { asChild?: boolean }) {
+}: React.ComponentProps<"span"> & {
+  variant?: BadgeVariant
+  asChild?: boolean
+}) {
   const Comp = asChild ? Slot : "span"
 
   return (

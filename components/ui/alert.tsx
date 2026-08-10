@@ -1,34 +1,28 @@
 import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
-const alertVariants = cva(
-  "alert group/alert relative grid w-full gap-1 after:absolute after:-inset-y-px after:-left-px after:w-0.5 has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2.5 *:[svg]:row-span-2 *:[svg]:translate-y-0.5 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-4",
-  {
-    variants: {
-      variant: {
-        default: "bg-base-100 text-base-content after:bg-base-content",
-        destructive:
-          "bg-base-100 text-error after:bg-error *:data-[slot=alert-description]:text-error/90 *:[svg]:text-current",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
-  }
-)
+const alertBase =
+  "alert group/alert relative grid w-full gap-1 after:absolute after:-inset-y-px after:-left-px after:w-0.5 has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2.5 *:[svg]:row-span-2 *:[svg]:translate-y-0.5 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-4"
+
+const alertVariantClasses = {
+  default: "bg-base-100 text-base-content after:bg-base-content",
+  destructive:
+    "bg-base-100 text-error after:bg-error *:data-[slot=alert-description]:text-error/90 *:[svg]:text-current",
+} as const
+
+type AlertVariant = keyof typeof alertVariantClasses
 
 function Alert({
   className,
-  variant,
+  variant = "default",
   ...props
-}: React.ComponentProps<"div"> & VariantProps<typeof alertVariants>) {
+}: React.ComponentProps<"div"> & { variant?: AlertVariant }) {
   return (
     <div
       data-slot="alert"
       role="alert"
-      className={cn(alertVariants({ variant }), className)}
+      className={cn(alertBase, alertVariantClasses[variant], className)}
       {...props}
     />
   )
