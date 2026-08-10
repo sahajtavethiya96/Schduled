@@ -157,10 +157,6 @@ export default async function HostProfilePage({
       ) : (
         <div className="flex flex-col gap-2">
           {eventTypes.map((et) => {
-            const defaultDuration =
-              et.durations.find((d) => d.isDefault)?.duration ??
-              et.durations[0]?.duration ??
-              30;
             const sortedDurations = [...et.durations].sort(
               (a, b) => a.duration - b.duration
             );

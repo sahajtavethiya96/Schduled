@@ -401,9 +401,9 @@ export function AuditTable({
                   href={page > 1 ? pageHref(page - 1) : "#"}
                 />
               </PaginationItem>
-              {paginationRange(page, totalPages).map((p, i) =>
-                p === "ellipsis" ? (
-                  <PaginationItem key={`e-${i}`}>
+              {paginationRange(page, totalPages).map((p) =>
+                typeof p === "string" ? (
+                  <PaginationItem key={p}>
                     <PaginationEllipsis />
                   </PaginationItem>
                 ) : (

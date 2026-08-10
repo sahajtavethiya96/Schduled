@@ -57,9 +57,9 @@ function PremiumFaqAccordion({ items, theme }: PremiumFaqProps) {
               style={{ filter: "blur(24px)", transform: "scale(1.22)" }}
             />
 
-            <div
+            <button
               className={cn(
-                "relative cursor-pointer border transition-colors duration-300",
+                "relative block w-full cursor-pointer border text-left transition-colors duration-300",
                 isDark
                   ? isOpen
                     ? "border-primary/45 bg-white/[0.09]"
@@ -77,6 +77,7 @@ function PremiumFaqAccordion({ items, theme }: PremiumFaqProps) {
                 transition:
                   "transform 0.3s ease, border-color 0.3s ease, background-color 0.3s ease",
               }}
+              type="button"
             >
               {/* Question row — always visible */}
               <div
@@ -148,7 +149,7 @@ function PremiumFaqAccordion({ items, theme }: PremiumFaqProps) {
                   </div>
                 </div>
               </div>
-            </div>
+            </button>
           </div>
         );
       })}

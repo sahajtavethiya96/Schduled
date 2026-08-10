@@ -73,7 +73,7 @@ export default async function BookingPage({
     .where(eq(user.username, username))
     .limit(1);
 
-  if (!host || !host.username) {
+  if (!host?.username) {
     notFound();
   }
 

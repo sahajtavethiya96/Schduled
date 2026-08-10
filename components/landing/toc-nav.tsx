@@ -10,10 +10,10 @@ export function TocNav({ toc }: { toc: TocEntry[] }) {
   useEffect(() => {
     const observers: IntersectionObserver[] = [];
 
-    toc.forEach(({ id }) => {
+    for (const { id } of toc) {
       const el = document.getElementById(id);
       if (!el) {
-        return;
+        continue;
       }
 
       const observer = new IntersectionObserver(
@@ -27,9 +27,13 @@ export function TocNav({ toc }: { toc: TocEntry[] }) {
 
       observer.observe(el);
       observers.push(observer);
-    });
+    }
 
-    return () => observers.forEach((o) => o.disconnect());
+    return () => {
+      for (const o of observers) {
+        o.disconnect();
+      }
+    };
   }, [toc]);
 
   return (

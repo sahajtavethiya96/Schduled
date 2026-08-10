@@ -232,7 +232,7 @@ export async function deleteAccountAction(
   if (!reason) {
     return { error: "Please select a reason for leaving." };
   }
-  if (!code || code.length !== 6) {
+  if (code?.length !== 6) {
     return { error: "Enter the 6-digit code from your email." };
   }
 

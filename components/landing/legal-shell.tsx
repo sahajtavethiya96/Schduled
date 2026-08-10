@@ -217,13 +217,15 @@ export function LegalTable({
           </tr>
         </thead>
         <tbody>
-          {rows.map((row, i) => (
-            <tr className="border-t border-base-300" key={i}>
-              {row.map((cell, j) => (
-                <td className="px-4 py-3 text-muted-foreground" key={j}>
-                  {cell}
-                </td>
-              ))}
+          {rows.map((row) => (
+            <tr className="border-t border-base-300" key={row.join("|")}>
+              {row
+                .map((cell, colIndex) => ({ cell, header: headers[colIndex] }))
+                .map(({ cell, header }) => (
+                  <td className="px-4 py-3 text-muted-foreground" key={header}>
+                    {cell}
+                  </td>
+                ))}
             </tr>
           ))}
         </tbody>

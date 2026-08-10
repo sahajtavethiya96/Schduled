@@ -1,7 +1,8 @@
 "use client";
 
 import { ArrowRight, CheckCircle, Copy } from "@phosphor-icons/react";
-import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 import { completeOnboarding } from "@/app/actions/onboarding";
 import { Button } from "@/components/ui/button";
 import { useAppOrigin } from "@/hooks/use-app-origin";
@@ -17,7 +18,7 @@ export function StepShareLink({ username, onBack }: StepShareLinkProps) {
   const [copied, setCopied] = useState(false);
   const [finishing, setFinishing] = useState(false);
   const [error, setError] = useState("");
-  const qrRef = useRef<HTMLImageElement>(null);
+  const [qrSrc, setQrSrc] = useState<string | null>(null);
 
   useEffect(() => {
     if (!username) {
@@ -33,9 +34,8 @@ export function StepShareLink({ username, onBack }: StepShareLinkProps) {
           margin: 1,
           color: { dark: "#0d9488", light: "#ffffff" },
         });
-        if (!cancelled && qrRef.current) {
-          qrRef.current.src = dataUrl;
-          qrRef.current.style.display = "block";
+        if (!cancelled) {
+          setQrSrc(dataUrl);
         }
       } catch {
         // non-fatal
@@ -108,15 +108,16 @@ export function StepShareLink({ username, onBack }: StepShareLinkProps) {
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest">
             QR Code
           </p>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            alt="Booking link QR code"
-            className="border border-base-300"
-            height={160}
-            ref={qrRef}
-            style={{ display: "none" }}
-            width={160}
-          />
+          {qrSrc && (
+            <Image
+              alt="Booking link QR code"
+              className="border border-base-300"
+              height={160}
+              src={qrSrc}
+              unoptimized
+              width={160}
+            />
+          )}
           <p className="text-xs text-muted-foreground text-center">
             Let clients scan to book from their phone
           </p>

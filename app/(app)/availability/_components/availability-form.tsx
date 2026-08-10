@@ -372,10 +372,14 @@ function OverrideDialog({
     loadDate(iso);
   }
 
-  const cells = [
-    ...Array(firstWeekday).fill(null),
-    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
-  ];
+  const cells = Array.from({ length: firstWeekday + daysInMonth }, (_, idx) => {
+    const day = idx - firstWeekday + 1;
+    const cellDate = new Date(year, month, day);
+    return {
+      key: `${cellDate.getFullYear()}-${cellDate.getMonth()}-${cellDate.getDate()}`,
+      day: day >= 1 && day <= daysInMonth ? day : null,
+    };
+  });
 
   return (
     <Dialog
@@ -447,10 +451,11 @@ function OverrideDialog({
                   {d}
                 </div>
               ))}
-              {cells.map((day, i) => {
-                if (!day) {
-                  return <div key={`e-${i}`} />;
+              {cells.map((cell) => {
+                if (!cell.day) {
+                  return <div key={cell.key} />;
                 }
+                const day = cell.day;
                 const iso = dateToISO(year, month, day);
                 const isPast = iso < today;
                 const isToday = iso === today;
@@ -510,7 +515,10 @@ function OverrideDialog({
             {!isBlocked && (
               <div className="space-y-2">
                 {slots.map((slot, i) => (
-                  <div className="flex items-center gap-2" key={i}>
+                  <div
+                    className="flex items-center gap-2"
+                    key={`${slot.startTime}-${slot.endTime}`}
+                  >
                     <TimeSelect
                       onChange={(v) =>
                         setSlots((p) =>
@@ -567,11 +575,15 @@ function OverrideDialog({
             )}
 
             <div className="flex flex-col gap-1.5 pt-1">
-              <label className="text-xs font-semibold text-muted-foreground">
+              <label
+                className="text-xs font-semibold text-muted-foreground"
+                htmlFor="date-override-reason"
+              >
                 Reason (optional)
               </label>
               <input
                 className="w-full border border-input bg-base-100 px-3 h-9 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all placeholder:text-muted-foreground/60"
+                id="date-override-reason"
                 maxLength={200}
                 onChange={(e) => setReason(e.target.value)}
                 placeholder="e.g. Public holiday, vacation…"
@@ -680,7 +692,10 @@ function WeekdayDialog({
           {!isBlocked && (
             <div className="space-y-2">
               {slots.map((slot, i) => (
-                <div className="flex items-center gap-2" key={i}>
+                <div
+                  className="flex items-center gap-2"
+                  key={`${slot.startTime}-${slot.endTime}`}
+                >
                   <TimeSelect
                     onChange={(v) =>
                       setSlots((p) =>
@@ -793,17 +808,18 @@ function FullCalendarView({
     year: "numeric",
   });
 
-  const allCells: (number | null)[] = [
-    ...Array(firstWeekday).fill(null),
-    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
-  ];
-  const weeks: (number | null)[][] = [];
+  const totalCells = Math.ceil((firstWeekday + daysInMonth) / 7) * 7;
+  const allCells = Array.from({ length: totalCells }, (_, idx) => {
+    const day = idx - firstWeekday + 1;
+    const cellDate = new Date(year, month, day);
+    return {
+      key: `${cellDate.getFullYear()}-${cellDate.getMonth()}-${cellDate.getDate()}`,
+      day: day >= 1 && day <= daysInMonth ? day : null,
+    };
+  });
+  const weeks: (typeof allCells)[number][][] = [];
   for (let i = 0; i < allCells.length; i += 7) {
-    const w = allCells.slice(i, i + 7);
-    while (w.length < 7) {
-      w.push(null);
-    }
-    weeks.push(w);
+    weeks.push(allCells.slice(i, i + 7));
   }
 
   return (
@@ -863,21 +879,22 @@ function FullCalendarView({
           ))}
         </div>
 
-        {weeks.map((week, wi) => (
+        {weeks.map((week) => (
           <div
             className="grid grid-cols-7 border-b border-base-300 last:border-b-0"
-            key={wi}
+            key={week[0].key}
             style={{ minHeight: 90 }}
           >
-            {week.map((day, di) => {
-              if (!day) {
+            {week.map((cell) => {
+              if (!cell.day) {
                 return (
                   <div
                     className="border-r border-base-300 last:border-r-0 bg-base-200/10 p-2 text-muted-foreground/30 text-sm"
-                    key={`e-${wi}-${di}`}
+                    key={cell.key}
                   />
                 );
               }
+              const day = cell.day;
               const iso = dateToISO(year, month, day);
               const isToday = iso === today;
               const isPast = iso < today;
@@ -921,7 +938,7 @@ function FullCalendarView({
                       ) : null)}
                   </div>
                   <div className="space-y-0.5">
-                    {displaySlots.map((s, i) => (
+                    {displaySlots.map((s) => (
                       <p
                         className={cn(
                           "text-xs leading-snug",
@@ -929,7 +946,7 @@ function FullCalendarView({
                             ? "text-primary font-medium"
                             : "text-muted-foreground"
                         )}
-                        key={i}
+                        key={`${s.startTime}-${s.endTime}`}
                       >
                         {fmt12(s.startTime)} – {fmt12(s.endTime)}
                       </p>
@@ -1090,9 +1107,7 @@ export function AvailabilityForm({
   const [currentTz, setCurrentTz] = useState(userTimezone);
 
   // Advanced tab
-  const [advName, setAdvName] = useState(
-    firstSchedule?.name ?? "Working Hours"
-  );
+  const [, setAdvName] = useState(firstSchedule?.name ?? "Working Hours");
   const [holidayCountry, setHolidayCountry] = useState(defaultHolidayCountry);
   const [holidays, setHolidays] = useState<HolidayItem[]>(initialHolidays);
   const [holidaysLoading, setHolidaysLoading] = useState(false);
@@ -1816,7 +1831,7 @@ export function AvailabilityForm({
                       max={999}
                       min={1}
                       onBlur={(e) => {
-                        const val = Number.parseInt(e.target.value);
+                        const val = Number.parseInt(e.target.value, 10);
                         if (!isNaN(val) && val !== lim.count) {
                           startLimitTransition(async () => {
                             const res = await updateMeetingLimit(lim.id, val);
@@ -1908,11 +1923,11 @@ export function AvailabilityForm({
                   disabled={
                     limitPending ||
                     !limitCount ||
-                    Number.parseInt(limitCount) < 1
+                    Number.parseInt(limitCount, 10) < 1
                   }
                   onClick={() =>
                     startLimitTransition(async () => {
-                      const count = Number.parseInt(limitCount);
+                      const count = Number.parseInt(limitCount, 10);
                       if (isNaN(count)) {
                         return;
                       }
@@ -2198,7 +2213,7 @@ export function AvailabilityForm({
                             {slots.map((slot, i) => (
                               <div
                                 className="flex items-center gap-1.5"
-                                key={i}
+                                key={`${slot.startTime}-${slot.endTime}`}
                               >
                                 <TimeCombobox
                                   format={fmt12}
@@ -2327,10 +2342,10 @@ export function AvailabilityForm({
                             </span>
                           ) : (
                             <div className="mt-0.5 space-y-0.5">
-                              {o.slots.map((s, i) => (
+                              {o.slots.map((s) => (
                                 <p
                                   className="text-xs text-muted-foreground"
-                                  key={i}
+                                  key={`${s.startTime}-${s.endTime}`}
                                 >
                                   {fmt12(s.startTime)} – {fmt12(s.endTime)}
                                 </p>

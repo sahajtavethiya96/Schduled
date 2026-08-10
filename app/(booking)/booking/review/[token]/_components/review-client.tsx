@@ -32,6 +32,75 @@ interface Props {
 
 const DATE_FMT = "EEEE, MMMM d, yyyy 'at' h:mm a";
 
+interface BookingCardProps {
+  eventName: string;
+  hostTimezone: string;
+  inviteeEmail: string;
+  inviteeName: string;
+  isReschedule: boolean;
+  locationLabel: string;
+  requestedWhen: string | null;
+  when: string;
+}
+
+// Booking card shared across views
+function BookingCard({
+  eventName,
+  hostTimezone,
+  inviteeEmail,
+  inviteeName,
+  isReschedule,
+  locationLabel,
+  requestedWhen,
+  when,
+}: BookingCardProps) {
+  return (
+    <div className="mb-5 border border-base-300 bg-base-200/30 p-4">
+      <p className="text-sm font-semibold text-base-content">{eventName}</p>
+      <p className="mt-0.5 text-xs text-muted-foreground">
+        with {inviteeName} ({inviteeEmail})
+      </p>
+      {isReschedule && requestedWhen ? (
+        <div className="mt-3 space-y-2">
+          <div>
+            <p className="text-2xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Current
+            </p>
+            <p className="text-xs text-base-content">{when}</p>
+          </div>
+          <p className="text-xs text-primary">↓</p>
+          <div>
+            <p className="text-2xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Requested
+            </p>
+            <p className="text-xs font-semibold text-base-content">
+              {requestedWhen}
+            </p>
+          </div>
+          <p className="text-xs text-muted-foreground">{hostTimezone}</p>
+        </div>
+      ) : (
+        <>
+          <p className="mt-2 text-xs text-muted-foreground">{when}</p>
+          <p className="text-xs text-muted-foreground">{hostTimezone}</p>
+        </>
+      )}
+      {locationLabel.startsWith("http") ? (
+        <a
+          className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-primary underline underline-offset-2 hover:opacity-80"
+          href={locationLabel}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          View Location
+        </a>
+      ) : (
+        <p className="mt-1 text-xs text-muted-foreground">{locationLabel}</p>
+      )}
+    </div>
+  );
+}
+
 export function ReviewClient(props: Props) {
   const isReschedule = props.mode === "reschedule";
   const approveEndpoint = isReschedule
@@ -75,12 +144,12 @@ export function ReviewClient(props: Props) {
   const didAutoApprove = useRef(false);
 
   // Auto-approve when host clicks the "Approve" link directly from email
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally mount-only; didAutoApprove guards against re-runs, and handleApprove/autoApproving would otherwise fire this on every render
   useEffect(() => {
     if (autoApproving && !didAutoApprove.current) {
       didAutoApprove.current = true;
       handleApprove();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const when = formatInTimeZone(
@@ -142,57 +211,6 @@ export function ReviewClient(props: Props) {
       setSubmitting(false);
     }
   }
-
-  // Booking card shared across views
-  const BookingCard = () => (
-    <div className="mb-5 border border-base-300 bg-base-200/30 p-4">
-      <p className="text-sm font-semibold text-base-content">
-        {props.eventName}
-      </p>
-      <p className="mt-0.5 text-xs text-muted-foreground">
-        with {props.inviteeName} ({props.inviteeEmail})
-      </p>
-      {isReschedule && requestedWhen ? (
-        <div className="mt-3 space-y-2">
-          <div>
-            <p className="text-2xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Current
-            </p>
-            <p className="text-xs text-base-content">{when}</p>
-          </div>
-          <p className="text-xs text-primary">↓</p>
-          <div>
-            <p className="text-2xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Requested
-            </p>
-            <p className="text-xs font-semibold text-base-content">
-              {requestedWhen}
-            </p>
-          </div>
-          <p className="text-xs text-muted-foreground">{props.hostTimezone}</p>
-        </div>
-      ) : (
-        <>
-          <p className="mt-2 text-xs text-muted-foreground">{when}</p>
-          <p className="text-xs text-muted-foreground">{props.hostTimezone}</p>
-        </>
-      )}
-      {props.locationLabel.startsWith("http") ? (
-        <a
-          className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-primary underline underline-offset-2 hover:opacity-80"
-          href={props.locationLabel}
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          View Location
-        </a>
-      ) : (
-        <p className="mt-1 text-xs text-muted-foreground">
-          {props.locationLabel}
-        </p>
-      )}
-    </div>
-  );
 
   // Show spinner only while the auto-approve request is in flight. Once it
   // resolves, a failure falls through to the review screen (which shows the
@@ -370,7 +388,16 @@ export function ReviewClient(props: Props) {
             </h1>
           </div>
           <div className="px-5 sm:px-8 py-6">
-            <BookingCard />
+            <BookingCard
+              eventName={props.eventName}
+              hostTimezone={props.hostTimezone}
+              inviteeEmail={props.inviteeEmail}
+              inviteeName={props.inviteeName}
+              isReschedule={isReschedule}
+              locationLabel={props.locationLabel}
+              requestedWhen={requestedWhen}
+              when={when}
+            />
 
             {isReschedule && (
               <p className="mb-4 text-xs text-muted-foreground">
@@ -458,7 +485,16 @@ export function ReviewClient(props: Props) {
             )}
           </p>
 
-          <BookingCard />
+          <BookingCard
+            eventName={props.eventName}
+            hostTimezone={props.hostTimezone}
+            inviteeEmail={props.inviteeEmail}
+            inviteeName={props.inviteeName}
+            isReschedule={isReschedule}
+            locationLabel={props.locationLabel}
+            requestedWhen={requestedWhen}
+            when={when}
+          />
 
           {error && <p className="mb-4 text-xs text-error">{error}</p>}
 

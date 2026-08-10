@@ -107,6 +107,7 @@ function AuthFormInner({
     }
   }, [router, session]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: only re-run on searchParams change; router.replace and allowPublicSignup are stable
   useEffect(() => {
     const redirectError = searchParams.get("error");
     if (!redirectError) {
@@ -122,8 +123,6 @@ function AuthFormInner({
       setError(GENERIC_AUTH_ERROR);
     }
     router.replace("/login", { scroll: false });
-    // Only re-run when the error param itself changes; router/allowPublicSignup are stable.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   if (isPending || session) {

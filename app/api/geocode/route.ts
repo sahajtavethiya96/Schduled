@@ -69,7 +69,13 @@ function photonLabel(f: PhotonFeature): string | null {
   }
   const seen = new Set<string>();
   const label = parts
-    .filter((x) => (seen.has(x) ? false : (seen.add(x), true)))
+    .filter((x) => {
+      if (seen.has(x)) {
+        return false;
+      }
+      seen.add(x);
+      return true;
+    })
     .join(", ");
   return label || null;
 }
@@ -188,7 +194,13 @@ export async function GET(request: Request) {
     // De-dupe + cap.
     const seen = new Set<string>();
     const suggestions = labels
-      .filter((l) => (seen.has(l) ? false : (seen.add(l), true)))
+      .filter((l) => {
+        if (seen.has(l)) {
+          return false;
+        }
+        seen.add(l);
+        return true;
+      })
       .slice(0, 6)
       .map((label) => ({ label }));
 

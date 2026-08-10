@@ -21,7 +21,7 @@ async function processCalendarSync(job: Job<CalendarSyncPayload>) {
     .where(eq(connectedCalendar.id, connectedCalendarId))
     .limit(1);
 
-  if (!cal || cal.provider !== "google" || cal.status !== "connected") {
+  if (cal?.provider !== "google" || cal.status !== "connected") {
     console.log(
       `[calendar-sync] ${connectedCalendarId}: not found or not connected — skipping`
     );

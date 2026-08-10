@@ -7,6 +7,7 @@ export function ScrollReset() {
   const pathname = usePathname();
   const isFirst = useRef(true);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: pathname isn't read in the body — it's the re-run trigger for "route changed"
   useEffect(() => {
     // Skip the very first mount — the page is at the right position already.
     if (isFirst.current) {

@@ -16,8 +16,7 @@ import { requireSession } from "@/lib/authz";
 import { db } from "@/lib/db";
 import { getAppUrl } from "@/lib/get-app-url";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-type ActionResult<T = {}> = { error: string } | ({ ok: true } & T);
+type ActionResult<T = object> = { error: string } | ({ ok: true } & T);
 
 const RESERVED = new Set([
   "orbit",

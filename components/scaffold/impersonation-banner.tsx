@@ -38,6 +38,7 @@ export function ImpersonationBanner({ userName }: { userName: string }) {
         className="flex shrink-0 items-center gap-1.5 border border-amber-400 bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800 transition-colors hover:bg-amber-200 disabled:opacity-60 dark:border-amber-600 dark:bg-amber-900/40 dark:text-amber-300 dark:hover:bg-amber-900/60"
         disabled={stopping}
         onClick={handleStop}
+        type="button"
       >
         <SignOut size={13} weight="bold" />
         {stopping ? "Stopping…" : "Stop impersonating"}

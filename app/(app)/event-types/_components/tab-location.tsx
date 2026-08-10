@@ -181,10 +181,8 @@ const LOCATION_OPTIONS: LocationOption[] = [
 
 const LS_KEY = "schduled:lastPhoneNumber";
 
-// E.164 caps the whole number (dial code + local number) at 15 digits; the
-// local number field enforces its own 4–15 digit range so a bare paste of
-// garbage digits can't produce an unusably long value.
-const MIN_LOCAL_DIGITS = 4;
+// E.164 caps the whole number (dial code + local number) at 15 digits, so a
+// bare paste of garbage digits can't produce an unusably long value.
 const MAX_LOCAL_DIGITS = 15;
 
 // Truncate `raw` so it contains at most `maxDigits` digit characters,
@@ -233,6 +231,7 @@ function PhoneInput({
   const localNumber = stripDialCode(value ?? "", dialCode);
 
   // Auto-fill on first mount only (new event or switching to phone type)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: mount-only (guarded by initialized ref); value/onChange are read fresh at mount, not deps to re-trigger on
   useEffect(() => {
     if (initialized.current) {
       return;
@@ -240,14 +239,14 @@ function PhoneInput({
     initialized.current = true;
 
     // Priority 1: already has a value (edit mode) — leave it alone
-    if (value && value.trim()) {
+    if (value?.trim()) {
       return;
     }
 
     // Priority 2: localStorage (last number used)
     try {
       const saved = localStorage.getItem(LS_KEY);
-      if (saved && saved.trim()) {
+      if (saved?.trim()) {
         onChange(saved.trim());
       }
     } catch {

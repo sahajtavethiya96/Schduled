@@ -99,7 +99,9 @@ export function UsersTable({
     if (allSelected) {
       setSelected((s) => {
         const n = new Set(s);
-        selectableIds.forEach((id) => n.delete(id));
+        for (const id of selectableIds) {
+          n.delete(id);
+        }
         return n;
       });
     } else {
@@ -110,14 +112,20 @@ export function UsersTable({
   function toggleOne(id: string) {
     setSelected((s) => {
       const n = new Set(s);
-      n.has(id) ? n.delete(id) : n.add(id);
+      if (n.has(id)) {
+        n.delete(id);
+      } else {
+        n.add(id);
+      }
       return n;
     });
   }
 
   function buildFormData() {
     const fd = new FormData();
-    selected.forEach((id) => fd.append("userId", id));
+    for (const id of selected) {
+      fd.append("userId", id);
+    }
     return fd;
   }
 
@@ -300,9 +308,9 @@ export function UsersTable({
                     href={page > 1 ? pageHref(page - 1) : "#"}
                   />
                 </PaginationItem>
-                {paginationRange(page, totalPages).map((p, i) =>
-                  p === "ellipsis" ? (
-                    <PaginationItem key={`e-${i}`}>
+                {paginationRange(page, totalPages).map((p) =>
+                  typeof p === "string" ? (
+                    <PaginationItem key={p}>
                       <PaginationEllipsis />
                     </PaginationItem>
                   ) : (

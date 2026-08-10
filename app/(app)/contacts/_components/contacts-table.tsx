@@ -113,16 +113,20 @@ export function ContactsTable({
   const searchDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const paginationItems = paginationRange(page, totalPages).map((p, i) => ({
+    key: p === "ellipsis" ? `ellipsis-${i}` : String(p),
+    page: p,
+  }));
 
   function push(updates: Record<string, string | null>) {
     const params = new URLSearchParams(sp.toString());
-    Object.entries(updates).forEach(([k, v]) => {
+    for (const [k, v] of Object.entries(updates)) {
       if (v === null || v === "") {
         params.delete(k);
       } else {
         params.set(k, v);
       }
-    });
+    }
     params.set("page", "1");
     // replace (not push) so each keystroke-search doesn't pollute history
     startTransition(() => {
@@ -494,13 +498,13 @@ export function ContactsTable({
                     }}
                   />
                 </PaginationItem>
-                {paginationRange(page, totalPages).map((p, i) =>
+                {paginationItems.map(({ key, page: p }) =>
                   p === "ellipsis" ? (
-                    <PaginationItem key={`e-${i}`}>
+                    <PaginationItem key={key}>
                       <PaginationEllipsis />
                     </PaginationItem>
                   ) : (
-                    <PaginationItem key={p}>
+                    <PaginationItem key={key}>
                       <PaginationLink
                         href="#"
                         isActive={p === page}

@@ -62,15 +62,6 @@ const STATS = [
   { value: "∞", label: "Bookings per month" },
 ];
 
-const TEAM = [
-  {
-    initials: "DH",
-    name: "Dev Team",
-    role: "Engineering & Design",
-    gradient: "from-teal-500 to-emerald-600",
-  },
-];
-
 export default function AboutPage() {
   return (
     <div className="min-h-screen overflow-x-clip bg-base-100 text-base-content antialiased">
@@ -263,7 +254,10 @@ export default function AboutPage() {
                 ].map((item, i) => {
                   const Icon = item.icon;
                   return (
-                    <div className="group relative flex gap-5" key={i}>
+                    <div
+                      className="group relative flex gap-5"
+                      key={item.heading}
+                    >
                       {/* Vertical line */}
                       <div className="flex flex-col items-center">
                         <div
@@ -411,7 +405,7 @@ export default function AboutPage() {
                     </div>
                     <div className="pl-4">
                       <span className="text-white/40">
-                        // Idempotency check — prevent duplicate bookings
+                        {"// Idempotency check — prevent duplicate bookings"}
                       </span>
                     </div>
                     <div className="pl-4">

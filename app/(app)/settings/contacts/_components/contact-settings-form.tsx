@@ -1,7 +1,7 @@
 "use client";
 
 import { FloppyDisk, X } from "@phosphor-icons/react";
-import { type KeyboardEvent, useRef, useState, useTransition } from "react";
+import { type KeyboardEvent, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { updateContactSettings } from "@/app/actions/settings";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,6 @@ export function ContactSettingsForm({
   );
   const [inputVal, setInputVal] = useState("");
   const [pending, start] = useTransition();
-  const inputRef = useRef<HTMLInputElement>(null);
 
   function addTag(raw: string) {
     const entries = parseTags(raw);
@@ -89,7 +88,10 @@ export function ContactSettingsForm({
 
         <div className="space-y-5 px-5 py-5">
           {/* Auto-create toggle */}
-          <label className="flex cursor-pointer items-start justify-between gap-4">
+          <label
+            className="flex cursor-pointer items-start justify-between gap-4"
+            htmlFor="auto-create-toggle"
+          >
             <div className="min-w-0">
               <p className="text-sm font-semibold text-base-content">
                 Someone books a meeting with you
@@ -99,7 +101,11 @@ export function ContactSettingsForm({
                 used to create a new contact automatically.
               </p>
             </div>
-            <Switch checked={autoCreate} onCheckedChange={setAutoCreate} />
+            <Switch
+              checked={autoCreate}
+              id="auto-create-toggle"
+              onCheckedChange={setAutoCreate}
+            />
           </label>
 
           {/* Exclusion list — tag chip input */}
@@ -115,14 +121,14 @@ export function ContactSettingsForm({
             </p>
 
             {/* Tag input box */}
-            <div
+            <label
               className={[
                 "flex min-h-[42px] flex-wrap items-center gap-1.5 border border-input bg-base-100 px-3 py-2 text-sm transition-colors",
                 autoCreate
                   ? "cursor-text focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
                   : "pointer-events-none opacity-50",
               ].join(" ")}
-              onClick={() => inputRef.current?.focus()}
+              htmlFor="contact-exclusion-input"
             >
               {tags.map((tag) => (
                 <span
@@ -146,6 +152,7 @@ export function ContactSettingsForm({
               <input
                 className="min-w-[200px] flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground/60 disabled:cursor-not-allowed"
                 disabled={!autoCreate}
+                id="contact-exclusion-input"
                 onBlur={handleBlur}
                 onChange={(e) => setInputVal(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -154,11 +161,10 @@ export function ContactSettingsForm({
                     ? "Type an email or domain, then press Enter or comma…"
                     : ""
                 }
-                ref={inputRef}
                 type="text"
                 value={inputVal}
               />
-            </div>
+            </label>
             <p className="mt-1.5 text-xs text-muted-foreground">
               Press{" "}
               <kbd className="rounded-none border border-base-300 px-1 py-0.5 font-mono text-[10px]">

@@ -141,10 +141,10 @@ function FormField({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-semibold text-base-content">
+      <span className="text-sm font-semibold text-base-content">
         {label}
         {required && <span className="ml-0.5 text-error">*</span>}
-      </label>
+      </span>
       {children}
     </div>
   );
@@ -203,13 +203,16 @@ function QuestionInput({
           const arr = Array.isArray(answers[q.id])
             ? (answers[q.id] as string[])
             : [];
+          const optionId = `${q.id}-${opt}`;
           return (
             <label
               className="flex cursor-pointer items-center gap-2 text-sm text-base-content"
+              htmlFor={optionId}
               key={opt}
             >
               <Checkbox
                 checked={arr.includes(opt)}
+                id={optionId}
                 onCheckedChange={(checked) => {
                   const cur = Array.isArray(answers[q.id])
                     ? (answers[q.id] as string[])
@@ -276,8 +279,9 @@ function buildTzList(): TzEntry[] {
   const now = new Date();
   let zones: string[];
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    zones = (Intl as any).supportedValuesOf("timeZone") as string[];
+    zones = (
+      Intl as unknown as { supportedValuesOf: (key: string) => string[] }
+    ).supportedValuesOf("timeZone");
   } catch {
     zones = [
       "Pacific/Honolulu",
@@ -319,7 +323,7 @@ function buildTzList(): TzEntry[] {
       }
       return (
         (m[1] === "-" ? -1 : 1) *
-        (Number.parseInt(m[2]) * 60 + Number.parseInt(m[3]))
+        (Number.parseInt(m[2], 10) * 60 + Number.parseInt(m[3], 10))
       );
     } catch {
       return 0;
@@ -567,6 +571,7 @@ export function BookingCalendar({
     const [y, m] = todayProp.split("-").map(Number);
     return new Date(y, m - 1, 1);
   });
+  // biome-ignore lint/correctness/useExhaustiveDependencies: one-time hydration correction using the mount-time todayProp; re-running on prop change would be redundant
   useEffect(() => {
     const clientToday = format(new Date(), "yyyy-MM-dd");
     if (clientToday !== todayProp) {
@@ -574,7 +579,6 @@ export function BookingCalendar({
       const [y, m] = clientToday.split("-").map(Number);
       setMonth(new Date(y, m - 1, 1));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Available dates fetched per-month from the server (factors in real bookings)
@@ -604,8 +608,7 @@ export function BookingCalendar({
 
   useEffect(() => {
     fetchAvailableDays(month);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [month, selectedDuration]);
+  }, [month, fetchAvailableDays]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [slots, setSlots] = useState<SlotInfo[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
@@ -630,6 +633,7 @@ export function BookingCalendar({
   const [checkingBlocked, setCheckingBlocked] = useState(false);
 
   // Return-booker pre-fill: debounce email → lookup contact + blocklist check
+  // biome-ignore lint/correctness/useExhaustiveDependencies: name intentionally excluded — re-running on every keystroke would restart the debounced lookup
   useEffect(() => {
     const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     if (!isValidEmail) {
@@ -678,8 +682,7 @@ export function BookingCalendar({
       clearTimeout(timer);
       controller.abort();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [email]);
+  }, [email, host.username]);
 
   const availableDowSet = new Set(availableDaysOfWeek);
   const blockedSet = new Set(blockedDates);
@@ -727,6 +730,7 @@ export function BookingCalendar({
   }
 
   // Restore state from URL params on first mount (inline fetch avoids forward-ref to fetchSlots)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally mount-only; hasRestoredFromUrl guards re-runs, and this must use the URL's initial values, not refetch on later prop changes
   useEffect(() => {
     if (hasRestoredFromUrl.current) {
       return;
@@ -769,7 +773,6 @@ export function BookingCalendar({
     if (timeParam) {
       setPendingTimeRestore(timeParam);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // After slots load, match the pending time param (URL-restored slot)
@@ -1374,6 +1377,7 @@ export function BookingCalendar({
                   className="flex h-11 w-11 items-center justify-center text-muted-foreground transition-colors hover:text-base-content disabled:cursor-not-allowed disabled:opacity-30"
                   disabled={format(month, "yyyy-MM") <= today.slice(0, 7)}
                   onClick={handlePrevMonth}
+                  type="button"
                 >
                   <CaretLeft size={14} weight="bold" />
                 </button>
@@ -1386,6 +1390,7 @@ export function BookingCalendar({
                     format(addMonths(month, 1), "yyyy-MM") > maxDate.slice(0, 7)
                   }
                   onClick={handleNextMonth}
+                  type="button"
                 >
                   <CaretRight size={14} weight="bold" />
                 </button>
@@ -1453,6 +1458,7 @@ export function BookingCalendar({
                         )}
                         disabled={!available}
                         onClick={() => handleDateClick(dateStr)}
+                        type="button"
                       >
                         {format(day, "d")}
                       </button>
@@ -1547,6 +1553,7 @@ export function BookingCalendar({
                               )}
                               key={slot.startUtc}
                               onClick={() => handleSlotClick(slot)}
+                              type="button"
                             >
                               {isChosen && (
                                 <CheckCircle size={14} weight="fill" />
@@ -1575,6 +1582,7 @@ export function BookingCalendar({
                       <button
                         className="flex h-11 w-full items-center justify-center gap-2 bg-primary text-sm font-bold text-white transition-all hover:bg-primary/90"
                         onClick={handleContinue}
+                        type="button"
                       >
                         Continue
                         <ArrowRight size={15} weight="bold" />
@@ -1603,6 +1611,7 @@ export function BookingCalendar({
                           className="flex items-center justify-between border border-base-300 bg-base-100 px-4 py-3 text-left text-sm transition-all hover:border-primary/60 hover:bg-primary/5"
                           key={pick.date}
                           onClick={() => handleDateClick(pick.date)}
+                          type="button"
                         >
                           <span className="font-semibold text-base-content">
                             {pick.label}
@@ -1642,6 +1651,7 @@ export function BookingCalendar({
                     setStep("calendar");
                     setSubmitError(null);
                   }}
+                  type="button"
                 >
                   <ArrowLeft size={13} />
                   Back to times

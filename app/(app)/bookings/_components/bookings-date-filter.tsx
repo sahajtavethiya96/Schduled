@@ -92,34 +92,38 @@ export function BookingsDateFilter({
 
   return (
     <Popover onOpenChange={setOpen} open={open}>
-      <PopoverTrigger asChild>
-        <Button
-          className={cn(
-            "h-9 gap-2 px-3 font-normal",
-            hasFilter
-              ? "border-primary/50 text-base-content"
-              : "text-muted-foreground hover:text-base-content"
-          )}
-          size="sm"
-          variant="outline"
-        >
-          <CalendarBlank
-            className={cn(hasFilter ? "text-primary" : "text-muted-foreground")}
-            size={14}
-          />
-          <span className="text-sm">{label}</span>
-          {hasFilter && (
-            <span
-              aria-label="Clear date filter"
-              className="ml-0.5 flex h-4 w-4 items-center justify-center text-muted-foreground transition-colors hover:text-base-content"
-              onClick={clear}
-              role="button"
-            >
-              <X size={11} weight="bold" />
-            </span>
-          )}
-        </Button>
-      </PopoverTrigger>
+      <div className="relative">
+        <PopoverTrigger asChild>
+          <Button
+            className={cn(
+              "h-9 gap-2 px-3 font-normal",
+              hasFilter
+                ? "border-primary/50 pr-7 text-base-content"
+                : "text-muted-foreground hover:text-base-content"
+            )}
+            size="sm"
+            variant="outline"
+          >
+            <CalendarBlank
+              className={cn(
+                hasFilter ? "text-primary" : "text-muted-foreground"
+              )}
+              size={14}
+            />
+            <span className="text-sm">{label}</span>
+          </Button>
+        </PopoverTrigger>
+        {hasFilter && (
+          <button
+            aria-label="Clear date filter"
+            className="-translate-y-1/2 absolute top-1/2 right-2 flex h-4 w-4 items-center justify-center text-muted-foreground transition-colors hover:text-base-content"
+            onClick={clear}
+            type="button"
+          >
+            <X size={11} weight="bold" />
+          </button>
+        )}
+      </div>
       <PopoverContent align="start" className="w-auto p-0">
         <Calendar
           autoFocus

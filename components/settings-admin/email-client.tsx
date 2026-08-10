@@ -354,6 +354,7 @@ export function EmailClient({
   const [dateOpen, setDateOpen] = useState(false);
   const router = useRouter();
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: fetchedAt isn't read in the body but must stay — it's the trigger that restarts the "seconds ago" ticker whenever fresh data arrives.
   useEffect(() => {
     setSecondsAgo(0);
     const id = setInterval(() => setSecondsAgo((s) => s + 1), 1000);
@@ -519,47 +520,49 @@ export function EmailClient({
               </Select>
               <div className="flex w-full items-center gap-2 sm:w-auto">
                 <Popover onOpenChange={setDateOpen} open={dateOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      className={cn(
-                        "h-9 gap-2 px-3 font-normal",
-                        filter.from || filter.to
-                          ? "border-primary/50 text-base-content"
-                          : "text-muted-foreground hover:text-base-content"
-                      )}
-                      size="sm"
-                      variant="outline"
-                    >
-                      <CalendarBlank
+                  <div className="relative">
+                    <PopoverTrigger asChild>
+                      <Button
                         className={cn(
+                          "h-9 gap-2 px-3 font-normal",
                           filter.from || filter.to
-                            ? "text-primary"
-                            : "text-muted-foreground"
+                            ? "border-primary/50 pr-7 text-base-content"
+                            : "text-muted-foreground hover:text-base-content"
                         )}
-                        size={14}
-                      />
-                      <span className="text-sm">
-                        {filter.from
-                          ? filter.to
-                            ? `${dateFmt.format(parseDate(filter.from)!)} – ${dateFmt.format(parseDate(filter.to)!)}`
-                            : `From ${dateFmt.format(parseDate(filter.from)!)}`
-                          : "Date range"}
-                      </span>
-                      {(filter.from || filter.to) && (
-                        <span
-                          aria-label="Clear date filter"
-                          className="ml-0.5 flex h-4 w-4 items-center justify-center text-muted-foreground transition-colors hover:text-base-content"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate({ from: "", to: "" });
-                          }}
-                          role="button"
-                        >
-                          <X size={11} weight="bold" />
+                        size="sm"
+                        variant="outline"
+                      >
+                        <CalendarBlank
+                          className={cn(
+                            filter.from || filter.to
+                              ? "text-primary"
+                              : "text-muted-foreground"
+                          )}
+                          size={14}
+                        />
+                        <span className="text-sm">
+                          {filter.from
+                            ? filter.to
+                              ? `${dateFmt.format(parseDate(filter.from)!)} – ${dateFmt.format(parseDate(filter.to)!)}`
+                              : `From ${dateFmt.format(parseDate(filter.from)!)}`
+                            : "Date range"}
                         </span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
+                      </Button>
+                    </PopoverTrigger>
+                    {(filter.from || filter.to) && (
+                      <button
+                        aria-label="Clear date filter"
+                        className="-translate-y-1/2 absolute top-1/2 right-2 flex h-4 w-4 items-center justify-center text-muted-foreground transition-colors hover:text-base-content"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate({ from: "", to: "" });
+                        }}
+                        type="button"
+                      >
+                        <X size={11} weight="bold" />
+                      </button>
+                    )}
+                  </div>
                   <PopoverContent align="start" className="w-auto p-0">
                     <Calendar
                       autoFocus
@@ -747,26 +750,25 @@ export function EmailClient({
                         }}
                       />
                     </PaginationItem>
-                    {paginationRange(outboxPage, outboxTotalPages).map(
-                      (p, i) =>
-                        p === "ellipsis" ? (
-                          <PaginationItem key={`e-${i}`}>
-                            <PaginationEllipsis />
-                          </PaginationItem>
-                        ) : (
-                          <PaginationItem key={p}>
-                            <PaginationLink
-                              href="#"
-                              isActive={p === outboxPage}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                goToPage(p);
-                              }}
-                            >
-                              {p}
-                            </PaginationLink>
-                          </PaginationItem>
-                        )
+                    {paginationRange(outboxPage, outboxTotalPages).map((p) =>
+                      typeof p === "string" ? (
+                        <PaginationItem key={p}>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      ) : (
+                        <PaginationItem key={p}>
+                          <PaginationLink
+                            href="#"
+                            isActive={p === outboxPage}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              goToPage(p);
+                            }}
+                          >
+                            {p}
+                          </PaginationLink>
+                        </PaginationItem>
+                      )
                     )}
                     <PaginationItem>
                       <PaginationNext

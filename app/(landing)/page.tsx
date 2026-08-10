@@ -188,6 +188,17 @@ const MONTH_SHORT = [
 ];
 const DAY_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+const WEEKDAY_COLS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
+const WEEKDAY_LETTERS: Record<(typeof WEEKDAY_COLS)[number], string> = {
+  mon: "M",
+  tue: "T",
+  wed: "W",
+  thu: "T",
+  fri: "F",
+  sat: "S",
+  sun: "S",
+};
+
 const DARK_BG: React.CSSProperties = {
   background: `
     radial-gradient(circle at top right, rgba(20,184,166,.18) 0%, transparent 55%),
@@ -228,10 +239,13 @@ export default async function LandingPage() {
   const selectedMonthShort = MONTH_SHORT[month];
 
   const firstWeekday = (new Date(year, month, 1).getDay() + 6) % 7;
-  const calGrid: (number | null)[][] = [];
-  let week: (number | null)[] = Array(firstWeekday).fill(null);
+  const calGrid: { day: number | null; col: string }[][] = [];
+  let week: { day: number | null; col: string }[] = WEEKDAY_COLS.slice(
+    0,
+    firstWeekday
+  ).map((col) => ({ day: null, col }));
   for (let d = 1; d <= daysInMonth; d++) {
-    week.push(d);
+    week.push({ day: d, col: WEEKDAY_COLS[week.length] });
     if (week.length === 7) {
       calGrid.push(week);
       week = [];
@@ -239,15 +253,10 @@ export default async function LandingPage() {
   }
   if (week.length > 0) {
     while (week.length < 7) {
-      week.push(null);
+      week.push({ day: null, col: WEEKDAY_COLS[week.length] });
     }
     calGrid.push(week);
   }
-
-  const featStart = today;
-  const featBusyDay = today + 3;
-  const featAvailDay = today + 7;
-  const todayDayName = DAY_SHORT[now.getDay()];
 
   return (
     <div className="min-h-screen overflow-x-clip bg-base-100 text-base-content antialiased">
@@ -299,10 +308,10 @@ export default async function LandingPage() {
 
           {/* Floating particles */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
-            {PARTICLES.map((p, i) => (
+            {PARTICLES.map((p) => (
               <div
                 className="absolute rounded-full bg-teal-400 animate-schduled-particle"
-                key={i}
+                key={`${p.top}-${p.left}`}
                 style={{
                   top: p.top,
                   left: p.left,
@@ -431,18 +440,21 @@ export default async function LandingPage() {
                   </div>
                   <div className="p-4">
                     <div className="mb-2 grid grid-cols-7 text-center">
-                      {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
+                      {WEEKDAY_COLS.map((col) => (
                         <span
                           className="text-2xs font-bold text-white/25"
-                          key={i}
+                          key={col}
                         >
-                          {d}
+                          {WEEKDAY_LETTERS[col]}
                         </span>
                       ))}
                     </div>
-                    {calGrid.map((week, wi) => (
-                      <div className="grid grid-cols-7 text-center" key={wi}>
-                        {week.map((day, di) => (
+                    {calGrid.map((week) => (
+                      <div
+                        className="grid grid-cols-7 text-center"
+                        key={week.map((c) => c.day ?? "x").join("")}
+                      >
+                        {week.map(({ day, col }) => (
                           <span
                             className={`my-0.5 inline-flex h-7 w-7 items-center justify-center text-xs font-medium transition-colors ${
                               day === null
@@ -453,7 +465,7 @@ export default async function LandingPage() {
                                     ? "text-white/20"
                                     : "cursor-default text-white/55 hover:bg-white/8"
                             }`}
-                            key={di}
+                            key={col}
                           >
                             {day ?? ""}
                           </span>
@@ -609,12 +621,15 @@ export default async function LandingPage() {
             <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-24 bg-gradient-to-r from-base-100 to-transparent" />
             <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-24 bg-gradient-to-l from-base-100 to-transparent" />
             <div className="flex animate-schduled-ticker items-center whitespace-nowrap">
-              {[...TECH_STACK, ...TECH_STACK].map((tech, i) => {
+              {[
+                ...TECH_STACK.map((tech) => ({ ...tech, copy: "a" })),
+                ...TECH_STACK.map((tech) => ({ ...tech, copy: "b" })),
+              ].map((tech) => {
                 const Icon = tech.icon;
                 return (
                   <div
                     className="mx-12 inline-flex shrink-0 items-center gap-2.5 text-base-content/55 transition-colors duration-300 hover:text-base-content"
-                    key={`${tech.id}-${i}`}
+                    key={`${tech.id}-${tech.copy}`}
                   >
                     <Icon className="text-primary" size={22} weight="duotone" />
                     <span className="text-[19px] font-black tracking-tight">
@@ -1251,7 +1266,7 @@ export default async function LandingPage() {
                 const connector = (
                   <div
                     className="flex flex-col items-center justify-center gap-1.5"
-                    key={`connector-${i}`}
+                    key={`connector-${step.num}`}
                   >
                     <div className="h-px w-5 bg-base-300" />
                     <ArrowRight
@@ -1428,12 +1443,12 @@ export default async function LandingPage() {
                         </div>
                       </div>
                       <div className="grid grid-cols-7 gap-1 text-center">
-                        {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
+                        {WEEKDAY_COLS.map((col) => (
                           <span
                             className="py-1 text-[10px] font-semibold text-white/25"
-                            key={i}
+                            key={col}
                           >
-                            {d}
+                            {WEEKDAY_LETTERS[col]}
                           </span>
                         ))}
                         {[
@@ -1469,7 +1484,7 @@ export default async function LandingPage() {
                           29,
                           30,
                           31,
-                        ].map((d, i) => (
+                        ].map((d) => (
                           <div
                             className={[
                               "flex h-7 w-full items-center justify-center text-[11px] font-medium transition-colors",
@@ -1485,7 +1500,7 @@ export default async function LandingPage() {
                                       ? "text-white/20"
                                       : "cursor-pointer text-white/70 hover:bg-white/10",
                             ].join(" ")}
-                            key={i}
+                            key={d ?? "pad"}
                           >
                             {d ?? ""}
                           </div>

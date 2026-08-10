@@ -73,7 +73,7 @@ export function AvatarUploadCard({
       });
       const data: { url?: string; error?: string } = await res.json();
       if (res.ok) {
-        const busted = `${data.url}?t=${new Date().getTime()}`;
+        const busted = `${data.url}?t=${Date.now()}`;
         setPreview(busted);
         setUrl(busted);
         setSuccess(true);

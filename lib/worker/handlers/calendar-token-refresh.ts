@@ -29,7 +29,7 @@ async function processCalendarTokenRefresh(
     .where(eq(connectedCalendar.id, connectedCalendarId))
     .limit(1);
 
-  if (!cal || cal.provider !== "google" || !cal.refreshToken) {
+  if (cal?.provider !== "google" || !cal.refreshToken) {
     console.warn(
       `[calendar-token-refresh] skipping ${connectedCalendarId}: not found or no refresh token`
     );

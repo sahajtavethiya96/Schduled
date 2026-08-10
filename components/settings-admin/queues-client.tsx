@@ -277,6 +277,7 @@ export function QueuesClient({
   const router = useRouter();
 
   // Reset and tick timer whenever fresh data arrives
+  // biome-ignore lint/correctness/useExhaustiveDependencies: fetchedAt isn't read in the body but must stay — it's the trigger that restarts the ticker on fresh data.
   useEffect(() => {
     setSecondsAgo(0);
     const id = setInterval(() => setSecondsAgo((s) => s + 1), 1000);
@@ -516,90 +517,86 @@ export function QueuesClient({
                 </p>
               </div>
             </div>
+          ) : filtered.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-2 py-16 text-center">
+              <span className="text-muted-foreground/25">
+                <MagnifyingGlass size={36} />
+              </span>
+              <p className="text-sm font-medium text-base-content">
+                No queues match
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Try a different search or filter.
+              </p>
+            </div>
           ) : (
-            <>
-              {filtered.length === 0 ? (
-                <div className="flex flex-col items-center justify-center gap-2 py-16 text-center">
-                  <span className="text-muted-foreground/25">
-                    <MagnifyingGlass size={36} />
-                  </span>
-                  <p className="text-sm font-medium text-base-content">
-                    No queues match
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Try a different search or filter.
-                  </p>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <Table className="w-full text-sm">
-                    <TableHeader>
-                      <TableRow className="border-b border-base-300 bg-base-200/40">
-                        <TableHead className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-ui text-muted-foreground">
-                          Queue
-                        </TableHead>
-                        <TableHead className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-ui text-muted-foreground">
-                          State
-                        </TableHead>
-                        <TableHead className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-ui text-muted-foreground">
-                          Jobs
-                        </TableHead>
-                        <TableHead className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-ui text-muted-foreground">
-                          Actions
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {pageRows.map((row) => (
-                        <TableRow
-                          className="cursor-pointer border-b border-base-300 transition-colors hover:bg-base-200/20 last:border-0"
-                          key={`${row.name}:${row.state}`}
-                          onClick={() =>
-                            setSelected({ name: row.name, state: row.state })
-                          }
-                        >
-                          {/* Queue name */}
-                          <TableCell className="px-6 py-3">
-                            <p className="text-sm font-medium">
-                              {getFriendlyName(row.name)}
-                            </p>
-                            <p className="mt-0.5 font-mono text-xs text-muted-foreground/60">
-                              {row.name}
-                            </p>
-                          </TableCell>
+            <div className="overflow-x-auto">
+              <Table className="w-full text-sm">
+                <TableHeader>
+                  <TableRow className="border-b border-base-300 bg-base-200/40">
+                    <TableHead className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-ui text-muted-foreground">
+                      Queue
+                    </TableHead>
+                    <TableHead className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-ui text-muted-foreground">
+                      State
+                    </TableHead>
+                    <TableHead className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-ui text-muted-foreground">
+                      Jobs
+                    </TableHead>
+                    <TableHead className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-ui text-muted-foreground">
+                      Actions
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {pageRows.map((row) => (
+                    <TableRow
+                      className="cursor-pointer border-b border-base-300 transition-colors hover:bg-base-200/20 last:border-0"
+                      key={`${row.name}:${row.state}`}
+                      onClick={() =>
+                        setSelected({ name: row.name, state: row.state })
+                      }
+                    >
+                      {/* Queue name */}
+                      <TableCell className="px-6 py-3">
+                        <p className="text-sm font-medium">
+                          {getFriendlyName(row.name)}
+                        </p>
+                        <p className="mt-0.5 font-mono text-xs text-muted-foreground/60">
+                          {row.name}
+                        </p>
+                      </TableCell>
 
-                          {/* State badge */}
-                          <TableCell className="px-4 py-3">
-                            <StateBadge state={row.state} />
-                          </TableCell>
+                      {/* State badge */}
+                      <TableCell className="px-4 py-3">
+                        <StateBadge state={row.state} />
+                      </TableCell>
 
-                          {/* Job count */}
-                          <TableCell className="px-4 py-3">
-                            <span className="text-sm font-semibold tabular-nums">
-                              {row.count.toLocaleString()}
-                            </span>
-                          </TableCell>
+                      {/* Job count */}
+                      <TableCell className="px-4 py-3">
+                        <span className="text-sm font-semibold tabular-nums">
+                          {row.count.toLocaleString()}
+                        </span>
+                      </TableCell>
 
-                          {/* Actions */}
-                          <TableCell
-                            className="px-4 py-3"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {row.state === "failed" ? (
-                              <RetryButton queueName={row.name} />
-                            ) : (
-                              <span className="text-xs text-muted-foreground">
-                                —
-                              </span>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              )}
-            </>
+                      {/* Actions */}
+                      <TableCell
+                        className="px-4 py-3"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {row.state === "failed" ? (
+                          <RetryButton queueName={row.name} />
+                        ) : (
+                          <span className="text-xs text-muted-foreground">
+                            —
+                          </span>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
 
           {/* Pagination */}
@@ -625,9 +622,9 @@ export function QueuesClient({
                       }}
                     />
                   </PaginationItem>
-                  {paginationRange(safePage, totalPages).map((p, i) =>
-                    p === "ellipsis" ? (
-                      <PaginationItem key={`e-${i}`}>
+                  {paginationRange(safePage, totalPages).map((p) =>
+                    typeof p === "string" ? (
+                      <PaginationItem key={p}>
                         <PaginationEllipsis />
                       </PaginationItem>
                     ) : (

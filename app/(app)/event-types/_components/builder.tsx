@@ -312,6 +312,7 @@ export function EventTypeBuilder({
   // compares against the ORIGINAL server values, not the restored draft —
   // otherwise the Save/Discard buttons in edit mode wouldn't realize there's
   // anything to save.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: mount-only restore, re-running on draftKey/form.reset would re-trigger the draft restore
   useEffect(() => {
     try {
       const raw = sessionStorage.getItem(draftKey);

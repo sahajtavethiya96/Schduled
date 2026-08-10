@@ -47,6 +47,7 @@ export default function BookingPageLoading() {
             {/* Day grid */}
             <div className="grid grid-cols-7 gap-y-1">
               {Array.from({ length: 35 }).map((_, i) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton list, order never changes
                 <div className="flex items-center justify-center p-0.5" key={i}>
                   <div
                     className="h-9 w-9 rounded-full bg-base-200 animate-pulse"

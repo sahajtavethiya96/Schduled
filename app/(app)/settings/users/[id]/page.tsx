@@ -187,13 +187,6 @@ export default async function SettingsUserDetailPage({
   const bTotal = Math.ceil((bookingCount?.value ?? 0) / PER_PAGE);
   const aTotal = Math.ceil((auditCount?.value ?? 0) / PER_PAGE);
 
-  // Build href helper that preserves existing search params
-  function pageHref(key: string, page: number) {
-    const next = new URLSearchParams(sp as Record<string, string>);
-    next.set(key, String(page));
-    return `?${next.toString()}`;
-  }
-
   return (
     <div className="space-y-6">
       {/* Back link */}
@@ -855,9 +848,9 @@ function SectionPager({
               href={page > 1 ? href(page - 1) : "#"}
             />
           </PaginationItem>
-          {paginationRange(page, totalPages).map((p, i) =>
+          {paginationRange(page, totalPages).map((p, i, arr) =>
             p === "ellipsis" ? (
-              <PaginationItem key={`e-${i}`}>
+              <PaginationItem key={`ellipsis-${arr[i - 1]}-${arr[i + 1]}`}>
                 <PaginationEllipsis />
               </PaginationItem>
             ) : (

@@ -74,6 +74,7 @@ export function TabGeneral({
   // creation (a distinct palette color per meeting type) and preserved on edit,
   // so we no longer derive it from the name (which made same-named events share
   // a color).
+  // biome-ignore lint/correctness/useExhaustiveDependencies: only re-run on name change; dirtyFields.slug/setValue are read fresh from the stable form instance, not deps to re-trigger on
   useEffect(() => {
     if (!form.formState.dirtyFields.slug) {
       form.setValue("slug", slugify(name), { shouldDirty: false });

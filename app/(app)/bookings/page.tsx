@@ -355,6 +355,11 @@ export default async function BookingsPage({
     }));
   })();
 
+  const paginationItems = paginationRange(page, totalPages).map((p, i) => ({
+    key: p === "ellipsis" ? `ellipsis-${i}` : String(p),
+    page: p,
+  }));
+
   return (
     <>
       <Suspense>
@@ -724,13 +729,13 @@ export default async function BookingsPage({
                     href={page > 1 ? pageHref(page - 1) : "#"}
                   />
                 </PaginationItem>
-                {paginationRange(page, totalPages).map((p, i) =>
+                {paginationItems.map(({ key, page: p }) =>
                   p === "ellipsis" ? (
-                    <PaginationItem key={`e-${i}`}>
+                    <PaginationItem key={key}>
                       <PaginationEllipsis />
                     </PaginationItem>
                   ) : (
-                    <PaginationItem key={p}>
+                    <PaginationItem key={key}>
                       <PaginationLink href={pageHref(p)} isActive={p === page}>
                         {p}
                       </PaginationLink>

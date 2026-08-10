@@ -136,11 +136,11 @@ export function StepAvailability({ onNext, onBack }: StepAvailabilityProps) {
         {DAYS.map(({ key, letter, label }) => {
           const day = schedule[key];
           return (
-            <div
-              aria-label={label}
-              className="flex items-center gap-3"
+            <fieldset
+              className="m-0 flex min-w-0 items-center gap-3 border-0 p-0"
               key={key}
             >
+              <legend className="sr-only">{label}</legend>
               {/* Day badge */}
               <div
                 className={[
@@ -195,7 +195,7 @@ export function StepAvailability({ onNext, onBack }: StepAvailabilityProps) {
                   </button>
                 </>
               )}
-            </div>
+            </fieldset>
           );
         })}
       </div>

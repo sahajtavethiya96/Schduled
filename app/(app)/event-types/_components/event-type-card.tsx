@@ -174,7 +174,7 @@ export function EventTypeCard({
   stats,
   isSelected = false,
   onSelect,
-  dragHandleProps,
+  dragHandleProps: _dragHandleProps,
   googleMeetConnected = true,
   zoomConnected = true,
   viewMode = "list",
@@ -407,6 +407,8 @@ export function EventTypeCard({
 
   if (viewMode === "grid") {
     return (
+      // biome-ignore lint/a11y/noStaticElementInteractions: hover-only (drives inline style), wraps nested interactive controls so it can't itself be a button
+      // biome-ignore lint/a11y/noNoninteractiveElementInteractions: hover-only (drives inline style), wraps nested interactive controls so it can't itself be a button
       <div
         className={cn(
           "group flex flex-col border bg-base-100 transition-all duration-200",
@@ -583,6 +585,8 @@ export function EventTypeCard({
   // ─────────────────────────────────────────────────────────────────────────
 
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: hover-only (drives inline style), wraps nested interactive controls so it can't itself be a button
+    // biome-ignore lint/a11y/noNoninteractiveElementInteractions: hover-only (drives inline style), wraps nested interactive controls so it can't itself be a button
     <div
       className={cn(
         "group flex items-stretch border bg-base-100 transition-all duration-200",

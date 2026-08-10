@@ -142,13 +142,13 @@ function AvailabilityMockup() {
         Set when you are typically available for meetings
       </p>
       <div className="space-y-1">
-        {days.map((d, i) => (
+        {days.map((d) => (
           <div
             className={cn(
               "flex items-center gap-3 px-1 py-2.5",
               d.avail ? "" : "opacity-50"
             )}
-            key={i}
+            key={d.label}
           >
             <div
               className={cn(
@@ -170,13 +170,22 @@ function AvailabilityMockup() {
                   {d.to}
                 </div>
                 <div className="ml-auto flex items-center gap-1">
-                  <button className="flex h-7 w-7 items-center justify-center text-muted-foreground/50 hover:text-base-content transition-colors">
+                  <button
+                    className="flex h-7 w-7 items-center justify-center text-muted-foreground/50 hover:text-base-content transition-colors"
+                    type="button"
+                  >
                     <X size={12} />
                   </button>
-                  <button className="flex h-7 w-7 items-center justify-center text-muted-foreground/50 hover:text-base-content transition-colors">
+                  <button
+                    className="flex h-7 w-7 items-center justify-center text-muted-foreground/50 hover:text-base-content transition-colors"
+                    type="button"
+                  >
                     <Plus size={12} />
                   </button>
-                  <button className="flex h-7 w-7 items-center justify-center text-muted-foreground/50 hover:text-base-content transition-colors">
+                  <button
+                    className="flex h-7 w-7 items-center justify-center text-muted-foreground/50 hover:text-base-content transition-colors"
+                    type="button"
+                  >
                     <Copy size={12} />
                   </button>
                 </div>
@@ -186,7 +195,10 @@ function AvailabilityMockup() {
                 <span className="text-xs text-muted-foreground">
                   Unavailable
                 </span>
-                <button className="flex h-7 w-7 items-center justify-center text-muted-foreground/50 hover:text-primary transition-colors">
+                <button
+                  className="flex h-7 w-7 items-center justify-center text-muted-foreground/50 hover:text-primary transition-colors"
+                  type="button"
+                >
                   <Plus size={12} />
                 </button>
               </div>
@@ -255,7 +267,10 @@ function MeetingTypesMockup() {
         </div>
       ))}
       <div className="flex items-center justify-center border border-dashed border-base-300 py-3">
-        <button className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors">
+        <button
+          className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors"
+          type="button"
+        >
           <Plus size={13} /> Add meeting type
         </button>
       </div>
@@ -271,7 +286,10 @@ function BookingLinkMockup() {
         <span className="min-w-0 flex-1 overflow-hidden text-ellipsis font-mono text-sm text-base-content/60">
           schduled.com/<span className="font-bold text-primary">yourname</span>
         </span>
-        <button className="shrink-0 text-xs font-semibold text-primary hover:underline">
+        <button
+          className="shrink-0 text-xs font-semibold text-primary hover:underline"
+          type="button"
+        >
           Copy
         </button>
       </div>

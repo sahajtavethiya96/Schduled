@@ -208,34 +208,34 @@ export function GuidedTour({ userId }: { userId: string }) {
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [show, finish, total]);
+  }, [show, finish]);
 
   // Mark the spotlit target element as active; dim all other tour targets
   useEffect(() => {
     const curStep = STEPS[step];
-    document
-      .querySelectorAll("[data-tour-active]")
-      .forEach((el) => el.removeAttribute("data-tour-active"));
-    document
-      .querySelectorAll("[data-tour-dim]")
-      .forEach((el) => el.removeAttribute("data-tour-dim"));
+    for (const el of document.querySelectorAll("[data-tour-active]")) {
+      el.removeAttribute("data-tour-active");
+    }
+    for (const el of document.querySelectorAll("[data-tour-dim]")) {
+      el.removeAttribute("data-tour-dim");
+    }
     if (!show || curStep.kind !== "spotlight" || !curStep.target) {
       return;
     }
     const el = document.querySelector<HTMLElement>(curStep.target);
     el?.setAttribute("data-tour-active", "true");
-    document
-      .querySelectorAll<HTMLElement>("[data-sidebar-nav-item]")
-      .forEach((other) => {
-        if (other !== el) {
-          other.setAttribute("data-tour-dim", "true");
-        }
-      });
+    for (const other of document.querySelectorAll<HTMLElement>(
+      "[data-sidebar-nav-item]"
+    )) {
+      if (other !== el) {
+        other.setAttribute("data-tour-dim", "true");
+      }
+    }
     return () => {
       el?.removeAttribute("data-tour-active");
-      document
-        .querySelectorAll("[data-tour-dim]")
-        .forEach((e) => e.removeAttribute("data-tour-dim"));
+      for (const e of document.querySelectorAll("[data-tour-dim]")) {
+        e.removeAttribute("data-tour-dim");
+      }
     };
   }, [show, step]);
 
@@ -305,7 +305,7 @@ export function GuidedTour({ userId }: { userId: string }) {
             isFirst || isLast ? "justify-center" : ""
           )}
         >
-          {STEPS.map((_, i) => (
+          {STEPS.map((s, i) => (
             <button
               aria-label={`Go to step ${i + 1}`}
               className={cn(
@@ -314,7 +314,7 @@ export function GuidedTour({ userId }: { userId: string }) {
                   ? "w-5 bg-primary"
                   : "w-1.5 bg-base-300 hover:bg-muted-foreground/40"
               )}
-              key={i}
+              key={s.title}
               onClick={() => setStep(i)}
               type="button"
             />

@@ -36,6 +36,7 @@ function RouteLoader() {
   }, [clearTimers]);
 
   // End the loader when pathname/searchParams actually change (navigation complete)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: pathname/searchParams aren't read in the body — they're the re-run trigger for "route changed"
   useEffect(() => {
     endNav();
   }, [pathname, searchParams, endNav]);

@@ -19,8 +19,7 @@ import { pickDistinctEventColor } from "@/lib/event-colors";
 
 const DUPLICATE_NAME = "DUPLICATE_NAME";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-type ActionResult<T = {}> = { error: string } | ({ ok: true } & T);
+type ActionResult<T = object> = { error: string } | ({ ok: true } & T);
 
 function slugify(name: string): string {
   return (

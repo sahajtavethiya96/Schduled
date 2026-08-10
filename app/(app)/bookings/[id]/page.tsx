@@ -385,10 +385,10 @@ export default async function BookingDetailPage({
 
           {answers.length > 0 && (
             <Card icon={<ChatCircleText size={14} />} title="Responses">
-              {answers.map((a, i) => (
+              {answers.map((a) => (
                 <div
                   className="border-b border-base-300/60 py-2.5 first:pt-0 last:border-0 last:pb-0"
-                  key={i}
+                  key={a.label}
                 >
                   <p className="text-xs font-medium uppercase tracking-ui text-muted-foreground">
                     {a.label}
@@ -406,8 +406,11 @@ export default async function BookingDetailPage({
               icon={<UsersThree size={14} />}
               title={`Guests (${guests.length})`}
             >
-              {guests.map((g, i) => (
-                <div className="flex items-center gap-2 py-1.5 text-sm" key={i}>
+              {guests.map((g) => (
+                <div
+                  className="flex items-center gap-2 py-1.5 text-sm"
+                  key={g.email}
+                >
                   <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-base-200 text-xs font-semibold text-muted-foreground">
                     {(g.name || g.email).charAt(0).toUpperCase()}
                   </span>
@@ -585,7 +588,10 @@ export default async function BookingDetailPage({
           <Card icon={<ClockCounterClockwise size={14} />} title="Activity">
             <ol className="space-y-0">
               {timeline.map((t, i) => (
-                <li className="relative flex gap-3 pb-4 last:pb-0" key={i}>
+                <li
+                  className="relative flex gap-3 pb-4 last:pb-0"
+                  key={t.label}
+                >
                   {/* `left-2` (half of the icon's fixed w-4/16px column) plus
                       `-translate-x-1/2` (half of the line's own 1px width)
                       centers the line under the icon by exact arithmetic

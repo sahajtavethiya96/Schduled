@@ -12,6 +12,7 @@ function Progress() {
   const searchParams = useSearchParams();
 
   // Finish the bar whenever the route settles
+  // biome-ignore lint/correctness/useExhaustiveDependencies: pathname/searchParams aren't read in the body — they're the re-run trigger for "route changed"
   useEffect(() => {
     NProgress.done();
   }, [pathname, searchParams]);

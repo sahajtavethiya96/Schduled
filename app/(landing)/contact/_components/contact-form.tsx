@@ -53,11 +53,15 @@ export function ContactForm() {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-ui text-muted-foreground">
+          <label
+            className="mb-1.5 block text-xs font-semibold uppercase tracking-ui text-muted-foreground"
+            htmlFor="contact-name"
+          >
             Your Name
           </label>
           <input
             className="h-10 w-full border border-base-300 bg-page px-3 text-sm text-base-content placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            id="contact-name"
             name="name"
             placeholder="Jane Smith"
             required
@@ -65,11 +69,15 @@ export function ContactForm() {
           />
         </div>
         <div>
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-ui text-muted-foreground">
+          <label
+            className="mb-1.5 block text-xs font-semibold uppercase tracking-ui text-muted-foreground"
+            htmlFor="contact-email"
+          >
             Email Address
           </label>
           <input
             className="h-10 w-full border border-base-300 bg-page px-3 text-sm text-base-content placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            id="contact-email"
             name="email"
             placeholder="jane@example.com"
             required
@@ -79,11 +87,14 @@ export function ContactForm() {
       </div>
 
       <div>
-        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-ui text-muted-foreground">
+        <label
+          className="mb-1.5 block text-xs font-semibold uppercase tracking-ui text-muted-foreground"
+          htmlFor="contact-subject"
+        >
           Subject
         </label>
         <Select name="subject" required>
-          <SelectTrigger className="h-10 w-full text-sm">
+          <SelectTrigger className="h-10 w-full text-sm" id="contact-subject">
             <SelectValue placeholder="Select a topic…" />
           </SelectTrigger>
           <SelectContent>
@@ -97,11 +108,15 @@ export function ContactForm() {
       </div>
 
       <div>
-        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-ui text-muted-foreground">
+        <label
+          className="mb-1.5 block text-xs font-semibold uppercase tracking-ui text-muted-foreground"
+          htmlFor="contact-message"
+        >
           Message
         </label>
         <textarea
           className="w-full border border-base-300 bg-page px-3 py-2.5 text-sm text-base-content placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+          id="contact-message"
           name="message"
           placeholder="Tell us what's on your mind…"
           required

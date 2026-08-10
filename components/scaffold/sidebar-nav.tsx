@@ -90,7 +90,7 @@ export function SidebarNav({
   email,
   userName,
   isAdmin,
-  userImage,
+  userImage: _userImage,
 }: {
   email: string;
   userName?: string | null;

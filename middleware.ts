@@ -9,8 +9,6 @@ const PUBLIC_PREFIXES = [
   "/reschedule/", // public booking reschedule
 ];
 
-const AUTH_PATHS: string[] = []; // handled client-side in auth-form via useSession()
-
 const PROTECTED_PREFIXES = [
   "/dashboard",
   "/event-types",
