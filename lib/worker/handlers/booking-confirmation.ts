@@ -2,10 +2,10 @@ import { formatInTimeZone } from "date-fns-tz";
 import { eq } from "drizzle-orm";
 import type { Job } from "pg-boss";
 import { contact, userProfile } from "@/db/schema";
+import { generateBookingICS } from "@/lib/calendar/ics";
 import { db } from "@/lib/db";
 import { enqueueEmail } from "@/lib/email";
 import { bookingEmail } from "@/lib/email/templates/booking-emails";
-import { generateBookingICS } from "@/lib/calendar/ics";
 import { createNotification } from "@/lib/notifications/create";
 import type { BookingConfirmationPayload } from "@/lib/worker/job-types";
 import {
@@ -19,7 +19,9 @@ import {
 // Matches an invitee email against the host's exclusion list (comma/space
 // separated emails or domains, e.g. "person@acme.com, acme.com").
 function isContactExcluded(email: string, excludedRaw: string | null): boolean {
-  if (!excludedRaw) return false;
+  if (!excludedRaw) {
+    return false;
+  }
   const lowerEmail = email.trim().toLowerCase();
   const domain = lowerEmail.split("@")[1] ?? "";
   return excludedRaw
@@ -76,8 +78,16 @@ async function processOne(job: Job<BookingConfirmationPayload>) {
 
   const prefs = await loadHostPrefs(b.hostUserId);
   const hostTimezone = b.hostTimezone ?? "UTC";
-  const locationLabelInvitee = resolveLocationLabel(b.etLocationType, b.etLocationValue, b.inviteePhone);
-  const locationLabelHost = resolveLocationLabelHost(b.etLocationType, b.etLocationValue, b.inviteePhone);
+  const locationLabelInvitee = resolveLocationLabel(
+    b.etLocationType,
+    b.etLocationValue,
+    b.inviteePhone
+  );
+  const locationLabelHost = resolveLocationLabelHost(
+    b.etLocationType,
+    b.etLocationValue,
+    b.inviteePhone
+  );
   const meetLabel = resolveMeetButtonLabel(b.etLocationType);
   const startUtc = new Date(b.startTime);
 
@@ -110,7 +120,7 @@ async function processOne(job: Job<BookingConfirmationPayload>) {
       description: `${b.etName} meeting via Schduled`,
       startUtc,
       durationMinutes: Math.round(
-        (new Date(b.endTime).getTime() - startUtc.getTime()) / 60000
+        (new Date(b.endTime).getTime() - startUtc.getTime()) / 60_000
       ),
       organizerName: b.hostName ?? "Your host",
       organizerEmail: b.hostEmail ?? "",
@@ -192,7 +202,10 @@ async function processOne(job: Job<BookingConfirmationPayload>) {
     .limit(1);
 
   const autoCreate = profile?.autoCreate ?? true;
-  if (autoCreate && !isContactExcluded(b.inviteeEmail, profile?.excluded ?? null)) {
+  if (
+    autoCreate &&
+    !isContactExcluded(b.inviteeEmail, profile?.excluded ?? null)
+  ) {
     await db
       .insert(contact)
       .values({

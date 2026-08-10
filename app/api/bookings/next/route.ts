@@ -58,8 +58,7 @@ export async function GET() {
   // The host joins via the host link (Zoom start URL) when present, else the
   // shared join/meet link, else a custom http location.
   const candidate = b.videoLinkHost || b.videoLinkInvitee || b.locationValue;
-  const joinUrl =
-    candidate && candidate.startsWith("http") ? candidate : null;
+  const joinUrl = candidate && candidate.startsWith("http") ? candidate : null;
 
   return NextResponse.json({
     leadMinutes,

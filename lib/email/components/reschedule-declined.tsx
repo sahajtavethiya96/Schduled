@@ -1,5 +1,5 @@
 import { Hr, Link, Section, Text } from "react-email";
-import { emailBranding, type EmailBranding } from "@/lib/email/branding";
+import { type EmailBranding, emailBranding } from "@/lib/email/branding";
 import { canonicalizeTz } from "@/lib/utils";
 import { buildEmailStyles, EmailLayout } from "./layout";
 
@@ -33,7 +33,11 @@ export function RescheduleDeclinedEmail({
   const teal = branding.brandColor;
   const emailStyles = buildEmailStyles(teal);
   return (
-    <EmailLayout preview={`Reschedule declined — your ${eventName} is still confirmed`} productName={branding.appName} logoUrl={branding.logoUrl}>
+    <EmailLayout
+      logoUrl={branding.logoUrl}
+      preview={`Reschedule declined — your ${eventName} is still confirmed`}
+      productName={branding.appName}
+    >
       {/* Badge */}
       <Section style={{ marginBottom: "8px" }}>
         <Text
@@ -58,8 +62,8 @@ export function RescheduleDeclinedEmail({
       </Text>
 
       <Text style={emailStyles.paragraph}>
-        Hi {inviteeName}, {hostName} wasn&apos;t able to move your {eventName} to the
-        new time you requested.
+        Hi {inviteeName}, {hostName} wasn&apos;t able to move your {eventName}{" "}
+        to the new time you requested.
       </Text>
 
       {/* Reassurance — original meeting remains */}
@@ -71,7 +75,14 @@ export function RescheduleDeclinedEmail({
           marginBottom: "8px",
         }}
       >
-        <Text style={{ ...emailStyles.paragraph, color: "#166534", margin: 0, fontWeight: 600 }}>
+        <Text
+          style={{
+            ...emailStyles.paragraph,
+            color: "#166534",
+            margin: 0,
+            fontWeight: 600,
+          }}
+        >
           Your original meeting is still confirmed.
         </Text>
       </Section>
@@ -88,7 +99,9 @@ export function RescheduleDeclinedEmail({
           <Text style={{ ...emailStyles.muted, margin: "0", fontWeight: 600 }}>
             Reason provided:
           </Text>
-          <Text style={{ ...emailStyles.paragraph, margin: "4px 0 0" }}>{reason}</Text>
+          <Text style={{ ...emailStyles.paragraph, margin: "4px 0 0" }}>
+            {reason}
+          </Text>
         </Section>
       )}
 
@@ -98,31 +111,73 @@ export function RescheduleDeclinedEmail({
       <Section>
         <DetailRow label="Event" value={eventName} />
         <DetailRow label="With" value={hostName} />
-        <DetailRow label={`Date & Time (${canonicalizeTz(hostTimezone)})`} value={whenHost} />
+        <DetailRow
+          label={`Date & Time (${canonicalizeTz(hostTimezone)})`}
+          value={whenHost}
+        />
         {canonicalizeTz(inviteeTimezone) !== canonicalizeTz(hostTimezone) && (
-          <DetailRow label={`Date & Time (${canonicalizeTz(inviteeTimezone)})`} value={whenInvitee} />
+          <DetailRow
+            label={`Date & Time (${canonicalizeTz(inviteeTimezone)})`}
+            value={whenInvitee}
+          />
         )}
-        <DetailRow label="Location" value={locationLabel} href={locationLabel.startsWith("http") ? locationLabel : undefined} linkColor={teal} />
+        <DetailRow
+          href={locationLabel.startsWith("http") ? locationLabel : undefined}
+          label="Location"
+          linkColor={teal}
+          value={locationLabel}
+        />
       </Section>
 
-      <Text style={{ ...emailStyles.muted, textAlign: "center" as const, marginTop: "16px" }}>
+      <Text
+        style={{
+          ...emailStyles.muted,
+          textAlign: "center" as const,
+          marginTop: "16px",
+        }}
+      >
         Feel free to reach out to {hostName} directly if you have questions.
       </Text>
     </EmailLayout>
   );
 }
 
-function DetailRow({ label, value, href, linkColor = emailBranding.brandColor }: { label: string; value: string; href?: string; linkColor?: string }) {
+function DetailRow({
+  label,
+  value,
+  href,
+  linkColor = emailBranding.brandColor,
+}: {
+  label: string;
+  value: string;
+  href?: string;
+  linkColor?: string;
+}) {
   const emailStyles = buildEmailStyles(linkColor);
   return (
     <Section style={{ marginBottom: "8px" }}>
       <Text style={{ ...emailStyles.muted, margin: "0" }}>{label}</Text>
       {href ? (
-        <Link href={href} style={{ color: linkColor, fontSize: "14px", fontWeight: 600, display: "block", textDecoration: "underline" }}>
+        <Link
+          href={href}
+          style={{
+            color: linkColor,
+            fontSize: "14px",
+            fontWeight: 600,
+            display: "block",
+            textDecoration: "underline",
+          }}
+        >
           View Location
         </Link>
       ) : (
-        <Text style={{ ...emailStyles.paragraph, fontWeight: 600, margin: "2px 0 0" }}>
+        <Text
+          style={{
+            ...emailStyles.paragraph,
+            fontWeight: 600,
+            margin: "2px 0 0",
+          }}
+        >
           {value}
         </Text>
       )}

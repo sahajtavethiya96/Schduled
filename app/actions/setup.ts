@@ -3,9 +3,9 @@
 import { eq, ne } from "drizzle-orm";
 import { ADMIN_ROLE } from "@/config/platform";
 import { user } from "@/db/schema";
-import { db } from "@/lib/db";
-import { auth } from "@/lib/auth";
 import { audit } from "@/lib/audit";
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
 import { passwordComplexityError } from "@/lib/password";
 
 type ActionResult<T = Record<never, never>> =
@@ -19,10 +19,7 @@ export async function createFirstAdmin(data: {
 }): Promise<ActionResult> {
   try {
     // Check if any user exists
-    const [existing] = await db
-      .select({ id: user.id })
-      .from(user)
-      .limit(1);
+    const [existing] = await db.select({ id: user.id }).from(user).limit(1);
 
     if (existing) {
       return { error: "An admin account already exists." };
@@ -92,13 +89,23 @@ export async function createFirstAdmin(data: {
         return true;
       });
     } catch (err) {
-      console.error("[setup] createFirstAdmin: promotion failed, rolling back", err);
-      await db.delete(user).where(eq(user.id, adminId)).catch(() => {});
-      return { error: "Something went wrong finishing setup. Please try again." };
+      console.error(
+        "[setup] createFirstAdmin: promotion failed, rolling back",
+        err
+      );
+      await db
+        .delete(user)
+        .where(eq(user.id, adminId))
+        .catch(() => {});
+      return {
+        error: "Something went wrong finishing setup. Please try again.",
+      };
     }
 
     if (!promoted) {
-      return { error: "An admin account already exists. Refresh and sign in instead." };
+      return {
+        error: "An admin account already exists. Refresh and sign in instead.",
+      };
     }
 
     await audit({

@@ -14,8 +14,8 @@ import { env } from "@/lib/env";
 // `redirectTo` is bound per call-site so sign-out returns to the surface the
 // user signed out from, defaulting to /login.
 export async function logoutAction(
-  redirectTo: string = "/login",
-  _formData?: FormData,
+  redirectTo = "/login",
+  _formData?: FormData
 ) {
   const requestHeaders = await headers();
   const session = await auth.api.getSession({ headers: requestHeaders });
@@ -51,11 +51,13 @@ export async function logoutAction(
  * `authClient.changePassword`, which requires the current password.
  */
 export async function setPasswordAction(
-  newPassword: string,
+  newPassword: string
 ): Promise<{ ok: true } | { error: string }> {
   const requestHeaders = await headers();
   const session = await auth.api.getSession({ headers: requestHeaders });
-  if (!session) return { error: "Unauthorized" };
+  if (!session) {
+    return { error: "Unauthorized" };
+  }
 
   // Guard: never let this overwrite an existing password without proving
   // knowledge of the old one — that's what changePassword is for.
@@ -92,10 +94,15 @@ export async function setPasswordAction(
  * can never sign in. This lets the form reject it immediately instead.
  */
 export async function canSignInByEmail(email: string): Promise<boolean> {
-  if (env.ALLOW_PUBLIC_SIGNUP) return true;
+  if (env.ALLOW_PUBLIC_SIGNUP) {
+    return true;
+  }
 
   const normalized = email.trim().toLowerCase();
-  if (env.INITIAL_ADMIN_EMAIL && normalized === env.INITIAL_ADMIN_EMAIL.toLowerCase()) {
+  if (
+    env.INITIAL_ADMIN_EMAIL &&
+    normalized === env.INITIAL_ADMIN_EMAIL.toLowerCase()
+  ) {
     return true;
   }
 

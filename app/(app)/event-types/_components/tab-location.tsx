@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import {
   ArrowSquareOut,
   Globe,
@@ -13,8 +12,9 @@ import {
   Warning,
 } from "@phosphor-icons/react";
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 import type { UseFormReturn } from "react-hook-form";
-import type { MeetingIntegrations } from "@/lib/integrations/status";
+import { AddressAutocomplete } from "@/components/ui/address-autocomplete";
 import { Button } from "@/components/ui/button";
 import {
   FormControl,
@@ -25,8 +25,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { AddressAutocomplete } from "@/components/ui/address-autocomplete";
 import { Separator } from "@/components/ui/separator";
+import type { MeetingIntegrations } from "@/lib/integrations/status";
 import { cn, dialCodeFromTz, extractDialCode } from "@/lib/utils";
 import type { BuilderFormValues } from "./builder";
 
@@ -45,55 +45,70 @@ type LocationType = BuilderFormValues["locationType"];
 
 function detectDialCode(): string {
   try {
-    return dialCodeFromTz(Intl.DateTimeFormat().resolvedOptions().timeZone)
+    return dialCodeFromTz(Intl.DateTimeFormat().resolvedOptions().timeZone);
   } catch {
-    return ''
+    return "";
   }
 }
 
 function getAddressPlaceholderForTz(tz: string): string {
   const exact: Record<string, string> = {
-    'Asia/Kolkata':        'e.g. Shop 4, SV Road, Borivali West, Mumbai 400092',
-    'Asia/Calcutta':       'e.g. Shop 4, SV Road, Borivali West, Mumbai 400092',
-    'Asia/Tokyo':          'e.g. 1-1-1 Shinjuku, Shinjuku-ku, Tokyo 160-0022',
-    'Asia/Shanghai':       'e.g. 123 Nanjing Rd, Huangpu, Shanghai 200001',
-    'Asia/Hong_Kong':      'e.g. 123 Nathan Road, Tsim Sha Tsui, Hong Kong',
-    'Asia/Singapore':      'e.g. 123 Orchard Road, Singapore 238856',
-    'Asia/Dubai':          'e.g. Shop 12, Sheikh Zayed Road, Dubai',
-    'Asia/Karachi':        'e.g. 123 Shahrah-e-Faisal, Karachi 75600',
-    'Asia/Dhaka':          'e.g. 123 Gulshan Avenue, Dhaka 1212',
-    'Asia/Jakarta':        'e.g. Jl. Sudirman No. 123, Jakarta Pusat 10220',
-    'Asia/Bangkok':        'e.g. 123 Sukhumvit Rd, Bangkok 10110',
-    'Asia/Kuala_Lumpur':   'e.g. 123 Jalan Ampang, Kuala Lumpur 50450',
-    'Asia/Manila':         'e.g. 123 Ayala Ave, Makati City, Metro Manila',
-    'Australia/Sydney':    'e.g. 123 George St, Sydney NSW 2000',
-    'Australia/Melbourne': 'e.g. 123 Collins St, Melbourne VIC 3000',
-    'Australia/Brisbane':  'e.g. 123 Queen St, Brisbane QLD 4000',
-    'Europe/London':       'e.g. 12 High Street, London SW1A 1AA',
-    'Europe/Paris':        'e.g. 12 Rue de Rivoli, Paris 75001',
-    'Europe/Berlin':       'e.g. Unter den Linden 12, 10117 Berlin',
-    'Europe/Amsterdam':    'e.g. Damrak 12, 1012 LG Amsterdam',
-    'Europe/Rome':         'e.g. Via Nazionale 12, 00184 Roma',
-    'Europe/Madrid':       'e.g. Calle Gran Vía 12, 28013 Madrid',
-    'America/New_York':    'e.g. 123 Main St, New York, NY 10001',
-    'America/Los_Angeles': 'e.g. 123 Main St, Los Angeles, CA 90001',
-    'America/Chicago':     'e.g. 123 Main St, Chicago, IL 60601',
-    'America/Toronto':     'e.g. 123 King St W, Toronto, ON M5X 1A1',
-    'America/Vancouver':   'e.g. 123 Granville St, Vancouver, BC V6C 1T2',
-    'America/Sao_Paulo':   'e.g. Rua da Consolação 123, São Paulo SP 01301-000',
-    'America/Mexico_City': 'e.g. Av. Insurgentes Sur 123, Ciudad de México 06600',
-    'Africa/Johannesburg': 'e.g. 123 Main Road, Cape Town 8001',
-    'Africa/Lagos':        'e.g. 123 Victoria Island, Lagos 106104',
-    'Africa/Nairobi':      'e.g. 123 Kenyatta Avenue, Nairobi 00100',
+    "Asia/Kolkata": "e.g. Shop 4, SV Road, Borivali West, Mumbai 400092",
+    "Asia/Calcutta": "e.g. Shop 4, SV Road, Borivali West, Mumbai 400092",
+    "Asia/Tokyo": "e.g. 1-1-1 Shinjuku, Shinjuku-ku, Tokyo 160-0022",
+    "Asia/Shanghai": "e.g. 123 Nanjing Rd, Huangpu, Shanghai 200001",
+    "Asia/Hong_Kong": "e.g. 123 Nathan Road, Tsim Sha Tsui, Hong Kong",
+    "Asia/Singapore": "e.g. 123 Orchard Road, Singapore 238856",
+    "Asia/Dubai": "e.g. Shop 12, Sheikh Zayed Road, Dubai",
+    "Asia/Karachi": "e.g. 123 Shahrah-e-Faisal, Karachi 75600",
+    "Asia/Dhaka": "e.g. 123 Gulshan Avenue, Dhaka 1212",
+    "Asia/Jakarta": "e.g. Jl. Sudirman No. 123, Jakarta Pusat 10220",
+    "Asia/Bangkok": "e.g. 123 Sukhumvit Rd, Bangkok 10110",
+    "Asia/Kuala_Lumpur": "e.g. 123 Jalan Ampang, Kuala Lumpur 50450",
+    "Asia/Manila": "e.g. 123 Ayala Ave, Makati City, Metro Manila",
+    "Australia/Sydney": "e.g. 123 George St, Sydney NSW 2000",
+    "Australia/Melbourne": "e.g. 123 Collins St, Melbourne VIC 3000",
+    "Australia/Brisbane": "e.g. 123 Queen St, Brisbane QLD 4000",
+    "Europe/London": "e.g. 12 High Street, London SW1A 1AA",
+    "Europe/Paris": "e.g. 12 Rue de Rivoli, Paris 75001",
+    "Europe/Berlin": "e.g. Unter den Linden 12, 10117 Berlin",
+    "Europe/Amsterdam": "e.g. Damrak 12, 1012 LG Amsterdam",
+    "Europe/Rome": "e.g. Via Nazionale 12, 00184 Roma",
+    "Europe/Madrid": "e.g. Calle Gran Vía 12, 28013 Madrid",
+    "America/New_York": "e.g. 123 Main St, New York, NY 10001",
+    "America/Los_Angeles": "e.g. 123 Main St, Los Angeles, CA 90001",
+    "America/Chicago": "e.g. 123 Main St, Chicago, IL 60601",
+    "America/Toronto": "e.g. 123 King St W, Toronto, ON M5X 1A1",
+    "America/Vancouver": "e.g. 123 Granville St, Vancouver, BC V6C 1T2",
+    "America/Sao_Paulo": "e.g. Rua da Consolação 123, São Paulo SP 01301-000",
+    "America/Mexico_City":
+      "e.g. Av. Insurgentes Sur 123, Ciudad de México 06600",
+    "Africa/Johannesburg": "e.g. 123 Main Road, Cape Town 8001",
+    "Africa/Lagos": "e.g. 123 Victoria Island, Lagos 106104",
+    "Africa/Nairobi": "e.g. 123 Kenyatta Avenue, Nairobi 00100",
+  };
+  if (exact[tz]) {
+    return exact[tz];
   }
-  if (exact[tz]) return exact[tz]
-  if (tz.startsWith('Asia/'))      return 'e.g. 123 Main Road, Singapore 018989'
-  if (tz.startsWith('Europe/'))    return 'e.g. 12 High Street, London SW1A 1AA'
-  if (tz.startsWith('America/'))   return 'e.g. 123 Main St, New York, NY 10001'
-  if (tz.startsWith('Australia/')) return 'e.g. 123 George St, Sydney NSW 2000'
-  if (tz.startsWith('Pacific/'))   return 'e.g. 123 Queen St, Auckland 1010'
-  if (tz.startsWith('Africa/'))    return 'e.g. 123 Main Road, Cape Town 8001'
-  return 'e.g. 123 Main St'
+  if (tz.startsWith("Asia/")) {
+    return "e.g. 123 Main Road, Singapore 018989";
+  }
+  if (tz.startsWith("Europe/")) {
+    return "e.g. 12 High Street, London SW1A 1AA";
+  }
+  if (tz.startsWith("America/")) {
+    return "e.g. 123 Main St, New York, NY 10001";
+  }
+  if (tz.startsWith("Australia/")) {
+    return "e.g. 123 George St, Sydney NSW 2000";
+  }
+  if (tz.startsWith("Pacific/")) {
+    return "e.g. 123 Queen St, Auckland 1010";
+  }
+  if (tz.startsWith("Africa/")) {
+    return "e.g. 123 Main Road, Cape Town 8001";
+  }
+  return "e.g. 123 Main St";
 }
 
 // ── Location options ──────────────────────────────────────────────────────────
@@ -164,25 +179,27 @@ const LOCATION_OPTIONS: LocationOption[] = [
   },
 ];
 
-const LS_KEY = 'schduled:lastPhoneNumber'
+const LS_KEY = "schduled:lastPhoneNumber";
 
 // E.164 caps the whole number (dial code + local number) at 15 digits; the
 // local number field enforces its own 4–15 digit range so a bare paste of
 // garbage digits can't produce an unusably long value.
-const MIN_LOCAL_DIGITS = 4
-const MAX_LOCAL_DIGITS = 15
+const MIN_LOCAL_DIGITS = 4;
+const MAX_LOCAL_DIGITS = 15;
 
 // Truncate `raw` so it contains at most `maxDigits` digit characters,
 // preserving any formatting characters (space, -, (, )) up to that point.
 function capDigits(raw: string, maxDigits: number): string {
-  let digitCount = 0
+  let digitCount = 0;
   for (let i = 0; i < raw.length; i++) {
     if (/\d/.test(raw[i])) {
-      digitCount++
-      if (digitCount > maxDigits) return raw.slice(0, i)
+      digitCount++;
+      if (digitCount > maxDigits) {
+        return raw.slice(0, i);
+      }
     }
   }
-  return raw
+  return raw;
 }
 
 // ── Smart phone input ─────────────────────────────────────────────────────────
@@ -191,11 +208,11 @@ function capDigits(raw: string, maxDigits: number): string {
 // leaving only the local number — so the number field never re-displays the
 // code that's already shown in the dial code field.
 function stripDialCode(value: string, dialCode: string): string {
-  let v = value ?? ''
+  let v = value ?? "";
   if (dialCode && v.startsWith(dialCode)) {
-    v = v.slice(dialCode.length)
+    v = v.slice(dialCode.length);
   }
-  return v.replace(/^[\s\-().]+/, '')
+  return v.replace(/^[\s\-().]+/, "");
 }
 
 function PhoneInput({
@@ -203,88 +220,98 @@ function PhoneInput({
   onChange,
   onBlur,
 }: {
-  value: string
-  onChange: (v: string) => void
-  onBlur?: () => void
+  value: string;
+  onChange: (v: string) => void;
+  onBlur?: () => void;
 }) {
-  const initialized = useRef(false)
+  const initialized = useRef(false);
 
   // Dial code: the code the host typed (matched against known country codes,
   // so "+918790056786" → "+91"); when none is typed, fall back to the code
   // derived from their timezone — so it always shows a sensible code (e.g. +91).
-  const dialCode = extractDialCode(value ?? '') || detectDialCode() || '+1'
-  const localNumber = stripDialCode(value ?? '', dialCode)
+  const dialCode = extractDialCode(value ?? "") || detectDialCode() || "+1";
+  const localNumber = stripDialCode(value ?? "", dialCode);
 
   // Auto-fill on first mount only (new event or switching to phone type)
   useEffect(() => {
-    if (initialized.current) return
-    initialized.current = true
+    if (initialized.current) {
+      return;
+    }
+    initialized.current = true;
 
     // Priority 1: already has a value (edit mode) — leave it alone
-    if (value && value.trim()) return
+    if (value && value.trim()) {
+      return;
+    }
 
     // Priority 2: localStorage (last number used)
     try {
-      const saved = localStorage.getItem(LS_KEY)
+      const saved = localStorage.getItem(LS_KEY);
       if (saved && saved.trim()) {
-        onChange(saved.trim())
+        onChange(saved.trim());
       }
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     // Priority 3 (no saved number): leave the number blank — the dial code
     // field already shows the timezone-detected code, so there's nothing
     // to pre-fill into the stored value.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function composeAndEmit(nextDialCode: string, nextLocalNumber: string) {
-    const trimmedNumber = nextLocalNumber.trim()
-    onChange(trimmedNumber ? `${nextDialCode} ${trimmedNumber}` : '')
+    const trimmedNumber = nextLocalNumber.trim();
+    onChange(trimmedNumber ? `${nextDialCode} ${trimmedNumber}` : "");
   }
 
   function handleDialCodeChange(e: React.ChangeEvent<HTMLInputElement>) {
-    let raw = e.target.value.replace(/[^\d+]/g, '')
-    raw = '+' + raw.replace(/\+/g, '')
-    composeAndEmit(raw, localNumber)
+    let raw = e.target.value.replace(/[^\d+]/g, "");
+    raw = "+" + raw.replace(/\+/g, "");
+    composeAndEmit(raw, localNumber);
   }
 
   function handleNumberChange(e: React.ChangeEvent<HTMLInputElement>) {
-    let raw = e.target.value.replace(/[^\d\s\-().]/g, '')
-    raw = capDigits(raw, MAX_LOCAL_DIGITS)
-    composeAndEmit(dialCode, raw)
+    let raw = e.target.value.replace(/[^\d\s\-().]/g, "");
+    raw = capDigits(raw, MAX_LOCAL_DIGITS);
+    composeAndEmit(dialCode, raw);
   }
 
   function handleBlur() {
-    const trimmed = (value ?? '').trim()
+    const trimmed = (value ?? "").trim();
     // Persist valid-looking numbers to localStorage
     if (trimmed.length > 5) {
-      try { localStorage.setItem(LS_KEY, trimmed) } catch { /* ignore */ }
+      try {
+        localStorage.setItem(LS_KEY, trimmed);
+      } catch {
+        /* ignore */
+      }
     }
-    onBlur?.()
+    onBlur?.();
   }
 
   return (
     <div className="flex items-stretch gap-2">
       <Input
+        aria-label="Country dial code"
+        className="w-20 shrink-0 font-mono"
+        onBlur={handleBlur}
+        onChange={handleDialCodeChange}
+        placeholder="+91"
         type="tel"
         value={dialCode}
-        onChange={handleDialCodeChange}
-        onBlur={handleBlur}
-        placeholder="+91"
-        className="w-20 shrink-0 font-mono"
-        aria-label="Country dial code"
       />
       <Input
+        aria-label="Phone number"
+        className="flex-1 font-mono"
+        maxLength={20}
+        onBlur={handleBlur}
+        onChange={handleNumberChange}
+        placeholder="98765 43210"
         type="tel"
         value={localNumber}
-        onChange={handleNumberChange}
-        onBlur={handleBlur}
-        placeholder="98765 43210"
-        maxLength={20}
-        className="flex-1 font-mono"
-        aria-label="Phone number"
       />
     </div>
-  )
+  );
 }
 
 // ── Tab component ─────────────────────────────────────────────────────────────
@@ -327,9 +354,11 @@ export function TabLocation({
                 const isDisabled = opt.comingSoon && !isSelected;
                 const showWarning =
                   isSelected &&
-                  ((opt.value === "google_meet" && !integrations.googleConnected) ||
+                  ((opt.value === "google_meet" &&
+                    !integrations.googleConnected) ||
                     (opt.value === "zoom" && !integrations.zoomConnected));
-                const warningProvider = opt.value === "zoom" ? "Zoom" : "Google Calendar";
+                const warningProvider =
+                  opt.value === "zoom" ? "Zoom" : "Google Calendar";
                 return (
                   <div key={opt.value}>
                     <button
@@ -345,16 +374,24 @@ export function TabLocation({
                       )}
                       disabled={isDisabled}
                       onClick={() => {
-                        if (isDisabled) return;
+                        if (isDisabled) {
+                          return;
+                        }
                         field.onChange(opt.value);
                         // Clear per-type fields the new type doesn't use, so a
                         // stale value (e.g. the dial-code PhoneInput auto-fills)
                         // can't fail the Location step's validation.
                         if (!opt.requiresPhone) {
-                          form.setValue("hostPhoneNumber", "", { shouldValidate: true, shouldDirty: true });
+                          form.setValue("hostPhoneNumber", "", {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          });
                         }
                         if (!opt.requiresValue) {
-                          form.setValue("locationValue", "", { shouldValidate: true, shouldDirty: true });
+                          form.setValue("locationValue", "", {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          });
                         }
                       }}
                       type="button"
@@ -362,7 +399,9 @@ export function TabLocation({
                       <span className="mt-0.5 shrink-0">{opt.icon}</span>
                       <span className="flex-1 min-w-0">
                         <span className="flex items-center gap-2">
-                          <span className="text-sm font-semibold">{opt.label}</span>
+                          <span className="text-sm font-semibold">
+                            {opt.label}
+                          </span>
                           {opt.comingSoon && (
                             <span className="inline-flex items-center bg-teal-600 px-1.5 py-0.5 text-2xs font-bold uppercase tracking-wide text-white">
                               Coming soon
@@ -388,19 +427,25 @@ export function TabLocation({
                     </button>
                     {showWarning && (
                       <div className="flex items-start gap-3 border border-t-0 border-amber-300 bg-amber-50 px-4 py-3 dark:border-amber-700 dark:bg-amber-950/30">
-                        <Warning className="mt-0.5 shrink-0 text-amber-600 dark:text-amber-400" size={16} weight="fill" />
+                        <Warning
+                          className="mt-0.5 shrink-0 text-amber-600 dark:text-amber-400"
+                          size={16}
+                          weight="fill"
+                        />
                         <div className="min-w-0 flex-1">
                           <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">
                             Connect {warningProvider} to generate meeting links
                           </p>
                           <p className="mt-0.5 text-xs text-amber-700/90 dark:text-amber-300/80">
-                            You haven&apos;t connected {warningProvider} yet, so bookings won&apos;t include a{" "}
-                            {opt.value === "zoom" ? "Zoom" : "Google Meet"} link until you do.
+                            You haven&apos;t connected {warningProvider} yet, so
+                            bookings won&apos;t include a{" "}
+                            {opt.value === "zoom" ? "Zoom" : "Google Meet"} link
+                            until you do.
                           </p>
                           <Link
+                            className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-amber-800 underline-offset-2 hover:underline dark:text-amber-200"
                             href="/settings/integrations"
                             target="_blank"
-                            className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-amber-800 underline-offset-2 hover:underline dark:text-amber-200"
                           >
                             Connect {warningProvider}
                             <ArrowSquareOut size={12} />
@@ -417,7 +462,6 @@ export function TabLocation({
         )}
       />
 
-
       {/* Custom location / in-person address */}
       {selected?.requiresValue && (
         <FormField
@@ -431,10 +475,10 @@ export function TabLocation({
                   <FormControl>
                     {locationType === "in_person" ? (
                       <AddressAutocomplete
+                        onBlur={field.onBlur}
+                        onChange={field.onChange}
                         placeholder={addressPlaceholder}
                         value={field.value ?? ""}
-                        onChange={field.onChange}
-                        onBlur={field.onBlur}
                       />
                     ) : (
                       <Input
@@ -463,8 +507,8 @@ export function TabLocation({
                 </FormDescription>
               ) : (
                 <FormDescription>
-                  Or open Google Maps, copy the link to your venue, and paste
-                  it here.
+                  Or open Google Maps, copy the link to your venue, and paste it
+                  here.
                 </FormDescription>
               )}
               <FormMessage />
@@ -483,9 +527,9 @@ export function TabLocation({
               <FormLabel>Your phone number</FormLabel>
               <FormControl>
                 <PhoneInput
-                  value={field.value ?? ''}
-                  onChange={field.onChange}
                   onBlur={field.onBlur}
+                  onChange={field.onChange}
+                  value={field.value ?? ""}
                 />
               </FormControl>
               <FormDescription>

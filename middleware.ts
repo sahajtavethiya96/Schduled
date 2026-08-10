@@ -1,15 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { env } from "@/lib/env";
 
 const PUBLIC_PREFIXES = [
-  "/api/auth",          // Better Auth handler
-  "/_next",             // Next.js internals
+  "/api/auth", // Better Auth handler
+  "/_next", // Next.js internals
   "/favicon",
-  "/cancel/",           // public booking cancel
-  "/reschedule/",       // public booking reschedule
+  "/cancel/", // public booking cancel
+  "/reschedule/", // public booking reschedule
 ];
 
-const AUTH_PATHS: string[] = [];  // handled client-side in auth-form via useSession()
+const AUTH_PATHS: string[] = []; // handled client-side in auth-form via useSession()
 
 const PROTECTED_PREFIXES = [
   "/dashboard",
@@ -25,12 +25,14 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Always public
-  if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p)))
+  if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) {
     return NextResponse.next();
+  }
 
   // Static assets
-  if (/\.(svg|png|jpg|jpeg|gif|webp|ico|woff2?)$/.test(pathname))
+  if (/\.(svg|png|jpg|jpeg|gif|webp|ico|woff2?)$/.test(pathname)) {
     return NextResponse.next();
+  }
 
   // Marketing landing page — optional. Internal/team deployments that don't
   // want a public marketing page can set NEXT_PUBLIC_LANDING_ENABLED=false;
@@ -41,8 +43,9 @@ export function middleware(request: NextRequest) {
   }
 
   // Landing + legal pages
-  if (["/", "/privacy", "/terms", "/cookies"].includes(pathname))
+  if (["/", "/privacy", "/terms", "/cookies"].includes(pathname)) {
     return NextResponse.next();
+  }
 
   // Public booking pages: /{username}, /{username}/{slug}
   // These are NOT protected — anyone can view a booking page

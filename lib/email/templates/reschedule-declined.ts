@@ -1,8 +1,8 @@
-import { createElement } from "react";
 import { formatInTimeZone } from "date-fns-tz";
+import { createElement } from "react";
+import { getEmailBranding } from "@/lib/email/branding";
 import { RescheduleDeclinedEmail } from "@/lib/email/components/reschedule-declined";
 import { renderEmailTemplate } from "@/lib/email/renderer";
-import { getEmailBranding } from "@/lib/email/branding";
 
 const DATE_FMT = "EEEE, MMMM d, yyyy 'at' h:mm a";
 
@@ -19,8 +19,16 @@ interface RescheduleDeclinedParams {
 
 export async function rescheduleDeclinedTemplate(p: RescheduleDeclinedParams) {
   const branding = await getEmailBranding();
-  const whenHost = formatInTimeZone(p.originalStartUtc, p.hostTimezone, DATE_FMT);
-  const whenInvitee = formatInTimeZone(p.originalStartUtc, p.inviteeTimezone, DATE_FMT);
+  const whenHost = formatInTimeZone(
+    p.originalStartUtc,
+    p.hostTimezone,
+    DATE_FMT
+  );
+  const whenInvitee = formatInTimeZone(
+    p.originalStartUtc,
+    p.inviteeTimezone,
+    DATE_FMT
+  );
 
   const html = await renderEmailTemplate(
     createElement(RescheduleDeclinedEmail, {

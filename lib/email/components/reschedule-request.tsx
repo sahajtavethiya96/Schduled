@@ -1,5 +1,5 @@
 import { Button, Hr, Link, Section, Text } from "react-email";
-import { emailBranding, type EmailBranding } from "@/lib/email/branding";
+import { type EmailBranding, emailBranding } from "@/lib/email/branding";
 import { buildEmailStyles, EmailLayout } from "./layout";
 
 interface RescheduleRequestEmailProps {
@@ -33,7 +33,11 @@ export function RescheduleRequestEmail({
   const emailStyles = buildEmailStyles(branding.brandColor);
 
   return (
-    <EmailLayout preview={`Reschedule request: ${eventName} with ${inviteeName}`} productName={branding.appName} logoUrl={branding.logoUrl}>
+    <EmailLayout
+      logoUrl={branding.logoUrl}
+      preview={`Reschedule request: ${eventName} with ${inviteeName}`}
+      productName={branding.appName}
+    >
       {/* Badge */}
       <Section style={{ marginBottom: "8px" }}>
         <Text
@@ -67,10 +71,24 @@ export function RescheduleRequestEmail({
       {/* Current → Requested */}
       <Section>
         <DetailRow label="Event" value={eventName} />
-        <DetailRow label="Requested by" value={`${inviteeName} (${inviteeEmail})`} />
-        <DetailRow label={`Current (${hostTimezone})`} value={currentWhenHost} />
-        <DetailRow label={`Requested (${hostTimezone})`} value={requestedWhenHost} />
-        <DetailRow label="Location" value={locationLabel} href={locationLabel.startsWith("http") ? locationLabel : undefined} linkColor={branding.brandColor} />
+        <DetailRow
+          label="Requested by"
+          value={`${inviteeName} (${inviteeEmail})`}
+        />
+        <DetailRow
+          label={`Current (${hostTimezone})`}
+          value={currentWhenHost}
+        />
+        <DetailRow
+          label={`Requested (${hostTimezone})`}
+          value={requestedWhenHost}
+        />
+        <DetailRow
+          href={locationLabel.startsWith("http") ? locationLabel : undefined}
+          label="Location"
+          linkColor={branding.brandColor}
+          value={locationLabel}
+        />
       </Section>
 
       <Hr style={{ borderColor: "#E5E7EB", margin: "20px 0" }} />
@@ -98,9 +116,15 @@ export function RescheduleRequestEmail({
         </Button>
       </Section>
 
-      <Text style={{ ...emailStyles.muted, marginTop: "16px", textAlign: "center" as const }}>
-        Rejecting keeps the current meeting exactly as it is. You can also manage
-        this from your{" "}
+      <Text
+        style={{
+          ...emailStyles.muted,
+          marginTop: "16px",
+          textAlign: "center" as const,
+        }}
+      >
+        Rejecting keeps the current meeting exactly as it is. You can also
+        manage this from your{" "}
         <a href={reviewUrl} style={emailStyles.link}>
           dashboard
         </a>
@@ -110,17 +134,42 @@ export function RescheduleRequestEmail({
   );
 }
 
-function DetailRow({ label, value, href, linkColor = emailBranding.brandColor }: { label: string; value: string; href?: string; linkColor?: string }) {
+function DetailRow({
+  label,
+  value,
+  href,
+  linkColor = emailBranding.brandColor,
+}: {
+  label: string;
+  value: string;
+  href?: string;
+  linkColor?: string;
+}) {
   const emailStyles = buildEmailStyles(linkColor);
   return (
     <Section style={{ marginBottom: "8px" }}>
       <Text style={{ ...emailStyles.muted, margin: "0" }}>{label}</Text>
       {href ? (
-        <Link href={href} style={{ color: linkColor, fontSize: "14px", fontWeight: 600, display: "block", textDecoration: "underline" }}>
+        <Link
+          href={href}
+          style={{
+            color: linkColor,
+            fontSize: "14px",
+            fontWeight: 600,
+            display: "block",
+            textDecoration: "underline",
+          }}
+        >
           View Location
         </Link>
       ) : (
-        <Text style={{ ...emailStyles.paragraph, fontWeight: 600, margin: "2px 0 0" }}>
+        <Text
+          style={{
+            ...emailStyles.paragraph,
+            fontWeight: 600,
+            margin: "2px 0 0",
+          }}
+        >
           {value}
         </Text>
       )}

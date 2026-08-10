@@ -1,24 +1,34 @@
-import { notFound } from 'next/navigation'
-import type { Metadata } from 'next'
-import Link from 'next/link'
-import Image from 'next/image'
-import { asc, and, eq } from 'drizzle-orm'
-import { Clock, VideoCamera, Phone, MapPin, Globe, CaretRight, CalendarBlank } from '@phosphor-icons/react/dist/ssr'
-import { db } from '@/lib/db'
-import { user, userProfile, eventType } from '@/db/schema'
+import {
+  CalendarBlank,
+  CaretRight,
+  Clock,
+  Globe,
+  MapPin,
+  Phone,
+  VideoCamera,
+} from "@phosphor-icons/react/dist/ssr";
+import { and, asc, eq } from "drizzle-orm";
+import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { eventType, user, userProfile } from "@/db/schema";
+import { db } from "@/lib/db";
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ username: string }>
+  params: Promise<{ username: string }>;
 }): Promise<Metadata> {
-  const { username } = await params
+  const { username } = await params;
   const [host] = await db
     .select({ name: user.name })
     .from(user)
     .where(eq(user.username, username))
-    .limit(1)
-  if (!host) return {}
+    .limit(1);
+  if (!host) {
+    return {};
+  }
   return {
     title: `Book a meeting with ${host.name}`,
     description: `Schedule time with ${host.name} — pick a date and time that works for you.`,
@@ -26,30 +36,44 @@ export async function generateMetadata({
       title: `Book a meeting with ${host.name}`,
       description: `Schedule time with ${host.name} on Schduled.`,
     },
-  }
+  };
 }
 
 const LOCATION_ICON: Record<string, React.ReactNode> = {
-  zoom:                <VideoCamera size={11} weight="fill" className="text-muted-foreground" />,
-  google_meet:         <VideoCamera size={11} weight="fill" className="text-muted-foreground" />,
-  phone_host_calls:    <Phone size={11} weight="fill" className="text-primary" />,
-  phone_invitee_calls: <Phone size={11} weight="fill" className="text-primary" />,
-  in_person:           <MapPin size={11} weight="fill" className="text-muted-foreground" />,
-  custom:              <Globe size={11} weight="fill" className="text-muted-foreground" />,
-  invitees_choice:     <Globe size={11} weight="fill" className="text-muted-foreground" />,
-}
+  zoom: (
+    <VideoCamera className="text-muted-foreground" size={11} weight="fill" />
+  ),
+  google_meet: (
+    <VideoCamera className="text-muted-foreground" size={11} weight="fill" />
+  ),
+  phone_host_calls: <Phone className="text-primary" size={11} weight="fill" />,
+  phone_invitee_calls: (
+    <Phone className="text-primary" size={11} weight="fill" />
+  ),
+  in_person: (
+    <MapPin className="text-muted-foreground" size={11} weight="fill" />
+  ),
+  custom: <Globe className="text-muted-foreground" size={11} weight="fill" />,
+  invitees_choice: (
+    <Globe className="text-muted-foreground" size={11} weight="fill" />
+  ),
+};
 const LOCATION_LABEL: Record<string, string> = {
-  zoom: 'Zoom', google_meet: 'Google Meet',
-  phone_host_calls: 'Phone', phone_invitee_calls: 'Phone',
-  in_person: 'In-person', custom: 'Online', invitees_choice: 'Flexible',
-}
+  zoom: "Zoom",
+  google_meet: "Google Meet",
+  phone_host_calls: "Phone",
+  phone_invitee_calls: "Phone",
+  in_person: "In-person",
+  custom: "Online",
+  invitees_choice: "Flexible",
+};
 
 export default async function HostProfilePage({
   params,
 }: {
-  params: Promise<{ username: string }>
+  params: Promise<{ username: string }>;
 }) {
-  const { username } = await params
+  const { username } = await params;
 
   const [host] = await db
     .select({
@@ -63,30 +87,32 @@ export default async function HostProfilePage({
     .from(user)
     .leftJoin(userProfile, eq(userProfile.userId, user.id))
     .where(eq(user.username, username))
-    .limit(1)
+    .limit(1);
 
-  if (!host) notFound()
+  if (!host) {
+    notFound();
+  }
 
   const eventTypes = await db.query.eventType.findMany({
     where: and(
       eq(eventType.userId, host.id),
       eq(eventType.isActive, true),
-      eq(eventType.isHidden, false),
+      eq(eventType.isHidden, false)
     ),
     with: { durations: true },
     orderBy: [asc(eventType.position)],
-  })
+  });
 
   return (
     <main className="mx-auto max-w-xl px-4 py-12">
       <header className="mb-10 flex flex-col items-center gap-3 text-center">
         {host.image ? (
           <Image
-            src={host.image}
             alt={host.name}
-            width={72}
-            height={72}
             className="h-[72px] w-[72px] rounded-none object-cover ring-1 ring-base-300"
+            height={72}
+            src={host.image}
+            width={72}
           />
         ) : (
           <div className="flex h-[72px] w-[72px] items-center justify-center rounded-none bg-primary text-2xl font-semibold text-primary-content">
@@ -97,7 +123,7 @@ export default async function HostProfilePage({
           <h1 className="text-xl font-semibold">{host.name}</h1>
           {(host.jobTitle || host.company) && (
             <p className="mt-0.5 text-sm text-muted-foreground">
-              {[host.jobTitle, host.company].filter(Boolean).join(' @ ')}
+              {[host.jobTitle, host.company].filter(Boolean).join(" @ ")}
             </p>
           )}
           <p className="mt-1 text-sm text-muted-foreground">@{username}</p>
@@ -115,10 +141,17 @@ export default async function HostProfilePage({
 
       {eventTypes.length === 0 ? (
         <div className="flex flex-col items-center gap-3 border border-dashed border-base-300 py-16 text-center">
-          <CalendarBlank size={36} weight="duotone" className="text-muted-foreground/40" />
-          <p className="text-sm font-semibold text-base-content">No meeting types available</p>
+          <CalendarBlank
+            className="text-muted-foreground/40"
+            size={36}
+            weight="duotone"
+          />
+          <p className="text-sm font-semibold text-base-content">
+            No meeting types available
+          </p>
           <p className="max-w-xs text-sm text-muted-foreground">
-            {host.name.split(' ')[0]} hasn&apos;t published any meeting types yet. Check back soon.
+            {host.name.split(" ")[0]} hasn&apos;t published any meeting types
+            yet. Check back soon.
           </p>
         </div>
       ) : (
@@ -127,20 +160,23 @@ export default async function HostProfilePage({
             const defaultDuration =
               et.durations.find((d) => d.isDefault)?.duration ??
               et.durations[0]?.duration ??
-              30
-            const sortedDurations = [...et.durations].sort((a, b) => a.duration - b.duration)
-            const locIcon = LOCATION_ICON[et.locationType] ?? LOCATION_ICON.custom
-            const locLabel = LOCATION_LABEL[et.locationType] ?? 'Online'
+              30;
+            const sortedDurations = [...et.durations].sort(
+              (a, b) => a.duration - b.duration
+            );
+            const locIcon =
+              LOCATION_ICON[et.locationType] ?? LOCATION_ICON.custom;
+            const locLabel = LOCATION_LABEL[et.locationType] ?? "Online";
 
             return (
               <Link
-                key={et.id}
-                href={`/${username}/${et.slug}`}
                 className="group flex items-center gap-4 border border-base-300 bg-base-100 p-5 transition-colors hover:border-primary hover:bg-primary/5"
+                href={`/${username}/${et.slug}`}
+                key={et.id}
               >
                 <div
                   className="h-12 w-1 shrink-0"
-                  style={{ backgroundColor: et.color ?? '#0d9488' }}
+                  style={{ backgroundColor: et.color ?? "#0d9488" }}
                 />
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold">{et.name}</p>
@@ -153,8 +189,8 @@ export default async function HostProfilePage({
                     {/* Duration chips */}
                     {sortedDurations.map((d) => (
                       <span
-                        key={d.duration}
                         className="inline-flex items-center gap-1 text-xs text-muted-foreground"
+                        key={d.duration}
                       >
                         <Clock size={12} />
                         {d.duration} min
@@ -168,12 +204,12 @@ export default async function HostProfilePage({
                   </div>
                 </div>
                 <CaretRight
+                  className="shrink-0 text-muted-foreground/30 transition-all group-hover:translate-x-0.5 group-hover:text-primary"
                   size={16}
                   weight="bold"
-                  className="shrink-0 text-muted-foreground/30 transition-all group-hover:translate-x-0.5 group-hover:text-primary"
                 />
               </Link>
-            )
+            );
           })}
         </div>
       )}
@@ -183,5 +219,5 @@ export default async function HostProfilePage({
         <span className="font-semibold text-primary">Schduled</span>
       </footer>
     </main>
-  )
+  );
 }

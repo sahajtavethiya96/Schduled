@@ -1,14 +1,16 @@
 import type { Job } from "pg-boss";
-import { createNotification } from "@/lib/notifications/create";
 import { enqueueEmail } from "@/lib/email";
 import { approvalRejectedTemplate } from "@/lib/email/templates/approval-rejected";
+import { createNotification } from "@/lib/notifications/create";
 import type { BookingRejectedPayload } from "@/lib/worker/job-types";
 import {
   loadBookingForLifecycle,
   resolveLocationLabel,
 } from "./booking-lifecycle-data";
 
-export async function handleBookingRejected(jobs: Job<BookingRejectedPayload>[]) {
+export async function handleBookingRejected(
+  jobs: Job<BookingRejectedPayload>[]
+) {
   for (const job of jobs) {
     await processOne(job.data.bookingId);
   }
@@ -28,7 +30,11 @@ async function processOne(bookingId: string) {
   }
 
   const hostTimezone = b.hostTimezone ?? "UTC";
-  const locationLabel = resolveLocationLabel(b.etLocationType, b.etLocationValue, b.inviteePhone);
+  const locationLabel = resolveLocationLabel(
+    b.etLocationType,
+    b.etLocationValue,
+    b.inviteePhone
+  );
 
   const mail = await approvalRejectedTemplate({
     eventName: b.etName,

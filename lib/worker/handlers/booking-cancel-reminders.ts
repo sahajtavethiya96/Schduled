@@ -1,5 +1,5 @@
-import type { Job } from 'pg-boss'
-import { type BookingCancelRemindersPayload } from '@/lib/worker/job-types'
+import type { Job } from "pg-boss";
+import type { BookingCancelRemindersPayload } from "@/lib/worker/job-types";
 
 /**
  * Reminder cancellation is handled lazily: when BOOKING_REMINDER_24H and
@@ -10,9 +10,11 @@ import { type BookingCancelRemindersPayload } from '@/lib/worker/job-types'
  * This handler exists as a required job contract; no active work needed here.
  */
 export async function handleBookingCancelReminders(
-  jobs: Job<BookingCancelRemindersPayload>[],
+  jobs: Job<BookingCancelRemindersPayload>[]
 ) {
   for (const job of jobs) {
-    console.log(`[booking-cancel-reminders] acknowledged cancel-reminders for booking ${job.data.bookingId}`)
+    console.log(
+      `[booking-cancel-reminders] acknowledged cancel-reminders for booking ${job.data.bookingId}`
+    );
   }
 }

@@ -32,16 +32,21 @@ interface NotificationItem {
 }
 
 const ICONS: Record<string, React.ReactNode> = {
-  booking_created:           <CalendarCheck className="text-primary" size={16} />,
-  booking_cancelled:         <CalendarX className="text-red-500" size={16} />,
-  booking_rejected:          <CalendarX className="text-red-500" size={16} />,
-  booking_rescheduled:       <ArrowsClockwise className="text-amber-500" size={16} />,
-  booking_reschedule_requested: <ArrowsClockwise className="text-amber-500" size={16} />,
-  booking_reminder:          <Clock className="text-amber-500" size={16} />,
-  booking_pending_approval:  <Hourglass className="text-amber-500" size={16} />,
+  booking_created: <CalendarCheck className="text-primary" size={16} />,
+  booking_cancelled: <CalendarX className="text-red-500" size={16} />,
+  booking_rejected: <CalendarX className="text-red-500" size={16} />,
+  booking_rescheduled: <ArrowsClockwise className="text-amber-500" size={16} />,
+  booking_reschedule_requested: (
+    <ArrowsClockwise className="text-amber-500" size={16} />
+  ),
+  booking_reminder: <Clock className="text-amber-500" size={16} />,
+  booking_pending_approval: <Hourglass className="text-amber-500" size={16} />,
 };
 
-function notificationCountMessage(count: number, verb: "marked as read" | "cleared"): string {
+function notificationCountMessage(
+  count: number,
+  verb: "marked as read" | "cleared"
+): string {
   const has = count === 1 ? "has" : "have";
   return `${count} notification${count === 1 ? "" : "s"} ${has} been ${verb}.`;
 }
@@ -96,14 +101,18 @@ export function NotificationBell() {
   // Re-fetch immediately when the user switches back to this tab
   useEffect(() => {
     function onVisible() {
-      if (document.visibilityState === 'visible') load();
+      if (document.visibilityState === "visible") {
+        load();
+      }
     }
-    document.addEventListener('visibilitychange', onVisible);
-    return () => document.removeEventListener('visibilitychange', onVisible);
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
   }, [load]);
 
   async function markAllRead() {
-    if (unread === 0) return;
+    if (unread === 0) {
+      return;
+    }
     const count = unread;
     setUnread(0);
     setItems((prev) => prev.map((n) => ({ ...n, read: true })));
@@ -149,7 +158,9 @@ export function NotificationBell() {
     const dismissed = items.find((n) => n.id === id);
     const wasUnread = !!dismissed && !dismissed.read;
     setItems((prev) => prev.filter((n) => n.id !== id));
-    if (wasUnread) setUnread((prev) => Math.max(0, prev - 1));
+    if (wasUnread) {
+      setUnread((prev) => Math.max(0, prev - 1));
+    }
     try {
       await fetch(`/api/notifications/${id}`, { method: "DELETE" });
     } catch {
@@ -159,7 +170,9 @@ export function NotificationBell() {
 
   async function clearAll() {
     const count = items.length;
-    if (count === 0) return;
+    if (count === 0) {
+      return;
+    }
     setItems([]);
     setUnread(0);
     try {
@@ -172,7 +185,9 @@ export function NotificationBell() {
 
   function handleOpenChange(next: boolean) {
     setOpen(next);
-    if (next) load();
+    if (next) {
+      load();
+    }
   }
 
   return (
@@ -244,7 +259,10 @@ export function NotificationBell() {
                   {ICONS[n.type] ?? <Bell size={16} />}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-base-content" title={n.title}>
+                  <p
+                    className="truncate text-sm font-medium text-base-content"
+                    title={n.title}
+                  >
                     {n.title}
                   </p>
                   {n.body && (

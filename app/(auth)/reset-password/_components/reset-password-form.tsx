@@ -1,7 +1,5 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { type FormEvent, useState } from "react";
 import {
   CheckCircle,
   CircleNotch,
@@ -10,6 +8,9 @@ import {
   LockSimple,
   WarningCircle,
 } from "@phosphor-icons/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { type FormEvent, useState } from "react";
+import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,7 +20,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Logo } from "@/components/logo";
 import { MIN_PASSWORD_LENGTH } from "@/config/platform";
 import { authClient } from "@/lib/auth-client";
 import { passwordComplexityError } from "@/lib/password";
@@ -71,7 +71,7 @@ export function ResetPasswordForm() {
   return (
     <div className="w-full max-w-md">
       <div className="mb-6 flex justify-center lg:hidden">
-        <Logo variant="full" size="lg" href="/" />
+        <Logo href="/" size="lg" variant="full" />
       </div>
 
       <Card className="animate-in fade-in slide-in-from-bottom-2 duration-500">
@@ -96,23 +96,37 @@ export function ResetPasswordForm() {
                   Your password has been reset. Redirecting you to sign in…
                 </p>
               </div>
-              <Button className="w-full" onClick={() => router.replace("/login")} type="button">
+              <Button
+                className="w-full"
+                onClick={() => router.replace("/login")}
+                type="button"
+              >
                 Go to sign in
               </Button>
             </div>
           ) : invalidLink ? (
             <div className="space-y-5">
               <div className="flex items-start gap-3 border border-error/25 bg-error/[0.06] px-4 py-3">
-                <WarningCircle size={18} weight="fill" className="mt-0.5 shrink-0 text-error" />
+                <WarningCircle
+                  className="mt-0.5 shrink-0 text-error"
+                  size={18}
+                  weight="fill"
+                />
                 <div>
-                  <p className="text-sm font-semibold text-error">Invalid or expired link</p>
+                  <p className="text-sm font-semibold text-error">
+                    Invalid or expired link
+                  </p>
                   <p className="mt-0.5 text-xs text-muted-foreground">
-                    This password reset link is missing, invalid, or has expired.
-                    Request a new one from the sign-in page.
+                    This password reset link is missing, invalid, or has
+                    expired. Request a new one from the sign-in page.
                   </p>
                 </div>
               </div>
-              <Button className="w-full" onClick={() => router.replace("/login")} type="button">
+              <Button
+                className="w-full"
+                onClick={() => router.replace("/login")}
+                type="button"
+              >
                 Back to sign in
               </Button>
             </div>
@@ -123,9 +137,13 @@ export function ResetPasswordForm() {
                   New password
                 </span>
                 <div className="relative">
-                  <LockSimple size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <LockSimple
+                    className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                    size={16}
+                  />
                   <Input
                     autoComplete="new-password"
+                    className="pl-9 pr-10"
                     id="new-password"
                     minLength={MIN_PASSWORD_LENGTH}
                     onChange={(event) => setPassword(event.target.value)}
@@ -133,14 +151,15 @@ export function ResetPasswordForm() {
                     required
                     type={showPassword ? "text" : "password"}
                     value={password}
-                    className="pl-9 pr-10"
                   />
                   <button
-                    type="button"
-                    onClick={() => setShowPassword((s) => !s)}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                    tabIndex={-1}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-base-content"
+                    onClick={() => setShowPassword((s) => !s)}
+                    tabIndex={-1}
+                    type="button"
                   >
                     {showPassword ? <Eye size={16} /> : <EyeSlash size={16} />}
                   </button>
@@ -151,9 +170,13 @@ export function ResetPasswordForm() {
                   Confirm new password
                 </span>
                 <div className="relative">
-                  <LockSimple size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <LockSimple
+                    className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                    size={16}
+                  />
                   <Input
                     autoComplete="new-password"
+                    className="pl-9 pr-10"
                     id="confirm-password"
                     minLength={MIN_PASSWORD_LENGTH}
                     onChange={(event) => setConfirm(event.target.value)}
@@ -161,14 +184,15 @@ export function ResetPasswordForm() {
                     required
                     type={showPassword ? "text" : "password"}
                     value={confirm}
-                    className="pl-9 pr-10"
                   />
                   <button
-                    type="button"
-                    onClick={() => setShowPassword((s) => !s)}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                    tabIndex={-1}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-base-content"
+                    onClick={() => setShowPassword((s) => !s)}
+                    tabIndex={-1}
+                    type="button"
                   >
                     {showPassword ? <Eye size={16} /> : <EyeSlash size={16} />}
                   </button>
@@ -179,8 +203,18 @@ export function ResetPasswordForm() {
                   {error}
                 </p>
               )}
-              <Button className="w-full gap-2" disabled={submitting} type="submit">
-                {submitting ? <><CircleNotch size={15} className="animate-spin" /> Updating…</> : "Update password"}
+              <Button
+                className="w-full gap-2"
+                disabled={submitting}
+                type="submit"
+              >
+                {submitting ? (
+                  <>
+                    <CircleNotch className="animate-spin" size={15} /> Updating…
+                  </>
+                ) : (
+                  "Update password"
+                )}
               </Button>
             </form>
           )}

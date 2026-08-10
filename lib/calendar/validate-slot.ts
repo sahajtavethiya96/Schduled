@@ -1,8 +1,8 @@
-import { formatInTimeZone } from 'date-fns-tz'
-import { and, eq } from 'drizzle-orm'
-import { availabilityOverride, availabilityWindow } from '@/db/schema'
-import { db } from '@/lib/db'
-import { generateSlots } from './slots'
+import { formatInTimeZone } from "date-fns-tz";
+import { and, eq } from "drizzle-orm";
+import { availabilityOverride, availabilityWindow } from "@/db/schema";
+import { db } from "@/lib/db";
+import { generateSlots } from "./slots";
 
 /**
  * True if `startUtc` is a genuine bookable slot start for the host on that date:
@@ -27,45 +27,69 @@ export async function isSlotBookable({
   bufferAfter = 0,
   increment = 30,
 }: {
-  hostUserId: string
-  scheduleId: string | null | undefined
-  hostTz: string
-  startUtc: Date
-  durationMinutes: number
-  bufferBefore?: number
-  bufferAfter?: number
-  increment?: number
+  hostUserId: string;
+  scheduleId: string | null | undefined;
+  hostTz: string;
+  startUtc: Date;
+  durationMinutes: number;
+  bufferBefore?: number;
+  bufferAfter?: number;
+  increment?: number;
 }): Promise<boolean> {
-  const date = formatInTimeZone(startUtc, hostTz, 'yyyy-MM-dd')
+  const date = formatInTimeZone(startUtc, hostTz, "yyyy-MM-dd");
 
   // Date-specific overrides (holidays / custom hours) take precedence.
   const overrides = await db
     .select()
     .from(availabilityOverride)
-    .where(and(eq(availabilityOverride.userId, hostUserId), eq(availabilityOverride.date, date)))
+    .where(
+      and(
+        eq(availabilityOverride.userId, hostUserId),
+        eq(availabilityOverride.date, date)
+      )
+    );
 
-  if (overrides.some((o) => o.isBlocked)) return false
+  if (overrides.some((o) => o.isBlocked)) {
+    return false;
+  }
 
-  let windows: { startTime: string; endTime: string }[]
+  let windows: { startTime: string; endTime: string }[];
   if (overrides.length > 0) {
     windows = overrides
       .filter((o) => !o.isBlocked && o.startTime && o.endTime)
-      .map((o) => ({ startTime: o.startTime as string, endTime: o.endTime as string }))
+      .map((o) => ({
+        startTime: o.startTime as string,
+        endTime: o.endTime as string,
+      }));
   } else {
-    if (!scheduleId) return false
-    const dayName = formatInTimeZone(new Date(`${date}T12:00:00Z`), hostTz, 'EEEE').toLowerCase()
+    if (!scheduleId) {
+      return false;
+    }
+    const dayName = formatInTimeZone(
+      new Date(`${date}T12:00:00Z`),
+      hostTz,
+      "EEEE"
+    ).toLowerCase();
     const rows = await db
-      .select({ dayOfWeek: availabilityWindow.dayOfWeek, startTime: availabilityWindow.startTime, endTime: availabilityWindow.endTime })
+      .select({
+        dayOfWeek: availabilityWindow.dayOfWeek,
+        startTime: availabilityWindow.startTime,
+        endTime: availabilityWindow.endTime,
+      })
       .from(availabilityWindow)
-      .where(eq(availabilityWindow.scheduleId, scheduleId))
+      .where(eq(availabilityWindow.scheduleId, scheduleId));
     windows = rows
       .filter((w) => w.dayOfWeek === dayName)
-      .map((w) => ({ startTime: w.startTime, endTime: w.endTime }))
+      .map((w) => ({ startTime: w.startTime, endTime: w.endTime }));
   }
 
   // Same dedup as /api/slots — no unique constraint on the window rows.
-  windows = Array.from(new Map(windows.map((w) => [`${w.startTime}-${w.endTime}`, w])).values())
-  if (windows.length === 0) return false
+  windows = Array.from(
+    new Map(windows.map((w) => [`${w.startTime}-${w.endTime}`, w])).values()
+  );
+  if (windows.length === 0) {
+    return false;
+  }
 
   const slots = generateSlots({
     date,
@@ -75,11 +99,11 @@ export async function isSlotBookable({
     bufferBefore,
     bufferAfter,
     increment,
-    existingBookings: [],   // conflicts checked separately, under the advisory lock
+    existingBookings: [], // conflicts checked separately, under the advisory lock
     minimumNoticeMinutes: 0, // notice checked separately
-    nowUtc: new Date(0),     // epoch → don't filter any slot by "now"
-  })
+    nowUtc: new Date(0), // epoch → don't filter any slot by "now"
+  });
 
-  const target = startUtc.toISOString()
-  return slots.some((s) => s.startUtc === target)
+  const target = startUtc.toISOString();
+  return slots.some((s) => s.startUtc === target);
 }

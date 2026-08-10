@@ -6,5 +6,7 @@ import { db } from "@/lib/db";
 export async function handleIdempotencyKeysPrune(
   _jobs: Job<Record<string, never>>[]
 ) {
-  await db.delete(idempotencyKey).where(lt(idempotencyKey.expiresAt, new Date()));
+  await db
+    .delete(idempotencyKey)
+    .where(lt(idempotencyKey.expiresAt, new Date()));
 }

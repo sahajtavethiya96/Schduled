@@ -78,7 +78,8 @@ export async function POST(request: Request) {
     const session = await getCurrentSession();
     const isHostActor = !!session && session.user.id === b.hostUserId;
     const isGuestRescheduleOfConfirmed =
-      !isHostActor && (b.status === "confirmed" || b.status === "reschedule_requested");
+      !isHostActor &&
+      (b.status === "confirmed" || b.status === "reschedule_requested");
 
     if (b.status === "cancelled") {
       return jsonError("This booking has been cancelled.", 409);
@@ -202,13 +203,16 @@ export async function POST(request: Request) {
     const dayEndUtc = fromZonedTime(`${date}T23:59:59.999`, hostTz);
 
     // Fixed booking window — the new date must fall inside the configured range.
-    if (et.bookingWindowType === "fixed" && et.bookingRangeStart && et.bookingRangeEnd) {
-      if (date < et.bookingRangeStart || date > et.bookingRangeEnd) {
-        return jsonError(
-          `This event can only be booked between ${et.bookingRangeStart} and ${et.bookingRangeEnd}.`,
-          400
-        );
-      }
+    if (
+      et.bookingWindowType === "fixed" &&
+      et.bookingRangeStart &&
+      et.bookingRangeEnd &&
+      (date < et.bookingRangeStart || date > et.bookingRangeEnd)
+    ) {
+      return jsonError(
+        `This event can only be booked between ${et.bookingRangeStart} and ${et.bookingRangeEnd}.`,
+        400
+      );
     }
 
     // The new time must be a real slot on the host's schedule — a direct API
@@ -225,16 +229,20 @@ export async function POST(request: Request) {
       increment: et.startTimeIncrement ?? 30,
     });
     if (!bookable) {
-      return jsonError("That time isn't available. Please choose an open slot.", 409);
+      return jsonError(
+        "That time isn't available. Please choose an open slot.",
+        409
+      );
     }
-
 
     // ── Transaction: advisory lock → conflict re-check → UPDATE ──────────────
     const result = await db.transaction(async (tx) => {
       // Serialise concurrent writes targeting the same host + slot.
       // Host-wide lock (see create route) so overlapping-but-different-start
       // moves can't both pass the conflict re-check under READ COMMITTED.
-      await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtext(${b.hostUserId}))`);
+      await tx.execute(
+        sql`SELECT pg_advisory_xact_lock(hashtext(${b.hostUserId}))`
+      );
 
       const existing = await tx
         .select({ startTime: booking.startTime, endTime: booking.endTime })
@@ -255,7 +263,9 @@ export async function POST(request: Request) {
         (e) =>
           bufferStart < new Date(e.endTime) && bufferEnd > new Date(e.startTime)
       );
-      if (hasConflict) return { conflict: true } as const;
+      if (hasConflict) {
+        return { conflict: true } as const;
+      }
 
       // Moving to a new day must still respect the per-day cap and the host's
       // global weekly/monthly limits — the create path enforces these, the
@@ -270,7 +280,9 @@ export async function POST(request: Request) {
         maxBookingsPerDay: et.maxBookingsPerDay,
         excludeBookingId: b.id,
       });
-      if (limit) return { limit } as const;
+      if (limit) {
+        return { limit } as const;
+      }
 
       if (isGuestRescheduleOfConfirmed) {
         // Guest moving a confirmed booking: do NOT touch startTime/endTime. Stage
@@ -353,7 +365,10 @@ export async function POST(request: Request) {
       // Guarded like the confirmed branch below: the reschedule already committed,
       // so a pg-boss enqueue failure must not surface as a 500 to the invitee.
       await Promise.allSettled([
-        enqueueJob(JOB_NAMES.BOOKING_APPROVAL_REQUEST, { bookingId: b.id, isReschedule: true }),
+        enqueueJob(JOB_NAMES.BOOKING_APPROVAL_REQUEST, {
+          bookingId: b.id,
+          isReschedule: true,
+        }),
       ]);
     } else {
       await Promise.allSettled([

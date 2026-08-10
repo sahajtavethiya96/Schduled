@@ -17,12 +17,20 @@ import pino from "pino";
 // keeps pretty output to an actual dev terminal — Docker containers have no
 // TTY unless `tty: true` is set, so a leaked NODE_ENV can no longer flip
 // production runtime onto the dev-only transport.
-const isDevTerminal = process.env.NODE_ENV !== "production" && process.stdout.isTTY === true;
+const isDevTerminal =
+  process.env.NODE_ENV !== "production" && process.stdout.isTTY === true;
 
 export const logger = pino({
   level: process.env.LOG_LEVEL ?? "info",
   transport: isDevTerminal
-    ? { target: "pino-pretty", options: { colorize: true, translateTime: "SYS:HH:MM:ss", ignore: "pid,hostname" } }
+    ? {
+        target: "pino-pretty",
+        options: {
+          colorize: true,
+          translateTime: "SYS:HH:MM:ss",
+          ignore: "pid,hostname",
+        },
+      }
     : undefined,
 });
 

@@ -6,16 +6,21 @@ import {
   ClockCounterClockwise,
   Envelope,
   Export,
+  type Icon,
   PencilSimple,
   Prohibit,
   SignIn,
   SignOut,
   UserPlus,
-  type Icon,
 } from "@phosphor-icons/react";
 import { format, isThisYear, isToday, isYesterday } from "date-fns";
 import { useTransition } from "react";
 import { toast } from "sonner";
+import {
+  type ExportAuditRow,
+  exportAuditLogsAction,
+} from "@/app/actions/audit";
+import { Button } from "@/components/ui/button";
 import {
   Pagination,
   PaginationContent,
@@ -25,10 +30,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { cn, paginationRange } from "@/lib/utils";
-import { exportAuditLogsAction, type ExportAuditRow } from "@/app/actions/audit";
 import type { AuditFilters } from "@/lib/audit-query";
-import { Button } from "@/components/ui/button";
+import { cn, paginationRange } from "@/lib/utils";
 import { AuditFilters as AuditFiltersBar } from "./audit-filters";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -100,23 +103,42 @@ function EntityBadge({ type }: { type: string }) {
 // categorization already used on the member-detail activity timeline.
 function getAuditMeta(action: string): { icon: Icon; colorClass: string } {
   const a = action.toLowerCase();
-  if (a.includes("user") && a.includes("creat"))
+  if (a.includes("user") && a.includes("creat")) {
     return { icon: UserPlus, colorClass: "bg-primary/10 text-primary" };
-  if (a.includes("logout") || a.includes("sign_out"))
+  }
+  if (a.includes("logout") || a.includes("sign_out")) {
     return { icon: SignOut, colorClass: "bg-amber-500/10 text-amber-600" };
-  if (a.includes("login") || a.includes("sign_in"))
+  }
+  if (a.includes("login") || a.includes("sign_in")) {
     return { icon: SignIn, colorClass: "bg-success/10 text-success" };
-  if (a.includes("event_type") || a.includes("meeting"))
+  }
+  if (a.includes("event_type") || a.includes("meeting")) {
     return { icon: CalendarPlus, colorClass: "bg-primary/10 text-primary" };
-  if (a.includes("email"))
+  }
+  if (a.includes("email")) {
     return { icon: Envelope, colorClass: "bg-primary/10 text-primary" };
-  if (a.includes("ban") || a.includes("suspend") || a.includes("delet"))
+  }
+  if (a.includes("ban") || a.includes("suspend") || a.includes("delet")) {
     return { icon: Prohibit, colorClass: "bg-error/10 text-error" };
-  if (a.includes("profile") || a.includes("updat"))
-    return { icon: PencilSimple, colorClass: "bg-base-200 text-muted-foreground" };
-  if (a.includes("creat") || a.includes("activat") || a.includes("connect") || a.includes("reactivat"))
+  }
+  if (a.includes("profile") || a.includes("updat")) {
+    return {
+      icon: PencilSimple,
+      colorClass: "bg-base-200 text-muted-foreground",
+    };
+  }
+  if (
+    a.includes("creat") ||
+    a.includes("activat") ||
+    a.includes("connect") ||
+    a.includes("reactivat")
+  ) {
     return { icon: CheckCircle, colorClass: "bg-success/10 text-success" };
-  return { icon: ClockCounterClockwise, colorClass: "bg-base-200 text-muted-foreground" };
+  }
+  return {
+    icon: ClockCounterClockwise,
+    colorClass: "bg-base-200 text-muted-foreground",
+  };
 }
 
 // Groups already-sorted (newest-first) rows into consecutive same-day
@@ -145,7 +167,15 @@ function groupByDay(logs: AuditRow[]): { label: string; rows: AuditRow[] }[] {
 // ── Export ────────────────────────────────────────────────────────────────────
 
 function buildCSV(rows: ExportAuditRow[]): string {
-  const headers = ["Action", "Actor", "Entity Type", "Entity ID", "Description", "IP", "Date"];
+  const headers = [
+    "Action",
+    "Actor",
+    "Entity Type",
+    "Entity ID",
+    "Description",
+    "IP",
+    "Date",
+  ];
   const lines = rows.map((r) => [
     getFriendlyLabel(r.action),
     r.actorEmail ?? "System",
@@ -156,7 +186,9 @@ function buildCSV(rows: ExportAuditRow[]): string {
     format(new Date(r.createdAt), "yyyy-MM-dd HH:mm:ss"),
   ]);
   return [headers, ...lines]
-    .map((row) => row.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","))
+    .map((row) =>
+      row.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")
+    )
     .join("\n");
 }
 
@@ -173,7 +205,12 @@ function downloadBlob(content: string, filename: string, mime: string) {
 // ── Main component ────────────────────────────────────────────────────────────
 
 export function AuditTable({
-  logs, total, page, totalPages, entityTypes, filters,
+  logs,
+  total,
+  page,
+  totalPages,
+  entityTypes,
+  filters,
 }: {
   logs: AuditRow[];
   total: number;
@@ -186,13 +223,27 @@ export function AuditTable({
 
   function pageHref(p: number) {
     const params = new URLSearchParams();
-    if (filters.search) params.set("q", filters.search);
-    if (filters.category !== "all") params.set("category", filters.category);
-    if (filters.entityType !== "all") params.set("entity", filters.entityType);
-    if (filters.dateRange !== "all") params.set("dateRange", filters.dateRange);
-    if (filters.customFrom) params.set("from", filters.customFrom);
-    if (filters.customTo) params.set("to", filters.customTo);
-    if (p > 1) params.set("page", String(p));
+    if (filters.search) {
+      params.set("q", filters.search);
+    }
+    if (filters.category !== "all") {
+      params.set("category", filters.category);
+    }
+    if (filters.entityType !== "all") {
+      params.set("entity", filters.entityType);
+    }
+    if (filters.dateRange !== "all") {
+      params.set("dateRange", filters.dateRange);
+    }
+    if (filters.customFrom) {
+      params.set("from", filters.customFrom);
+    }
+    if (filters.customTo) {
+      params.set("to", filters.customTo);
+    }
+    if (p > 1) {
+      params.set("page", String(p));
+    }
     const qs = params.toString();
     return qs ? `/settings/audit?${qs}` : "/settings/audit";
   }
@@ -201,11 +252,17 @@ export function AuditTable({
     startExport(async () => {
       const { rows, truncated } = await exportAuditLogsAction(filters);
       if (truncated) {
-        toast.warning(`Export capped at ${rows.length} rows — narrow the date range for more.`);
+        toast.warning(
+          `Export capped at ${rows.length} rows — narrow the date range for more.`
+        );
       }
       const todayStamp = new Date().toISOString().slice(0, 10);
       if (format === "csv") {
-        downloadBlob(buildCSV(rows), `audit-logs-${todayStamp}.csv`, "text/csv");
+        downloadBlob(
+          buildCSV(rows),
+          `audit-logs-${todayStamp}.csv`,
+          "text/csv"
+        );
       } else {
         const data = rows.map((r) => ({
           action: r.action,
@@ -217,7 +274,11 @@ export function AuditTable({
           ip: (r.metadata?.ip as string) ?? null,
           timestamp: r.createdAt,
         }));
-        downloadBlob(JSON.stringify(data, null, 2), `audit-logs-${todayStamp}.json`, "application/json");
+        downloadBlob(
+          JSON.stringify(data, null, 2),
+          `audit-logs-${todayStamp}.json`,
+          "application/json"
+        );
       }
     });
   }
@@ -227,31 +288,31 @@ export function AuditTable({
       {/* ── Toolbar ───────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-3 border-b border-base-300 p-4 lg:flex-row lg:items-start lg:justify-between">
         <AuditFiltersBar
-          entityTypes={entityTypes}
           category={filters.category}
-          entityType={filters.entityType}
-          dateRange={filters.dateRange}
           customFrom={filters.customFrom}
           customTo={filters.customTo}
+          dateRange={filters.dateRange}
+          entityType={filters.entityType}
+          entityTypes={entityTypes}
         />
 
         <div className="flex items-center gap-2">
           <Button
             className="h-9 gap-1.5 text-xs"
+            disabled={exporting}
             onClick={() => runExport("csv")}
             size="sm"
             variant="outline"
-            disabled={exporting}
           >
             <Export size={14} />
             Export CSV
           </Button>
           <Button
             className="h-9 gap-1.5 text-xs"
+            disabled={exporting}
             onClick={() => runExport("json")}
             size="sm"
             variant="outline"
-            disabled={exporting}
           >
             <Export size={14} />
             Export JSON
@@ -262,31 +323,48 @@ export function AuditTable({
       {/* ── Timeline ──────────────────────────────────────────────────── */}
       {logs.length === 0 ? (
         <div className="px-6 py-16 text-center">
-          <p className="text-sm text-muted-foreground">No audit logs match your filters.</p>
+          <p className="text-sm text-muted-foreground">
+            No audit logs match your filters.
+          </p>
         </div>
       ) : (
         <div className="px-6 py-5">
           {groupByDay(logs).map((group) => (
-            <div key={group.label} className="mb-6 last:mb-0">
+            <div className="mb-6 last:mb-0" key={group.label}>
               <p className="mb-3 text-xs font-bold uppercase tracking-ui text-muted-foreground/70">
                 {group.label}
               </p>
               <ol>
                 {group.rows.map((log, i) => {
-                  const { icon: EventIcon, colorClass } = getAuditMeta(log.action);
+                  const { icon: EventIcon, colorClass } = getAuditMeta(
+                    log.action
+                  );
                   return (
-                    <li key={log.id} className="relative flex gap-4 pb-5 last:pb-0">
+                    <li
+                      className="relative flex gap-4 pb-5 last:pb-0"
+                      key={log.id}
+                    >
                       {i < group.rows.length - 1 && (
-                        <span className="absolute left-[15px] top-8 h-full w-px bg-base-300" aria-hidden />
+                        <span
+                          aria-hidden
+                          className="absolute left-[15px] top-8 h-full w-px bg-base-300"
+                        />
                       )}
-                      <span className={cn("relative z-10 flex size-8 shrink-0 items-center justify-center", colorClass)}>
+                      <span
+                        className={cn(
+                          "relative z-10 flex size-8 shrink-0 items-center justify-center",
+                          colorClass
+                        )}
+                      >
                         <EventIcon size={14} weight="bold" />
                       </span>
                       <div className="min-w-0 flex-1 pt-1">
                         <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
                           <div className="min-w-0">
                             <div className="flex flex-wrap items-center gap-2">
-                              <p className="text-sm font-semibold">{getFriendlyLabel(log.action)}</p>
+                              <p className="text-sm font-semibold">
+                                {getFriendlyLabel(log.action)}
+                              </p>
                               <EntityBadge type={log.entityType} />
                             </div>
                             <p className="mt-0.5 text-sm text-muted-foreground">
@@ -318,14 +396,16 @@ export function AuditTable({
             <PaginationContent>
               <PaginationItem>
                 <PaginationPrevious
-                  href={page > 1 ? pageHref(page - 1) : "#"}
                   aria-disabled={page <= 1}
                   className={page <= 1 ? "pointer-events-none opacity-40" : ""}
+                  href={page > 1 ? pageHref(page - 1) : "#"}
                 />
               </PaginationItem>
               {paginationRange(page, totalPages).map((p, i) =>
                 p === "ellipsis" ? (
-                  <PaginationItem key={`e-${i}`}><PaginationEllipsis /></PaginationItem>
+                  <PaginationItem key={`e-${i}`}>
+                    <PaginationEllipsis />
+                  </PaginationItem>
                 ) : (
                   <PaginationItem key={p}>
                     <PaginationLink href={pageHref(p)} isActive={p === page}>
@@ -336,9 +416,11 @@ export function AuditTable({
               )}
               <PaginationItem>
                 <PaginationNext
-                  href={page < totalPages ? pageHref(page + 1) : "#"}
                   aria-disabled={page >= totalPages}
-                  className={page >= totalPages ? "pointer-events-none opacity-40" : ""}
+                  className={
+                    page >= totalPages ? "pointer-events-none opacity-40" : ""
+                  }
+                  href={page < totalPages ? pageHref(page + 1) : "#"}
                 />
               </PaginationItem>
             </PaginationContent>

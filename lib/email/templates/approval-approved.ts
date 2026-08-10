@@ -1,7 +1,7 @@
-import { createElement } from "react";
 import { formatInTimeZone } from "date-fns-tz";
-import { ApprovalOutcomeEmail } from "@/lib/email/components/approval-outcome";
+import { createElement } from "react";
 import { getEmailBranding } from "@/lib/email/branding";
+import { ApprovalOutcomeEmail } from "@/lib/email/components/approval-outcome";
 import { renderEmailTemplate } from "@/lib/email/renderer";
 import { getAppUrl } from "@/lib/get-app-url";
 
@@ -59,7 +59,7 @@ export async function approvalApprovedTemplate(p: ApprovalApprovedParams) {
 Your booking request for ${p.eventName} with ${p.hostName} has been approved!
 
 Date & Time (${p.hostTimezone}): ${whenHost}
-${p.inviteeTimezone !== p.hostTimezone ? `Date & Time (${p.inviteeTimezone}): ${whenInvitee}\n` : ""}Location: ${p.locationLabel}
+${p.inviteeTimezone === p.hostTimezone ? "" : `Date & Time (${p.inviteeTimezone}): ${whenInvitee}\n`}Location: ${p.locationLabel}
 ${p.meetLink ? `\nJoin: ${p.meetLink}` : ""}
 ${p.meetLink && p.meetPassword ? `Meeting Password: ${p.meetPassword}\n` : ""}
 Reschedule: ${rescheduleUrl}

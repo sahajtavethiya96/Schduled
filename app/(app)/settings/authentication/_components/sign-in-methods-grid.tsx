@@ -1,17 +1,22 @@
 "use client";
 
+import {
+  GoogleLogo,
+  type Icon,
+  LockKey,
+  MagicWand,
+} from "@phosphor-icons/react";
 import { useState, useTransition } from "react";
-import { GoogleLogo, type Icon, LockKey, MagicWand } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { updateSignInMethodsAction } from "@/app/actions/platform-settings";
-import { Switch } from "@/components/ui/switch";
 import { UnsavedChangesBar } from "@/components/settings-admin/unsaved-changes-bar";
-import { cn } from "@/lib/utils";
+import { Switch } from "@/components/ui/switch";
 import type { SignInMethods } from "@/lib/settings/sign-in-methods";
+import { cn } from "@/lib/utils";
 
 interface Props {
-  initial: SignInMethods;
   availability: SignInMethods;
+  initial: SignInMethods;
   smtpConfigured: boolean;
 }
 
@@ -38,7 +43,8 @@ const METHODS: {
     label: "Magic Link",
     description:
       "Sign in with a one-time link emailed to the user. Requires SMTP to be configured for delivery.",
-    unavailableHint: "Configure SMTP (SMTP_HOST, SMTP_PORT, SMTP_USER) to enable.",
+    unavailableHint:
+      "Configure SMTP (SMTP_HOST, SMTP_PORT, SMTP_USER) to enable.",
   },
   {
     key: "google",
@@ -49,7 +55,11 @@ const METHODS: {
   },
 ];
 
-export function SignInMethodsGrid({ initial, availability, smtpConfigured }: Props) {
+export function SignInMethodsGrid({
+  initial,
+  availability,
+  smtpConfigured,
+}: Props) {
   const [methods, setMethods] = useState<SignInMethods>(initial);
   const [saved, setSaved] = useState<SignInMethods>(initial);
   const [pending, startTransition] = useTransition();
@@ -86,76 +96,83 @@ export function SignInMethodsGrid({ initial, availability, smtpConfigured }: Pro
   return (
     <>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {METHODS.map(({ key, icon: MethodIcon, label, description, unavailableHint }) => {
-          const available = availability[key];
-          const checked = available && methods[key];
-          return (
-            <div
-              key={key}
-              className={cn(
-                "flex flex-col gap-4 border p-5 transition-colors",
-                checked ? "border-primary/30 bg-primary/[0.03]" : "border-base-300"
-              )}
-            >
-              <div className="flex items-start justify-between gap-3">
-                <span
-                  className={cn(
-                    "flex size-10 shrink-0 items-center justify-center border transition-colors",
-                    checked
-                      ? "border-primary/30 bg-primary/10 text-primary"
-                      : "border-base-300 bg-base-200/40 text-muted-foreground"
-                  )}
-                >
-                  <MethodIcon size={18} weight="bold" />
-                </span>
-                <Switch
-                  aria-label={`Toggle ${label}`}
-                  checked={checked}
-                  disabled={!available || pending}
-                  onCheckedChange={(v) => toggle(key, v)}
-                />
-              </div>
-
-              <div>
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-semibold">{label}</p>
-                  {available && (
-                    <span
-                      className={cn(
-                        "text-2xs font-bold uppercase tracking-wider",
-                        checked ? "text-primary" : "text-muted-foreground/60"
-                      )}
-                    >
-                      {checked ? "Enabled" : "Disabled"}
-                    </span>
-                  )}
+        {METHODS.map(
+          ({ key, icon: MethodIcon, label, description, unavailableHint }) => {
+            const available = availability[key];
+            const checked = available && methods[key];
+            return (
+              <div
+                className={cn(
+                  "flex flex-col gap-4 border p-5 transition-colors",
+                  checked
+                    ? "border-primary/30 bg-primary/[0.03]"
+                    : "border-base-300"
+                )}
+                key={key}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <span
+                    className={cn(
+                      "flex size-10 shrink-0 items-center justify-center border transition-colors",
+                      checked
+                        ? "border-primary/30 bg-primary/10 text-primary"
+                        : "border-base-300 bg-base-200/40 text-muted-foreground"
+                    )}
+                  >
+                    <MethodIcon size={18} weight="bold" />
+                  </span>
+                  <Switch
+                    aria-label={`Toggle ${label}`}
+                    checked={checked}
+                    disabled={!available || pending}
+                    onCheckedChange={(v) => toggle(key, v)}
+                  />
                 </div>
-                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                  {description}
-                </p>
-                {!available && (
-                  <p className="mt-2 text-xs font-medium text-amber-600 dark:text-amber-500">
-                    {unavailableHint}
+
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-semibold">{label}</p>
+                    {available && (
+                      <span
+                        className={cn(
+                          "text-2xs font-bold uppercase tracking-wider",
+                          checked ? "text-primary" : "text-muted-foreground/60"
+                        )}
+                      >
+                        {checked ? "Enabled" : "Disabled"}
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                    {description}
                   </p>
-                )}
-                {available && key === "magicLink" && checked && !smtpConfigured && (
-                  <p className="mt-2 text-xs font-medium text-amber-600 dark:text-amber-500">
-                    No SMTP configured — magic links are written to the server
-                    log, not emailed.
-                  </p>
-                )}
+                  {!available && (
+                    <p className="mt-2 text-xs font-medium text-amber-600 dark:text-amber-500">
+                      {unavailableHint}
+                    </p>
+                  )}
+                  {available &&
+                    key === "magicLink" &&
+                    checked &&
+                    !smtpConfigured && (
+                      <p className="mt-2 text-xs font-medium text-amber-600 dark:text-amber-500">
+                        No SMTP configured — magic links are written to the
+                        server log, not emailed.
+                      </p>
+                    )}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          }
+        )}
       </div>
 
       <UnsavedChangesBar
-        visible={dirty}
         label="Unsaved changes in Sign-in Methods"
-        pending={pending}
         onCancel={() => setMethods(saved)}
         onSave={save}
+        pending={pending}
+        visible={dirty}
       />
     </>
   );

@@ -1,15 +1,20 @@
-import { getAvailabilityData, getMeetingLimits } from "@/app/actions/availability";
+import {
+  getAvailabilityData,
+  getMeetingLimits,
+} from "@/app/actions/availability";
 import { PageHeader } from "@/components/scaffold/page-header";
-import { countryFromTimezone, countryHolidays, holidayCountries } from "@/lib/holidays";
+import {
+  countryFromTimezone,
+  countryHolidays,
+  holidayCountries,
+} from "@/lib/holidays";
 import { AvailabilityForm } from "./_components/availability-form";
 
 export const metadata = { title: "Availability" };
 
 export default async function AvailabilityPage() {
-  const [{ schedules, overrides, userTimezone }, initialLimits] = await Promise.all([
-    getAvailabilityData(),
-    getMeetingLimits(),
-  ]);
+  const [{ schedules, overrides, userTimezone }, initialLimits] =
+    await Promise.all([getAvailabilityData(), getMeetingLimits()]);
 
   // Holiday picker: default to the country from the user's timezone (e.g.
   // Asia/Kolkata → India) and prime it with that country's public holidays.
@@ -25,13 +30,13 @@ export default async function AvailabilityPage() {
         title="Availability"
       />
       <AvailabilityForm
+        defaultHolidayCountry={defaultHolidayCountry}
+        holidayCountryList={holidayCountryList}
+        initialHolidays={initialHolidays}
+        initialMeetingLimits={initialLimits}
         initialOverrides={overrides}
         initialSchedules={schedules}
-        initialMeetingLimits={initialLimits}
         userTimezone={userTimezone}
-        holidayCountryList={holidayCountryList}
-        defaultHolidayCountry={defaultHolidayCountry}
-        initialHolidays={initialHolidays}
       />
     </>
   );

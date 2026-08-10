@@ -16,27 +16,30 @@ export function BookingCancelButton({
   const [confirm, setConfirm] = useState(false);
 
   if (status === "cancelled") {
-    return (
-      <span className="text-xs text-muted-foreground">Cancelled</span>
-    );
+    return <span className="text-xs text-muted-foreground">Cancelled</span>;
   }
 
   if (confirm) {
     return (
       <div className="flex items-center gap-1.5">
         <form action={cancelBookingAction}>
-          <input type="hidden" name="bookingId" value={bookingId} />
-          <input type="hidden" name="hostUserId" value={hostUserId} />
-          <Button type="submit" variant="destructive" size="sm" className="h-6 px-2 text-xs">
+          <input name="bookingId" type="hidden" value={bookingId} />
+          <input name="hostUserId" type="hidden" value={hostUserId} />
+          <Button
+            className="h-6 px-2 text-xs"
+            size="sm"
+            type="submit"
+            variant="destructive"
+          >
             Confirm
           </Button>
         </form>
         <Button
-          type="button"
-          variant="ghost"
-          size="sm"
           className="h-6 px-2 text-xs"
           onClick={() => setConfirm(false)}
+          size="sm"
+          type="button"
+          variant="ghost"
         >
           No
         </Button>
@@ -46,11 +49,11 @@ export function BookingCancelButton({
 
   return (
     <Button
-      type="button"
-      variant="outline"
-      size="sm"
       className="h-6 px-2 text-xs border-error/40 text-error hover:bg-error/10 hover:text-error"
       onClick={() => setConfirm(true)}
+      size="sm"
+      type="button"
+      variant="outline"
     >
       Cancel
     </Button>

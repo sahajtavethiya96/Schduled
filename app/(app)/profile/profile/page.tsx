@@ -57,11 +57,7 @@ export default async function ProfilePage() {
               {bookingUrl}
             </p>
           </div>
-          <Button
-            asChild
-            className="shrink-0 gap-1.5 text-xs"
-            size="sm"
-          >
+          <Button asChild className="shrink-0 gap-1.5 text-xs" size="sm">
             <Link
               href={`/${freshUser.username}`}
               rel="noopener noreferrer"

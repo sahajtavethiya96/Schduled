@@ -1,7 +1,8 @@
-'use client'
+"use client";
 
-import type { UseFormReturn } from 'react-hook-form'
-import type { BuilderFormValues } from './builder'
+import { Bell, Check, EnvelopeSimple } from "@phosphor-icons/react";
+import Link from "next/link";
+import type { UseFormReturn } from "react-hook-form";
 import {
   FormControl,
   FormDescription,
@@ -9,14 +10,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Textarea } from '@/components/ui/textarea'
-import { Separator } from '@/components/ui/separator'
-import { Bell, Check, EnvelopeSimple } from '@phosphor-icons/react'
-import Link from 'next/link'
+} from "@/components/ui/form";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
+import type { BuilderFormValues } from "./builder";
 
 interface TabNotificationsProps {
-  form: UseFormReturn<BuilderFormValues>
+  form: UseFormReturn<BuilderFormValues>;
 }
 
 export function TabNotifications({ form }: TabNotificationsProps) {
@@ -36,25 +36,46 @@ export function TabNotifications({ form }: TabNotificationsProps) {
         <p className="text-sm font-medium">Emails sent automatically</p>
         <div className="space-y-2">
           {[
-            { icon: <EnvelopeSimple size={15} />, label: 'Booking confirmation to invitee', desc: 'Sent immediately after booking, includes meeting details and calendar attachment.' },
-            { icon: <Bell size={15} />, label: 'Booking notification to you', desc: 'Sent to your email when someone books this meeting type.' },
-            { icon: <EnvelopeSimple size={15} />, label: 'Reminders (24h + 1h before)', desc: 'Sent to both you and the invitee.' },
+            {
+              icon: <EnvelopeSimple size={15} />,
+              label: "Booking confirmation to invitee",
+              desc: "Sent immediately after booking, includes meeting details and calendar attachment.",
+            },
+            {
+              icon: <Bell size={15} />,
+              label: "Booking notification to you",
+              desc: "Sent to your email when someone books this meeting type.",
+            },
+            {
+              icon: <EnvelopeSimple size={15} />,
+              label: "Reminders (24h + 1h before)",
+              desc: "Sent to both you and the invitee.",
+            },
           ].map((item) => (
-            <div key={item.label} className="flex items-start gap-3 border border-base-300 bg-base-200/20 px-4 py-3">
+            <div
+              className="flex items-start gap-3 border border-base-300 bg-base-200/20 px-4 py-3"
+              key={item.label}
+            >
               <span className="mt-0.5 text-primary">{item.icon}</span>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium">{item.label}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{item.desc}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {item.desc}
+                </p>
               </div>
-              <Check size={15} className="text-primary mt-0.5 shrink-0" />
+              <Check className="text-primary mt-0.5 shrink-0" size={15} />
             </div>
           ))}
         </div>
         <p className="text-xs text-muted-foreground">
-          Manage global notification preferences in{' '}
-          <Link href="/settings/communication" className="text-primary underline underline-offset-4">
+          Manage global notification preferences in{" "}
+          <Link
+            className="text-primary underline underline-offset-4"
+            href="/settings/communication"
+          >
             Communication Settings
-          </Link>.
+          </Link>
+          .
         </p>
       </div>
 
@@ -69,22 +90,22 @@ export function TabNotifications({ form }: TabNotificationsProps) {
             <FormLabel>Custom confirmation message</FormLabel>
             <FormControl>
               <Textarea
+                className="resize-none"
+                maxLength={1000}
                 placeholder="e.g. Please come prepared with a list of your top goals for the quarter. I look forward to meeting you!"
                 rows={4}
-                maxLength={1000}
-                className="resize-none"
                 {...field}
-                value={field.value ?? ''}
+                value={field.value ?? ""}
               />
             </FormControl>
             <FormDescription>
-              Added to the bottom of the booking confirmation email sent to the invitee.
-              Leave empty to use the default message.
+              Added to the bottom of the booking confirmation email sent to the
+              invitee. Leave empty to use the default message.
             </FormDescription>
             <FormMessage />
           </FormItem>
         )}
       />
     </div>
-  )
+  );
 }

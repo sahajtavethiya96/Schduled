@@ -14,13 +14,21 @@ interface ApproveBody {
 
 export async function POST(request: Request) {
   try {
-    if (!(await checkRateLimit(rateLimitKey("POST:/api/bookings/reschedule-approve", request), 20, 60_000))) {
+    if (
+      !(await checkRateLimit(
+        rateLimitKey("POST:/api/bookings/reschedule-approve", request),
+        20,
+        60_000
+      ))
+    ) {
       return jsonError("Too many requests. Please wait a moment.", 429);
     }
 
     const body: ApproveBody = await request.json();
     const { token } = body;
-    if (!token) return jsonError("Missing approval token", 400);
+    if (!token) {
+      return jsonError("Missing approval token", 400);
+    }
 
     const [b] = await db
       .select({
@@ -38,22 +46,33 @@ export async function POST(request: Request) {
       .where(eq(booking.approvalToken, token))
       .limit(1);
 
-    if (!b) return jsonError("This approval link is invalid.", 404);
+    if (!b) {
+      return jsonError("This approval link is invalid.", 404);
+    }
 
-    if (b.status !== "reschedule_requested" || !b.rescheduleRequestedStart || !b.rescheduleRequestedEnd) {
+    if (
+      b.status !== "reschedule_requested" ||
+      !b.rescheduleRequestedStart ||
+      !b.rescheduleRequestedEnd
+    ) {
       return jsonError("This reschedule request is no longer valid.", 409);
     }
 
     const newStart = new Date(b.rescheduleRequestedStart);
     const newEnd = new Date(b.rescheduleRequestedEnd);
     if (newStart.getTime() < Date.now()) {
-      return jsonError("The requested time is now in the past. Please decline and ask for another time.", 409);
+      return jsonError(
+        "The requested time is now in the past. Please decline and ask for another time.",
+        409
+      );
     }
 
     const previousStartUtc = new Date(b.startTime).toISOString();
 
     // Buffers + host timezone so the conflict re-check matches the create path.
-    const et = await db.query.eventType.findFirst({ where: eq(eventType.id, b.eventTypeId) });
+    const et = await db.query.eventType.findFirst({
+      where: eq(eventType.id, b.eventTypeId),
+    });
     const schedule = await db.query.availabilitySchedule.findFirst({
       where: et?.availabilityScheduleId
         ? and(
@@ -67,8 +86,12 @@ export async function POST(request: Request) {
     });
     const hostTz = schedule?.timezone ?? "UTC";
 
-    const bufferStart = et?.bufferBefore ? addMinutes(newStart, -et.bufferBefore) : newStart;
-    const bufferEnd = et?.bufferAfter ? addMinutes(newEnd, et.bufferAfter) : newEnd;
+    const bufferStart = et?.bufferBefore
+      ? addMinutes(newStart, -et.bufferBefore)
+      : newStart;
+    const bufferEnd = et?.bufferAfter
+      ? addMinutes(newEnd, et.bufferAfter)
+      : newEnd;
     const date = formatInTimeZone(newStart, hostTz, "yyyy-MM-dd");
     const dayStartUtc = fromZonedTime(`${date}T00:00:00`, hostTz);
     const dayEndUtc = fromZonedTime(`${date}T23:59:59.999`, hostTz);
@@ -76,7 +99,9 @@ export async function POST(request: Request) {
     // ── Transaction: advisory lock → conflict re-check (against the proposed
     // time) → apply the staged time and confirm ──────────────────────────────
     const result = await db.transaction(async (tx) => {
-      await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtext(${b.hostUserId}))`);
+      await tx.execute(
+        sql`SELECT pg_advisory_xact_lock(hashtext(${b.hostUserId}))`
+      );
 
       const existing = await tx
         .select({ startTime: booking.startTime, endTime: booking.endTime })
@@ -92,9 +117,12 @@ export async function POST(request: Request) {
         );
 
       const hasConflict = existing.some(
-        (e) => bufferStart < new Date(e.endTime) && bufferEnd > new Date(e.startTime)
+        (e) =>
+          bufferStart < new Date(e.endTime) && bufferEnd > new Date(e.startTime)
       );
-      if (hasConflict) return { conflict: true } as const;
+      if (hasConflict) {
+        return { conflict: true } as const;
+      }
 
       await tx
         .update(booking)
@@ -123,7 +151,10 @@ export async function POST(request: Request) {
     }
 
     await Promise.allSettled([
-      enqueueJob(JOB_NAMES.BOOKING_RESCHEDULE_NOTIFY, { bookingId: b.id, previousStartUtc }),
+      enqueueJob(JOB_NAMES.BOOKING_RESCHEDULE_NOTIFY, {
+        bookingId: b.id,
+        previousStartUtc,
+      }),
       enqueueJob(JOB_NAMES.CALENDAR_UPDATE, { bookingId: b.id }),
       enqueueJob(JOB_NAMES.BOOKING_RESCHEDULE_REMINDERS, {
         bookingId: b.id,

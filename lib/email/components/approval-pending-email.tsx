@@ -1,5 +1,5 @@
 import { Hr, Link, Section, Text } from "react-email";
-import { emailBranding, type EmailBranding } from "@/lib/email/branding";
+import { type EmailBranding, emailBranding } from "@/lib/email/branding";
 import { canonicalizeTz } from "@/lib/utils";
 import { buildEmailStyles, EmailLayout } from "./layout";
 
@@ -33,7 +33,11 @@ export function ApprovalPendingEmail({
 }: ApprovalPendingEmailProps) {
   const emailStyles = buildEmailStyles(branding.brandColor);
   return (
-    <EmailLayout preview={`Request received: ${eventName} with ${hostName}`} productName={branding.appName} logoUrl={branding.logoUrl}>
+    <EmailLayout
+      logoUrl={branding.logoUrl}
+      preview={`Request received: ${eventName} with ${hostName}`}
+      productName={branding.appName}
+    >
       <Section style={{ marginBottom: "8px" }}>
         <Text
           style={{
@@ -57,8 +61,8 @@ export function ApprovalPendingEmail({
       </Text>
 
       <Text style={emailStyles.paragraph}>
-        Hi {inviteeName}, your request for {eventName} with {hostName} has been submitted.
-        {" "}Your host will review and confirm or decline your request.
+        Hi {inviteeName}, your request for {eventName} with {hostName} has been
+        submitted. Your host will review and confirm or decline your request.
       </Text>
 
       <Hr style={{ borderColor: "#E5E7EB", margin: "20px 0" }} />
@@ -66,11 +70,22 @@ export function ApprovalPendingEmail({
       <Section>
         <DetailRow label="Event" value={eventName} />
         <DetailRow label="With" value={hostName} />
-        <DetailRow label={`Date & Time (${canonicalizeTz(hostTimezone)})`} value={whenHost} />
+        <DetailRow
+          label={`Date & Time (${canonicalizeTz(hostTimezone)})`}
+          value={whenHost}
+        />
         {canonicalizeTz(inviteeTimezone) !== canonicalizeTz(hostTimezone) && (
-          <DetailRow label={`Date & Time (${canonicalizeTz(inviteeTimezone)})`} value={whenInvitee} />
+          <DetailRow
+            label={`Date & Time (${canonicalizeTz(inviteeTimezone)})`}
+            value={whenInvitee}
+          />
         )}
-        <DetailRow label="Location" value={locationLabel} href={locationLabel.startsWith('http') ? locationLabel : undefined} linkColor={branding.brandColor} />
+        <DetailRow
+          href={locationLabel.startsWith("http") ? locationLabel : undefined}
+          label="Location"
+          linkColor={branding.brandColor}
+          value={locationLabel}
+        />
         <DetailRow label="Status" value="Awaiting host approval" />
       </Section>
 
@@ -86,17 +101,42 @@ export function ApprovalPendingEmail({
   );
 }
 
-function DetailRow({ label, value, href, linkColor = emailBranding.brandColor }: { label: string; value: string; href?: string; linkColor?: string }) {
+function DetailRow({
+  label,
+  value,
+  href,
+  linkColor = emailBranding.brandColor,
+}: {
+  label: string;
+  value: string;
+  href?: string;
+  linkColor?: string;
+}) {
   const emailStyles = buildEmailStyles(linkColor);
   return (
     <Section style={{ marginBottom: "8px" }}>
       <Text style={{ ...emailStyles.muted, margin: "0" }}>{label}</Text>
       {href ? (
-        <Link href={href} style={{ color: linkColor, fontSize: "14px", fontWeight: 600, display: "block", textDecoration: "underline" }}>
+        <Link
+          href={href}
+          style={{
+            color: linkColor,
+            fontSize: "14px",
+            fontWeight: 600,
+            display: "block",
+            textDecoration: "underline",
+          }}
+        >
           View Location
         </Link>
       ) : (
-        <Text style={{ ...emailStyles.paragraph, fontWeight: 600, margin: "2px 0 0" }}>
+        <Text
+          style={{
+            ...emailStyles.paragraph,
+            fontWeight: 600,
+            margin: "2px 0 0",
+          }}
+        >
           {value}
         </Text>
       )}

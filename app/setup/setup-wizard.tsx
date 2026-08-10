@@ -96,7 +96,10 @@ function Stepper({ step }: { step: 1 | 2 | 3 | 4 }) {
           </div>
           {i < 3 && (
             <div
-              className={cn("h-px w-10", n < step ? "bg-primary" : "bg-base-300")}
+              className={cn(
+                "h-px w-10",
+                n < step ? "bg-primary" : "bg-base-300"
+              )}
             />
           )}
         </React.Fragment>

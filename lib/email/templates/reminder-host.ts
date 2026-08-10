@@ -1,23 +1,23 @@
-import { createElement } from "react";
 import { formatInTimeZone } from "date-fns-tz";
-import { renderEmailTemplate } from "@/lib/email/renderer";
-import { ReminderHostEmail } from "@/lib/email/components/reminder-host";
+import { createElement } from "react";
 import { getEmailBranding } from "@/lib/email/branding";
+import { ReminderHostEmail } from "@/lib/email/components/reminder-host";
+import { renderEmailTemplate } from "@/lib/email/renderer";
 import { getAppUrl } from "@/lib/get-app-url";
 
 interface ReminderHostParams {
-  hostName: string;
-  inviteeName: string;
   eventName: string;
-  startUtc: Date;
+  hostName: string;
   hostTimezone: string;
+  inviteeName: string;
   inviteeTimezone: string;
   locationLabel: string;
-  /** Zoom start URL (host-only) or Google Meet link */
-  startMeetLink: string | null;
   /** "Start Google Meet" | "Start Zoom Meeting" */
   meetLabel: string;
   meetPassword?: string | null;
+  /** Zoom start URL (host-only) or Google Meet link */
+  startMeetLink: string | null;
+  startUtc: Date;
   timeUntil: "24 hours" | "1 hour" | "10 minutes" | "5 minutes";
 }
 
@@ -28,11 +28,7 @@ export async function reminderHostTemplate(p: ReminderHostParams) {
   const dashboardUrl = `${getAppUrl()}/dashboard`;
 
   const startFormatted = formatInTimeZone(p.startUtc, p.hostTimezone, DATE_FMT);
-  const inviteeTime = formatInTimeZone(
-    p.startUtc,
-    p.inviteeTimezone,
-    DATE_FMT
-  );
+  const inviteeTime = formatInTimeZone(p.startUtc, p.inviteeTimezone, DATE_FMT);
 
   const html = await renderEmailTemplate(
     createElement(ReminderHostEmail, {

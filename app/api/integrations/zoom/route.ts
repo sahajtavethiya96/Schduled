@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { getCurrentSession } from "@/lib/authz";
 import { safeReturnTo } from "@/lib/api/helpers";
+import { getCurrentSession } from "@/lib/authz";
 import { getAppUrl } from "@/lib/get-app-url";
 import { getZoomAuthUrl, zoomConfigured } from "@/lib/zoom/client";
 

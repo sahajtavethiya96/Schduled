@@ -2,9 +2,9 @@
 
 import { desc } from "drizzle-orm";
 import { auditLogs } from "@/db/schema";
-import { db } from "@/lib/db";
-import { requireAdmin } from "@/lib/authz";
 import { type AuditFilters, buildAuditWhereClause } from "@/lib/audit-query";
+import { requireAdmin } from "@/lib/authz";
+import { db } from "@/lib/db";
 
 // Export is capped — a single CSV/JSON download of the entire audit history
 // isn't a realistic use case, and an unbounded export would risk a very large
@@ -12,15 +12,15 @@ import { type AuditFilters, buildAuditWhereClause } from "@/lib/audit-query";
 const EXPORT_LIMIT = 5000;
 
 export interface ExportAuditRow {
-  id: string;
   action: string;
-  actorId: string | null;
   actorEmail: string | null;
-  entityType: string;
-  entityId: string | null;
-  description: string;
-  metadata: Record<string, unknown> | null;
+  actorId: string | null;
   createdAt: string;
+  description: string;
+  entityId: string | null;
+  entityType: string;
+  id: string;
+  metadata: Record<string, unknown> | null;
 }
 
 export async function exportAuditLogsAction(
@@ -49,7 +49,9 @@ export async function exportAuditLogsAction(
 
   const truncated = rows.length > EXPORT_LIMIT;
   return {
-    rows: rows.slice(0, EXPORT_LIMIT).map((r) => ({ ...r, createdAt: r.createdAt.toISOString() })),
+    rows: rows
+      .slice(0, EXPORT_LIMIT)
+      .map((r) => ({ ...r, createdAt: r.createdAt.toISOString() })),
     truncated,
   };
 }

@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import { useEffect } from 'react'
+import { useEffect } from "react";
 
 // Chrome positions native popups (autofill/password suggestions, <select>
 // dropdowns) against the focused field and only tracks/closes them on window
@@ -10,23 +10,25 @@ import { useEffect } from 'react'
 // appear to drift. Blurring the field on scroll closes the popup cleanly.
 export function AutofillScrollFix() {
   useEffect(() => {
-    const main = document.querySelector<HTMLElement>('[data-app-main]')
-    if (!main) return
+    const main = document.querySelector<HTMLElement>("[data-app-main]");
+    if (!main) {
+      return;
+    }
 
     function onScroll() {
-      const active = document.activeElement
+      const active = document.activeElement;
       if (
         active instanceof HTMLInputElement ||
         active instanceof HTMLSelectElement ||
         active instanceof HTMLTextAreaElement
       ) {
-        active.blur()
+        active.blur();
       }
     }
 
-    main.addEventListener('scroll', onScroll, { passive: true })
-    return () => main.removeEventListener('scroll', onScroll)
-  }, [])
+    main.addEventListener("scroll", onScroll, { passive: true });
+    return () => main.removeEventListener("scroll", onScroll);
+  }, []);
 
-  return null
+  return null;
 }

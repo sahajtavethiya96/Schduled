@@ -17,18 +17,23 @@ export function EventTypeDeleteButton({
     return (
       <div className="flex items-center gap-1.5">
         <form action={deleteEventTypeAction}>
-          <input type="hidden" name="eventTypeId" value={eventTypeId} />
-          <input type="hidden" name="hostUserId" value={hostUserId} />
-          <Button type="submit" variant="destructive" size="sm" className="h-6 px-2 text-xs">
+          <input name="eventTypeId" type="hidden" value={eventTypeId} />
+          <input name="hostUserId" type="hidden" value={hostUserId} />
+          <Button
+            className="h-6 px-2 text-xs"
+            size="sm"
+            type="submit"
+            variant="destructive"
+          >
             Confirm Delete
           </Button>
         </form>
         <Button
-          type="button"
-          variant="ghost"
-          size="sm"
           className="h-6 px-2 text-xs"
           onClick={() => setConfirm(false)}
+          size="sm"
+          type="button"
+          variant="ghost"
         >
           No
         </Button>
@@ -38,11 +43,11 @@ export function EventTypeDeleteButton({
 
   return (
     <Button
-      type="button"
-      variant="outline"
-      size="sm"
       className="h-6 px-2 text-xs border-error/40 text-error hover:bg-error/10 hover:text-error"
       onClick={() => setConfirm(true)}
+      size="sm"
+      type="button"
+      variant="outline"
     >
       Delete
     </Button>

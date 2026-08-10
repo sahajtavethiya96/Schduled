@@ -9,11 +9,7 @@ import {
   Plus,
   ShareNetwork,
 } from "@phosphor-icons/react/dist/ssr";
-import {
-  endOfDay,
-  startOfDay,
-  startOfMonth,
-} from "date-fns";
+import { endOfDay, startOfDay, startOfMonth } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 import { and, count, desc, eq, gt, gte, lte } from "drizzle-orm";
 import Link from "next/link";
@@ -28,24 +24,37 @@ import { getAppUrl } from "@/lib/get-app-url";
 export const metadata = { title: "Dashboard" };
 
 function dayLabel(date: Date, tz: string): string {
-  const today    = formatInTimeZone(new Date(), tz, 'yyyy-MM-dd')
-  const tomorrow = formatInTimeZone(new Date(Date.now() + 86400000), tz, 'yyyy-MM-dd')
-  const day      = formatInTimeZone(date, tz, 'yyyy-MM-dd')
-  if (day === today)    return "Today"
-  if (day === tomorrow) return "Tomorrow"
-  return formatInTimeZone(date, tz, "MMM d")
+  const today = formatInTimeZone(new Date(), tz, "yyyy-MM-dd");
+  const tomorrow = formatInTimeZone(
+    new Date(Date.now() + 86_400_000),
+    tz,
+    "yyyy-MM-dd"
+  );
+  const day = formatInTimeZone(date, tz, "yyyy-MM-dd");
+  if (day === today) {
+    return "Today";
+  }
+  if (day === tomorrow) {
+    return "Tomorrow";
+  }
+  return formatInTimeZone(date, tz, "MMM d");
 }
 
 export default async function DashboardPage() {
   const session = await requireSession();
 
   const [freshUser] = await db
-    .select({ name: user.name, email: user.email, username: user.username, timezone: user.timezone })
+    .select({
+      name: user.name,
+      email: user.email,
+      username: user.username,
+      timezone: user.timezone,
+    })
     .from(user)
     .where(eq(user.id, session.user.id))
     .limit(1);
 
-  const hostTz = freshUser?.timezone ?? 'UTC';
+  const hostTz = freshUser?.timezone ?? "UTC";
 
   const now = new Date();
   const monthStart = startOfMonth(now);
@@ -232,9 +241,6 @@ export default async function DashboardPage() {
     <div className="space-y-8">
       {/* ── Welcome + Quick Actions ──────────────────────────────────── */}
       <PageHeader
-        title={`Welcome back, ${displayName}`}
-        description={`You have ${stats.upcoming} upcoming meetings${stats.meetingsToday > 0 ? `, ${stats.meetingsToday} today` : ''} and ${stats.totalThisMonth} bookings this month.`}
-        eyebrow="Dashboard"
         action={
           <div className="flex flex-wrap items-center gap-2">
             <Button asChild>
@@ -250,14 +256,14 @@ export default async function DashboardPage() {
               </Link>
             </Button>
             {bookingUrl ? (
-              <Button asChild variant="secondary" data-tour="booking-link">
+              <Button asChild data-tour="booking-link" variant="secondary">
                 <a href={bookingUrl} rel="noopener noreferrer" target="_blank">
                   <ShareNetwork className="mr-1.5" size={15} />
                   My Booking Page
                 </a>
               </Button>
             ) : (
-              <Button asChild variant="secondary" data-tour="booking-link">
+              <Button asChild data-tour="booking-link" variant="secondary">
                 <Link href="/settings/my-link">
                   <LinkSimple className="mr-1.5" size={15} />
                   Set Up Link
@@ -266,17 +272,23 @@ export default async function DashboardPage() {
             )}
           </div>
         }
+        description={`You have ${stats.upcoming} upcoming meetings${stats.meetingsToday > 0 ? `, ${stats.meetingsToday} today` : ""} and ${stats.totalThisMonth} bookings this month.`}
+        eyebrow="Dashboard"
+        title={`Welcome back, ${displayName}`}
       />
 
       {/* ── Next meeting focal strip ─────────────────────────────────── */}
       {upcomingMeetings[0] && (
         <Link
-          href={`/bookings/${upcomingMeetings[0].id}`}
           className="group flex flex-wrap items-center gap-4 border border-primary/30 bg-primary/[0.04] px-5 py-4 transition-colors hover:bg-primary/[0.07]"
+          href={`/bookings/${upcomingMeetings[0].id}`}
         >
           <div
             className="flex h-11 w-11 shrink-0 items-center justify-center text-white"
-            style={{ backgroundColor: upcomingMeetings[0].eventColor ?? "var(--primary)" }}
+            style={{
+              backgroundColor:
+                upcomingMeetings[0].eventColor ?? "var(--primary)",
+            }}
           >
             <Clock size={22} weight="duotone" />
           </div>
@@ -299,7 +311,11 @@ export default async function DashboardPage() {
               {dayLabel(upcomingMeetings[0].startTime, hostTz)}
             </p>
             <p className="text-sm text-muted-foreground">
-              {formatInTimeZone(upcomingMeetings[0].startTime, hostTz, "h:mm a")}
+              {formatInTimeZone(
+                upcomingMeetings[0].startTime,
+                hostTz,
+                "h:mm a"
+              )}
             </p>
           </div>
           <span className="ml-1 hidden shrink-0 items-center gap-1 text-sm font-medium text-primary transition-transform group-hover:translate-x-0.5 sm:inline-flex">
@@ -377,9 +393,9 @@ export default async function DashboardPage() {
             ) : (
               upcomingMeetings.map((m) => (
                 <Link
-                  key={m.id}
-                  href={`/bookings?highlight=${m.id}`}
                   className="flex items-center justify-between gap-4 border-t border-base-300 px-6 py-3.5 transition-colors duration-150 hover:bg-primary/[0.02] group"
+                  href={`/bookings?highlight=${m.id}`}
+                  key={m.id}
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold group-hover:text-primary transition-colors">
@@ -388,7 +404,9 @@ export default async function DashboardPage() {
                     <div className="mt-0.5 flex items-center gap-1.5 flex-wrap">
                       <span
                         className="size-2.5 shrink-0"
-                        style={{ backgroundColor: m.eventColor ?? "var(--primary)" }}
+                        style={{
+                          backgroundColor: m.eventColor ?? "var(--primary)",
+                        }}
                       />
                       <p className="truncate text-sm text-muted-foreground">
                         {m.eventName}
@@ -432,9 +450,9 @@ export default async function DashboardPage() {
             ) : (
               recentBookings.map((b) => (
                 <Link
-                  key={b.id}
-                  href={`/bookings?highlight=${b.id}`}
                   className="flex items-center justify-between gap-4 border-t border-base-300 px-6 py-3.5 transition-colors duration-150 hover:bg-primary/[0.02] group"
+                  href={`/bookings?highlight=${b.id}`}
+                  key={b.id}
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold group-hover:text-primary transition-colors">
@@ -443,7 +461,9 @@ export default async function DashboardPage() {
                     <div className="mt-0.5 flex items-center gap-1.5">
                       <span
                         className="size-2.5 shrink-0"
-                        style={{ backgroundColor: b.eventColor ?? "var(--primary)" }}
+                        style={{
+                          backgroundColor: b.eventColor ?? "var(--primary)",
+                        }}
                       />
                       <p className="truncate text-sm text-muted-foreground">
                         {b.eventName}
@@ -532,9 +552,15 @@ function StatCard({
         </div>
       </CardContent>
     </Card>
-  )
-  if (href) return <Link href={href} className="block h-full">{inner}</Link>
-  return inner
+  );
+  if (href) {
+    return (
+      <Link className="block h-full" href={href}>
+        {inner}
+      </Link>
+    );
+  }
+  return inner;
 }
 
 function EmptyUpcoming({
@@ -548,7 +574,11 @@ function EmptyUpcoming({
     return (
       <div className="flex flex-col items-center px-8 py-12 text-center">
         <div className="mb-4 flex h-14 w-14 items-center justify-center bg-primary/10">
-          <ShareNetwork className="text-primary/60" size={28} weight="duotone" />
+          <ShareNetwork
+            className="text-primary/60"
+            size={28}
+            weight="duotone"
+          />
         </div>
         <p className="text-base font-semibold text-base-content">
           Your calendar is clear
@@ -578,7 +608,11 @@ function EmptyUpcoming({
   return (
     <div className="flex flex-col items-center px-8 py-12 text-center">
       <div className="mb-4 flex h-14 w-14 items-center justify-center bg-base-200">
-        <CalendarBlank className="text-muted-foreground/40" size={28} weight="duotone" />
+        <CalendarBlank
+          className="text-muted-foreground/40"
+          size={28}
+          weight="duotone"
+        />
       </div>
       <p className="text-base font-semibold text-base-content">
         No meeting types yet
@@ -600,9 +634,15 @@ function EmptyBookings({ bookingUrl }: { bookingUrl: string | null }) {
   return (
     <div className="flex flex-col items-center px-8 py-12 text-center">
       <div className="mb-4 flex h-14 w-14 items-center justify-center bg-base-200">
-        <CalendarCheck className="text-muted-foreground/40" size={28} weight="duotone" />
+        <CalendarCheck
+          className="text-muted-foreground/40"
+          size={28}
+          weight="duotone"
+        />
       </div>
-      <p className="text-base font-semibold text-base-content">No bookings yet</p>
+      <p className="text-base font-semibold text-base-content">
+        No bookings yet
+      </p>
       <p className="mt-1.5 max-w-xs text-sm text-muted-foreground">
         {bookingUrl
           ? "Share your booking page link and your first booking will show up here."
@@ -661,7 +701,8 @@ const LOCATION_BADGE_STYLES: Record<string, string> = {
   zoom: "bg-base-200 text-muted-foreground border border-base-300",
   google_meet: "bg-base-200 text-muted-foreground border border-base-300",
   phone_host_calls: "bg-base-200 text-muted-foreground border border-base-300",
-  phone_invitee_calls: "bg-base-200 text-muted-foreground border border-base-300",
+  phone_invitee_calls:
+    "bg-base-200 text-muted-foreground border border-base-300",
   in_person: "bg-base-200 text-muted-foreground border border-base-300",
 };
 const LOCATION_LABEL: Record<string, string> = {

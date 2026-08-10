@@ -1,6 +1,6 @@
 import "server-only";
-import Holidays from "date-holidays";
 import { getCountryForTimezone } from "countries-and-timezones";
+import Holidays from "date-holidays";
 
 export interface HolidayItem {
   date: string; // YYYY-MM-DD
@@ -15,7 +15,10 @@ export interface HolidayCountry {
 let countriesCache: Record<string, string> | null = null;
 function countriesMap(): Record<string, string> {
   if (!countriesCache) {
-    countriesCache = new Holidays().getCountries("en") as Record<string, string>;
+    countriesCache = new Holidays().getCountries("en") as Record<
+      string,
+      string
+    >;
   }
   return countriesCache;
 }
@@ -31,17 +34,23 @@ export function holidayCountries(): HolidayCountry[] {
  * The holiday country implied by the user's timezone (e.g. Asia/Kolkata → IN),
  * falling back to US when the timezone maps to an unsupported country.
  */
-export function countryFromTimezone(timeZone: string | null | undefined): string {
+export function countryFromTimezone(
+  timeZone: string | null | undefined
+): string {
   if (timeZone) {
     const country = getCountryForTimezone(timeZone);
-    if (country && countriesMap()[country.id]) return country.id;
+    if (country && countriesMap()[country.id]) {
+      return country.id;
+    }
   }
   return "US";
 }
 
 /** Public holidays for a country in the given year (defaults to the current year). */
 export function countryHolidays(code: string, year?: number): HolidayItem[] {
-  if (!countriesMap()[code]) return [];
+  if (!countriesMap()[code]) {
+    return [];
+  }
   const hd = new Holidays(code);
   const y = year ?? new Date().getFullYear();
   return hd

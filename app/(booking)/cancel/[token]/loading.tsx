@@ -20,5 +20,5 @@ export default function CancelLoading() {
         </div>
       </div>
     </main>
-  )
+  );
 }

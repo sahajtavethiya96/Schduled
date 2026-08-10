@@ -16,13 +16,12 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { type FieldErrors, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import type { MeetingLimitRow } from "@/app/actions/availability";
 import {
   createEventType,
   type EventTypeFormData,
   updateEventType,
 } from "@/app/actions/event-types";
-import type { MeetingLimitRow } from "@/app/actions/availability";
-import type { MeetingIntegrations } from "@/lib/integrations/status";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -39,106 +38,129 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
+import type { MeetingIntegrations } from "@/lib/integrations/status";
 import { cn } from "@/lib/utils";
 import { LivePreview } from "./live-preview";
 import { TabAvailability } from "./tab-availability";
 import { TabCancellation } from "./tab-cancellation";
-import { TabGeneral, MEETING_TYPES } from "./tab-general";
+import { MEETING_TYPES, TabGeneral } from "./tab-general";
 import { TabLocation } from "./tab-location";
 import { TabNotifications } from "./tab-notifications";
 import { TabQuestions } from "./tab-questions";
 
-const schema = z.object({
-  name: z.string().min(1, "Name is required").max(100),
-  slug: z
-    .string()
-    .min(1)
-    .max(100)
-    .regex(/^[a-z0-9-]+$/, "Only lowercase letters, numbers, and hyphens"),
-  description: z.string().max(500).optional(),
-  color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
-  isActive: z.boolean(),
-  isHidden: z.boolean(),
-  durations: z
-    .array(z.number().min(5).max(480))
-    .min(1, "At least one duration required"),
-  defaultDuration: z.number(),
-  availabilityScheduleId: z.string().optional(),
-  bookingWindow: z.number().min(1).max(365),
-  bookingWindowType: z.enum(["rolling", "fixed"]),
-  bookingRangeStart: z.string().optional(),
-  bookingRangeEnd: z.string().optional(),
-  minimumNotice: z.number().min(0).max(1440),
-  bufferBefore: z.number().min(0).max(120),
-  bufferAfter: z.number().min(0).max(120),
-  maxBookingsPerDay: z.number().min(1).max(100).nullable().optional(),
-  startTimeIncrement: z.number().min(5).max(60),
-  locationType: z.enum([
-    "zoom",
-    "google_meet",
-    "phone_host_calls",
-    "phone_invitee_calls",
-    "in_person",
-    "custom",
-    "invitees_choice",
-  ]),
-  locationValue: z.string().max(500).optional(),
-  hostPhoneNumber: z
-    .string()
-    .max(25)
-    .refine(
-      (v) => !v || v.trim() === '' || /^\+[1-9][\d\s\-().]*$/.test(v.trim()),
-      { message: 'Enter a valid number with country code (e.g. +91 98765 43210)' }
-    )
-    .refine(
-      (v) => {
-        if (!v || v.trim() === '') return true
-        // Digits after the dial code's leading "+" — bounds the local
-        // number to a plausible length (4–15 digits, per E.164).
-        const digits = v.trim().replace(/\D/g, '')
-        return digits.length >= 5 && digits.length <= 18
-      },
-      { message: 'Phone number must be between 4 and 15 digits (plus country code)' }
-    )
-    .optional(),
-  confirmationNote: z.string().max(1000).optional(),
-  meetingType: z.enum(['one_on_one', 'group', 'round_robin', 'collective']),
-  requiresApproval: z.boolean(),
-  allowCancellation: z.boolean(),
-  cancellationCutoffHours: z.number().min(0).max(72),
-  allowRescheduling: z.boolean(),
-  rescheduleCutoffHours: z.number().min(0).max(72),
-  requireCancellationReason: z.boolean(),
-  showPolicyText: z.boolean(),
-  policyText: z.string().max(1000).optional(),
-}).refine((v) => v.durations.includes(v.defaultDuration), {
-  message: "The default duration must be one of the offered durations",
-  path: ["defaultDuration"],
-}).refine(
-  (v) => v.locationType !== "in_person" || !!v.locationValue?.trim(),
-  { message: "Enter a location address for in-person meetings", path: ["locationValue"] }
-).refine(
-  (v) => v.locationType !== "custom" || !!v.locationValue?.trim(),
-  { message: "Enter a custom location or link", path: ["locationValue"] }
-).refine(
-  (v) => v.locationType !== "phone_invitee_calls" || !!v.hostPhoneNumber?.trim(),
-  { message: "Enter your phone number for invitees to call", path: ["hostPhoneNumber"] }
-).refine(
-  (v) =>
-    v.bookingWindowType !== "fixed" ||
-    (!!v.bookingRangeStart && !!v.bookingRangeEnd),
-  {
-    message: "Set both a start and end date for a fixed booking window",
-    path: ["bookingRangeEnd"],
-  }
-).refine(
-  (v) =>
-    v.bookingWindowType !== "fixed" ||
-    !v.bookingRangeStart ||
-    !v.bookingRangeEnd ||
-    v.bookingRangeEnd >= v.bookingRangeStart,
-  { message: "End date must be on or after the start date", path: ["bookingRangeEnd"] }
-);
+const schema = z
+  .object({
+    name: z.string().min(1, "Name is required").max(100),
+    slug: z
+      .string()
+      .min(1)
+      .max(100)
+      .regex(/^[a-z0-9-]+$/, "Only lowercase letters, numbers, and hyphens"),
+    description: z.string().max(500).optional(),
+    color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+    isActive: z.boolean(),
+    isHidden: z.boolean(),
+    durations: z
+      .array(z.number().min(5).max(480))
+      .min(1, "At least one duration required"),
+    defaultDuration: z.number(),
+    availabilityScheduleId: z.string().optional(),
+    bookingWindow: z.number().min(1).max(365),
+    bookingWindowType: z.enum(["rolling", "fixed"]),
+    bookingRangeStart: z.string().optional(),
+    bookingRangeEnd: z.string().optional(),
+    minimumNotice: z.number().min(0).max(1440),
+    bufferBefore: z.number().min(0).max(120),
+    bufferAfter: z.number().min(0).max(120),
+    maxBookingsPerDay: z.number().min(1).max(100).nullable().optional(),
+    startTimeIncrement: z.number().min(5).max(60),
+    locationType: z.enum([
+      "zoom",
+      "google_meet",
+      "phone_host_calls",
+      "phone_invitee_calls",
+      "in_person",
+      "custom",
+      "invitees_choice",
+    ]),
+    locationValue: z.string().max(500).optional(),
+    hostPhoneNumber: z
+      .string()
+      .max(25)
+      .refine(
+        (v) => !v || v.trim() === "" || /^\+[1-9][\d\s\-().]*$/.test(v.trim()),
+        {
+          message:
+            "Enter a valid number with country code (e.g. +91 98765 43210)",
+        }
+      )
+      .refine(
+        (v) => {
+          if (!v || v.trim() === "") {
+            return true;
+          }
+          // Digits after the dial code's leading "+" — bounds the local
+          // number to a plausible length (4–15 digits, per E.164).
+          const digits = v.trim().replace(/\D/g, "");
+          return digits.length >= 5 && digits.length <= 18;
+        },
+        {
+          message:
+            "Phone number must be between 4 and 15 digits (plus country code)",
+        }
+      )
+      .optional(),
+    confirmationNote: z.string().max(1000).optional(),
+    meetingType: z.enum(["one_on_one", "group", "round_robin", "collective"]),
+    requiresApproval: z.boolean(),
+    allowCancellation: z.boolean(),
+    cancellationCutoffHours: z.number().min(0).max(72),
+    allowRescheduling: z.boolean(),
+    rescheduleCutoffHours: z.number().min(0).max(72),
+    requireCancellationReason: z.boolean(),
+    showPolicyText: z.boolean(),
+    policyText: z.string().max(1000).optional(),
+  })
+  .refine((v) => v.durations.includes(v.defaultDuration), {
+    message: "The default duration must be one of the offered durations",
+    path: ["defaultDuration"],
+  })
+  .refine((v) => v.locationType !== "in_person" || !!v.locationValue?.trim(), {
+    message: "Enter a location address for in-person meetings",
+    path: ["locationValue"],
+  })
+  .refine((v) => v.locationType !== "custom" || !!v.locationValue?.trim(), {
+    message: "Enter a custom location or link",
+    path: ["locationValue"],
+  })
+  .refine(
+    (v) =>
+      v.locationType !== "phone_invitee_calls" || !!v.hostPhoneNumber?.trim(),
+    {
+      message: "Enter your phone number for invitees to call",
+      path: ["hostPhoneNumber"],
+    }
+  )
+  .refine(
+    (v) =>
+      v.bookingWindowType !== "fixed" ||
+      (!!v.bookingRangeStart && !!v.bookingRangeEnd),
+    {
+      message: "Set both a start and end date for a fixed booking window",
+      path: ["bookingRangeEnd"],
+    }
+  )
+  .refine(
+    (v) =>
+      v.bookingWindowType !== "fixed" ||
+      !v.bookingRangeStart ||
+      !v.bookingRangeEnd ||
+      v.bookingRangeEnd >= v.bookingRangeStart,
+    {
+      message: "End date must be on or after the start date",
+      path: ["bookingRangeEnd"],
+    }
+  );
 
 export type BuilderFormValues = z.infer<typeof schema>;
 
@@ -157,7 +179,13 @@ export interface ExistingQuestion {
   options: string[] | null;
   placeholder: string | null;
   position: number;
-  type: "short_text" | "long_text" | "phone" | "single_select" | "multiple_select" | "dropdown";
+  type:
+    | "short_text"
+    | "long_text"
+    | "phone"
+    | "single_select"
+    | "multiple_select"
+    | "dropdown";
 }
 
 interface BuilderProps {
@@ -193,7 +221,16 @@ function draftKeyFor(mode: "create" | "edit", eventTypeId?: string) {
 
 // Maps each tab to the form fields it owns — used to jump to the tab with errors
 const TAB_FIELDS: Record<string, (keyof BuilderFormValues)[]> = {
-  general: ["name", "slug", "description", "color", "meetingType", "isActive", "isHidden", "requiresApproval"],
+  general: [
+    "name",
+    "slug",
+    "description",
+    "color",
+    "meetingType",
+    "isActive",
+    "isHidden",
+    "requiresApproval",
+  ],
   availability: [
     "durations",
     "defaultDuration",
@@ -284,10 +321,18 @@ export function EventTypeBuilder({
       // cross-field rules not satisfied yet). form.reset() doesn't require
       // validity; the existing per-tab/submit validation UX handles
       // incompleteness normally once the user acts on it.
-      if (parsed?.values && typeof parsed.values === "object" && !Array.isArray(parsed.values)) {
+      if (
+        parsed?.values &&
+        typeof parsed.values === "object" &&
+        !Array.isArray(parsed.values)
+      ) {
         form.reset(parsed.values, { keepDefaultValues: true });
-        if (typeof parsed.activeTab === "string") setActiveTab(parsed.activeTab);
-        if (Array.isArray(parsed.pendingQuestions)) setPendingQuestions(parsed.pendingQuestions);
+        if (typeof parsed.activeTab === "string") {
+          setActiveTab(parsed.activeTab);
+        }
+        if (Array.isArray(parsed.pendingQuestions)) {
+          setPendingQuestions(parsed.pendingQuestions);
+        }
       }
     } catch {
       // Corrupted/incompatible draft — ignore it and start fresh.
@@ -304,7 +349,9 @@ export function EventTypeBuilder({
   // Persist the in-progress draft on every change so it survives the
   // navigate-away-and-come-back flow above. Gated on `hydrated` — see above.
   useEffect(() => {
-    if (!hydrated) return;
+    if (!hydrated) {
+      return;
+    }
     try {
       sessionStorage.setItem(
         draftKey,
@@ -321,8 +368,13 @@ export function EventTypeBuilder({
 
   // Warn before closing/refreshing when there are unsaved changes
   useEffect(() => {
-    if (!isDirty) return;
-    const handler = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = ''; };
+    if (!isDirty) {
+      return;
+    }
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
     window.addEventListener("beforeunload", handler);
     return () => window.removeEventListener("beforeunload", handler);
   }, [isDirty]);
@@ -407,7 +459,10 @@ export function EventTypeBuilder({
               <BreadcrumbList className="gap-1.5 font-sans text-xs font-normal normal-case tracking-normal sm:gap-1.5">
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link className="flex items-center gap-1" href="/event-types">
+                    <Link
+                      className="flex items-center gap-1"
+                      href="/event-types"
+                    >
                       <ArrowLeft size={13} />
                       Meeting Types
                     </Link>
@@ -423,7 +478,7 @@ export function EventTypeBuilder({
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-  
+
             {/* Title row */}
             <div className="flex flex-wrap items-center gap-3 px-4 py-3">
               {/* Initials avatar */}
@@ -432,7 +487,8 @@ export function EventTypeBuilder({
                 className="h-9 w-9 shrink-0 flex items-center justify-center text-white font-bold text-base ring-2 ring-inset ring-black/10"
                 style={{ backgroundColor: form.watch("color") || "#0d9488" }}
               >
-                {(form.watch("name") || (mode === "create" ? "N" : "E"))[0].toUpperCase()}
+                {(form.watch("name") ||
+                  (mode === "create" ? "N" : "E"))[0].toUpperCase()}
               </span>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
@@ -443,17 +499,21 @@ export function EventTypeBuilder({
                 </div>
                 {/* Event type badge */}
                 <span className="mt-1 inline-block text-xs font-medium text-muted-foreground">
-                  {MEETING_TYPES.find((m) => m.id === form.watch('meetingType'))?.label ?? "One-on-One"}
+                  {MEETING_TYPES.find((m) => m.id === form.watch("meetingType"))
+                    ?.label ?? "One-on-One"}
                 </span>
               </div>
-  
+
               {/* Save / Discard always visible in header */}
               <div className="flex shrink-0 items-center gap-2">
                 {mode === "edit" && (
                   <Button
                     className="gap-1.5 text-muted-foreground"
                     disabled={!isDirty || isPending}
-                    onClick={() => { form.reset(savedValuesRef.current); clearDraft(); }}
+                    onClick={() => {
+                      form.reset(savedValuesRef.current);
+                      clearDraft();
+                    }}
                     size="sm"
                     type="button"
                     variant="ghost"
@@ -470,13 +530,17 @@ export function EventTypeBuilder({
                 >
                   <FloppyDisk size={13} />
                   {isPending
-                    ? mode === "create" ? "Creating…" : "Saving…"
-                    : mode === "create" ? "Create Meeting Type" : "Save Changes"}
+                    ? mode === "create"
+                      ? "Creating…"
+                      : "Saving…"
+                    : mode === "create"
+                      ? "Create Meeting Type"
+                      : "Save Changes"}
                 </Button>
               </div>
             </div>
           </div>
-  
+
           {/* Tab bar — custom, avoids scroll arrows. Aligns to the
               header card above (no edge-to-edge bleed) so the borders line up. */}
           <div className="border-b border-base-300 bg-page">
@@ -507,19 +571,31 @@ export function EventTypeBuilder({
             {activeTab === "general" && (
               <TabGeneral
                 form={form}
-                meetingType={form.watch('meetingType')}
-                onMeetingTypeChange={(t) => form.setValue('meetingType', t as BuilderFormValues['meetingType'], { shouldDirty: true })}
+                meetingType={form.watch("meetingType")}
+                onMeetingTypeChange={(t) =>
+                  form.setValue(
+                    "meetingType",
+                    t as BuilderFormValues["meetingType"],
+                    { shouldDirty: true }
+                  )
+                }
               />
             )}
             {activeTab === "availability" && (
-              <TabAvailability form={form} schedules={schedules} globalLimits={globalLimits} />
+              <TabAvailability
+                form={form}
+                globalLimits={globalLimits}
+                schedules={schedules}
+              />
             )}
-            {activeTab === "location" && <TabLocation form={form} integrations={integrations} />}
+            {activeTab === "location" && (
+              <TabLocation form={form} integrations={integrations} />
+            )}
             {activeTab === "questions" && (
               <TabQuestions
                 eventTypeId={eventTypeId}
-                mode={mode}
                 locationType={form.watch("locationType")}
+                mode={mode}
                 onPendingChange={setPendingQuestions}
                 pendingQuestions={pendingQuestions}
                 questions={questions}
@@ -534,13 +610,16 @@ export function EventTypeBuilder({
               <Button
                 className="gap-1.5"
                 disabled={isFirst}
-                onClick={(e) => { e.preventDefault(); setActiveTab(TABS[tabIndex - 1].id); }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveTab(TABS[tabIndex - 1].id);
+                }}
                 size="sm"
                 type="button"
                 variant="outline"
               >
                 <ArrowLeft size={13} />
-                {!isFirst ? TABS[tabIndex - 1].label : "Previous"}
+                {isFirst ? "Previous" : TABS[tabIndex - 1].label}
               </Button>
 
               <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hidden sm:block">
@@ -569,7 +648,9 @@ export function EventTypeBuilder({
                   onClick={async (e) => {
                     e.preventDefault();
                     const valid = await form.trigger(TAB_FIELDS[activeTab]);
-                    if (valid) setActiveTab(TABS[tabIndex + 1].id);
+                    if (valid) {
+                      setActiveTab(TABS[tabIndex + 1].id);
+                    }
                   }}
                   size="sm"
                   type="button"
@@ -584,10 +665,13 @@ export function EventTypeBuilder({
 
           {/* Right: live preview — always visible on large screens */}
           <div className="w-80 shrink-0 hidden lg:block lg:sticky lg:top-44">
-            <LivePreview form={form} meetingType={form.watch('meetingType')} username={username} />
+            <LivePreview
+              form={form}
+              meetingType={form.watch("meetingType")}
+              username={username}
+            />
           </div>
         </div>
-
       </form>
 
       {/* Post-save success dialog */}

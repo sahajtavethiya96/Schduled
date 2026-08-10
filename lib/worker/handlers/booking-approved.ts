@@ -1,12 +1,14 @@
 import type { Job } from "pg-boss";
 import { createNotification } from "@/lib/notifications/create";
 import { enqueueJob } from "@/lib/worker/enqueue";
-import { JOB_NAMES } from "@/lib/worker/job-types";
 import type { BookingApprovedPayload } from "@/lib/worker/job-types";
+import { JOB_NAMES } from "@/lib/worker/job-types";
 import { computeReminderSchedule } from "@/lib/worker/reminder-schedule";
 import { loadBookingForLifecycle } from "./booking-lifecycle-data";
 
-export async function handleBookingApproved(jobs: Job<BookingApprovedPayload>[]) {
+export async function handleBookingApproved(
+  jobs: Job<BookingApprovedPayload>[]
+) {
   for (const job of jobs) {
     await processOne(job.data.bookingId);
   }
@@ -45,7 +47,10 @@ async function processOne(bookingId: string) {
       enqueueJob(
         reminder.jobName,
         { bookingId: b.id, bookingStartUtc: startUtcIso },
-        { singletonKey: `reminder-${reminder.singletonTag}-${b.id}`, startAfter: reminder.startAfter }
+        {
+          singletonKey: `reminder-${reminder.singletonTag}-${b.id}`,
+          startAfter: reminder.startAfter,
+        }
       )
     );
   }
@@ -55,7 +60,9 @@ async function processOne(bookingId: string) {
 
   // Generate meeting link for approval-gated bookings (was skipped at booking-time)
   if (b.etLocationType === "zoom" || b.etLocationType === "google_meet") {
-    reminders.push(enqueueJob(JOB_NAMES.VIDEO_LINK_GENERATE, { bookingId: b.id }));
+    reminders.push(
+      enqueueJob(JOB_NAMES.VIDEO_LINK_GENERATE, { bookingId: b.id })
+    );
   }
 
   // Send the invitee "approved" email via a delayed job so CALENDAR_WRITE and
@@ -66,9 +73,10 @@ async function processOne(bookingId: string) {
       JOB_NAMES.BOOKING_APPROVED_NOTIFY,
       { bookingId: b.id },
       {
-        startAfter: (b.etLocationType === "zoom" || b.etLocationType === "google_meet")
-          ? new Date(Date.now() + 30_000)
-          : undefined,
+        startAfter:
+          b.etLocationType === "zoom" || b.etLocationType === "google_meet"
+            ? new Date(Date.now() + 30_000)
+            : undefined,
       }
     )
   );

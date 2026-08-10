@@ -1,7 +1,7 @@
-import { createElement } from "react";
 import { formatInTimeZone } from "date-fns-tz";
-import { ApprovalRequestEmail } from "@/lib/email/components/approval-request";
+import { createElement } from "react";
 import { getEmailBranding } from "@/lib/email/branding";
+import { ApprovalRequestEmail } from "@/lib/email/components/approval-request";
 import { renderEmailTemplate } from "@/lib/email/renderer";
 import { getAppUrl } from "@/lib/get-app-url";
 

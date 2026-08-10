@@ -150,7 +150,10 @@ export function TimezoneCard({ timezone }: { timezone: string }) {
           </DialogDescription>
           <div className="space-y-3">
             <div className="relative">
-              <MagnifyingGlass size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <MagnifyingGlass
+                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                size={16}
+              />
               <Input
                 autoFocus
                 className="h-9 pl-9"

@@ -1,4 +1,14 @@
-<svg viewBox="0 0 55 58" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M33.5 13V4H3.5V37H33.5V28" stroke="#019E90" stroke-width="7" stroke-linecap="square"/>
-  <path d="M21.5 30V21H51.5V54H21.5V45" stroke="#019E90" stroke-width="7" stroke-linecap="square"/>
+<svg fill="none" viewBox="0 0 55 58" xmlns="http://www.w3.org/2000/svg">
+  <path
+    d="M33.5 13V4H3.5V37H33.5V28"
+    stroke="#019E90"
+    stroke-linecap="square"
+    stroke-width="7"
+  />
+  <path
+    d="M21.5 30V21H51.5V54H21.5V45"
+    stroke="#019E90"
+    stroke-linecap="square"
+    stroke-width="7"
+  />
 </svg>

@@ -1,8 +1,8 @@
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { booking, cancellationPolicy } from "@/db/schema";
-import { db } from "@/lib/db";
 import { checkRateLimit, jsonError, rateLimitKey } from "@/lib/api/helpers";
+import { db } from "@/lib/db";
 import { enqueueJob } from "@/lib/worker/enqueue";
 import { JOB_NAMES } from "@/lib/worker/job-types";
 
@@ -13,14 +13,22 @@ interface CancelBody {
 
 export async function POST(request: Request) {
   try {
-    if (!(await checkRateLimit(rateLimitKey("POST:/api/bookings/cancel", request), 10, 60_000))) {
+    if (
+      !(await checkRateLimit(
+        rateLimitKey("POST:/api/bookings/cancel", request),
+        10,
+        60_000
+      ))
+    ) {
       return jsonError("Too many requests. Please wait a moment.", 429);
     }
 
     const body: CancelBody = await request.json();
     const { token, reason } = body;
 
-    if (!token) return jsonError("Missing cancellation token", 400);
+    if (!token) {
+      return jsonError("Missing cancellation token", 400);
+    }
 
     const [b] = await db
       .select({
@@ -34,13 +42,18 @@ export async function POST(request: Request) {
       .where(eq(booking.cancelToken, token))
       .limit(1);
 
-    if (!b) return jsonError("This cancellation link is invalid.", 404);
+    if (!b) {
+      return jsonError("This cancellation link is invalid.", 404);
+    }
 
     if (b.status === "cancelled") {
       return NextResponse.json({ ok: true, alreadyCancelled: true });
     }
 
-    if (b.cancelTokenExpiresAt && b.cancelTokenExpiresAt.getTime() < Date.now()) {
+    if (
+      b.cancelTokenExpiresAt &&
+      b.cancelTokenExpiresAt.getTime() < Date.now()
+    ) {
       return jsonError("This cancellation link has expired.", 410);
     }
 
@@ -51,8 +64,8 @@ export async function POST(request: Request) {
     // Enforce cancellation policy
     const [policy] = await db
       .select({
-        allowCancellation:         cancellationPolicy.allowCancellation,
-        cutoffHours:               cancellationPolicy.cutoffHours,
+        allowCancellation: cancellationPolicy.allowCancellation,
+        cutoffHours: cancellationPolicy.cutoffHours,
         requireCancellationReason: cancellationPolicy.requireCancellationReason,
       })
       .from(cancellationPolicy)
@@ -61,11 +74,15 @@ export async function POST(request: Request) {
 
     if (policy) {
       if (!policy.allowCancellation) {
-        return jsonError("Cancellations are not allowed for this event type.", 403);
+        return jsonError(
+          "Cancellations are not allowed for this event type.",
+          403
+        );
       }
       const cutoff = policy.cutoffHours ?? 0;
       if (cutoff > 0) {
-        const hoursUntil = (new Date(b.startTime).getTime() - Date.now()) / 3_600_000;
+        const hoursUntil =
+          (new Date(b.startTime).getTime() - Date.now()) / 3_600_000;
         if (hoursUntil < cutoff) {
           return jsonError(
             `Cancellations must be made at least ${cutoff} hour${cutoff === 1 ? "" : "s"} before the meeting.`,

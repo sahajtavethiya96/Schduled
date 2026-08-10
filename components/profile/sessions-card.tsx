@@ -41,7 +41,9 @@ export function SessionsCard({ sessions }: { sessions: SessionRow[] }) {
   const otherSessionCount = sessions.filter((s) => !s.isCurrent).length;
 
   function handleRevoke() {
-    if (!revokeId) return;
+    if (!revokeId) {
+      return;
+    }
     const fd = new FormData();
     fd.append("sessionId", revokeId);
     startTransition(() => revokeSessionAction(fd));
@@ -65,10 +67,10 @@ export function SessionsCard({ sessions }: { sessions: SessionRow[] }) {
           </div>
           {otherSessionCount > 0 && (
             <Button
+              onClick={() => setSignOutAll(true)}
+              size="sm"
               type="button"
               variant="secondary"
-              size="sm"
-              onClick={() => setSignOutAll(true)}
             >
               Sign out other sessions
             </Button>
@@ -77,8 +79,8 @@ export function SessionsCard({ sessions }: { sessions: SessionRow[] }) {
         <CardContent className="p-0">
           {sessions.map((session, i) => (
             <div
+              className={`flex items-start justify-between gap-4 px-6 py-4 transition-colors duration-150 hover:bg-base-200/40 ${i === 0 ? "" : "border-t border-base-300"}`}
               key={session.id}
-              className={`flex items-start justify-between gap-4 px-6 py-4 transition-colors duration-150 hover:bg-base-200/40 ${i !== 0 ? "border-t border-base-300" : ""}`}
             >
               <div className="min-w-0 flex-1 space-y-1">
                 <div className="flex min-w-0 flex-wrap items-center gap-2">
@@ -123,14 +125,16 @@ export function SessionsCard({ sessions }: { sessions: SessionRow[] }) {
 
               <div className="shrink-0">
                 {session.isCurrent ? (
-                  <span className="text-xs text-muted-foreground">Protected</span>
+                  <span className="text-xs text-muted-foreground">
+                    Protected
+                  </span>
                 ) : (
                   <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
                     className="text-xs border-error/40 text-error hover:bg-error/10 hover:text-error"
                     onClick={() => setRevokeId(session.id)}
+                    size="sm"
+                    type="button"
+                    variant="outline"
                   >
                     Revoke
                   </Button>
@@ -142,17 +146,25 @@ export function SessionsCard({ sessions }: { sessions: SessionRow[] }) {
       </Card>
 
       {/* Revoke single session */}
-      <AlertDialog open={revokeId !== null} onOpenChange={(open) => { if (!open) setRevokeId(null); }}>
+      <AlertDialog
+        onOpenChange={(open) => {
+          if (!open) {
+            setRevokeId(null);
+          }
+        }}
+        open={revokeId !== null}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Revoke this session?</AlertDialogTitle>
             <AlertDialogDescription>
-              This device will be signed out immediately and will need to sign in again to access the account.
+              This device will be signed out immediately and will need to sign
+              in again to access the account.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction variant="destructive" onClick={handleRevoke}>
+            <AlertDialogAction onClick={handleRevoke} variant="destructive">
               Revoke session
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -160,17 +172,21 @@ export function SessionsCard({ sessions }: { sessions: SessionRow[] }) {
       </AlertDialog>
 
       {/* Sign out all other sessions */}
-      <AlertDialog open={signOutAll} onOpenChange={setSignOutAll}>
+      <AlertDialog onOpenChange={setSignOutAll} open={signOutAll}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Sign out other sessions?</AlertDialogTitle>
             <AlertDialogDescription>
-              All sessions except your current one will be signed out immediately.
+              All sessions except your current one will be signed out
+              immediately.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction variant="destructive" onClick={handleSignOutOthers}>
+            <AlertDialogAction
+              onClick={handleSignOutOthers}
+              variant="destructive"
+            >
               Sign out all others
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -206,16 +222,24 @@ function describeUserAgent(userAgent: string) {
 }
 
 function shortenIp(ip: string): string {
-  if (ip === "0000:0000:0000:0000:0000:0000:0000:0000" || ip === "::") return "::1 (localhost)";
-  if (ip === "::1") return "::1 (localhost)";
+  if (ip === "0000:0000:0000:0000:0000:0000:0000:0000" || ip === "::") {
+    return "::1 (localhost)";
+  }
+  if (ip === "::1") {
+    return "::1 (localhost)";
+  }
   if (ip.includes(":") && !ip.includes("::")) {
     try {
-      return ip
-        .split(":")
-        .map((g) => g.replace(/^0+/, "") || "0")
-        .join(":")
-        .replace(/(^|:)(0:)+0($|:)/, "::") || ip;
-    } catch { return ip; }
+      return (
+        ip
+          .split(":")
+          .map((g) => g.replace(/^0+/, "") || "0")
+          .join(":")
+          .replace(/(^|:)(0:)+0($|:)/, "::") || ip
+      );
+    } catch {
+      return ip;
+    }
   }
   return ip;
 }

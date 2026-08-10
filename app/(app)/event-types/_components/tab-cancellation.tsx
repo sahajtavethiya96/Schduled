@@ -1,7 +1,6 @@
-'use client'
+"use client";
 
-import type { UseFormReturn } from 'react-hook-form'
-import type { BuilderFormValues } from './builder'
+import type { UseFormReturn } from "react-hook-form";
 import {
   FormControl,
   FormDescription,
@@ -9,20 +8,21 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Switch } from '@/components/ui/switch'
-import { Textarea } from '@/components/ui/textarea'
-import { Separator } from '@/components/ui/separator'
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import type { BuilderFormValues } from "./builder";
 
 interface TabCancellationProps {
-  form: UseFormReturn<BuilderFormValues>
+  form: UseFormReturn<BuilderFormValues>;
 }
 
 export function TabCancellation({ form }: TabCancellationProps) {
-  const allowCancellation = form.watch('allowCancellation')
-  const allowRescheduling = form.watch('allowRescheduling')
-  const showPolicyText    = form.watch('showPolicyText')
+  const allowCancellation = form.watch("allowCancellation");
+  const allowRescheduling = form.watch("allowRescheduling");
+  const showPolicyText = form.watch("showPolicyText");
 
   return (
     <div className="space-y-6">
@@ -42,9 +42,12 @@ export function TabCancellation({ form }: TabCancellationProps) {
         render={({ field }) => (
           <FormItem className="flex items-center justify-between gap-4">
             <div>
-              <FormLabel className="text-sm font-medium">Allow cancellations</FormLabel>
+              <FormLabel className="text-sm font-medium">
+                Allow cancellations
+              </FormLabel>
               <FormDescription className="text-xs">
-                Invitees can cancel their booking via the cancel link in their confirmation email.
+                Invitees can cancel their booking via the cancel link in their
+                confirmation email.
               </FormDescription>
             </div>
             <FormControl>
@@ -64,12 +67,14 @@ export function TabCancellation({ form }: TabCancellationProps) {
               <FormControl>
                 <div className="flex items-stretch border border-input max-w-[200px]">
                   <Input
-                    type="number"
-                    min={0}
-                    max={72}
                     className="border-0 shadow-none focus-visible:ring-0"
+                    max={72}
+                    min={0}
+                    type="number"
                     {...field}
-                    onChange={(e) => field.onChange(parseInt(e.target.value, 10) || 0)}
+                    onChange={(e) =>
+                      field.onChange(Number.parseInt(e.target.value, 10) || 0)
+                    }
                   />
                   <span className="flex items-center bg-base-200 px-3 text-xs text-muted-foreground border-l border-input whitespace-nowrap">
                     hours before
@@ -77,7 +82,8 @@ export function TabCancellation({ form }: TabCancellationProps) {
                 </div>
               </FormControl>
               <FormDescription>
-                Invitees cannot cancel within this many hours of the meeting. Set to 0 to allow cancellation up to the start time.
+                Invitees cannot cancel within this many hours of the meeting.
+                Set to 0 to allow cancellation up to the start time.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -94,9 +100,12 @@ export function TabCancellation({ form }: TabCancellationProps) {
         render={({ field }) => (
           <FormItem className="flex items-center justify-between gap-4">
             <div>
-              <FormLabel className="text-sm font-medium">Allow rescheduling</FormLabel>
+              <FormLabel className="text-sm font-medium">
+                Allow rescheduling
+              </FormLabel>
               <FormDescription className="text-xs">
-                Invitees can pick a new time via the reschedule link in their confirmation email.
+                Invitees can pick a new time via the reschedule link in their
+                confirmation email.
               </FormDescription>
             </div>
             <FormControl>
@@ -116,12 +125,14 @@ export function TabCancellation({ form }: TabCancellationProps) {
               <FormControl>
                 <div className="flex items-stretch border border-input max-w-[200px]">
                   <Input
-                    type="number"
-                    min={0}
-                    max={72}
                     className="border-0 shadow-none focus-visible:ring-0"
+                    max={72}
+                    min={0}
+                    type="number"
                     {...field}
-                    onChange={(e) => field.onChange(parseInt(e.target.value, 10) || 0)}
+                    onChange={(e) =>
+                      field.onChange(Number.parseInt(e.target.value, 10) || 0)
+                    }
                   />
                   <span className="flex items-center bg-base-200 px-3 text-xs text-muted-foreground border-l border-input whitespace-nowrap">
                     hours before
@@ -129,7 +140,8 @@ export function TabCancellation({ form }: TabCancellationProps) {
                 </div>
               </FormControl>
               <FormDescription>
-                Invitees cannot reschedule within this many hours of the meeting.
+                Invitees cannot reschedule within this many hours of the
+                meeting.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -146,7 +158,9 @@ export function TabCancellation({ form }: TabCancellationProps) {
         render={({ field }) => (
           <FormItem className="flex items-center justify-between gap-4">
             <div>
-              <FormLabel className="text-sm font-medium">Require cancellation reason</FormLabel>
+              <FormLabel className="text-sm font-medium">
+                Require cancellation reason
+              </FormLabel>
               <FormDescription className="text-xs">
                 Invitees must provide a reason when they cancel.
               </FormDescription>
@@ -167,7 +181,9 @@ export function TabCancellation({ form }: TabCancellationProps) {
         render={({ field }) => (
           <FormItem className="flex items-center justify-between gap-4">
             <div>
-              <FormLabel className="text-sm font-medium">Show cancellation policy on booking page</FormLabel>
+              <FormLabel className="text-sm font-medium">
+                Show cancellation policy on booking page
+              </FormLabel>
               <FormDescription className="text-xs">
                 Display the policy text below on your public booking page.
               </FormDescription>
@@ -188,12 +204,12 @@ export function TabCancellation({ form }: TabCancellationProps) {
               <FormLabel>Policy text</FormLabel>
               <FormControl>
                 <Textarea
+                  className="resize-none"
+                  maxLength={1000}
                   placeholder="e.g. Cancellations must be made at least 24 hours in advance. Late cancellations may be subject to a fee."
                   rows={3}
-                  maxLength={1000}
-                  className="resize-none"
                   {...field}
-                  value={field.value ?? ''}
+                  value={field.value ?? ""}
                 />
               </FormControl>
               <FormMessage />
@@ -202,5 +218,5 @@ export function TabCancellation({ form }: TabCancellationProps) {
         />
       )}
     </div>
-  )
+  );
 }

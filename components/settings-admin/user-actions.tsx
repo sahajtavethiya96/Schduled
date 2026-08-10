@@ -2,7 +2,6 @@
 
 import { useTransition } from "react";
 import { toggleUserBanAction } from "@/app/actions/users";
-import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,6 +13,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 
 export function UserSuspendForm({
   banned,
@@ -35,12 +35,12 @@ export function UserSuspendForm({
   if (banned) {
     return (
       <Button
+        className="text-xs h-7"
+        disabled={isPending}
+        onClick={run}
+        size="sm"
         type="button"
         variant="secondary"
-        size="sm"
-        className="text-xs h-7"
-        onClick={run}
-        disabled={isPending}
       >
         {isPending ? "Reactivating…" : "Reactivate"}
       </Button>
@@ -51,11 +51,11 @@ export function UserSuspendForm({
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button
-          type="button"
-          variant="outline"
-          size="sm"
           className="text-xs h-7"
           disabled={isPending}
+          size="sm"
+          type="button"
+          variant="outline"
         >
           Suspend
         </Button>
@@ -72,8 +72,8 @@ export function UserSuspendForm({
           <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             className="bg-error text-error-content hover:bg-error/90"
-            onClick={run}
             disabled={isPending}
+            onClick={run}
           >
             {isPending ? "Suspending…" : "Suspend"}
           </AlertDialogAction>

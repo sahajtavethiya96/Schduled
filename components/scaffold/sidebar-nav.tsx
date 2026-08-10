@@ -1,8 +1,5 @@
 "use client";
 
-import type { ComponentType } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
   AddressBook,
   CalendarCheck,
@@ -13,10 +10,13 @@ import {
   SquaresFour,
   UserCircle,
 } from "@phosphor-icons/react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import type { ComponentType } from "react";
 import { logoutAction } from "@/app/actions/auth";
 import { useAvatar } from "@/components/avatar-context";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Logo } from "@/components/logo";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
 type IconComponent = ComponentType<{
@@ -25,13 +25,33 @@ type IconComponent = ComponentType<{
   className?: string;
 }>;
 
-const NAV_LINKS: { href: string; label: string; icon: IconComponent; tourId?: string }[] = [
-  { href: "/dashboard",    label: "Dashboard",   icon: SquaresFour },
-  { href: "/event-types",  label: "Meeting Types", icon: CalendarPlus, tourId: "meeting-types" },
-  { href: "/availability", label: "Availability", icon: Clock, tourId: "availability" },
-  { href: "/bookings",     label: "Bookings",    icon: CalendarCheck, tourId: "bookings" },
-  { href: "/contacts",     label: "Contacts",    icon: AddressBook },
-  { href: "/settings",     label: "Settings",    icon: GearSix     },
+const NAV_LINKS: {
+  href: string;
+  label: string;
+  icon: IconComponent;
+  tourId?: string;
+}[] = [
+  { href: "/dashboard", label: "Dashboard", icon: SquaresFour },
+  {
+    href: "/event-types",
+    label: "Meeting Types",
+    icon: CalendarPlus,
+    tourId: "meeting-types",
+  },
+  {
+    href: "/availability",
+    label: "Availability",
+    icon: Clock,
+    tourId: "availability",
+  },
+  {
+    href: "/bookings",
+    label: "Bookings",
+    icon: CalendarCheck,
+    tourId: "bookings",
+  },
+  { href: "/contacts", label: "Contacts", icon: AddressBook },
+  { href: "/settings", label: "Settings", icon: GearSix },
 ];
 
 function NavItem({
@@ -49,16 +69,16 @@ function NavItem({
 }) {
   return (
     <Link
-      href={href}
-      data-tour={tourId}
-      data-sidebar-nav-item
       className={cn(
         "flex items-center gap-3 px-3 py-2.5 text-sm font-medium transition-colors rounded-none border-l-[3px]",
         active
           ? "border-l-sidebar-primary bg-sidebar-primary text-sidebar-primary-foreground"
           : "border-l-transparent text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
-        "data-[tour-dim=true]:!bg-transparent data-[tour-dim=true]:!border-l-transparent data-[tour-dim=true]:!text-sidebar-foreground/25",
+        "data-[tour-dim=true]:!bg-transparent data-[tour-dim=true]:!border-l-transparent data-[tour-dim=true]:!text-sidebar-foreground/25"
       )}
+      data-sidebar-nav-item
+      data-tour={tourId}
+      href={href}
     >
       <Icon size={17} weight={active ? "fill" : "regular"} />
       {label}
@@ -82,7 +102,6 @@ export function SidebarNav({
 
   return (
     <div className="flex h-full flex-col">
-
       {/* ── Logo — same height as top bar so it aligns visually ──────── */}
       <div className="flex h-14 shrink-0 items-center border-b border-sidebar-border px-4 text-white">
         <Logo href="/dashboard" size="md" variant="full" />
@@ -94,38 +113,44 @@ export function SidebarNav({
           const isProfileSection =
             pathname.startsWith("/profile/profile") ||
             pathname.startsWith("/profile/security") ||
-            pathname.startsWith("/profile/login")
+            pathname.startsWith("/profile/login");
           const active =
             href === "/settings"
               ? pathname.startsWith("/settings") && !isProfileSection
               : pathname === href ||
-                (href !== "/dashboard" && pathname.startsWith(href + "/"))
+                (href !== "/dashboard" && pathname.startsWith(href + "/"));
           return (
-            <NavItem key={href} href={href} label={label} icon={icon} active={active} tourId={tourId} />
-          )
+            <NavItem
+              active={active}
+              href={href}
+              icon={icon}
+              key={href}
+              label={label}
+              tourId={tourId}
+            />
+          );
         })}
       </nav>
 
       {/* ── Bottom section ───────────────────────────────────────────── */}
       <div className="shrink-0 border-t border-sidebar-border px-2 py-2 space-y-0.5">
-
         {/* Profile link */}
         <NavItem
-          href="/profile/profile"
-          label="Profile"
-          icon={UserCircle}
           active={
             pathname.startsWith("/profile/profile") ||
             pathname.startsWith("/profile/security") ||
             pathname.startsWith("/profile/login")
           }
+          href="/profile/profile"
+          icon={UserCircle}
+          label="Profile"
         />
 
         {/* Sign out */}
         <form action={logoutAction.bind(null, "/login")}>
           <button
-            type="submit"
             className="flex w-full items-center gap-3 border-l-[3px] border-l-transparent px-3 py-2.5 text-sm font-medium text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent/40 hover:text-error"
+            type="submit"
           >
             <SignOut size={17} />
             Sign out
@@ -140,7 +165,7 @@ export function SidebarNav({
           {/* key remounts on URL change so the placeholder shows after the
               photo is removed (avoids a stale "loaded" status carrying over). */}
           <Avatar key={avatarUrl ?? "placeholder"}>
-            {avatarUrl ? <AvatarImage src={avatarUrl} alt="Profile" /> : null}
+            {avatarUrl ? <AvatarImage alt="Profile" src={avatarUrl} /> : null}
             <AvatarFallback className="bg-primary/10 text-primary">
               <UserCircle size={22} />
             </AvatarFallback>
@@ -154,7 +179,6 @@ export function SidebarNav({
             </p>
           </div>
         </div>
-
       </div>
     </div>
   );

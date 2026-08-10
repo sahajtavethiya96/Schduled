@@ -21,10 +21,7 @@ export async function DELETE(
   await db
     .delete(notification)
     .where(
-      and(
-        eq(notification.id, id),
-        eq(notification.userId, current.user.id)
-      )
+      and(eq(notification.id, id), eq(notification.userId, current.user.id))
     );
 
   return NextResponse.json({ ok: true });

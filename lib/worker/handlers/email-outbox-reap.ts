@@ -21,7 +21,9 @@ export async function handleEmailOutboxReap(
       maxAttempts: emailOutbox.maxAttempts,
     })
     .from(emailOutbox)
-    .where(and(eq(emailOutbox.status, "sending"), lt(emailOutbox.claimedAt, cutoff)));
+    .where(
+      and(eq(emailOutbox.status, "sending"), lt(emailOutbox.claimedAt, cutoff))
+    );
 
   for (const row of stuck) {
     // Requeue while attempts remain so a crash mid-send doesn't silently lose
@@ -34,10 +36,13 @@ export async function handleEmailOutboxReap(
         .set({
           status: "queued",
           claimedAt: null,
-          lastError: "Requeued by email.outbox-reap after the worker stalled mid-send.",
+          lastError:
+            "Requeued by email.outbox-reap after the worker stalled mid-send.",
           updatedAt: new Date(),
         })
-        .where(and(eq(emailOutbox.id, row.id), eq(emailOutbox.status, "sending")))
+        .where(
+          and(eq(emailOutbox.id, row.id), eq(emailOutbox.status, "sending"))
+        )
         .returning({ id: emailOutbox.id });
 
       if (requeued) {
@@ -51,7 +56,9 @@ export async function handleEmailOutboxReap(
           lastError: "Stuck in sending and out of send attempts.",
           updatedAt: new Date(),
         })
-        .where(and(eq(emailOutbox.id, row.id), eq(emailOutbox.status, "sending")));
+        .where(
+          and(eq(emailOutbox.id, row.id), eq(emailOutbox.status, "sending"))
+        );
     }
   }
 }

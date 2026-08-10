@@ -25,37 +25,78 @@ export function escapeHtml(text: string): string {
 // Each validator returns null on success, or an error string on failure.
 
 export function validateEmail(email: string): string | null {
-  if (!email?.trim()) return "Email is required";
-  if (email.trim().length > 254) return "Email address is too long";
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()))
+  if (!email?.trim()) {
+    return "Email is required";
+  }
+  if (email.trim().length > 254) {
+    return "Email address is too long";
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
     return "Invalid email address";
+  }
   return null;
 }
 
 const RESERVED_USERNAMES = new Set([
-  "orbit", "api", "admin", "dashboard", "settings", "login",
-  "signup", "post-auth", "onboarding", "privacy", "terms", "cookies",
-  "cancel", "reschedule", "help", "support", "about", "pricing",
-  "contact", "careers", "jobs", "blog", "docs", "status", "app",
-  "www", "mail", "ftp", "cdn", "assets", "static",
+  "orbit",
+  "api",
+  "admin",
+  "dashboard",
+  "settings",
+  "login",
+  "signup",
+  "post-auth",
+  "onboarding",
+  "privacy",
+  "terms",
+  "cookies",
+  "cancel",
+  "reschedule",
+  "help",
+  "support",
+  "about",
+  "pricing",
+  "contact",
+  "careers",
+  "jobs",
+  "blog",
+  "docs",
+  "status",
+  "app",
+  "www",
+  "mail",
+  "ftp",
+  "cdn",
+  "assets",
+  "static",
 ]);
 
 export function validateUsername(username: string): string | null {
-  if (!username) return "Username is required";
+  if (!username) {
+    return "Username is required";
+  }
   const u = username.toLowerCase().trim();
-  if (u.length < 3) return "At least 3 characters required";
-  if (u.length > 30) return "Max 30 characters";
-  if (!/^[a-z0-9][a-z0-9-]*[a-z0-9]$/.test(u))
+  if (u.length < 3) {
+    return "At least 3 characters required";
+  }
+  if (u.length > 30) {
+    return "Max 30 characters";
+  }
+  if (!/^[a-z0-9][a-z0-9-]*[a-z0-9]$/.test(u)) {
     return "Only letters, numbers, and hyphens. Cannot start or end with a hyphen.";
-  if (RESERVED_USERNAMES.has(u)) return "That username is reserved";
+  }
+  if (RESERVED_USERNAMES.has(u)) {
+    return "That username is reserved";
+  }
   return null;
 }
 
 export function validateUrl(url: string): string | null {
   try {
     const parsed = new URL(url);
-    if (!["http:", "https:"].includes(parsed.protocol))
+    if (!["http:", "https:"].includes(parsed.protocol)) {
       return "URL must use http or https";
+    }
     return null;
   } catch {
     return "Invalid URL";

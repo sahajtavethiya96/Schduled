@@ -1,8 +1,8 @@
 import { and, count, desc, eq, gte, ilike, lte, or, sql } from "drizzle-orm";
 import { PageHeader } from "@/components/scaffold/page-header";
+import { EmailClient } from "@/components/settings-admin/email-client";
 import { JobsTabs } from "@/components/settings-admin/jobs-tabs";
 import { QueuesClient } from "@/components/settings-admin/queues-client";
-import { EmailClient } from "@/components/settings-admin/email-client";
 import { emailEvents, emailOutbox } from "@/db/schema";
 import { requireAdmin } from "@/lib/authz";
 import { db } from "@/lib/db";
@@ -30,8 +30,13 @@ export default async function SettingsJobsPage({
   const sp = await searchParams;
   const defaultTab = sp.tab === "email" ? "email" : "queues";
 
-  const outboxPage = Math.max(1, Number.parseInt(sp.outboxPage ?? "1", 10) || 1);
-  const status: OutboxStatus | "all" = OUTBOX_STATUSES.includes(sp.outboxStatus as OutboxStatus)
+  const outboxPage = Math.max(
+    1,
+    Number.parseInt(sp.outboxPage ?? "1", 10) || 1
+  );
+  const status: OutboxStatus | "all" = OUTBOX_STATUSES.includes(
+    sp.outboxStatus as OutboxStatus
+  )
     ? (sp.outboxStatus as OutboxStatus)
     : "all";
   const q = (sp.outboxQ ?? "").trim();
@@ -102,12 +107,20 @@ export default async function SettingsJobsPage({
       .orderBy(desc(emailEvents.receivedAt))
       .limit(50),
     db.select({ value: count() }).from(emailOutbox),
-    db.select({ value: count() }).from(emailOutbox).where(eq(emailOutbox.status, "sent")),
-    db.select({ value: count() }).from(emailOutbox).where(eq(emailOutbox.status, "failed")),
     db
       .select({ value: count() })
       .from(emailOutbox)
-      .where(or(eq(emailOutbox.status, "queued"), eq(emailOutbox.status, "sending"))),
+      .where(eq(emailOutbox.status, "sent")),
+    db
+      .select({ value: count() })
+      .from(emailOutbox)
+      .where(eq(emailOutbox.status, "failed")),
+    db
+      .select({ value: count() })
+      .from(emailOutbox)
+      .where(
+        or(eq(emailOutbox.status, "queued"), eq(emailOutbox.status, "sending"))
+      ),
     db.select({ value: count() }).from(emailOutbox).where(whereCond),
   ]);
 
@@ -116,21 +129,26 @@ export default async function SettingsJobsPage({
     sentAt: r.sentAt ? r.sentAt.toISOString() : null,
     createdAt: r.createdAt.toISOString(),
   }));
-  const events = eventRows.map((r) => ({ ...r, receivedAt: r.receivedAt.toISOString() }));
+  const events = eventRows.map((r) => ({
+    ...r,
+    receivedAt: r.receivedAt.toISOString(),
+  }));
   const filteredTotal = filteredRow?.value ?? 0;
-  const outboxTotalPages = Math.max(1, Math.ceil(filteredTotal / OUTBOX_PAGE_SIZE));
+  const outboxTotalPages = Math.max(
+    1,
+    Math.ceil(filteredTotal / OUTBOX_PAGE_SIZE)
+  );
   const fetchedAt = new Date().toISOString();
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Background Jobs"
         description="pg-boss queue monitor and the transactional email outbox."
+        title="Background Jobs"
       />
 
       <JobsTabs
         defaultTab={defaultTab}
-        queuesSlot={<QueuesClient queues={queues} fetchedAt={fetchedAt} />}
         emailSlot={
           <EmailClient
             events={events}
@@ -148,6 +166,7 @@ export default async function SettingsJobsPage({
             }}
           />
         }
+        queuesSlot={<QueuesClient fetchedAt={fetchedAt} queues={queues} />}
       />
     </div>
   );

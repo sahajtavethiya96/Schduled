@@ -12,7 +12,9 @@ import { checkRateLimit } from "./helpers";
 const TEST_KEY_PREFIX = "vitest:rate-limit:";
 
 async function cleanupTestBuckets() {
-  await db.execute(sql`DELETE FROM rate_limit_bucket WHERE key LIKE ${TEST_KEY_PREFIX + "%"}`);
+  await db.execute(
+    sql`DELETE FROM rate_limit_bucket WHERE key LIKE ${TEST_KEY_PREFIX + "%"}`
+  );
 }
 
 beforeEach(cleanupTestBuckets);

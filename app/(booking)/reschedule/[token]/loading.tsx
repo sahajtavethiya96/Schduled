@@ -27,7 +27,7 @@ export default function RescheduleLoading() {
             </div>
             <div className="grid grid-cols-7 gap-1">
               {Array.from({ length: 35 }).map((_, i) => (
-                <div key={i} className="aspect-square bg-base-200" />
+                <div className="aspect-square bg-base-200" key={i} />
               ))}
             </div>
           </div>
@@ -37,11 +37,11 @@ export default function RescheduleLoading() {
             <div className="h-4 w-24 bg-base-200" />
             <div className="h-5 w-36 bg-base-200" />
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-11 w-full bg-base-200" />
+              <div className="h-11 w-full bg-base-200" key={i} />
             ))}
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

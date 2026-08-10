@@ -82,7 +82,9 @@ export function CancelClient(props: Props) {
               Cancellation not available
             </h1>
             {props.policyText ? (
-              <p className="text-sm text-muted-foreground">{props.policyText}</p>
+              <p className="text-sm text-muted-foreground">
+                {props.policyText}
+              </p>
             ) : props.cutoffHours > 0 ? (
               <p className="text-sm text-muted-foreground">
                 This booking cannot be cancelled within{" "}
@@ -91,16 +93,18 @@ export function CancelClient(props: Props) {
               </p>
             ) : (
               <p className="text-sm text-muted-foreground">
-                This meeting type does not allow cancellations. Please contact the
-                host directly.
+                This meeting type does not allow cancellations. Please contact
+                the host directly.
               </p>
             )}
           </div>
           <div className="border-t border-base-300 px-5 sm:px-8 py-5">
             <button
-              type="button"
-              onClick={() => (window.history.length > 1 ? router.back() : router.push("/"))}
               className="flex h-10 w-full items-center justify-center gap-2 border border-base-300 text-sm font-semibold text-base-content transition-all hover:bg-base-200"
+              onClick={() =>
+                window.history.length > 1 ? router.back() : router.push("/")
+              }
+              type="button"
             >
               <ArrowLeft size={14} />
               Go Back
@@ -122,15 +126,17 @@ export function CancelClient(props: Props) {
                 Booking cancelled
               </h1>
               <p className="text-sm text-muted-foreground">
-                Your {props.eventName} with {props.hostName} has been cancelled. A
-                confirmation email is on its way.
+                Your {props.eventName} with {props.hostName} has been cancelled.
+                A confirmation email is on its way.
               </p>
             </div>
             <div className="border-t border-base-300 px-5 sm:px-8 py-5">
               <button
-                type="button"
-                onClick={() => (window.history.length > 1 ? router.back() : router.push("/"))}
                 className="flex h-10 w-full items-center justify-center gap-2 border border-base-300 text-sm font-semibold text-base-content transition-all hover:bg-base-200"
+                onClick={() =>
+                  window.history.length > 1 ? router.back() : router.push("/")
+                }
+                type="button"
               >
                 <ArrowLeft size={14} />
                 Go Back
@@ -145,15 +151,17 @@ export function CancelClient(props: Props) {
                 This booking has passed
               </h1>
               <p className="text-sm text-muted-foreground">
-                It&apos;s no longer possible to cancel a meeting that has already
-                taken place.
+                It&apos;s no longer possible to cancel a meeting that has
+                already taken place.
               </p>
             </div>
             <div className="border-t border-base-300 px-5 sm:px-8 py-5">
               <button
-                type="button"
-                onClick={() => (window.history.length > 1 ? router.back() : router.push("/"))}
                 className="flex h-10 w-full items-center justify-center gap-2 border border-base-300 text-sm font-semibold text-base-content transition-all hover:bg-base-200"
+                onClick={() =>
+                  window.history.length > 1 ? router.back() : router.push("/")
+                }
+                type="button"
               >
                 <ArrowLeft size={14} />
                 Go Back
@@ -164,9 +172,11 @@ export function CancelClient(props: Props) {
           <>
             <div className="border-b border-base-300 bg-base-200/30 px-5 sm:px-8 py-5">
               <button
-                type="button"
-                onClick={() => (window.history.length > 1 ? router.back() : router.push("/"))}
                 className="mb-4 inline-flex items-center gap-2 border border-base-300 bg-base-100 px-3.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary"
+                onClick={() =>
+                  window.history.length > 1 ? router.back() : router.push("/")
+                }
+                type="button"
               >
                 <ArrowLeft size={14} />
                 Back
@@ -207,9 +217,12 @@ export function CancelClient(props: Props) {
                 className="mb-1.5 block text-xs font-semibold text-muted-foreground"
                 htmlFor="cancel-reason"
               >
-                Reason{props.requireCancellationReason
-                  ? <span className="text-error ml-0.5">*</span>
-                  : <span className="font-normal"> (optional)</span>}
+                Reason
+                {props.requireCancellationReason ? (
+                  <span className="text-error ml-0.5">*</span>
+                ) : (
+                  <span className="font-normal"> (optional)</span>
+                )}
               </label>
               <textarea
                 className="w-full resize-none border border-input bg-base-100 px-3 py-2 text-sm outline-none transition-all placeholder:text-muted-foreground/60 focus:border-primary focus:ring-2 focus:ring-primary/15"
@@ -221,9 +234,7 @@ export function CancelClient(props: Props) {
                 value={reason}
               />
 
-              {error && (
-                <p className="mt-3 text-xs text-error">{error}</p>
-              )}
+              {error && <p className="mt-3 text-xs text-error">{error}</p>}
 
               <button
                 className="mt-5 flex h-11 w-full items-center justify-center gap-2 bg-error text-sm font-bold text-primary-content transition-all hover:bg-error/90 disabled:opacity-60"

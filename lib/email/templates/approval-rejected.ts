@@ -1,9 +1,8 @@
-import { createElement } from "react";
 import { formatInTimeZone } from "date-fns-tz";
-import { ApprovalOutcomeEmail } from "@/lib/email/components/approval-outcome";
+import { createElement } from "react";
 import { getEmailBranding } from "@/lib/email/branding";
+import { ApprovalOutcomeEmail } from "@/lib/email/components/approval-outcome";
 import { renderEmailTemplate } from "@/lib/email/renderer";
-import { env } from "@/lib/env";
 
 const DATE_FMT = "EEEE, MMMM d, yyyy 'at' h:mm a";
 

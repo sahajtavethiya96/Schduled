@@ -24,7 +24,10 @@ import { paginationRange } from "@/lib/utils";
 const PAGE_SIZE = 10;
 
 import { retryFailedJobsAction } from "@/app/actions/queues";
-import { getFriendlyName, StateBadge } from "@/components/settings-admin/queue-format";
+import {
+  getFriendlyName,
+  StateBadge,
+} from "@/components/settings-admin/queue-format";
 import { QueueJobsSheet } from "@/components/settings-admin/queue-jobs-sheet";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -186,17 +189,39 @@ function QueueOverviewCard({
 }) {
   const status =
     failed > 0
-      ? { label: `${failed} Failed`, cls: "text-error", dot: "bg-error", border: "border-error/25" }
+      ? {
+          label: `${failed} Failed`,
+          cls: "text-error",
+          dot: "bg-error",
+          border: "border-error/25",
+        }
       : active > 0
-        ? { label: `${active} Running`, cls: "text-primary", dot: "bg-primary", border: "border-primary/25" }
+        ? {
+            label: `${active} Running`,
+            cls: "text-primary",
+            dot: "bg-primary",
+            border: "border-primary/25",
+          }
         : pending > 0
-          ? { label: `${pending} Pending`, cls: "text-amber-600 dark:text-amber-500", dot: "bg-amber-500", border: "border-amber-500/25" }
-          : { label: "Healthy", cls: "text-success", dot: "bg-success", border: "border-success/20" };
+          ? {
+              label: `${pending} Pending`,
+              cls: "text-amber-600 dark:text-amber-500",
+              dot: "bg-amber-500",
+              border: "border-amber-500/25",
+            }
+          : {
+              label: "Healthy",
+              cls: "text-success",
+              dot: "bg-success",
+              border: "border-success/20",
+            };
 
   return (
     <div className={`flex flex-col gap-2 border p-3.5 ${status.border}`}>
       <p className="truncate text-sm font-medium text-base-content">{name}</p>
-      <span className={`flex items-center gap-1.5 text-xs font-semibold ${status.cls}`}>
+      <span
+        className={`flex items-center gap-1.5 text-xs font-semibold ${status.cls}`}
+      >
         <span className={`size-1.5 rounded-full ${status.dot}`} />
         {status.label}
       </span>
@@ -309,13 +334,22 @@ export function QueuesClient({
   // Collapses every state row down to one card per queue name, surfacing
   // whichever count is most actionable: failed > running > pending > healthy.
   const queueOverview = useMemo(() => {
-    const byName = new Map<string, { failed: number; active: number; pending: number }>();
+    const byName = new Map<
+      string,
+      { failed: number; active: number; pending: number }
+    >();
     for (const q of queues) {
-      if (q.name.startsWith("__")) continue; // internal pg-boss queues — noise in a compact summary
+      if (q.name.startsWith("__")) {
+        continue; // internal pg-boss queues — noise in a compact summary
+      }
       const entry = byName.get(q.name) ?? { failed: 0, active: 0, pending: 0 };
-      if (q.state === "failed") entry.failed += q.count;
-      else if (q.state === "active") entry.active += q.count;
-      else if (q.state === "created" || q.state === "retry") entry.pending += q.count;
+      if (q.state === "failed") {
+        entry.failed += q.count;
+      } else if (q.state === "active") {
+        entry.active += q.count;
+      } else if (q.state === "created" || q.state === "retry") {
+        entry.pending += q.count;
+      }
       byName.set(q.name, entry);
     }
     return Array.from(byName.entries())
@@ -409,10 +443,16 @@ export function QueuesClient({
       {/* ── Per-queue overview ──────────────────────────────────────────── */}
       {queueOverview.length > 0 && (
         <div>
-          <h3 className="mb-3 text-sm font-semibold text-base-content">Queue Overview</h3>
+          <h3 className="mb-3 text-sm font-semibold text-base-content">
+            Queue Overview
+          </h3>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {queueOverview.map((q) => (
-              <QueueOverviewCard key={q.name} {...q} name={getFriendlyName(q.name)} />
+              <QueueOverviewCard
+                key={q.name}
+                {...q}
+                name={getFriendlyName(q.name)}
+              />
             ))}
           </div>
         </div>
@@ -438,8 +478,11 @@ export function QueuesClient({
                   value={search}
                 />
               </div>
-              <Select value={stateFilter} onValueChange={setStateFilter}>
-                <SelectTrigger className="h-9 w-full text-sm sm:w-40" aria-label="State">
+              <Select onValueChange={setStateFilter} value={stateFilter}>
+                <SelectTrigger
+                  aria-label="State"
+                  className="h-9 w-full text-sm sm:w-40"
+                >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -466,7 +509,9 @@ export function QueuesClient({
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   Run{" "}
-                  <code className="font-mono text-base-content">pnpm worker</code>{" "}
+                  <code className="font-mono text-base-content">
+                    pnpm worker
+                  </code>{" "}
                   or enqueue an email to populate the pg-boss schema.
                 </p>
               </div>

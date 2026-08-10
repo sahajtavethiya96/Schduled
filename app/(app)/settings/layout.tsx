@@ -3,7 +3,7 @@ import { ADMIN_ROLE } from "@/config/platform";
 import { user } from "@/db/schema";
 import { requireSession } from "@/lib/authz";
 import { db } from "@/lib/db";
-import { SettingsNav, SettingsMobileNav } from "./_components/settings-nav";
+import { SettingsMobileNav, SettingsNav } from "./_components/settings-nav";
 import { SettingsSearch } from "./_components/settings-search";
 
 export default async function SettingsLayout({

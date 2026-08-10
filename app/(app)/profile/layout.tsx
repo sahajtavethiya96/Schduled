@@ -1,4 +1,7 @@
-import { SettingsNav, SettingsMobileNav } from "../settings/_components/settings-nav";
+import {
+  SettingsMobileNav,
+  SettingsNav,
+} from "../settings/_components/settings-nav";
 
 export default function ProfileLayout({
   children,

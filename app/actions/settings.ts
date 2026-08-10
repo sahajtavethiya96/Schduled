@@ -163,7 +163,9 @@ export async function updateCommunicationPrefs(
       .limit(1);
 
     // Only accept one of the allowed lead-time choices; default to 15.
-    const joinSoonLeadMinutes = JOIN_SOON_LEAD_OPTIONS.includes(data.joinSoonLeadMinutes)
+    const joinSoonLeadMinutes = JOIN_SOON_LEAD_OPTIONS.includes(
+      data.joinSoonLeadMinutes
+    )
       ? data.joinSoonLeadMinutes
       : 15;
 
@@ -469,7 +471,9 @@ export async function getContacts({
     .map((s) => s.trim().toLowerCase())
     .filter(Boolean);
   // Split into exact emails vs domain patterns
-  const excludedEmails = new Set(excludedEntries.filter((e) => e.includes("@")));
+  const excludedEmails = new Set(
+    excludedEntries.filter((e) => e.includes("@"))
+  );
   const excludedDomains = excludedEntries.filter((e) => !e.includes("@"));
 
   const searchClause = search
@@ -514,22 +518,28 @@ export async function getContacts({
 
   function isExcluded(email: string) {
     const lower = email.toLowerCase();
-    if (excludedEmails.has(lower)) return true;
+    if (excludedEmails.has(lower)) {
+      return true;
+    }
     const domain = lower.split("@")[1] ?? "";
-    return excludedDomains.some((d) => domain === d || domain.endsWith("." + d));
+    return excludedDomains.some(
+      (d) => domain === d || domain.endsWith("." + d)
+    );
   }
 
-  const allContacts = (rows as unknown as {
-    email: string;
-    name: string;
-    booking_count: number;
-    last_booked_at: string | null;
-    last_meeting_at: string | null;
-    next_meeting_at: string | null;
-    notes: string | null;
-    is_archived: boolean | null;
-    contact_id: string | null;
-  }[]).filter((r) => !isExcluded(r.email));
+  const allContacts = (
+    rows as unknown as {
+      email: string;
+      name: string;
+      booking_count: number;
+      last_booked_at: string | null;
+      last_meeting_at: string | null;
+      next_meeting_at: string | null;
+      notes: string | null;
+      is_archived: boolean | null;
+      contact_id: string | null;
+    }[]
+  ).filter((r) => !isExcluded(r.email));
 
   const contacts = allContacts.slice(offset, offset + pageSize);
 

@@ -3,8 +3,14 @@
 import { eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { account, booking, eventType, session as sessionTable, user } from "@/db/schema";
 import { ADMIN_ROLE } from "@/config/platform";
+import {
+  account,
+  booking,
+  eventType,
+  session as sessionTable,
+  user,
+} from "@/db/schema";
 import { audit } from "@/lib/audit";
 import { requireAdmin } from "@/lib/authz";
 import {
@@ -26,14 +32,18 @@ export async function recordImpersonationAction(
   targetUserId: string
 ): Promise<{ error: string } | { ok: true }> {
   const admin = await requireAdmin();
-  if (!targetUserId) return { error: "Missing user id." };
+  if (!targetUserId) {
+    return { error: "Missing user id." };
+  }
 
   const [target] = await db
     .select({ email: user.email })
     .from(user)
     .where(eq(user.id, targetUserId))
     .limit(1);
-  if (!target) return { error: "User not found." };
+  if (!target) {
+    return { error: "User not found." };
+  }
 
   await audit({
     action: "orbit.impersonation_start",
@@ -49,7 +59,9 @@ export async function recordImpersonationAction(
 
 /** Returns the subset of `ids` that are NOT admins — admins can't be acted on. */
 async function nonAdminIds(ids: string[]): Promise<string[]> {
-  if (ids.length === 0) return [];
+  if (ids.length === 0) {
+    return [];
+  }
   const rows = await db
     .select({ id: user.id, role: user.role })
     .from(user)
@@ -73,7 +85,9 @@ export async function toggleUserBanAction(formData: FormData): Promise<void> {
       .from(user)
       .where(eq(user.id, userId))
       .limit(1);
-    if (target?.role === ADMIN_ROLE) return;
+    if (target?.role === ADMIN_ROLE) {
+      return;
+    }
   }
 
   await db
@@ -92,7 +106,10 @@ export async function toggleUserBanAction(formData: FormData): Promise<void> {
     // A suspended host can't take meetings, so cancel their upcoming bookings
     // and notify the invitees + host + remove the calendar events. Reactivating
     // does NOT restore them.
-    await cancelUpcomingBookingsForHost(userId, "The host's account was suspended.");
+    await cancelUpcomingBookingsForHost(
+      userId,
+      "The host's account was suspended."
+    );
   }
 
   await audit({
@@ -167,33 +184,44 @@ export async function deleteUserAction(formData: FormData): Promise<void> {
 
 export async function cancelBookingAction(formData: FormData): Promise<void> {
   const admin = await requireAdmin();
-  const bookingId  = String(formData.get("bookingId")  ?? "");
+  const bookingId = String(formData.get("bookingId") ?? "");
   const hostUserId = String(formData.get("hostUserId") ?? "");
-  if (!bookingId) return;
+  if (!bookingId) {
+    return;
+  }
 
   const [b] = await db
-    .select({ id: booking.id, status: booking.status, inviteeName: booking.inviteeName })
+    .select({
+      id: booking.id,
+      status: booking.status,
+      inviteeName: booking.inviteeName,
+    })
     .from(booking)
     .where(eq(booking.id, bookingId))
     .limit(1);
 
-  if (!b || b.status === "cancelled") return;
+  if (!b || b.status === "cancelled") {
+    return;
+  }
 
-  await db.update(booking).set({
-    status:             "cancelled",
-    cancelledBy:        "admin",
-    cancelledAt:        new Date(),
-    cancellationReason: "Cancelled by admin",
-    updatedAt:          new Date(),
-  }).where(eq(booking.id, bookingId));
+  await db
+    .update(booking)
+    .set({
+      status: "cancelled",
+      cancelledBy: "admin",
+      cancelledAt: new Date(),
+      cancellationReason: "Cancelled by admin",
+      updatedAt: new Date(),
+    })
+    .where(eq(booking.id, bookingId));
 
   await audit({
-    action:      "orbit.booking_cancelled",
-    actorEmail:  admin.user.email,
-    actorId:     admin.user.id,
+    action: "orbit.booking_cancelled",
+    actorEmail: admin.user.email,
+    actorId: admin.user.id,
     description: `Admin cancelled booking for ${b.inviteeName}`,
-    entityId:    bookingId,
-    entityType:  "booking",
+    entityId: bookingId,
+    entityType: "booking",
   });
 
   // Same side-effects as an invitee cancellation: notify the invitee, remove
@@ -213,8 +241,10 @@ export async function cancelBookingAction(formData: FormData): Promise<void> {
 export async function deleteEventTypeAction(formData: FormData): Promise<void> {
   const admin = await requireAdmin();
   const eventTypeId = String(formData.get("eventTypeId") ?? "");
-  const hostUserId  = String(formData.get("hostUserId")  ?? "");
-  if (!eventTypeId) return;
+  const hostUserId = String(formData.get("hostUserId") ?? "");
+  if (!eventTypeId) {
+    return;
+  }
 
   const [et] = await db
     .select({ id: eventType.id, name: eventType.name })
@@ -222,15 +252,17 @@ export async function deleteEventTypeAction(formData: FormData): Promise<void> {
     .where(eq(eventType.id, eventTypeId))
     .limit(1);
 
-  if (!et) return;
+  if (!et) {
+    return;
+  }
 
   await audit({
-    action:      "orbit.event_type_deleted",
-    actorEmail:  admin.user.email,
-    actorId:     admin.user.id,
+    action: "orbit.event_type_deleted",
+    actorEmail: admin.user.email,
+    actorId: admin.user.id,
     description: `Admin deleted event type "${et.name}"`,
-    entityId:    eventTypeId,
-    entityType:  "event_type",
+    entityId: eventTypeId,
+    entityType: "event_type",
   });
 
   await db.delete(booking).where(eq(booking.eventTypeId, eventTypeId));
@@ -243,26 +275,34 @@ export async function deleteEventTypeAction(formData: FormData): Promise<void> {
 
 export async function bulkBanUsersAction(formData: FormData): Promise<void> {
   const admin = await requireAdmin();
-  const requested = formData.getAll("userId").map(String).filter((id) => id && id !== admin.user.id);
+  const requested = formData
+    .getAll("userId")
+    .map(String)
+    .filter((id) => id && id !== admin.user.id);
   const ids = await nonAdminIds(requested);
-  if (ids.length === 0) return;
+  if (ids.length === 0) {
+    return;
+  }
 
-  await db.update(user).set({
-    banned:     true,
-    banReason:  "Bulk suspended by admin",
-    updatedAt:  new Date(),
-  }).where(inArray(user.id, ids));
+  await db
+    .update(user)
+    .set({
+      banned: true,
+      banReason: "Bulk suspended by admin",
+      updatedAt: new Date(),
+    })
+    .where(inArray(user.id, ids));
 
   await db.delete(sessionTable).where(inArray(sessionTable.userId, ids));
 
   await audit({
-    action:      "orbit.bulk_suspend",
-    actorEmail:  admin.user.email,
-    actorId:     admin.user.id,
+    action: "orbit.bulk_suspend",
+    actorEmail: admin.user.email,
+    actorId: admin.user.id,
     description: `Bulk suspended ${ids.length} user(s)`,
-    entityId:    admin.user.id,
-    entityType:  "user",
-    metadata:    { count: ids.length },
+    entityId: admin.user.id,
+    entityType: "user",
+    metadata: { count: ids.length },
   });
 
   revalidatePath("/settings/users");
@@ -272,9 +312,14 @@ export async function bulkBanUsersAction(formData: FormData): Promise<void> {
 
 export async function bulkDeleteUsersAction(formData: FormData): Promise<void> {
   const admin = await requireAdmin();
-  const requested = formData.getAll("userId").map(String).filter((id) => id && id !== admin.user.id);
+  const requested = formData
+    .getAll("userId")
+    .map(String)
+    .filter((id) => id && id !== admin.user.id);
   const ids = await nonAdminIds(requested);
-  if (ids.length === 0) return;
+  if (ids.length === 0) {
+    return;
+  }
 
   const targets = await db
     .select({ id: user.id, email: user.email })
@@ -283,13 +328,13 @@ export async function bulkDeleteUsersAction(formData: FormData): Promise<void> {
 
   for (const target of targets) {
     await audit({
-      action:      "orbit.user_deleted",
-      actorEmail:  admin.user.email,
-      actorId:     admin.user.id,
+      action: "orbit.user_deleted",
+      actorEmail: admin.user.email,
+      actorId: admin.user.id,
       description: `Bulk deleted user: ${target.email}`,
-      entityId:    target.id,
-      entityType:  "user",
-      metadata:    { email: target.email },
+      entityId: target.id,
+      entityType: "user",
+      metadata: { email: target.email },
     });
   }
 

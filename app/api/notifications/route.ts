@@ -48,9 +48,7 @@ export async function DELETE() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  await db
-    .delete(notification)
-    .where(eq(notification.userId, current.user.id));
+  await db.delete(notification).where(eq(notification.userId, current.user.id));
 
   return NextResponse.json({ ok: true });
 }

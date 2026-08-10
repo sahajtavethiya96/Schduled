@@ -1,5 +1,5 @@
 import { createId } from "@paralleldrive/cuid2";
-import { addMinutes, addHours } from "date-fns";
+import { addHours, addMinutes } from "date-fns";
 import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
 import { and, eq, gt, gte, lte, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
@@ -15,11 +15,11 @@ import {
   user,
   videoConnection,
 } from "@/db/schema";
-import { db } from "@/lib/db";
-import { isSlotBookable } from "@/lib/calendar/validate-slot";
 import { checkRateLimit, jsonError, rateLimitKey } from "@/lib/api/helpers";
-import { isValidTimezone, sanitizeText, validateEmail } from "@/lib/validators";
+import { isSlotBookable } from "@/lib/calendar/validate-slot";
+import { db } from "@/lib/db";
 import { canonicalizeTz } from "@/lib/utils";
+import { isValidTimezone, sanitizeText, validateEmail } from "@/lib/validators";
 import { enqueueJob } from "@/lib/worker/enqueue";
 import { JOB_NAMES } from "@/lib/worker/job-types";
 import { computeReminderSchedule } from "@/lib/worker/reminder-schedule";
@@ -43,22 +43,27 @@ interface BookingBody {
 export async function POST(request: Request) {
   try {
     // ── Rate limit: 10 bookings/minute per IP ────────────────────────────────
-    if (!(await checkRateLimit(rateLimitKey("POST:/api/bookings", request), 10, 60_000))) {
-      return jsonError("Too many requests. Please wait a moment and try again.", 429);
+    if (
+      !(await checkRateLimit(
+        rateLimitKey("POST:/api/bookings", request),
+        10,
+        60_000
+      ))
+    ) {
+      return jsonError(
+        "Too many requests. Please wait a moment and try again.",
+        429
+      );
     }
 
     const body: BookingBody = await request.json();
-    const {
-      username,
-      eventSlug,
-      startUtc,
-      timezone,
-      answers = [],
-    } = body;
+    const { username, eventSlug, startUtc, timezone, answers = [] } = body;
 
     // ── Sanitize user-supplied text before any use ───────────────────────────
     const name = sanitizeText(String(body.name ?? ""));
-    const email = String(body.email ?? "").trim().toLowerCase();
+    const email = String(body.email ?? "")
+      .trim()
+      .toLowerCase();
     const phone = body.phone ? sanitizeText(body.phone) : undefined;
 
     // ── Input validation ─────────────────────────────────────────────────────
@@ -67,7 +72,9 @@ export async function POST(request: Request) {
     }
 
     const emailError = validateEmail(email);
-    if (emailError) return jsonError(emailError, 400);
+    if (emailError) {
+      return jsonError(emailError, 400);
+    }
 
     if (!isValidTimezone(timezone)) {
       return jsonError("Invalid timezone", 400);
@@ -91,24 +98,33 @@ export async function POST(request: Request) {
       .where(eq(user.username, username))
       .limit(1);
 
-    if (!host) return jsonError("Host not found", 404);
+    if (!host) {
+      return jsonError("Host not found", 404);
+    }
 
     const et = await db.query.eventType.findFirst({
-      where: and(eq(eventType.userId, host.id), eq(eventType.slug, eventSlug), eq(eventType.isActive, true), eq(eventType.isHidden, false)),
+      where: and(
+        eq(eventType.userId, host.id),
+        eq(eventType.slug, eventSlug),
+        eq(eventType.isActive, true),
+        eq(eventType.isHidden, false)
+      ),
       with: { durations: true },
     });
 
-    if (!et) return jsonError("Event type not found", 404);
+    if (!et) {
+      return jsonError("Event type not found", 404);
+    }
 
     // ── Integration connectivity check ───────────────────────────────────────
-    if (et.locationType === 'google_meet') {
+    if (et.locationType === "google_meet") {
       const [cal] = await db
         .select({ id: connectedCalendar.id })
         .from(connectedCalendar)
         .where(
           and(
             eq(connectedCalendar.userId, host.id),
-            eq(connectedCalendar.status, 'connected'),
+            eq(connectedCalendar.status, "connected"),
             eq(connectedCalendar.isWriteTarget, true)
           )
         )
@@ -121,14 +137,14 @@ export async function POST(request: Request) {
       }
     }
 
-    if (et.locationType === 'zoom') {
+    if (et.locationType === "zoom") {
       const [zoomConn] = await db
         .select({ id: videoConnection.id })
         .from(videoConnection)
         .where(
           and(
             eq(videoConnection.userId, host.id),
-            eq(videoConnection.provider, 'zoom')
+            eq(videoConnection.provider, "zoom")
           )
         )
         .limit(1);
@@ -143,16 +159,26 @@ export async function POST(request: Request) {
     // ── Blocklist check ──────────────────────────────────────────────────────
     const inviteeDomain = email.split("@")[1] ?? "";
     const blocklist = await db
-      .select({ pattern: bookingBlocklist.pattern, type: bookingBlocklist.type })
+      .select({
+        pattern: bookingBlocklist.pattern,
+        type: bookingBlocklist.type,
+      })
       .from(bookingBlocklist)
       .where(eq(bookingBlocklist.userId, host.id));
 
     const isBlocked = blocklist.some((b) =>
-      b.type === "email"  ? b.pattern.toLowerCase() === email :
-      b.type === "domain" ? b.pattern.toLowerCase() === inviteeDomain :
-      false
+      b.type === "email"
+        ? b.pattern.toLowerCase() === email
+        : b.type === "domain"
+          ? b.pattern.toLowerCase() === inviteeDomain
+          : false
     );
-    if (isBlocked) return jsonError("You have been blocked from booking with this host.", 403);
+    if (isBlocked) {
+      return jsonError(
+        "You have been blocked from booking with this host.",
+        403
+      );
+    }
 
     // Enforce minimum notice (default 60 — matches the DB column default and
     // the /api/slots display, so a direct API call can't bypass the notice the
@@ -160,8 +186,14 @@ export async function POST(request: Request) {
     const minimumNoticeMs = (et.minimumNotice ?? 60) * 60_000;
     if (minimumNoticeMs > 0 && startTime.getTime() - nowMs < minimumNoticeMs) {
       const mins = et.minimumNotice ?? 60;
-      const label = mins >= 60 ? `${mins / 60} hour${mins / 60 === 1 ? "" : "s"}` : `${mins} minute${mins === 1 ? "" : "s"}`;
-      return jsonError(`This event type requires at least ${label} notice before booking.`, 400);
+      const label =
+        mins >= 60
+          ? `${mins / 60} hour${mins / 60 === 1 ? "" : "s"}`
+          : `${mins} minute${mins === 1 ? "" : "s"}`;
+      return jsonError(
+        `This event type requires at least ${label} notice before booking.`,
+        400
+      );
     }
 
     // Enforce booking window (rolling only — the fixed-range check needs the
@@ -170,47 +202,66 @@ export async function POST(request: Request) {
       const bookingWindowDays = et.bookingWindow ?? 60;
       const maxBookableMs = nowMs + bookingWindowDays * 86_400_000;
       if (startTime.getTime() > maxBookableMs) {
-        return jsonError(`Bookings can only be made up to ${bookingWindowDays} days in advance.`, 400);
-      }
-    }
-
-    const defaultDuration =
-      et.durations.find((d) => d.isDefault)?.duration ?? et.durations[0]?.duration ?? 30;
-    // Use client-supplied duration only if it's a valid option for this event type
-    const requestedDuration = body.duration ? Number(body.duration) : null;
-    const duration =
-      requestedDuration && et.durations.some((d) => d.duration === requestedDuration)
-        ? requestedDuration
-        : defaultDuration;
-
-    const endTime      = addMinutes(startTime, duration);
-    const bufferStart  = et.bufferBefore  ? addMinutes(startTime, -et.bufferBefore) : startTime;
-    const bufferEnd    = et.bufferAfter   ? addMinutes(endTime,    et.bufferAfter)  : endTime;
-
-    const schedule = await db.query.availabilitySchedule.findFirst({
-      where: et.availabilityScheduleId
-        ? and(eq(availabilitySchedule.id, et.availabilityScheduleId), eq(availabilitySchedule.userId, host.id))
-        : and(eq(availabilitySchedule.userId, host.id), eq(availabilitySchedule.isDefault, true)),
-    });
-
-    const hostTz    = schedule?.timezone ?? "UTC";
-    const date      = formatInTimeZone(startTime, hostTz, "yyyy-MM-dd");
-    const dayStartUtc = fromZonedTime(`${date}T00:00:00`, hostTz);
-    const dayEndUtc   = fromZonedTime(`${date}T23:59:59.999`, hostTz);
-
-    // Fixed booking window — the host-local date must fall inside the range.
-    if (et.bookingWindowType === "fixed" && et.bookingRangeStart && et.bookingRangeEnd) {
-      if (date < et.bookingRangeStart || date > et.bookingRangeEnd) {
         return jsonError(
-          `This event can only be booked between ${et.bookingRangeStart} and ${et.bookingRangeEnd}.`,
+          `Bookings can only be made up to ${bookingWindowDays} days in advance.`,
           400
         );
       }
     }
 
+    const defaultDuration =
+      et.durations.find((d) => d.isDefault)?.duration ??
+      et.durations[0]?.duration ??
+      30;
+    // Use client-supplied duration only if it's a valid option for this event type
+    const requestedDuration = body.duration ? Number(body.duration) : null;
+    const duration =
+      requestedDuration &&
+      et.durations.some((d) => d.duration === requestedDuration)
+        ? requestedDuration
+        : defaultDuration;
+
+    const endTime = addMinutes(startTime, duration);
+    const bufferStart = et.bufferBefore
+      ? addMinutes(startTime, -et.bufferBefore)
+      : startTime;
+    const bufferEnd = et.bufferAfter
+      ? addMinutes(endTime, et.bufferAfter)
+      : endTime;
+
+    const schedule = await db.query.availabilitySchedule.findFirst({
+      where: et.availabilityScheduleId
+        ? and(
+            eq(availabilitySchedule.id, et.availabilityScheduleId),
+            eq(availabilitySchedule.userId, host.id)
+          )
+        : and(
+            eq(availabilitySchedule.userId, host.id),
+            eq(availabilitySchedule.isDefault, true)
+          ),
+    });
+
+    const hostTz = schedule?.timezone ?? "UTC";
+    const date = formatInTimeZone(startTime, hostTz, "yyyy-MM-dd");
+    const dayStartUtc = fromZonedTime(`${date}T00:00:00`, hostTz);
+    const dayEndUtc = fromZonedTime(`${date}T23:59:59.999`, hostTz);
+
+    // Fixed booking window — the host-local date must fall inside the range.
+    if (
+      et.bookingWindowType === "fixed" &&
+      et.bookingRangeStart &&
+      et.bookingRangeEnd &&
+      (date < et.bookingRangeStart || date > et.bookingRangeEnd)
+    ) {
+      return jsonError(
+        `This event can only be booked between ${et.bookingRangeStart} and ${et.bookingRangeEnd}.`,
+        400
+      );
+    }
+
     // Phone required server-side for phone_host_calls
-    if (et.locationType === 'phone_host_calls' && !phone?.trim()) {
-      return jsonError('Phone number is required for this meeting type.', 400);
+    if (et.locationType === "phone_host_calls" && !phone?.trim()) {
+      return jsonError("Phone number is required for this meeting type.", 400);
     }
 
     // Server-side availability check — the requested time must be a real slot on
@@ -228,7 +279,10 @@ export async function POST(request: Request) {
       increment: et.startTimeIncrement ?? 30,
     });
     if (!bookable) {
-      return jsonError("That time isn't available. Please choose an open slot.", 409);
+      return jsonError(
+        "That time isn't available. Please choose an open slot.",
+        409
+      );
     }
 
     // ── Idempotency check ────────────────────────────────────────────────────
@@ -240,7 +294,9 @@ export async function POST(request: Request) {
     const [existing] = await db
       .select({ result: idempotencyKey.result })
       .from(idempotencyKey)
-      .where(and(eq(idempotencyKey.key, idemKey), gt(idempotencyKey.expiresAt, now)))
+      .where(
+        and(eq(idempotencyKey.key, idemKey), gt(idempotencyKey.expiresAt, now))
+      )
       .limit(1);
 
     if (existing?.result) {
@@ -270,10 +326,13 @@ export async function POST(request: Request) {
         );
 
       const hasConflict = existingBookings.some(
-        (b) => bufferStart < new Date(b.endTime) && bufferEnd > new Date(b.startTime)
+        (b) =>
+          bufferStart < new Date(b.endTime) && bufferEnd > new Date(b.startTime)
       );
 
-      if (hasConflict) return { conflict: true } as const;
+      if (hasConflict) {
+        return { conflict: true } as const;
+      }
 
       if (et.maxBookingsPerDay != null) {
         const sameDayCount = existingBookings.filter(
@@ -298,7 +357,7 @@ export async function POST(request: Request) {
           .where(
             and(
               eq(booking.hostUserId, host.id),
-              sql`${booking.status} IN ('confirmed', 'pending', 'reschedule_requested')`,
+              sql`${booking.status} IN ('confirmed', 'pending', 'reschedule_requested')`
             )
           );
 
@@ -319,21 +378,37 @@ export async function POST(request: Request) {
         const weekEndCal = new Date(weekStartCal);
         weekEndCal.setUTCDate(weekStartCal.getUTCDate() + 6);
 
-        const weekStartUtc = fromZonedTime(`${fmtCal(weekStartCal)}T00:00:00`, hostTz);
-        const weekEndUtc = fromZonedTime(`${fmtCal(weekEndCal)}T23:59:59.999`, hostTz);
+        const weekStartUtc = fromZonedTime(
+          `${fmtCal(weekStartCal)}T00:00:00`,
+          hostTz
+        );
+        const weekEndUtc = fromZonedTime(
+          `${fmtCal(weekEndCal)}T23:59:59.999`,
+          hostTz
+        );
 
         const monthEndCal = new Date(Date.UTC(ly, lm, 0)); // day 0 of next month = last day
         const monthStartUtc = fromZonedTime(
           `${ly}-${String(lm).padStart(2, "0")}-01T00:00:00`,
           hostTz
         );
-        const monthEndUtc = fromZonedTime(`${fmtCal(monthEndCal)}T23:59:59.999`, hostTz);
+        const monthEndUtc = fromZonedTime(
+          `${fmtCal(monthEndCal)}T23:59:59.999`,
+          hostTz
+        );
 
         for (const lim of globalLimits) {
           let windowStart: Date, windowEnd: Date;
-          if (lim.period === 'day')   { windowStart = dayStartUtc;   windowEnd = dayEndUtc; }
-          else if (lim.period === 'week')  { windowStart = weekStartUtc;  windowEnd = weekEndUtc; }
-          else                         { windowStart = monthStartUtc; windowEnd = monthEndUtc; }
+          if (lim.period === "day") {
+            windowStart = dayStartUtc;
+            windowEnd = dayEndUtc;
+          } else if (lim.period === "week") {
+            windowStart = weekStartUtc;
+            windowEnd = weekEndUtc;
+          } else {
+            windowStart = monthStartUtc;
+            windowEnd = monthEndUtc;
+          }
 
           const windowCount = allHostBookings.filter(
             (b) => b.startTime >= windowStart && b.startTime <= windowEnd
@@ -345,28 +420,28 @@ export async function POST(request: Request) {
         }
       }
 
-      const cancelToken     = createId();
+      const cancelToken = createId();
       const rescheduleToken = createId();
-      const approvalToken   = et.requiresApproval ? createId() : null;
+      const approvalToken = et.requiresApproval ? createId() : null;
 
       const [newBooking] = await tx
         .insert(booking)
         .values({
-          eventTypeId:      et.id,
-          hostUserId:       host.id,
-          inviteeName:      name.trim(),
-          inviteeEmail:     email.toLowerCase().trim(),
-          inviteePhone:     phone?.trim() || null,
-          inviteeTimezone:  canonicalizeTz(timezone),
+          eventTypeId: et.id,
+          hostUserId: host.id,
+          inviteeName: name.trim(),
+          inviteeEmail: email.toLowerCase().trim(),
+          inviteePhone: phone?.trim() || null,
+          inviteeTimezone: canonicalizeTz(timezone),
           startTime,
           endTime,
           duration,
-          locationValue:    et.locationValue,
-          status:           et.requiresApproval ? "pending" : "confirmed",
+          locationValue: et.locationValue,
+          status: et.requiresApproval ? "pending" : "confirmed",
           cancelToken,
           rescheduleToken,
           approvalToken,
-          cancelTokenExpiresAt:     addHours(endTime, 24),
+          cancelTokenExpiresAt: addHours(endTime, 24),
           rescheduleTokenExpiresAt: addHours(endTime, 24),
         })
         .returning();
@@ -374,10 +449,10 @@ export async function POST(request: Request) {
       if (answers.length > 0) {
         await tx.insert(bookingAnswer).values(
           answers.map((a) => ({
-            bookingId:     newBooking.id,
-            questionId:    a.questionId,
+            bookingId: newBooking.id,
+            questionId: a.questionId,
             questionLabel: a.questionLabel,
-            answer:        a.answer,
+            answer: a.answer,
           }))
         );
       }
@@ -387,28 +462,30 @@ export async function POST(request: Request) {
       // – phone_invitee_calls → host's phone number (they need to call)
       // – in_person / custom  → locationValue (address / custom link)
       const locationValue =
-        et.locationType === 'phone_invitee_calls' ? (et.hostPhoneNumber ?? null) :
-        (et.locationType === 'in_person' || et.locationType === 'custom') ? (et.locationValue ?? null) :
-        null;
+        et.locationType === "phone_invitee_calls"
+          ? (et.hostPhoneNumber ?? null)
+          : et.locationType === "in_person" || et.locationType === "custom"
+            ? (et.locationValue ?? null)
+            : null;
 
       const responsePayload = {
         ok: true,
-        bookingId:      newBooking.id,
+        bookingId: newBooking.id,
         cancelToken,
         rescheduleToken,
-        eventName:      et.name,
+        eventName: et.name,
         duration,
-        startUtc:       startTime.toISOString(),
-        endUtc:         endTime.toISOString(),
+        startUtc: startTime.toISOString(),
+        endUtc: endTime.toISOString(),
         locationValue,
-        isPending:      et.requiresApproval,
+        isPending: et.requiresApproval,
       };
 
       await tx
         .insert(idempotencyKey)
         .values({
-          key:       idemKey,
-          result:    JSON.stringify(responsePayload),
+          key: idemKey,
+          result: JSON.stringify(responsePayload),
           expiresAt: addHours(now, 24),
         })
         .onConflictDoNothing();
@@ -417,7 +494,10 @@ export async function POST(request: Request) {
     });
 
     if ("conflict" in result && result.conflict) {
-      return jsonError("This time slot is no longer available. Please pick another time.", 409);
+      return jsonError(
+        "This time slot is no longer available. Please pick another time.",
+        409
+      );
     }
 
     if ("dailyLimit" in result && result.dailyLimit) {
@@ -426,17 +506,20 @@ export async function POST(request: Request) {
 
     if ("globalLimit" in result && result.globalLimit) {
       const period = result.globalLimit as string;
-      return jsonError(`The host has reached their maximum bookings for this ${period}.`, 409);
+      return jsonError(
+        `The host has reached their maximum bookings for this ${period}.`,
+        409
+      );
     }
 
     const { data } = result;
 
     // ── Fire async booking lifecycle jobs ────────────────────────────────────
     await enqueueBookingJobs({
-      bookingId:        data.bookingId,
+      bookingId: data.bookingId,
       startTime,
       endTime,
-      locationType:     et.locationType,
+      locationType: et.locationType,
       requiresApproval: et.requiresApproval,
     });
 
@@ -448,13 +531,14 @@ export async function POST(request: Request) {
 }
 
 async function enqueueBookingJobs(opts: {
-  bookingId:        string;
-  startTime:        Date;
-  endTime:          Date;
-  locationType:     string;
+  bookingId: string;
+  startTime: Date;
+  endTime: Date;
+  locationType: string;
   requiresApproval: boolean;
 }) {
-  const { bookingId, startTime, endTime, locationType, requiresApproval } = opts;
+  const { bookingId, startTime, endTime, locationType, requiresApproval } =
+    opts;
   const startUtcIso = startTime.toISOString();
   const now = Date.now();
 
@@ -468,13 +552,17 @@ async function enqueueBookingJobs(opts: {
     const results = await Promise.allSettled(jobs);
     for (const r of results) {
       if (r.status === "rejected") {
-        console.error(`[enqueueBookingJobs] approval job enqueue failed for booking ${bookingId}:`, r.reason);
+        console.error(
+          `[enqueueBookingJobs] approval job enqueue failed for booking ${bookingId}:`,
+          r.reason
+        );
       }
     }
     return;
   }
 
-  const needsVideoLink = locationType === "google_meet" || locationType === "zoom";
+  const needsVideoLink =
+    locationType === "google_meet" || locationType === "zoom";
 
   // Calendar event (no-op if host has no connected write-target calendar)
   jobs.push(enqueueJob(JOB_NAMES.CALENDAR_WRITE, { bookingId }));
@@ -501,7 +589,10 @@ async function enqueueBookingJobs(opts: {
       enqueueJob(
         reminder.jobName,
         { bookingId, bookingStartUtc: startUtcIso },
-        { singletonKey: `reminder-${reminder.singletonTag}-${bookingId}`, startAfter: reminder.startAfter }
+        {
+          singletonKey: `reminder-${reminder.singletonTag}-${bookingId}`,
+          startAfter: reminder.startAfter,
+        }
       )
     );
   }
@@ -519,7 +610,10 @@ async function enqueueBookingJobs(opts: {
   const results = await Promise.allSettled(jobs);
   for (const r of results) {
     if (r.status === "rejected") {
-      console.error(`[enqueueBookingJobs] job enqueue failed for booking ${bookingId}:`, r.reason);
+      console.error(
+        `[enqueueBookingJobs] job enqueue failed for booking ${bookingId}:`,
+        r.reason
+      );
     }
   }
 }

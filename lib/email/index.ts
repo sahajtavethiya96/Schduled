@@ -33,7 +33,13 @@ export async function enqueueEmail(
     .returning({ id: emailOutbox.id });
 
   // No row → an email with this key was already enqueued; don't double-send.
-  if (!row) return;
+  if (!row) {
+    return;
+  }
 
-  await enqueueJob(JOB_NAMES.EMAIL_SEND, { outboxId: row.id }, { startAfter: jobOptions?.startAfter });
+  await enqueueJob(
+    JOB_NAMES.EMAIL_SEND,
+    { outboxId: row.id },
+    { startAfter: jobOptions?.startAfter }
+  );
 }

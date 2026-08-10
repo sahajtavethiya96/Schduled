@@ -1,67 +1,75 @@
-'use client'
+"use client";
 
-import { useEffect, useRef, useState } from 'react'
-import { CheckCircle, Copy, ArrowRight } from '@phosphor-icons/react'
-import { Button } from '@/components/ui/button'
-import { completeOnboarding } from '@/app/actions/onboarding'
-import { useAppOrigin } from '@/hooks/use-app-origin'
+import { ArrowRight, CheckCircle, Copy } from "@phosphor-icons/react";
+import { useEffect, useRef, useState } from "react";
+import { completeOnboarding } from "@/app/actions/onboarding";
+import { Button } from "@/components/ui/button";
+import { useAppOrigin } from "@/hooks/use-app-origin";
 
 interface StepShareLinkProps {
-  username: string
-  onBack: () => void
+  onBack: () => void;
+  username: string;
 }
 
 export function StepShareLink({ username, onBack }: StepShareLinkProps) {
-  const appOrigin = useAppOrigin()
-  const bookingUrl = `${appOrigin}/${username}`
-  const [copied, setCopied] = useState(false)
-  const [finishing, setFinishing] = useState(false)
-  const [error, setError] = useState('')
-  const qrRef = useRef<HTMLImageElement>(null)
+  const appOrigin = useAppOrigin();
+  const bookingUrl = `${appOrigin}/${username}`;
+  const [copied, setCopied] = useState(false);
+  const [finishing, setFinishing] = useState(false);
+  const [error, setError] = useState("");
+  const qrRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
-    if (!username) return
-    let cancelled = false
+    if (!username) {
+      return;
+    }
+    let cancelled = false;
 
     async function buildQr() {
       try {
-        const QRCode = (await import('qrcode')).default
+        const QRCode = (await import("qrcode")).default;
         const dataUrl = await QRCode.toDataURL(bookingUrl, {
           width: 160,
           margin: 1,
-          color: { dark: '#0d9488', light: '#ffffff' },
-        })
+          color: { dark: "#0d9488", light: "#ffffff" },
+        });
         if (!cancelled && qrRef.current) {
-          qrRef.current.src = dataUrl
-          qrRef.current.style.display = 'block'
+          qrRef.current.src = dataUrl;
+          qrRef.current.style.display = "block";
         }
       } catch {
         // non-fatal
       }
     }
 
-    buildQr()
-    return () => { cancelled = true }
-  }, [bookingUrl, username])
+    buildQr();
+    return () => {
+      cancelled = true;
+    };
+  }, [bookingUrl, username]);
 
   async function handleCopy() {
     try {
-      await navigator.clipboard.writeText(bookingUrl)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      await navigator.clipboard.writeText(bookingUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch {
       /* clipboard unavailable */
     }
   }
 
   async function handleFinish() {
-    setFinishing(true)
-    setError('')
-    const result = await completeOnboarding()
-    if ('error' in result) { setFinishing(false); setError(result.error); return }
+    setFinishing(true);
+    setError("");
+    const result = await completeOnboarding();
+    if ("error" in result) {
+      setFinishing(false);
+      setError(result.error);
+      return;
+    }
     // Hard navigate so the layout fully re-renders (reads onboardingDone=true, modal unmounts)
     // and the user lands directly on their new event type.
-    window.location.href = '/event-types'
+    window.location.href = "/event-types";
   }
 
   return (
@@ -76,15 +84,19 @@ export function StepShareLink({ username, onBack }: StepShareLinkProps) {
             {bookingUrl}
           </span>
           <button
-            type="button"
-            onClick={handleCopy}
-            className="ml-auto shrink-0 flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition"
             aria-label="Copy booking link"
+            className="ml-auto shrink-0 flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition"
+            onClick={handleCopy}
+            type="button"
           >
             {copied ? (
-              <><CheckCircle size={15} weight="fill" /> Copied!</>
+              <>
+                <CheckCircle size={15} weight="fill" /> Copied!
+              </>
             ) : (
-              <><Copy size={15} /> Copy</>
+              <>
+                <Copy size={15} /> Copy
+              </>
             )}
           </button>
         </div>
@@ -98,12 +110,12 @@ export function StepShareLink({ username, onBack }: StepShareLinkProps) {
           </p>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            ref={qrRef}
             alt="Booking link QR code"
-            style={{ display: 'none' }}
-            width={160}
-            height={160}
             className="border border-base-300"
+            height={160}
+            ref={qrRef}
+            style={{ display: "none" }}
+            width={160}
           />
           <p className="text-xs text-muted-foreground text-center">
             Let clients scan to book from their phone
@@ -114,12 +126,16 @@ export function StepShareLink({ username, onBack }: StepShareLinkProps) {
       {/* What's ready */}
       <ul className="space-y-2 text-sm text-muted-foreground">
         {[
-          'Your profile and timezone are saved',
-          'Your default availability is set',
-          'A 30-minute meeting type is ready to book',
+          "Your profile and timezone are saved",
+          "Your default availability is set",
+          "A 30-minute meeting type is ready to book",
         ].map((item) => (
-          <li key={item} className="flex items-center gap-2">
-            <CheckCircle size={15} weight="fill" className="shrink-0 text-primary" />
+          <li className="flex items-center gap-2" key={item}>
+            <CheckCircle
+              className="shrink-0 text-primary"
+              size={15}
+              weight="fill"
+            />
             {item}
           </li>
         ))}
@@ -128,17 +144,24 @@ export function StepShareLink({ username, onBack }: StepShareLinkProps) {
       {error && <p className="text-sm text-error">{error}</p>}
 
       <div className="flex flex-col gap-2">
-        <Button className="w-full" onClick={handleFinish} disabled={finishing}>
-          {finishing ? 'Setting things up…' : (
+        <Button className="w-full" disabled={finishing} onClick={handleFinish}>
+          {finishing ? (
+            "Setting things up…"
+          ) : (
             <span className="flex items-center gap-2">
               Go to my Meeting Types <ArrowRight size={16} />
             </span>
           )}
         </Button>
-        <Button variant="ghost" size="sm" className="text-muted-foreground" onClick={onBack}>
+        <Button
+          className="text-muted-foreground"
+          onClick={onBack}
+          size="sm"
+          variant="ghost"
+        >
           Back
         </Button>
       </div>
     </div>
-  )
+  );
 }

@@ -1,6 +1,6 @@
 import type { Job } from "pg-boss";
-import { enqueueEmail } from "@/lib/email";
 import { generateBookingICS } from "@/lib/calendar/ics";
+import { enqueueEmail } from "@/lib/email";
 import { approvalApprovedTemplate } from "@/lib/email/templates/approval-approved";
 import { bookingEmail } from "@/lib/email/templates/booking-emails";
 import type { BookingApprovedPayload } from "@/lib/worker/job-types";
@@ -12,7 +12,9 @@ import {
   resolveMeetButtonLabel,
 } from "./booking-lifecycle-data";
 
-export async function handleBookingApprovedNotify(jobs: Job<BookingApprovedPayload>[]) {
+export async function handleBookingApprovedNotify(
+  jobs: Job<BookingApprovedPayload>[]
+) {
   for (const job of jobs) {
     await processOne(job.data.bookingId);
   }
@@ -34,8 +36,16 @@ async function processOne(bookingId: string) {
   }
 
   const hostTimezone = b.hostTimezone ?? "UTC";
-  const locationLabelInvitee = resolveLocationLabel(b.etLocationType, b.etLocationValue, b.inviteePhone);
-  const locationLabelHost = resolveLocationLabelHost(b.etLocationType, b.etLocationValue, b.inviteePhone);
+  const locationLabelInvitee = resolveLocationLabel(
+    b.etLocationType,
+    b.etLocationValue,
+    b.inviteePhone
+  );
+  const locationLabelHost = resolveLocationLabelHost(
+    b.etLocationType,
+    b.etLocationValue,
+    b.inviteePhone
+  );
   const meetLabel = resolveMeetButtonLabel(b.etLocationType);
   const startUtc = new Date(b.startTime);
 
@@ -62,7 +72,7 @@ async function processOne(bookingId: string) {
     description: `${b.etName} meeting via Schduled`,
     startUtc,
     durationMinutes: Math.round(
-      (new Date(b.endTime).getTime() - startUtc.getTime()) / 60000
+      (new Date(b.endTime).getTime() - startUtc.getTime()) / 60_000
     ),
     organizerName: b.hostName ?? "Your host",
     organizerEmail: b.hostEmail ?? "",
@@ -117,5 +127,7 @@ async function processOne(bookingId: string) {
     );
   }
 
-  console.log(`[booking-approved-notify] sent approval email for booking ${bookingId}`);
+  console.log(
+    `[booking-approved-notify] sent approval email for booking ${bookingId}`
+  );
 }

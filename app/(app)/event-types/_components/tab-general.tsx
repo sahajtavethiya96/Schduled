@@ -1,40 +1,74 @@
-'use client'
+"use client";
 
-import { useEffect } from 'react'
-import type { UseFormReturn } from 'react-hook-form'
+import { ArrowsClockwise, Stack, User, Users } from "@phosphor-icons/react";
+import { useEffect } from "react";
+import type { UseFormReturn } from "react-hook-form";
 import {
-  ArrowsClockwise,
-  Stack,
-  User,
-  Users,
-} from '@phosphor-icons/react'
-import type { BuilderFormValues } from './builder'
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Separator } from '@/components/ui/separator'
-import { Switch } from '@/components/ui/switch'
-import { Textarea } from '@/components/ui/textarea'
-import { cn } from '@/lib/utils'
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
+import type { BuilderFormValues } from "./builder";
 
 function slugify(name: string) {
-  return name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 export const MEETING_TYPES = [
-  { id: 'one_on_one', label: 'One-on-One', desc: 'Single invitee', icon: <User size={15} />, disabled: false },
-  { id: 'group', label: 'Group', desc: 'Coming soon', icon: <Users size={15} />, disabled: true },
-  { id: 'round_robin', label: 'Round Robin', desc: 'Coming soon', icon: <ArrowsClockwise size={15} />, disabled: true },
-  { id: 'collective', label: 'Collective', desc: 'Coming soon', icon: <Stack size={15} />, disabled: true },
-]
+  {
+    id: "one_on_one",
+    label: "One-on-One",
+    desc: "Single invitee",
+    icon: <User size={15} />,
+    disabled: false,
+  },
+  {
+    id: "group",
+    label: "Group",
+    desc: "Coming soon",
+    icon: <Users size={15} />,
+    disabled: true,
+  },
+  {
+    id: "round_robin",
+    label: "Round Robin",
+    desc: "Coming soon",
+    icon: <ArrowsClockwise size={15} />,
+    disabled: true,
+  },
+  {
+    id: "collective",
+    label: "Collective",
+    desc: "Coming soon",
+    icon: <Stack size={15} />,
+    disabled: true,
+  },
+];
 
 interface TabGeneralProps {
-  form: UseFormReturn<BuilderFormValues>
-  meetingType: string
-  onMeetingTypeChange: (type: string) => void
+  form: UseFormReturn<BuilderFormValues>;
+  meetingType: string;
+  onMeetingTypeChange: (type: string) => void;
 }
 
-export function TabGeneral({ form, meetingType, onMeetingTypeChange }: TabGeneralProps) {
-  const name = form.watch('name')
+export function TabGeneral({
+  form,
+  meetingType,
+  onMeetingTypeChange,
+}: TabGeneralProps) {
+  const name = form.watch("name");
 
   // Auto-generate the slug from the name. The color is assigned server-side at
   // creation (a distinct palette color per meeting type) and preserved on edit,
@@ -42,42 +76,56 @@ export function TabGeneral({ form, meetingType, onMeetingTypeChange }: TabGenera
   // a color).
   useEffect(() => {
     if (!form.formState.dirtyFields.slug) {
-      form.setValue('slug', slugify(name), { shouldDirty: false })
+      form.setValue("slug", slugify(name), { shouldDirty: false });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [name]);
 
   return (
     <div className="space-y-6">
-
       {/* ── Meeting type selector ───────────────────────────────── */}
       <div>
         <p className="text-sm font-medium mb-3">Meeting Type</p>
         <div className="grid grid-cols-2 gap-2">
           {MEETING_TYPES.map((mt) => (
             <button
-              key={mt.id}
-              type="button"
-              disabled={mt.disabled}
-              onClick={() => !mt.disabled && onMeetingTypeChange(mt.id)}
               className={cn(
-                'flex items-start gap-2.5 p-3 border text-left transition-colors',
+                "flex items-start gap-2.5 p-3 border text-left transition-colors",
                 mt.disabled
-                  ? 'border-base-300 opacity-40 cursor-not-allowed'
+                  ? "border-base-300 opacity-40 cursor-not-allowed"
                   : meetingType === mt.id
-                    ? 'border-primary bg-primary/5'
-                    : 'border-base-300 hover:border-primary/40 hover:bg-base-200/40'
+                    ? "border-primary bg-primary/5"
+                    : "border-base-300 hover:border-primary/40 hover:bg-base-200/40"
               )}
+              disabled={mt.disabled}
+              key={mt.id}
+              onClick={() => !mt.disabled && onMeetingTypeChange(mt.id)}
+              type="button"
             >
-              <span className={cn(
-                'mt-0.5 shrink-0',
-                mt.disabled ? 'text-muted-foreground' : meetingType === mt.id ? 'text-primary' : 'text-muted-foreground'
-              )}>
+              <span
+                className={cn(
+                  "mt-0.5 shrink-0",
+                  mt.disabled
+                    ? "text-muted-foreground"
+                    : meetingType === mt.id
+                      ? "text-primary"
+                      : "text-muted-foreground"
+                )}
+              >
                 {mt.icon}
               </span>
               <div>
-                <p className={cn('text-xs font-semibold', mt.disabled ? 'text-muted-foreground' : 'text-base-content')}>{mt.label}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{mt.desc}</p>
+                <p
+                  className={cn(
+                    "text-xs font-semibold",
+                    mt.disabled ? "text-muted-foreground" : "text-base-content"
+                  )}
+                >
+                  {mt.label}
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {mt.desc}
+                </p>
               </div>
             </button>
           ))}
@@ -92,9 +140,15 @@ export function TabGeneral({ form, meetingType, onMeetingTypeChange }: TabGenera
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Event name <span className="text-error">*</span></FormLabel>
+            <FormLabel>
+              Event name <span className="text-error">*</span>
+            </FormLabel>
             <FormControl>
-              <Input placeholder="e.g. 30 Minute Meeting" maxLength={100} {...field} />
+              <Input
+                maxLength={100}
+                placeholder="e.g. 30 Minute Meeting"
+                {...field}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -110,12 +164,12 @@ export function TabGeneral({ form, meetingType, onMeetingTypeChange }: TabGenera
             <FormLabel>Description</FormLabel>
             <FormControl>
               <Textarea
+                className="resize-none"
+                maxLength={500}
                 placeholder="What should invitees know about this meeting?"
                 rows={3}
-                maxLength={500}
-                className="resize-none"
                 {...field}
-                value={field.value ?? ''}
+                value={field.value ?? ""}
               />
             </FormControl>
             <FormDescription>Shown on your booking page.</FormDescription>
@@ -133,9 +187,12 @@ export function TabGeneral({ form, meetingType, onMeetingTypeChange }: TabGenera
         render={({ field }) => (
           <FormItem className="flex items-center justify-between gap-4">
             <div>
-              <FormLabel className="text-sm font-medium">Require Approval</FormLabel>
+              <FormLabel className="text-sm font-medium">
+                Require Approval
+              </FormLabel>
               <FormDescription className="text-xs">
-                Bookings won&apos;t be confirmed until you approve them. You&apos;ll receive an email to review each request.
+                Bookings won&apos;t be confirmed until you approve them.
+                You&apos;ll receive an email to review each request.
               </FormDescription>
             </div>
             <FormControl>
@@ -145,5 +202,5 @@ export function TabGeneral({ form, meetingType, onMeetingTypeChange }: TabGenera
         )}
       />
     </div>
-  )
+  );
 }
