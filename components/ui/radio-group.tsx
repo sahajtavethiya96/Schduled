@@ -45,24 +45,11 @@ function RadioGroupItem({
     <Radio
       data-slot="radio-group-item"
       className={cn(
-        "group/radio-group-item peer relative flex aspect-square size-4.5 shrink-0 rounded-full border border-input bg-transparent outline-none after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-error aria-invalid:ring-2 aria-invalid:ring-error/20 aria-invalid:aria-checked:border-primary dark:aria-invalid:border-error/50 dark:aria-invalid:ring-error/40 data-checked:border-primary",
+        "radio radio-primary group/radio-group-item peer relative flex aspect-square size-4.5 shrink-0 rounded-full border border-input bg-transparent outline-none after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-error aria-invalid:ring-2 aria-invalid:ring-error/20 aria-invalid:aria-checked:border-primary dark:aria-invalid:border-error/50 dark:aria-invalid:ring-error/40 data-checked:border-primary",
         className
       )}
       {...props}
-    >
-      {({ checked }) => (
-        <>
-          {checked && (
-            <span
-              data-slot="radio-group-indicator"
-              className="flex size-4.5 items-center justify-center"
-            >
-              <span className="absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary" />
-            </span>
-          )}
-        </>
-      )}
-    </Radio>
+    />
   )
 }
 

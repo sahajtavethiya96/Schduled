@@ -443,8 +443,8 @@ export default async function LandingPage() {
             </p>
           </Reveal>
           <div className="relative overflow-hidden">
-            <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-24 bg-gradient-to-r from-background to-transparent" />
-            <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-24 bg-gradient-to-l from-background to-transparent" />
+            <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-24 bg-gradient-to-r from-base-100 to-transparent" />
+            <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-24 bg-gradient-to-l from-base-100 to-transparent" />
             <div className="flex animate-schduled-ticker items-center whitespace-nowrap">
               {[...TECH_STACK, ...TECH_STACK].map((tech, i) => {
                 const Icon = tech.icon
@@ -682,8 +682,8 @@ export default async function LandingPage() {
                       {/* Welcome + actions */}
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <div className="h-5 w-48 bg-foreground/15" />
-                          <div className="mt-1.5 h-2.5 w-64 bg-foreground/6" />
+                          <div className="h-5 w-48 bg-base-content/15" />
+                          <div className="mt-1.5 h-2.5 w-64 bg-base-content/6" />
                         </div>
                         <div className="hidden items-center gap-1.5 sm:flex">
                           <div className="h-7 w-28 bg-primary" />
@@ -700,7 +700,7 @@ export default async function LandingPage() {
                         <div className="flex-1 min-w-0">
                           <p className="text-[9px] font-black uppercase tracking-wider text-primary">Your next meeting</p>
                           <div className="mt-0.5 flex items-center gap-1.5">
-                            <div className="h-2 w-20 bg-foreground/20" />
+                            <div className="h-2 w-20 bg-base-content/20" />
                             <span className="text-[9px] text-muted-foreground">· Discovery Call</span>
                           </div>
                         </div>
@@ -796,7 +796,7 @@ export default async function LandingPage() {
         </section>
 
         {/* ─── HOW IT WORKS ────────────────────────────────────────────────────── */}
-        <section id="how-it-works" className="relative overflow-hidden bg-gradient-to-b from-background to-muted/20 py-32 lg:py-44">
+        <section id="how-it-works" className="relative overflow-hidden bg-gradient-to-b from-base-100 to-base-200/20 py-32 lg:py-44">
 
           {/* Floating gradient blobs */}
           <div

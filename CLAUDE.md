@@ -7,8 +7,11 @@ Design decisions are documented in [design.md](./design.md) — follow it strict
 - Next.js 16 App Router + Turbopack
 - Better Auth v1.6.18 (magic link, admin plugin)
 - Drizzle ORM + PostgreSQL
-- Tailwind CSS v4
+- Tailwind CSS v4 + daisyUI (styling foundation — component classes and theme tokens; see `app/globals.css`)
+- Headless UI for interactive behavior where needed (dialog, menu, tabs, switch, etc.); Floating UI (`@floating-ui/react`) for Popover/Tooltip positioning; plain native HTML elements where no behavior is needed
 - pg-boss background worker
+
+Radix UI and shadcn/ui are **not** dependencies of this project — `components/ui/` is a hand-authored kit built directly on daisyUI + Headless UI + Floating UI (see [design.md](./design.md)).
 
 ---
 

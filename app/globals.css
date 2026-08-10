@@ -64,16 +64,19 @@
 
 /*
  * DaisyUI theme tokens are the single source of truth for every semantic
- * color, defined here as literal values. The legacy shadcn-named variables
- * in :root / .dark below (--background, --primary, --border, etc.) are now
- * thin var(--color-*) proxies pointed AT these tokens, kept only because
- * hundreds of call sites across the app still use the shadcn utility names
- * (bg-background, text-foreground, border-border, ...) — they retire
- * incrementally as those call sites migrate to daisyUI semantic utilities
- * directly. Light/dark switching is driven by next-themes toggling both
- * .dark (for shadcn's `dark:` variant) and [data-theme] (for DaisyUI) on
- * <html> at the same time — see components/theme-provider.tsx usage in
- * app/layout.tsx.
+ * color, defined here as literal values. The shadcn-named variables in
+ * :root / .dark below (--background, --border, --muted-foreground, etc.)
+ * are thin var(--color-*) proxies pointed AT these tokens, kept because
+ * call sites across the app use the shadcn utility names (bg-background,
+ * text-foreground, border-border, ...) alongside daisyUI's own semantic
+ * utilities (bg-primary, text-base-content, ...) — both read from the same
+ * underlying daisyUI tokens, so there is no drift between them. Tokens that
+ * daisyUI already exposes natively under the same name (primary, secondary,
+ * accent, success, warning) are consumed directly rather than re-proxied,
+ * to avoid a self-referential var() cycle. Light/dark switching is driven
+ * by next-themes toggling both .dark (for shadcn's `dark:` variant) and
+ * [data-theme] (for DaisyUI) on <html> at the same time — see
+ * components/theme-provider.tsx usage in app/layout.tsx.
  */
 @plugin "daisyui/theme" {
   name: "light";
@@ -197,53 +200,32 @@ body:has([data-app-shell]) {
   /* Page background token */
   --color-page: var(--page);
 
-  /* Status tokens */
-  --color-success:            var(--success);
-  --color-success-foreground: var(--success-foreground);
+  /* Status tokens — success/warning are native daisyUI theme colors already
+     scoped per-theme by @plugin "daisyui/theme" below; only the extras that
+     daisyUI doesn't define get proxied here. */
   --color-success-subtle:     var(--success-subtle);
-  --color-success-light:      var(--success-light);
-  --color-warning:            var(--warning);
 
   /* Sidebar tokens */
-  --color-sidebar-ring:                var(--sidebar-ring);
   --color-sidebar-border:              var(--sidebar-border);
-  --color-sidebar-accent-foreground:   var(--sidebar-accent-foreground);
   --color-sidebar-accent:              var(--sidebar-accent);
   --color-sidebar-primary-foreground:  var(--sidebar-primary-foreground);
   --color-sidebar-primary:             var(--sidebar-primary);
   --color-sidebar-foreground:          var(--sidebar-foreground);
   --color-sidebar:                     var(--sidebar);
 
-  /* Chart tokens */
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-
-  /* Core tokens */
-  --color-ring:                 var(--ring);
+  /* Core tokens — primary/secondary/accent are native daisyUI theme colors
+     already scoped per-theme by @plugin "daisyui/theme" below; only the
+     extras that daisyUI doesn't define get proxied here. */
   --color-input:                var(--input);
   --color-border:               var(--border);
-  --color-destructive:          var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-accent-foreground:    var(--accent-foreground);
-  --color-accent:               var(--accent);
   --color-muted-foreground:     var(--muted-foreground);
-  --color-muted:                var(--muted);
   --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary:            var(--secondary);
-  --color-primary-foreground:   var(--primary-foreground);
-  --color-primary:              var(--primary);
-  --color-popover-foreground:   var(--popover-foreground);
   --color-popover:              var(--popover);
-  --color-card-foreground:      var(--card-foreground);
-  --color-card:                 var(--card);
   --color-foreground:           var(--foreground);
   --color-background:           var(--background);
 
   /* Border radius — ZERO everywhere. Sharp corners are the brand. */
-  --radius-sm:  2px;
+  --radius-sm:  0;
   --radius-md:  0;
   --radius-lg:  0;
   --radius-xl:  0;
@@ -270,52 +252,30 @@ body:has([data-app-shell]) {
 
   /* Status */
   --success:              var(--color-success);
-  --success-foreground:   var(--color-success-content);
   --success-subtle:       oklch(0.97 0.04 145);
-  --success-light:        oklch(0.78 0.13 145);
   --warning:              var(--color-warning);
 
   /* Backgrounds — pure white topbar, white cards */
   --background:         var(--color-base-100);
   --foreground:         var(--color-base-content);
-  --card:               var(--color-base-100);
-  --card-foreground:    var(--color-base-content);
   --popover:            var(--color-base-100);
-  --popover-foreground: var(--color-base-content);
 
   /* PRIMARY — Teal */
   --primary:            var(--color-primary);
-  --primary-foreground: var(--color-primary-content);
 
   /* SECONDARY — teal-tinted light surface (not plain gray) */
   --secondary:            var(--color-secondary);
   --secondary-foreground: var(--color-secondary-content);
 
   /* MUTED — subtle teal wash */
-  --muted:              var(--color-base-200);
   --muted-foreground:   oklch(0.50 0.024 200);    /* cool blue-slate mid-tone, no daisyUI equivalent */
 
   /* ACCENT — rich teal hover state (not a washed-out gray) */
   --accent:             var(--color-accent);
-  --accent-foreground:  var(--color-accent-content);
-
-  --destructive:            var(--color-error);
-  --destructive-foreground: var(--color-error-content);
 
   /* Borders — clean neutral #E5E7EB */
   --border:             var(--color-base-300);
   --input:              var(--color-base-300);
-  --ring:               var(--color-primary);
-
-  /* CHART — teal scale light → dark */
-  --chart-1: oklch(0.855 0.125 181.107);
-  --chart-2: oklch(0.785 0.133 181.944);
-  --chart-3: oklch(0.704 0.123 182.533);
-  --chart-4: oklch(0.60  0.104 184.735);
-  --chart-5: oklch(0.511 0.086 186.423);
-
-  /* Border radius — ZERO */
-  --radius: 0rem;
 
   /*
    * SIDEBAR — Deep ocean blue-teal (signature element)
@@ -327,9 +287,7 @@ body:has([data-app-shell]) {
   --sidebar-primary:            oklch(0.700 0.140 182);
   --sidebar-primary-foreground: oklch(0.980 0.005 185);
   --sidebar-accent:             oklch(0.185 0.040 210);
-  --sidebar-accent-foreground:  oklch(0.940 0.012 185);
   --sidebar-border:             oklch(0.200 0.036 210);
-  --sidebar-ring:               oklch(0.60  0.104 184.735);
 }
 
 /* ── Dark mode ──────────────────────────────────────────────────── */
@@ -339,51 +297,31 @@ body:has([data-app-shell]) {
   --page: oklch(0.130 0.020 210);
 
   --success:              var(--color-success);
-  --success-foreground:   var(--color-success-content);
   --success-subtle:       oklch(0.20 0.07 145);
-  --success-light:        oklch(0.78 0.13 145);
   --warning:              var(--color-warning);
 
   --background:         var(--color-base-100);
   --foreground:         var(--color-base-content);
-  --card:               oklch(0.180 0.025 210);
-  --card-foreground:    var(--color-base-content);
   --popover:            oklch(0.180 0.025 210);
-  --popover-foreground: var(--color-base-content);
 
   --primary:            var(--color-primary);
-  --primary-foreground: var(--color-primary-content);
 
   --secondary:            var(--color-secondary);
   --secondary-foreground: var(--color-secondary-content);
 
-  --muted:              var(--color-base-200);
   --muted-foreground:   oklch(0.620 0.028 200);
 
   --accent:             var(--color-accent);
-  --accent-foreground:  var(--color-accent-content);
-
-  --destructive:            var(--color-error);
-  --destructive-foreground: var(--color-error-content);
 
   --border:             var(--color-base-300);
   --input:              oklch(1 0 0 / 12%);
-  --ring:               var(--color-primary);
-
-  --chart-1: oklch(0.855 0.125 181.107);
-  --chart-2: oklch(0.785 0.133 181.944);
-  --chart-3: oklch(0.704 0.123 182.533);
-  --chart-4: oklch(0.60  0.104 184.735);
-  --chart-5: oklch(0.511 0.086 186.423);
 
   --sidebar:                    oklch(0.175 0.035 215);
   --sidebar-foreground:         oklch(0.940 0.012 185);
   --sidebar-primary:            oklch(0.700 0.140 182);
   --sidebar-primary-foreground: oklch(0.980 0.005 185);
   --sidebar-accent:             oklch(0.230 0.040 210);
-  --sidebar-accent-foreground:  oklch(0.940 0.012 185);
   --sidebar-border:             oklch(0.250 0.036 210);
-  --sidebar-ring:               oklch(0.700 0.120 183);
 }
 
 /* ── Base layer ─────────────────────────────────────────────────── */
