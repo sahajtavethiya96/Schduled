@@ -59,7 +59,7 @@
 }
 
 @plugin "daisyui" {
-  themes: light --default, dark;
+  themes: false;
 }
 
 /*
