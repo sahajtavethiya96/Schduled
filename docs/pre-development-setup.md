@@ -817,7 +817,7 @@ if (!DATABASE_URL) {
 const url = new URL(DATABASE_URL)
 const user = decodeURIComponent(url.username) || 'postgres'
 const password = decodeURIComponent(url.password) || 'password'
-const port = Number(url.port) || 54329
+const port = Number(url.port) || 5432
 const database = url.pathname.replace(/^\//, '') || 'postgres'
 const dataDir = path.resolve(process.cwd(), '.pgdata')
 
@@ -860,7 +860,7 @@ main().catch((err) => {
 
 **3. Set `DATABASE_URL` in `.env.local`** — same as Option A, just pointing to the embedded port:
 ```bash
-DATABASE_URL=postgresql://schduled:password@localhost:54329/schduled_dev
+DATABASE_URL=postgresql://schduled:password@localhost:5432/schduled_dev
 ```
 
 **4. How to use** — two terminals:
